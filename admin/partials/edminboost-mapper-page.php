@@ -42,8 +42,8 @@ foreach ( $top_bar_items as $item ) {
 
 		<div class="edminboost-mapper-layout">
 			<aside class="edminboost-card edminboost-mapper-panel" aria-labelledby="edminboost-discovered-heading">
-				<h2 id="edminboost-discovered-heading"><?php esc_html_e( 'Discovered Sidebar Plugins', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Auto-scanned from your installed admin menus.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+				<h2 id="edminboost-discovered-heading"><?php esc_html_e( 'Discovered Admin Pages', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Auto-scanned from your sidebar menus, including submenu pages.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 
 				<label class="screen-reader-text" for="edminboost-plugin-search">
 					<?php esc_html_e( 'Filter plugins', EDMINBOOST_TEXT_DOMAIN ); ?>
@@ -66,9 +66,10 @@ foreach ( $top_bar_items as $item ) {
 							<?php
 							$is_active = in_array( $menu_item['slug'], $active_slugs, true );
 							$item_id   = 'edminboost_discovered_' . $index;
+							$source    = isset( $menu_item['source'] ) ? $menu_item['source'] : 'top';
 							?>
 							<li
-								class="edminboost-discovered-item"
+								class="edminboost-discovered-item edminboost-discovered-item--<?php echo esc_attr( $source ); ?><?php echo $is_active ? ' is-active' : ''; ?>"
 								data-slug="<?php echo esc_attr( $menu_item['slug'] ); ?>"
 								data-label="<?php echo esc_attr( $menu_item['label'] ); ?>"
 								data-icon="<?php echo esc_attr( $menu_item['icon'] ); ?>"
@@ -94,6 +95,41 @@ foreach ( $top_bar_items as $item ) {
 						<?php endforeach; ?>
 					<?php endif; ?>
 				</ul>
+
+				<div class="edminboost-custom-link" id="edminboost-custom-link">
+					<h3 class="edminboost-custom-link__heading"><?php esc_html_e( 'Custom admin link', EDMINBOOST_TEXT_DOMAIN ); ?></h3>
+					<p class="description"><?php esc_html_e( 'Add any admin page path that does not appear in the list above.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+
+					<p>
+						<label for="edminboost-custom-link-path"><?php esc_html_e( 'Admin path', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+						<input
+							type="text"
+							id="edminboost-custom-link-path"
+							class="regular-text code"
+							placeholder="<?php echo esc_attr( 'edit-tags.php?taxonomy=product_tag&post_type=product' ); ?>"
+							autocomplete="off"
+						/>
+					</p>
+
+					<p>
+						<label for="edminboost-custom-link-label"><?php esc_html_e( 'Label', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+						<input
+							type="text"
+							id="edminboost-custom-link-label"
+							class="regular-text"
+							placeholder="<?php esc_attr_e( 'Product Tags', EDMINBOOST_TEXT_DOMAIN ); ?>"
+							autocomplete="off"
+						/>
+					</p>
+
+					<p class="edminboost-custom-link__actions">
+						<button type="button" class="button button-secondary" id="edminboost-custom-link-add">
+							<?php esc_html_e( 'Add to top bar', EDMINBOOST_TEXT_DOMAIN ); ?>
+						</button>
+					</p>
+
+					<p class="edminboost-custom-link__error description" id="edminboost-custom-link-error" hidden role="alert"></p>
+				</div>
 			</aside>
 
 			<div class="edminboost-mapper-main">
@@ -210,6 +246,7 @@ foreach ( $top_bar_items as $item ) {
 			</div>
 		</div>
 
+		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_layout_studio_save]" value="1" />
 		<div id="edminboost-topbar-hidden-inputs"></div>
 
 		<p class="submit">

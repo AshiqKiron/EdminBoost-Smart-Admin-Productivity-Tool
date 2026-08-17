@@ -347,7 +347,11 @@ class EDMINBOOST_Settings {
 			$output['default_preset'] = sanitize_key( $raw['default_preset'] );
 		}
 
-		if ( isset( $raw['top_bar_items'] ) && is_array( $raw['top_bar_items'] ) ) {
+		if ( ! empty( $raw['_layout_studio_save'] ) ) {
+			$output['top_bar_items'] = isset( $raw['top_bar_items'] ) && is_array( $raw['top_bar_items'] )
+				? self::sanitize_top_bar_items( $raw['top_bar_items'] )
+				: array();
+		} elseif ( isset( $raw['top_bar_items'] ) && is_array( $raw['top_bar_items'] ) ) {
 			$output['top_bar_items'] = self::sanitize_top_bar_items( $raw['top_bar_items'] );
 		}
 
@@ -404,7 +408,7 @@ class EDMINBOOST_Settings {
 
 			$slug = sanitize_text_field( wp_unslash( $item['slug'] ) );
 
-			if ( '' === $slug || ! preg_match( '/^[a-zA-Z0-9_\-\.?=&]+$/', $slug ) ) {
+			if ( '' === $slug || ! preg_match( '/^[a-zA-Z0-9_\-\.?=&%]+$/', $slug ) ) {
 				continue;
 			}
 

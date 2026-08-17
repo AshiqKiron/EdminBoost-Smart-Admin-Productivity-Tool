@@ -18,13 +18,14 @@ includes/
   class-edminboost-admin.php                  # menus, settings UI, assets
   class-edminboost-settings.php               # options, defaults, sanitize
   class-edminboost-command-center.php         # CC defaults, presets, discovery helpers
+  class-edminboost-command-center-bar.php     # live admin bar nodes + declutter
   class-edminboost-features.php               # feature registry
   class-edminboost-{activator,deactivator,i18n}.php
   features/
     class-edminboost-feature-base.php
     class-edminboost-{feature}.php
 admin/
-  css/  js/  partials/
+  css/  js/  partials/                        # css: edminboost-admin.css, edminboost-command-center-bar.css
 languages/                                    # translation files (Domain Path)
 uninstall.php
 readme.txt
@@ -37,11 +38,12 @@ readme.txt
 - `EDMINBOOST_Plugin::run()` wires i18n, admin menu/settings/assets, and `EDMINBOOST_Features::register_hooks()` on `admin_init`.
 - Settings: `edminboost_settings` via `EDMINBOOST_Settings` (group `edminboost_settings_group`). Global kill switch: `enabled`.
 - Command Center config lives under `settings['command_center']`; helpers in `EDMINBOOST_Command_Center`.
+- Live admin bar: `EDMINBOOST_Command_Center_Bar` (not a feature module) — registered in `EDMINBOOST_Plugin::run()`, renders saved `top_bar_items` on `#wpadminbar` and applies behavior declutter toggles.
 - Version tracker: `edminboost_version` (`EDMINBOOST_Settings::VERSION_OPTION`), seeded on activation.
 - Features extend `EDMINBOOST_Feature_Base` in `includes/features/`, loaded by `EDMINBOOST_Features`.
 - Admin UI: `EDMINBOOST_Admin` + partials in `admin/partials/`.
-- Assets enqueued only on plugin screens via `EDMINBOOST_Admin::is_plugin_screen()`.
-- No custom tables, REST endpoints, cron, or blocks — options API only.
+- Plugin-screen assets enqueued via `EDMINBOOST_Admin::is_plugin_screen()`. Admin bar CSS (`edminboost-command-center-bar`) loads only when the CC bar is active (`EDMINBOOST_Command_Center_Bar::is_active()`).
+- No custom tables, REST endpoints, cron, or blocks — options API only (WPForms badge count uses a guarded read on `wpforms_entries` when WPForms is present).
 - No external requests or telemetry. Badge sources read local WP/WC data only.
 
 ## Admin Pages

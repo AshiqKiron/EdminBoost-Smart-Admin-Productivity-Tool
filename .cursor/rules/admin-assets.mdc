@@ -1,6 +1,6 @@
 ---
 description: Admin JS and CSS conventions for EdminBoost
-globs: "admin/**/*.{js,css}"
+globs: "admin/**/*.{js,css},admin/css/edminboost-command-center-bar.css"
 alwaysApply: false
 ---
 
@@ -29,7 +29,9 @@ alwaysApply: false
 }
 ```
 
-## CSS (`admin/css/edminboost-admin.css`)
+## CSS
+
+### Plugin screens (`admin/css/edminboost-admin.css`)
 
 - Prefix all selectors with `.edminboost-` to avoid admin conflicts.
 - Layout: `.edminboost-wrap`, `.edminboost-dashboard`, `.edminboost-card`, `.edminboost-status`.
@@ -37,11 +39,17 @@ alwaysApply: false
 - Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`.
 - Command Center: `.edminboost-cc-wrap`, `.edminboost-cc-nav`, `.edminboost-cc-hero`, `.edminboost-cc-footer`.
 - Onboarding: `.edminboost-persona-grid`, `.edminboost-persona-card` (+ `.is-selected`).
-- Mapper: `.edminboost-mapper-layout`, `.edminboost-discovered-list`, `.edminboost-topbar-canvas`, `.edminboost-topbar-item`, `.edminboost-item-drawer`.
+- Mapper: `.edminboost-mapper-layout`, `.edminboost-discovered-list`, `.edminboost-discovered-item` (+ `__toggle`, `__checkbox`, `__handle`, `__icon`), `.edminboost-topbar-canvas` (+ `.is-drag-over`), `.edminboost-topbar-item`, `.edminboost-item-drawer`.
 - Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-role-matrix`.
 - Behavior: `.edminboost-badge-preview`.
 - Status modifiers: `.is-active`, `.is-inactive`, `.is-selected`, `.is-dragging`, `.is-default`.
 - Responsive: feature list stacks at `782px`; persona grid and mapper layout stack at `960px`.
+
+### Live admin bar (`admin/css/edminboost-command-center-bar.css`)
+
+- Scoped under `#wpadminbar` — not prefixed with `.edminboost-wrap`.
+- Classes: `.edminboost-cc-bar-item`, `.edminboost-cc-bar-badge`, `.edminboost-cc-bar-badge--dot|pill|accent`.
+- Enqueued by `EDMINBOOST_Command_Center_Bar::enqueue_assets()` when the bar is active (admin + front end when admin bar shows).
 
 ## Partials (`admin/partials/`)
 
@@ -57,6 +65,21 @@ alwaysApply: false
 
 Use `fieldset` + `legend` for grouped settings; label every input; `screen-reader-text` for icon-only controls.
 
+## Mapper JS (`initMapper`)
+
+Key elements: `#edminboost-mapper-form`, `#edminboost-topbar-items`, `#edminboost-topbar-canvas`, `#edminboost-discovered-list`, `#edminboost-topbar-hidden-inputs`, `#edminboost-item-drawer`.
+
+- Canvas items: drag-reorder within canvas (`dragItem`, `effectAllowed: move`).
+- Discovered rows: drag-to-canvas (`dragPayload`, `effectAllowed: copy`); checkbox and row-click toggle add/remove.
+- `setDiscoveredChecked()` keeps discovered `is-active` in sync with canvas membership.
+- `syncHiddenInputs()` writes indexed hidden fields for `top_bar_items` before form submit.
+- Hidden marker input: `command_center[_layout_studio_save]` = `1` (Layout Studio partial only).
+
 ## Enqueuing
 
-`EDMINBOOST_Admin::enqueue_scripts()` / `enqueue_styles()` — only on plugin screens (`is_plugin_screen()`), version `EDMINBOOST_VERSION`. Handle: `edminboost-admin`.
+| Handle | File | When |
+|--------|------|------|
+| `edminboost-admin` | `admin/js/edminboost-admin.js`, `admin/css/edminboost-admin.css` | Plugin screens (`EDMINBOOST_Admin::is_plugin_screen()`) |
+| `edminboost-command-center-bar` | `admin/css/edminboost-command-center-bar.css` | CC bar active (`EDMINBOOST_Command_Center_Bar::is_active()`) |
+
+Version: `EDMINBOOST_VERSION` for all handles.

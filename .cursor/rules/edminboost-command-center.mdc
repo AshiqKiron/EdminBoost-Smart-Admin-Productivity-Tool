@@ -1,6 +1,6 @@
 ---
-description: Command Center patterns — onboarding, layout studio, presets, behavior
-globs: "includes/class-edminboost-command-center.php,admin/partials/edminboost-{onboarding,mapper,presets,behavior,command-center}*.php"
+description: Command Center patterns — onboarding, layout studio, presets, behavior, live admin bar
+globs: "includes/class-edminboost-command-center*.php,admin/partials/edminboost-{onboarding,mapper,presets,behavior,command-center}*.php,admin/css/edminboost-command-center-bar.css"
 alwaysApply: false
 ---
 
@@ -18,6 +18,18 @@ Shared config UI for persona onboarding, top-bar layout, presets/roles, and beha
 
 Page slug suffixes: `PAGE_ONBOARDING` (`-onboarding`), `PAGE_MAPPER` (`-mapper`), `PAGE_PRESETS` (`-presets`), `PAGE_BEHAVIOR` (`-behavior`).
 
+## Live Admin Bar: `EDMINBOOST_Command_Center_Bar`
+
+Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
+
+- `register_nodes()` on `admin_bar_menu` (priority 80) — adds nodes from saved `top_bar_items` for the current user.
+- `apply_declutter()` on `admin_bar_menu` (priority 999) — removes `wp-logo`, `comments`, `my-account`, `updates` per `behavior` toggles.
+- `enqueue_assets()` on `admin_enqueue_scripts` and `wp_enqueue_scripts` — loads `edminboost-command-center-bar.css` + `dashicons` when `is_active()`.
+- `is_active()` — plugin enabled, user logged in, admin bar showing, and `get_items_for_current_user()` non-empty.
+- `get_items_for_current_user()` — filters items by `role_visibility` (hidden slugs per role).
+- Node IDs: `edminboost-cc-{md5(slug)}`; meta class `edminboost-cc-bar-item`; badge markup `edminboost-cc-bar-badge edminboost-cc-bar-badge--{style}`.
+- URLs: `admin_url( $slug )` for slugs; full `http(s)` URLs pass through `esc_url()`.
+
 ## Rendering
 
 - Public entry points: `render_onboarding_page()`, `render_mapper_page()`, `render_presets_page()`, `render_behavior_page()` — each delegates to private `render_command_center_page( $partial )`.
@@ -31,12 +43,15 @@ CC pages submit via `options.php` with `settings_fields( EDMINBOOST_Settings::SE
 
 ```
 edminboost_settings[command_center][persona]
+edminboost_settings[command_center][_layout_studio_save]   # marker: 1 when Layout Studio form submits
 edminboost_settings[command_center][top_bar_items][0][slug|label|icon|interaction|badge_source]
 edminboost_settings[command_center][role_assignments][role_key]
 edminboost_settings[command_center][behavior][drawer_width|animation_speed|...]
 ```
 
 Sanitization: `EDMINBOOST_Settings::sanitize_command_center()` (private) — whitelist personas, presets, icons, interactions, badge sources, behavior enums.
+
+Layout Studio save: when `_layout_studio_save` is present, `top_bar_items` is always sanitized — an empty array clears the stored layout (fix for removing all items). Other CC pages omit this field so they do not overwrite `top_bar_items`.
 
 Allowed values:
 
@@ -77,5 +92,6 @@ array(
 - Read settings via `EDMINBOOST_Command_Center::get_settings()` — not raw `get_option()`.
 - System presets (`system_client`, `system_ecommerce`, `system_developer`) are read-only; custom presets live in `command_center.presets`.
 - `role_visibility` stores hidden slugs per role (inverted from visible checkboxes in UI).
-- Mapper JS syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit.
-- Badge sources (`wc_orders`, `comments`, etc.) are local admin counters only — no remote API calls.
+- Mapper JS (`initMapper`) syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit.
+- Mapper UX: discovered rows are draggable to canvas; row click toggles checkbox (except handle/toggle areas); canvas and shell accept drops; `is-active` on discovered rows mirrors canvas membership.
+- Badge sources (`wc_orders`, `comments`, `forms_entries`, etc.) are local counters only — no remote API calls.

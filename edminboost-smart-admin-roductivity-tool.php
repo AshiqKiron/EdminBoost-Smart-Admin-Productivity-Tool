@@ -37,6 +37,7 @@ require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-deactivator.php'
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-i18n.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-settings.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-command-center.php';
+require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-command-center-bar.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-features.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-admin.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-plugin.php';

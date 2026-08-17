@@ -55,6 +55,7 @@
 	function initMapper( root ) {
 		var form         = document.getElementById( 'edminboost-mapper-form' );
 		var canvas       = document.getElementById( 'edminboost-topbar-items' );
+		var canvasShell  = document.getElementById( 'edminboost-topbar-canvas' );
 		var discovered   = document.getElementById( 'edminboost-discovered-list' );
 		var searchInput  = document.getElementById( 'edminboost-plugin-search' );
 		var drawer       = document.getElementById( 'edminboost-item-drawer' );
@@ -67,9 +68,48 @@
 
 		var selectedItem = null;
 		var dragItem     = null;
+		var dragPayload  = null;
 
 		function getItems() {
 			return Array.prototype.slice.call( canvas.querySelectorAll( '.edminboost-topbar-item' ) );
+		}
+
+		function findCanvasItemBySlug( slug ) {
+			return getItems().find( function ( item ) {
+				return item.dataset.slug === slug;
+			} ) || null;
+		}
+
+		function findDiscoveredRowBySlug( slug ) {
+			var rows = discovered.querySelectorAll( '.edminboost-discovered-item' );
+			for ( var i = 0; i < rows.length; i++ ) {
+				if ( rows[ i ].dataset.slug === slug ) {
+					return rows[ i ];
+				}
+			}
+			return null;
+		}
+
+		function getRowData( row ) {
+			return {
+				slug: row.dataset.slug || '',
+				label: row.dataset.label || '',
+				icon: row.dataset.icon || 'dashicons-admin-generic'
+			};
+		}
+
+		function setDiscoveredChecked( slug, checked ) {
+			var row = findDiscoveredRowBySlug( slug );
+			if ( ! row ) {
+				return;
+			}
+
+			var checkbox = row.querySelector( '.edminboost-discovered-item__checkbox' );
+			if ( checkbox ) {
+				checkbox.checked = checked;
+			}
+
+			row.classList.toggle( 'is-active', checked );
 		}
 
 		function updateEmptyState() {
@@ -147,25 +187,23 @@
 		}
 
 		function addToCanvas( data ) {
-			if ( canvas.querySelector( '[data-slug="' + data.slug + '"]' ) ) {
+			if ( ! data.slug || findCanvasItemBySlug( data.slug ) ) {
 				return;
 			}
 
 			canvas.appendChild( createTopBarItem( data ) );
+			setDiscoveredChecked( data.slug, true );
 			updateEmptyState();
 			syncHiddenInputs();
 		}
 
 		function removeFromCanvas( slug ) {
-			var item = canvas.querySelector( '[data-slug="' + slug + '"]' );
+			var item = findCanvasItemBySlug( slug );
 			if ( item ) {
 				item.remove();
 			}
 
-			var checkbox = discovered.querySelector( '.edminboost-discovered-item[data-slug="' + slug + '"] .edminboost-discovered-item__checkbox' );
-			if ( checkbox ) {
-				checkbox.checked = false;
-			}
+			setDiscoveredChecked( slug, false );
 
 			if ( selectedItem && selectedItem.dataset.slug === slug ) {
 				closeDrawer();
@@ -235,6 +273,7 @@
 			}
 
 			item.addEventListener( 'dragstart', function ( event ) {
+				dragPayload = null;
 				dragItem = item;
 				item.classList.add( 'is-dragging' );
 				event.dataTransfer.effectAllowed = 'move';
@@ -243,6 +282,7 @@
 			item.addEventListener( 'dragend', function () {
 				item.classList.remove( 'is-dragging' );
 				dragItem = null;
+				setCanvasDragOver( false );
 				syncHiddenInputs();
 			} );
 
@@ -258,7 +298,83 @@
 			} );
 		}
 
+		function setCanvasDragOver( active ) {
+			if ( canvasShell ) {
+				canvasShell.classList.toggle( 'is-drag-over', active );
+			}
+		}
+
+		function handleDiscoveredDrop() {
+			if ( ! dragPayload || ! dragPayload.slug ) {
+				return;
+			}
+
+			addToCanvas( dragPayload );
+			dragPayload = null;
+		}
+
 		getItems().forEach( bindTopBarItem );
+
+		discovered.querySelectorAll( '.edminboost-discovered-item' ).forEach( function ( row ) {
+			if ( findCanvasItemBySlug( row.dataset.slug ) ) {
+				row.classList.add( 'is-active' );
+			}
+
+			row.draggable = true;
+
+			row.addEventListener( 'dragstart', function ( event ) {
+				if ( event.target.closest( '.edminboost-discovered-item__toggle' ) ) {
+					event.preventDefault();
+					return;
+				}
+
+				dragItem = null;
+				dragPayload = getRowData( row );
+				row.classList.add( 'is-dragging' );
+				event.dataTransfer.effectAllowed = 'copy';
+				event.dataTransfer.setData( 'text/plain', dragPayload.slug );
+			} );
+
+			row.addEventListener( 'dragend', function () {
+				row.classList.remove( 'is-dragging' );
+				dragPayload = null;
+				setCanvasDragOver( false );
+			} );
+		} );
+
+		function allowCanvasDrop( event ) {
+			if ( ! dragItem && ! dragPayload ) {
+				return;
+			}
+
+			event.preventDefault();
+			setCanvasDragOver( true );
+		}
+
+		canvas.addEventListener( 'dragover', allowCanvasDrop );
+		canvas.addEventListener( 'drop', function ( event ) {
+			event.preventDefault();
+			setCanvasDragOver( false );
+			handleDiscoveredDrop();
+		} );
+
+		if ( canvasShell ) {
+			canvasShell.addEventListener( 'dragover', allowCanvasDrop );
+			canvasShell.addEventListener( 'dragleave', function ( event ) {
+				if ( ! canvasShell.contains( event.relatedTarget ) ) {
+					setCanvasDragOver( false );
+				}
+			} );
+			canvasShell.addEventListener( 'drop', function ( event ) {
+				if ( event.target.closest( '.edminboost-topbar-item' ) ) {
+					return;
+				}
+
+				event.preventDefault();
+				setCanvasDragOver( false );
+				handleDiscoveredDrop();
+			} );
+		}
 
 		discovered.addEventListener( 'change', function ( event ) {
 			var checkbox = event.target;
@@ -272,14 +388,32 @@
 			}
 
 			if ( checkbox.checked ) {
-				addToCanvas( {
-					slug: row.dataset.slug,
-					label: row.dataset.label,
-					icon: row.dataset.icon
-				} );
+				addToCanvas( getRowData( row ) );
 			} else {
 				removeFromCanvas( row.dataset.slug );
 			}
+		} );
+
+		discovered.addEventListener( 'click', function ( event ) {
+			if (
+				event.target.closest( '.edminboost-discovered-item__handle' ) ||
+				event.target.closest( '.edminboost-discovered-item__toggle' )
+			) {
+				return;
+			}
+
+			var row = event.target.closest( '.edminboost-discovered-item' );
+			if ( ! row ) {
+				return;
+			}
+
+			var checkbox = row.querySelector( '.edminboost-discovered-item__checkbox' );
+			if ( ! checkbox ) {
+				return;
+			}
+
+			checkbox.checked = ! checkbox.checked;
+			checkbox.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 		} );
 
 		if ( searchInput ) {
@@ -287,8 +421,111 @@
 				var query = searchInput.value.toLowerCase().trim();
 				discovered.querySelectorAll( '.edminboost-discovered-item' ).forEach( function ( row ) {
 					var label = ( row.dataset.label || '' ).toLowerCase();
-					row.classList.toggle( 'is-hidden-by-search', query !== '' && label.indexOf( query ) === -1 );
+					var slug = ( row.dataset.slug || '' ).toLowerCase();
+					var matches = query === '' || label.indexOf( query ) !== -1 || slug.indexOf( query ) !== -1;
+					row.classList.toggle( 'is-hidden-by-search', ! matches );
 				} );
+			} );
+		}
+
+		var customLinkPathInput  = document.getElementById( 'edminboost-custom-link-path' );
+		var customLinkLabelInput = document.getElementById( 'edminboost-custom-link-label' );
+		var customLinkAddBtn     = document.getElementById( 'edminboost-custom-link-add' );
+		var customLinkError      = document.getElementById( 'edminboost-custom-link-error' );
+		var slugPattern          = /^[a-zA-Z0-9_\-\.?=&%]+$/;
+
+		function showCustomLinkError( message ) {
+			if ( ! customLinkError ) {
+				return;
+			}
+
+			if ( message ) {
+				customLinkError.textContent = message;
+				customLinkError.hidden = false;
+				return;
+			}
+
+			customLinkError.textContent = '';
+			customLinkError.hidden = true;
+		}
+
+		function normalizeCustomPath( value ) {
+			var path = ( value || '' ).trim();
+
+			if ( 0 === path.indexOf( 'http://' ) || 0 === path.indexOf( 'https://' ) ) {
+				return path;
+			}
+
+			path = path.replace( /^\/?wp-admin\//, '' );
+			path = path.replace( /^\/+/, '' );
+
+			return path;
+		}
+
+		function addCustomLinkToCanvas() {
+			if ( ! customLinkPathInput || ! customLinkLabelInput ) {
+				return;
+			}
+
+			var slug  = normalizeCustomPath( customLinkPathInput.value );
+			var label = customLinkLabelInput.value.trim();
+			var strings = ( window.edminboostData && window.edminboostData.strings ) || {};
+
+			showCustomLinkError( '' );
+
+			if ( ! slug ) {
+				showCustomLinkError( strings.customLinkPathRequired || 'Enter an admin path.' );
+				customLinkPathInput.focus();
+				return;
+			}
+
+			if ( ! label ) {
+				showCustomLinkError( strings.customLinkLabelRequired || 'Enter a label.' );
+				customLinkLabelInput.focus();
+				return;
+			}
+
+			if ( ! slugPattern.test( slug ) ) {
+				showCustomLinkError( strings.customLinkPathInvalid || 'Use a relative admin path such as edit.php?post_type=page.' );
+				customLinkPathInput.focus();
+				return;
+			}
+
+			if ( findCanvasItemBySlug( slug ) ) {
+				showCustomLinkError( strings.customLinkDuplicate || 'That link is already on your top bar.' );
+				return;
+			}
+
+			addToCanvas( {
+				slug: slug,
+				label: label,
+				icon: 'dashicons-admin-links'
+			} );
+
+			customLinkPathInput.value = '';
+			customLinkLabelInput.value = '';
+			customLinkPathInput.focus();
+		}
+
+		if ( customLinkAddBtn ) {
+			customLinkAddBtn.addEventListener( 'click', addCustomLinkToCanvas );
+		}
+
+		if ( customLinkPathInput ) {
+			customLinkPathInput.addEventListener( 'keydown', function ( event ) {
+				if ( 'Enter' === event.key ) {
+					event.preventDefault();
+					addCustomLinkToCanvas();
+				}
+			} );
+		}
+
+		if ( customLinkLabelInput ) {
+			customLinkLabelInput.addEventListener( 'keydown', function ( event ) {
+				if ( 'Enter' === event.key ) {
+					event.preventDefault();
+					addCustomLinkToCanvas();
+				}
 			} );
 		}
 

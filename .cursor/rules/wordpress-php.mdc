@@ -46,7 +46,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Bootstrap requires core classes; instantiate only via `edminboost_run_plugin()`.
 - `EDMINBOOST_Plugin` constructor: `EDMINBOOST_I18n`, `EDMINBOOST_Features`, `EDMINBOOST_Admin`.
 - Command Center: `EDMINBOOST_Command_Center` (static helpers, no hooks).
-- New modules: extend `EDMINBOOST_Feature_Base`, register in `EDMINBOOST_Features` (see `edminboost-features.mdc`).
+- Command Center Bar: `EDMINBOOST_Command_Center_Bar::register_hooks()` in `EDMINBOOST_Plugin::run()` — not part of the feature registry.
+- New productivity modules: extend `EDMINBOOST_Feature_Base`, register in `EDMINBOOST_Features` (see `edminboost-features.mdc`).
 - Settings: `EDMINBOOST_Settings::get()`, `::is_enabled()`, `::is_feature_enabled()`, `::get_feature_settings()`.
 - Activation seeds defaults via `EDMINBOOST_Activator`; deactivation is a no-op.
 

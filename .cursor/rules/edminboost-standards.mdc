@@ -38,7 +38,7 @@ Cross-cutting quality standards. See also: `edminboost-project.mdc` (architectur
 - Any notice must be dismissible or disappear when resolved.
 - Do not place ads or upsells outside the plugin's own screens unless absolutely necessary and policy-safe.
 - Avoid cluttering the admin menu.
-- Only load assets on this plugin's pages.
+- Load plugin-screen assets only on this plugin's pages; exception: `edminboost-command-center-bar` CSS when the CC bar is active and the admin bar is showing.
 - Features must respect the global `enabled` kill switch via `EDMINBOOST_Settings::is_enabled()`.
 - Admin footer replacement is opt-in only (enabled + non-empty text).
 
@@ -48,7 +48,7 @@ Cross-cutting quality standards. See also: `edminboost-project.mdc` (architectur
 - Avoid expensive queries on every request.
 - Cache remote calls and expensive computations.
 - Avoid autoloading large options (`edminboost_settings` and `edminboost_version` are not autoloaded).
-- Avoid front-end impact unless the plugin's purpose requires it.
+- Avoid front-end impact unless the plugin's purpose requires it (CC bar CSS on `wp_enqueue_scripts` is the only current exception).
 
 ## Privacy
 

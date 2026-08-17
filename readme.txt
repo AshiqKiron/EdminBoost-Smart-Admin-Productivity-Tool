@@ -56,6 +56,10 @@ Yes. When uninstalled, all plugin options are removed from the database.
 = 1.2.0 =
 * Add EdminBoost Command Center with four admin pages: Onboarding wizard, Layout Studio, Presets & Roles, and Behavior & Style.
 * Add persona-based preset selector, top-bar mapper UI, role visibility matrix, and behavior styling controls.
+* Render saved Layout Studio items on the live WordPress admin bar.
+* Extend Layout Studio discovery to include submenu admin pages (e.g. taxonomy screens).
+* Add a custom admin link control in Layout Studio for pages not auto-discovered.
+* Fix Layout Studio save so removing all items clears the stored top bar layout.
 * Extend settings with command_center option group and interactive admin assets.
 * Correct plugin display name to EdminBoost - Smart Admin Productivity Tool throughout the admin UI.
 

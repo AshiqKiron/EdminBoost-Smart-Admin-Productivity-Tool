@@ -197,41 +197,94 @@ class EDMINBOOST_Command_Center {
 	/**
 	 * Discover installed admin menu items for the layout studio.
 	 *
-	 * @return array[] Each item: slug, label, icon.
+	 * Includes top-level sidebar entries and submenu pages (e.g. taxonomy screens).
+	 *
+	 * @return array[] Each item: slug, label, icon, source (top|submenu).
 	 */
 	public static function get_discovered_menu_items() {
-		global $menu;
+		global $menu, $submenu;
 
-		$items = array();
+		$items      = array();
+		$seen_slugs = array();
+		$parents    = array();
 
-		if ( ! is_array( $menu ) ) {
-			return $items;
+		if ( is_array( $menu ) ) {
+			foreach ( $menu as $menu_item ) {
+				if ( empty( $menu_item[2] ) ) {
+					continue;
+				}
+
+				$slug = (string) $menu_item[2];
+				if ( self::is_ignorable_menu_slug( $slug ) ) {
+					continue;
+				}
+
+				$label = wp_strip_all_tags( (string) $menu_item[0] );
+				if ( '' === $label ) {
+					$label = $slug;
+				}
+
+				$icon = self::normalize_menu_icon( isset( $menu_item[6] ) ? $menu_item[6] : '' );
+
+				$parents[ $slug ] = array(
+					'label' => $label,
+					'icon'  => $icon,
+				);
+
+				$items[]      = array(
+					'slug'   => $slug,
+					'label'  => $label,
+					'icon'   => $icon,
+					'source' => 'top',
+				);
+				$seen_slugs[] = $slug;
+			}
 		}
 
-		foreach ( $menu as $menu_item ) {
-			if ( empty( $menu_item[2] ) ) {
-				continue;
+		if ( is_array( $submenu ) ) {
+			foreach ( $submenu as $parent_slug => $submenu_items ) {
+				if ( ! is_array( $submenu_items ) ) {
+					continue;
+				}
+
+				$parent_slug  = (string) $parent_slug;
+				$parent_label = isset( $parents[ $parent_slug ]['label'] ) ? $parents[ $parent_slug ]['label'] : $parent_slug;
+				$parent_icon  = isset( $parents[ $parent_slug ]['icon'] ) ? $parents[ $parent_slug ]['icon'] : 'dashicons-admin-generic';
+
+				foreach ( $submenu_items as $submenu_item ) {
+					if ( empty( $submenu_item[2] ) ) {
+						continue;
+					}
+
+					$slug = (string) $submenu_item[2];
+					if ( self::is_ignorable_menu_slug( $slug ) || $slug === $parent_slug ) {
+						continue;
+					}
+
+					if ( in_array( $slug, $seen_slugs, true ) ) {
+						continue;
+					}
+
+					$sub_label = wp_strip_all_tags( (string) $submenu_item[0] );
+					if ( '' === $sub_label ) {
+						$sub_label = $slug;
+					}
+
+					$items[] = array(
+						'slug'   => $slug,
+						'label'  => sprintf(
+							/* translators: 1: parent menu label, 2: submenu label */
+							__( '%1$s → %2$s', EDMINBOOST_TEXT_DOMAIN ),
+							$parent_label,
+							$sub_label
+						),
+						'icon'   => $parent_icon,
+						'source' => 'submenu',
+					);
+
+					$seen_slugs[] = $slug;
+				}
 			}
-
-			$slug  = (string) $menu_item[2];
-			$label = wp_strip_all_tags( (string) $menu_item[0] );
-
-			if ( '' === $label ) {
-				$label = $slug;
-			}
-
-			$icon = 'dashicons-admin-generic';
-			if ( ! empty( $menu_item[6] ) ) {
-				$icon = strpos( (string) $menu_item[6], 'dashicons-' ) !== false
-					? (string) $menu_item[6]
-					: 'dashicons-' . $menu_item[6];
-			}
-
-			$items[] = array(
-				'slug'  => $slug,
-				'label' => $label,
-				'icon'  => $icon,
-			);
 		}
 
 		usort(
@@ -242,6 +295,40 @@ class EDMINBOOST_Command_Center {
 		);
 
 		return $items;
+	}
+
+	/**
+	 * Whether a menu slug should be excluded from discovery.
+	 *
+	 * @param string $slug Menu slug.
+	 * @return bool
+	 */
+	private static function is_ignorable_menu_slug( $slug ) {
+		if ( '' === $slug || '---' === $slug ) {
+			return true;
+		}
+
+		return 0 === strpos( $slug, 'separator' );
+	}
+
+	/**
+	 * Normalize a WordPress admin menu icon value to a dashicons class.
+	 *
+	 * @param mixed $icon Raw menu icon value.
+	 * @return string
+	 */
+	private static function normalize_menu_icon( $icon ) {
+		if ( empty( $icon ) ) {
+			return 'dashicons-admin-generic';
+		}
+
+		$icon = (string) $icon;
+
+		if ( false !== strpos( $icon, 'dashicons-' ) ) {
+			return $icon;
+		}
+
+		return 'dashicons-' . $icon;
 	}
 
 	/**

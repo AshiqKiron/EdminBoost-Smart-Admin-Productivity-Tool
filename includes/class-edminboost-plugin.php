@@ -28,6 +28,7 @@
  *   - admin_footer       → admin_footer_text
  *   - disable_emojis     → admin_init
  *   - admin_bar          → admin_bar_menu (priority 999)
+ *   - command_center_bar → admin_bar_menu (priority 80), wp_enqueue_scripts
  *
  * REST endpoints:  none (not required; all features use core hooks)
  * Cron events:     none (no scheduled tasks)
@@ -89,5 +90,6 @@ class EDMINBOOST_Plugin {
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
 		add_filter( 'plugin_action_links_' . EDMINBOOST_PLUGIN_BASENAME, array( $this->admin, 'add_settings_link' ) );
 		add_action( 'admin_init', array( $this->features, 'register_hooks' ) );
+		EDMINBOOST_Command_Center_Bar::register_hooks();
 	}
 }

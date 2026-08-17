@@ -34,6 +34,7 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 
 ## Rules
 
+- Command Center live admin bar (`EDMINBOOST_Command_Center_Bar`) is **not** a feature module — do not add it to `EDMINBOOST_Features`. See `edminboost-command-center.mdc`.
 - Feature IDs: unique `snake_case` matching the `features` settings key.
 - Read settings via `EDMINBOOST_Settings::get_feature_settings( $this->get_id() )` — not `get_option()`.
 - Register hooks only in `register_hooks()`; no side effects in the constructor.

@@ -259,6 +259,15 @@
 	align-items: center;
 	padding: 10px 12px;
 	border-bottom: 1px solid #f0f0f1;
+	cursor: pointer;
+}
+
+.edminboost-discovered-item.is-active {
+	background: #f0f6fc;
+}
+
+.edminboost-discovered-item.is-dragging {
+	opacity: 0.55;
 }
 
 .edminboost-discovered-item:last-child {
@@ -274,6 +283,16 @@
 	cursor: grab;
 }
 
+.edminboost-discovered-item__toggle {
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+.edminboost-discovered-item__checkbox {
+	margin: 0;
+}
+
 .edminboost-discovered-item__icon {
 	color: #50575e;
 }
@@ -285,6 +304,37 @@
 .edminboost-discovered-list__empty {
 	padding: 16px;
 	color: #50575e;
+}
+
+.edminboost-discovered-item--submenu .edminboost-discovered-item__label {
+	color: #50575e;
+}
+
+.edminboost-custom-link {
+	margin-top: 16px;
+	padding-top: 16px;
+	border-top: 1px solid #dcdcde;
+}
+
+.edminboost-custom-link__heading {
+	margin: 0 0 8px;
+	font-size: 13px;
+	font-weight: 600;
+}
+
+.edminboost-custom-link label {
+	display: block;
+	margin-bottom: 4px;
+	font-weight: 600;
+}
+
+.edminboost-custom-link__actions {
+	margin-bottom: 0;
+}
+
+.edminboost-custom-link__error {
+	color: #b32d2e;
+	margin-top: 8px;
 }
 
 .edminboost-mapper-main {
@@ -302,6 +352,11 @@
 	border-radius: 4px;
 	min-height: 52px;
 	margin-top: 12px;
+}
+
+.edminboost-topbar-canvas.is-drag-over {
+	outline: 2px dashed #72aee6;
+	outline-offset: 2px;
 }
 
 .edminboost-topbar-canvas__brand,

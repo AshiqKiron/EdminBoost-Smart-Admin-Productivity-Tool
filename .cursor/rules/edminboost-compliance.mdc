@@ -22,7 +22,7 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 
 - No obfuscated code, undisclosed telemetry, or hidden external requests.
 - No tracking or data transmission to external servers (current plugin behavior).
-- Badge sources (WooCommerce orders, comments, updates) read local WordPress data only — no remote API calls.
+- Badge sources (WooCommerce orders, comments, updates, WPForms entries) read local WordPress data only — no remote API calls. WPForms count uses a guarded `$wpdb` read when the plugin and table exist.
 - No public-site credit injection by default (admin footer replacement is opt-in).
 - No spammy readme, deceptive "free" behavior, or fake trial logic.
 - Any future remote integration must be documented, justified, and opt-in.
@@ -32,7 +32,7 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 - Prefer WordPress core APIs over custom hacks.
 - Keep code human-readable for directory review.
 - Follow WPCS across PHP, CSS, JS, and HTML.
-- Admin-only unless explicitly requested; enqueue assets only on plugin screens.
+- Admin-only unless explicitly requested; enqueue plugin-screen assets via `is_plugin_screen()`; CC bar CSS is the allowed exception when active.
 - Use `edminboost` prefix (10 chars) consistently — `EDMINBOOST_` / `edminboost_`.
 
 ## Self-Review Checklist
