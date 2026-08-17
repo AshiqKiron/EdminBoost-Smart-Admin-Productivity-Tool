@@ -1,0 +1,81 @@
+---
+description: Command Center patterns — onboarding, layout studio, presets, behavior
+globs: "includes/class-edminboost-command-center.php,admin/partials/edminboost-{onboarding,mapper,presets,behavior,command-center}*.php"
+alwaysApply: false
+---
+
+# Command Center
+
+Shared config UI for persona onboarding, top-bar layout, presets/roles, and behavior styling. Data stored in `edminboost_settings['command_center']`.
+
+## Class: `EDMINBOOST_Command_Center`
+
+- `get_defaults()` / `get_settings()` — merged CC settings
+- `get_nav_items()` — sub-nav tabs (Onboarding, Layout Studio, Presets & Roles, Behavior & Style)
+- `get_personas()`, `get_system_presets()`, `get_all_presets()` — preset catalog
+- `get_discovered_menu_items()` — scans global `$menu` for layout studio
+- `get_assignable_roles()`, `get_badge_sources()`, `get_dashicon_options()` — UI option lists
+
+Page slug suffixes: `PAGE_ONBOARDING` (`-onboarding`), `PAGE_MAPPER` (`-mapper`), `PAGE_PRESETS` (`-presets`), `PAGE_BEHAVIOR` (`-behavior`).
+
+## Rendering
+
+- Public entry points: `render_onboarding_page()`, `render_mapper_page()`, `render_presets_page()`, `render_behavior_page()` — each delegates to private `render_command_center_page( $partial )`.
+- `render_command_center_page()` checks `EDMINBOOST_Settings::CAPABILITY`, sets `$cc_settings` + `$current_page`, includes the partial.
+- All CC pages include `admin/partials/edminboost-command-center-nav.php`.
+- Wrap in `.edminboost-wrap.edminboost-cc-wrap` (add `.edminboost-cc-wrap--wide` for mapper/presets).
+
+## Settings API Forms
+
+CC pages submit via `options.php` with `settings_fields( EDMINBOOST_Settings::SETTINGS_GROUP )`. Field names:
+
+```
+edminboost_settings[command_center][persona]
+edminboost_settings[command_center][top_bar_items][0][slug|label|icon|interaction|badge_source]
+edminboost_settings[command_center][role_assignments][role_key]
+edminboost_settings[command_center][behavior][drawer_width|animation_speed|...]
+```
+
+Sanitization: `EDMINBOOST_Settings::sanitize_command_center()` (private) — whitelist personas, presets, icons, interactions, badge sources, behavior enums.
+
+Allowed values:
+
+| Key | Values |
+|-----|--------|
+| `persona` | `client`, `ecommerce`, `developer` (empty = none) |
+| `interaction` | `redirect`, `drawer` |
+| `drawer_width` | `compact`, `standard`, `fullscreen` |
+| `animation_speed` | `fast`, `normal`, `slow` |
+| `badge_style` | `dot`, `pill`, `accent` |
+| `badge_source` | `''`, `wc_orders`, `wc_reviews`, `comments`, `updates`, `forms_entries` |
+| `autosave_interval` / `badge_refresh_rate` | integers, clamped 10–600 / 15–600 |
+
+## Top Bar Item Shape
+
+```php
+array(
+	'slug'         => 'edit.php',
+	'label'        => 'Posts',
+	'icon'         => 'dashicons-admin-post',
+	'interaction'  => 'redirect', // or 'drawer'
+	'badge_source' => '',         // key from get_badge_sources()
+)
+```
+
+## Partials
+
+| File | Purpose |
+|------|---------|
+| `edminboost-command-center-nav.php` | Sub-nav tabs (`$current_page`) |
+| `edminboost-onboarding-page.php` | Persona cards + default preset |
+| `edminboost-mapper-page.php` | Drag-and-drop top bar builder |
+| `edminboost-presets-page.php` | Preset cards + role assignment matrix |
+| `edminboost-behavior-page.php` | Drawer, animation, badge, admin bar toggles |
+
+## Rules
+
+- Read settings via `EDMINBOOST_Command_Center::get_settings()` — not raw `get_option()`.
+- System presets (`system_client`, `system_ecommerce`, `system_developer`) are read-only; custom presets live in `command_center.presets`.
+- `role_visibility` stores hidden slugs per role (inverted from visible checkboxes in UI).
+- Mapper JS syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit.
+- Badge sources (`wc_orders`, `comments`, etc.) are local admin counters only — no remote API calls.

@@ -7,7 +7,7 @@ alwaysApply: true
 
 WordPress admin productivity plugin. PHP 7.4+, WordPress 6.0+, GPL-3.0.
 
-See `edminboost-standards.mdc` (quality standards), `edminboost-compliance.mdc` (security/directory gate), `edminboost-features.mdc` (feature modules).
+See `edminboost-standards.mdc` (quality), `edminboost-compliance.mdc` (security gate), `edminboost-features.mdc` (feature modules), `edminboost-command-center.mdc` (Command Center UI).
 
 ## Directory Layout
 
@@ -17,6 +17,7 @@ includes/
   class-edminboost-plugin.php                 # hook orchestrator
   class-edminboost-admin.php                  # menus, settings UI, assets
   class-edminboost-settings.php               # options, defaults, sanitize
+  class-edminboost-command-center.php         # CC defaults, presets, discovery helpers
   class-edminboost-features.php               # feature registry
   class-edminboost-{activator,deactivator,i18n}.php
   features/
@@ -35,23 +36,30 @@ readme.txt
 - `EDMINBOOST_PLUGIN_SLUG` is the canonical plugin slug; `EDMINBOOST_TEXT_DOMAIN` is set from it.
 - `EDMINBOOST_Plugin::run()` wires i18n, admin menu/settings/assets, and `EDMINBOOST_Features::register_hooks()` on `admin_init`.
 - Settings: `edminboost_settings` via `EDMINBOOST_Settings` (group `edminboost_settings_group`). Global kill switch: `enabled`.
+- Command Center config lives under `settings['command_center']`; helpers in `EDMINBOOST_Command_Center`.
 - Version tracker: `edminboost_version` (`EDMINBOOST_Settings::VERSION_OPTION`), seeded on activation.
 - Features extend `EDMINBOOST_Feature_Base` in `includes/features/`, loaded by `EDMINBOOST_Features`.
-- Admin UI: `EDMINBOOST_Admin` + partials in `admin/partials/` (feature fields in `edminboost-settings-features.php`).
+- Admin UI: `EDMINBOOST_Admin` + partials in `admin/partials/`.
 - Assets enqueued only on plugin screens via `EDMINBOOST_Admin::is_plugin_screen()`.
 - No custom tables, REST endpoints, cron, or blocks — options API only.
-- No external requests or telemetry.
+- No external requests or telemetry. Badge sources read local WP/WC data only.
 
 ## Admin Pages
 
-Use `EDMINBOOST_Admin::PAGE_SLUG` (equals `EDMINBOOST_PLUGIN_SLUG`) — never hardcode slug strings.
+Use `EDMINBOOST_Admin::PAGE_SLUG` (equals `EDMINBOOST_PLUGIN_SLUG`) — never hardcode slug strings. Command Center suffixes: `EDMINBOOST_Command_Center::PAGE_*`.
 
-| Page | Slug | Settings API screen |
-|------|------|---------------------|
-| Dashboard | `PAGE_SLUG` | — |
-| Settings | `PAGE_SLUG . '-settings'` | same suffix |
+| Page | Slug | Renderer |
+|------|------|----------|
+| Dashboard | `PAGE_SLUG` | `render_admin_page()` |
+| Onboarding | `PAGE_SLUG . PAGE_ONBOARDING` | `render_onboarding_page()` |
+| Layout Studio | `PAGE_SLUG . PAGE_MAPPER` | `render_mapper_page()` |
+| Presets & Roles | `PAGE_SLUG . PAGE_PRESETS` | `render_presets_page()` |
+| Behavior & Style | `PAGE_SLUG . PAGE_BEHAVIOR` | `render_behavior_page()` |
+| Settings | `PAGE_SLUG . '-settings'` | `render_settings_page()` |
 
 Capability: `EDMINBOOST_Settings::CAPABILITY` (`manage_options`).
+
+Settings constants: `OPTION_NAME` (`edminboost_settings`), `SETTINGS_GROUP` (`edminboost_settings_group`), `VERSION_OPTION` (`edminboost_version`).
 
 ## Naming
 
@@ -66,7 +74,7 @@ Project prefix: `edminboost` (10 characters). Use consistently in all identifier
 | Options | `edminboost_{key}` | `edminboost_settings` |
 | Feature IDs | `snake_case` | `hide_admin_notices` |
 | CSS/JS handles | `edminboost-{name}` | `edminboost-admin` |
-| CSS classes | `edminboost-*` | `edminboost-wrap` |
+| CSS classes | `edminboost-*` | `edminboost-wrap`, `edminboost-cc-*` |
 | JS global (localized) | `edminboostData` | via `wp_localize_script()` |
 
 `EDMINBOOST_TEXT_DOMAIN` must match `EDMINBOOST_PLUGIN_SLUG`.

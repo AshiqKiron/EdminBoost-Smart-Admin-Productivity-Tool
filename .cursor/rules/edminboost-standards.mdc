@@ -5,7 +5,7 @@ alwaysApply: true
 
 # EdminBoost Standards
 
-Cross-cutting quality standards. See also: `edminboost-project.mdc` (architecture), `edminboost-compliance.mdc` (pre-ship gate), `edminboost-features.mdc` (modules), `wordpress-php.mdc` (PHP), `admin-assets.mdc` (JS/CSS).
+Cross-cutting quality standards. See also: `edminboost-project.mdc` (architecture), `edminboost-compliance.mdc` (pre-ship gate), `edminboost-features.mdc` (modules), `edminboost-command-center.mdc` (Command Center), `wordpress-php.mdc` (PHP), `admin-assets.mdc` (JS/CSS).
 
 ## Coding Standards
 

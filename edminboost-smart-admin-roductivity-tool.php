@@ -4,10 +4,10 @@
  *
  * Purpose: Single entry point. No business logic here; delegates to EDMINBOOST_Plugin.
  *
- * Plugin Name: Edmin - Boost Smart Admin Productivity Tool
+ * Plugin Name: EdminBoost - Smart Admin Productivity Tool
  * Plugin URI: https://asphaltthemes.com/edminboost
  * Description: Boost WordPress admin productivity with smart tools to simplify workflows, customize the dashboard, and streamline daily admin tasks.
- * Version: 1.1.1
+ * Version: 1.2.0
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: ashiquzzaman
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'EDMINBOOST_VERSION', '1.1.1' );
+define( 'EDMINBOOST_VERSION', '1.2.0' );
 define( 'EDMINBOOST_PLUGIN_FILE', __FILE__ );
 define( 'EDMINBOOST_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
@@ -36,6 +36,7 @@ require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-activator.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-deactivator.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-i18n.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-settings.php';
+require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-command-center.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-features.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-admin.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-plugin.php';

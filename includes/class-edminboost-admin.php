@@ -47,8 +47,8 @@ class EDMINBOOST_Admin {
 	 */
 	public function register_menu() {
 		add_menu_page(
-			__( 'Edmin Boost', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Edmin Boost', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'EdminBoost', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'EdminBoost', EDMINBOOST_TEXT_DOMAIN ),
 			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_admin_page' ),
@@ -63,6 +63,42 @@ class EDMINBOOST_Admin {
 			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG,
 			array( $this, 'render_admin_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Onboarding', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Onboarding', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_ONBOARDING,
+			array( $this, 'render_onboarding_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Layout Studio', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Layout Studio', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER,
+			array( $this, 'render_mapper_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Presets & Roles', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Presets & Roles', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS,
+			array( $this, 'render_presets_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Behavior & Style', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Behavior & Style', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BEHAVIOR,
+			array( $this, 'render_behavior_page' )
 		);
 
 		add_submenu_page(
@@ -101,7 +137,7 @@ class EDMINBOOST_Admin {
 
 		add_settings_field(
 			'edminboost_enabled',
-			__( 'Enable Edmin Boost', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Enable EdminBoost', EDMINBOOST_TEXT_DOMAIN ),
 			array( $this, 'render_enabled_field' ),
 			self::PAGE_SLUG . '-settings',
 			'edminboost_general_section'
@@ -149,6 +185,59 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
+	 * Render the onboarding wizard page.
+	 *
+	 * @return void
+	 */
+	public function render_onboarding_page() {
+		$this->render_command_center_page( 'admin/partials/edminboost-onboarding-page.php' );
+	}
+
+	/**
+	 * Render the layout mapper page.
+	 *
+	 * @return void
+	 */
+	public function render_mapper_page() {
+		$this->render_command_center_page( 'admin/partials/edminboost-mapper-page.php' );
+	}
+
+	/**
+	 * Render the presets & roles page.
+	 *
+	 * @return void
+	 */
+	public function render_presets_page() {
+		$this->render_command_center_page( 'admin/partials/edminboost-presets-page.php' );
+	}
+
+	/**
+	 * Render the behavior & styling page.
+	 *
+	 * @return void
+	 */
+	public function render_behavior_page() {
+		$this->render_command_center_page( 'admin/partials/edminboost-behavior-page.php' );
+	}
+
+	/**
+	 * Render a Command Center partial.
+	 *
+	 * @param string $partial Relative path under the plugin directory.
+	 * @return void
+	 */
+	private function render_command_center_page( $partial ) {
+		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
+			return;
+		}
+
+		$cc_settings  = EDMINBOOST_Command_Center::get_settings();
+		$current_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		include EDMINBOOST_PLUGIN_DIR . $partial;
+	}
+
+	/**
 	 * Render the settings page.
 	 *
 	 * @return void
@@ -178,7 +267,7 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function render_general_section() {
-		echo '<p>' . esc_html__( 'Configure core Edmin Boost behavior.', EDMINBOOST_TEXT_DOMAIN ) . '</p>';
+		echo '<p>' . esc_html__( 'Configure core EdminBoost behavior.', EDMINBOOST_TEXT_DOMAIN ) . '</p>';
 	}
 
 	/**
@@ -260,13 +349,21 @@ class EDMINBOOST_Admin {
 			true
 		);
 
+		$screen_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
 		wp_localize_script(
 			'edminboost-admin',
 			'edminboostData',
 			array(
-				'version' => EDMINBOOST_VERSION,
-				'strings' => array(
-					'ready' => __( 'Edmin Boost is ready.', EDMINBOOST_TEXT_DOMAIN ),
+				'version'    => EDMINBOOST_VERSION,
+				'currentPage' => $screen_page,
+				'optionName' => EDMINBOOST_Settings::OPTION_NAME,
+				'strings'    => array(
+					'ready'           => __( 'EdminBoost is ready.', EDMINBOOST_TEXT_DOMAIN ),
+					'configureItem'   => __( 'Configure', EDMINBOOST_TEXT_DOMAIN ),
+					'removeFromTopBar' => __( 'Remove from top bar', EDMINBOOST_TEXT_DOMAIN ),
+					'emptyCanvas'     => __( 'Toggle items from the left panel or drag them here to build your top bar.', EDMINBOOST_TEXT_DOMAIN ),
+					'exportSuccess'   => __( 'Preset exported.', EDMINBOOST_TEXT_DOMAIN ),
 				),
 			)
 		);

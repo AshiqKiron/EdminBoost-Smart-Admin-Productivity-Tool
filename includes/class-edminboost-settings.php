@@ -52,8 +52,9 @@ class EDMINBOOST_Settings {
 	 */
 	public static function get_defaults() {
 		$defaults = array(
-			'enabled'  => true,
-			'features' => array(
+			'enabled'         => true,
+			'command_center'  => EDMINBOOST_Command_Center::get_defaults(),
+			'features'        => array(
 				'hide_admin_notices' => false,
 				'dashboard_widgets'  => array(
 					'remove_welcome_panel'   => false,
@@ -102,6 +103,22 @@ class EDMINBOOST_Settings {
 		}
 
 		$settings = wp_parse_args( $settings, $defaults );
+
+		if ( isset( $settings['command_center'] ) && is_array( $settings['command_center'] ) ) {
+			$settings['command_center'] = wp_parse_args(
+				$settings['command_center'],
+				$defaults['command_center']
+			);
+
+			if ( isset( $settings['command_center']['behavior'] ) && is_array( $settings['command_center']['behavior'] ) ) {
+				$settings['command_center']['behavior'] = wp_parse_args(
+					$settings['command_center']['behavior'],
+					$defaults['command_center']['behavior']
+				);
+			}
+		} else {
+			$settings['command_center'] = $defaults['command_center'];
+		}
 
 		if ( isset( $settings['features'] ) && is_array( $settings['features'] ) ) {
 			$settings['features'] = wp_parse_args( $settings['features'], $defaults['features'] );
@@ -241,8 +258,13 @@ class EDMINBOOST_Settings {
 
 		if ( isset( $input['enabled'] ) ) {
 			$sanitized['enabled'] = (bool) $input['enabled'];
-		} else {
-			$sanitized['enabled'] = false;
+		}
+
+		if ( isset( $input['command_center'] ) && is_array( $input['command_center'] ) ) {
+			$sanitized['command_center'] = self::sanitize_command_center(
+				$input['command_center'],
+				$sanitized
+			);
 		}
 
 		if ( ! isset( $input['features'] ) || ! is_array( $input['features'] ) ) {
@@ -295,5 +317,208 @@ class EDMINBOOST_Settings {
 		 * @param array $input     Raw input.
 		 */
 		return apply_filters( 'edminboost_sanitize_settings', $sanitized, $input );
+	}
+
+	/**
+	 * Sanitize Command Center settings input.
+	 *
+	 * @param array $raw       Raw command_center input.
+	 * @param array $sanitized Current sanitized settings (for merge context).
+	 * @return array
+	 */
+	private static function sanitize_command_center( $raw, $sanitized ) {
+		$defaults = EDMINBOOST_Command_Center::get_defaults();
+		$current  = isset( $sanitized['command_center'] ) && is_array( $sanitized['command_center'] )
+			? $sanitized['command_center']
+			: $defaults;
+		$output   = wp_parse_args( $current, $defaults );
+
+		if ( isset( $raw['onboarding_completed'] ) ) {
+			$output['onboarding_completed'] = ! empty( $raw['onboarding_completed'] );
+		}
+
+		$allowed_personas = array_keys( EDMINBOOST_Command_Center::get_personas() );
+		if ( isset( $raw['persona'] ) ) {
+			$persona = sanitize_key( $raw['persona'] );
+			$output['persona'] = in_array( $persona, $allowed_personas, true ) ? $persona : '';
+		}
+
+		if ( isset( $raw['default_preset'] ) ) {
+			$output['default_preset'] = sanitize_key( $raw['default_preset'] );
+		}
+
+		if ( isset( $raw['top_bar_items'] ) && is_array( $raw['top_bar_items'] ) ) {
+			$output['top_bar_items'] = self::sanitize_top_bar_items( $raw['top_bar_items'] );
+		}
+
+		if ( isset( $raw['role_assignments'] ) && is_array( $raw['role_assignments'] ) ) {
+			$assignments = array();
+			$all_presets = array_keys( EDMINBOOST_Command_Center::get_all_presets() );
+
+			foreach ( $raw['role_assignments'] as $role_key => $preset_id ) {
+				$role_key  = sanitize_key( $role_key );
+				$preset_id = sanitize_key( $preset_id );
+
+				if ( '' === $role_key ) {
+					continue;
+				}
+
+				if ( '' === $preset_id || in_array( $preset_id, $all_presets, true ) ) {
+					$assignments[ $role_key ] = $preset_id;
+				}
+			}
+
+			$output['role_assignments'] = $assignments;
+		}
+
+		if ( isset( $raw['role_visibility'] ) && is_array( $raw['role_visibility'] ) ) {
+			$output['role_visibility'] = self::sanitize_role_visibility(
+				$raw['role_visibility'],
+				$output['top_bar_items']
+			);
+		}
+
+		if ( isset( $raw['behavior'] ) && is_array( $raw['behavior'] ) ) {
+			$output['behavior'] = self::sanitize_behavior( $raw['behavior'] );
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Sanitize top bar item configuration.
+	 *
+	 * @param array $items Raw items.
+	 * @return array
+	 */
+	private static function sanitize_top_bar_items( $items ) {
+		$sanitized      = array();
+		$allowed_icons  = EDMINBOOST_Command_Center::get_dashicon_options();
+		$badge_sources  = array_keys( EDMINBOOST_Command_Center::get_badge_sources() );
+		$seen_slugs     = array();
+
+		foreach ( $items as $item ) {
+			if ( ! is_array( $item ) || empty( $item['slug'] ) ) {
+				continue;
+			}
+
+			$slug = sanitize_text_field( wp_unslash( $item['slug'] ) );
+
+			if ( '' === $slug || ! preg_match( '/^[a-zA-Z0-9_\-\.?=&]+$/', $slug ) ) {
+				continue;
+			}
+
+			if ( in_array( $slug, $seen_slugs, true ) ) {
+				continue;
+			}
+
+			$seen_slugs[] = $slug;
+
+			$icon = isset( $item['icon'] ) ? sanitize_text_field( wp_unslash( $item['icon'] ) ) : 'dashicons-admin-generic';
+			if ( ! in_array( $icon, $allowed_icons, true ) && 0 !== strpos( $icon, 'dashicons-' ) ) {
+				$icon = 'dashicons-admin-generic';
+			}
+
+			$interaction = isset( $item['interaction'] ) ? sanitize_key( $item['interaction'] ) : 'redirect';
+			if ( ! in_array( $interaction, array( 'redirect', 'drawer' ), true ) ) {
+				$interaction = 'redirect';
+			}
+
+			$badge_source = isset( $item['badge_source'] ) ? sanitize_key( $item['badge_source'] ) : '';
+			if ( ! in_array( $badge_source, $badge_sources, true ) ) {
+				$badge_source = '';
+			}
+
+			$sanitized[] = array(
+				'slug'         => $slug,
+				'label'        => isset( $item['label'] ) ? sanitize_text_field( wp_unslash( $item['label'] ) ) : $slug,
+				'icon'         => $icon,
+				'interaction'  => $interaction,
+				'badge_source' => $badge_source,
+			);
+		}
+
+		return $sanitized;
+	}
+
+	/**
+	 * Sanitize per-role icon visibility (stores hidden slugs).
+	 *
+	 * @param array $raw_visibility Submitted visible slugs per role.
+	 * @param array $top_bar_items  Current top bar items.
+	 * @return array
+	 */
+	private static function sanitize_role_visibility( $raw_visibility, $top_bar_items ) {
+		$all_slugs = array();
+		foreach ( $top_bar_items as $item ) {
+			if ( ! empty( $item['slug'] ) ) {
+				$all_slugs[] = $item['slug'];
+			}
+		}
+
+		$hidden_by_role = array();
+
+		foreach ( $raw_visibility as $role_key => $visible_slugs ) {
+			$role_key = sanitize_key( $role_key );
+
+			if ( '' === $role_key || ! is_array( $visible_slugs ) ) {
+				continue;
+			}
+
+			$visible = array();
+			foreach ( $visible_slugs as $slug ) {
+				$slug = sanitize_text_field( wp_unslash( $slug ) );
+				if ( in_array( $slug, $all_slugs, true ) ) {
+					$visible[] = $slug;
+				}
+			}
+
+			$hidden_by_role[ $role_key ] = array_values( array_diff( $all_slugs, $visible ) );
+		}
+
+		return $hidden_by_role;
+	}
+
+	/**
+	 * Sanitize behavior & styling settings.
+	 *
+	 * @param array $raw Raw behavior input.
+	 * @return array
+	 */
+	private static function sanitize_behavior( $raw ) {
+		$defaults = EDMINBOOST_Command_Center::get_defaults()['behavior'];
+		$output   = $defaults;
+
+		$allowed_widths = array( 'compact', 'standard', 'fullscreen' );
+		if ( isset( $raw['drawer_width'] ) && in_array( $raw['drawer_width'], $allowed_widths, true ) ) {
+			$output['drawer_width'] = $raw['drawer_width'];
+		}
+
+		$allowed_speeds = array( 'fast', 'normal', 'slow' );
+		if ( isset( $raw['animation_speed'] ) && in_array( $raw['animation_speed'], $allowed_speeds, true ) ) {
+			$output['animation_speed'] = $raw['animation_speed'];
+		}
+
+		$output['glassmorphism'] = ! empty( $raw['glassmorphism'] );
+
+		if ( isset( $raw['autosave_interval'] ) ) {
+			$output['autosave_interval'] = max( 10, min( 600, absint( $raw['autosave_interval'] ) ) );
+		}
+
+		if ( isset( $raw['badge_refresh_rate'] ) ) {
+			$output['badge_refresh_rate'] = max( 15, min( 600, absint( $raw['badge_refresh_rate'] ) ) );
+		}
+
+		$allowed_styles = array( 'dot', 'pill', 'accent' );
+		if ( isset( $raw['badge_style'] ) && in_array( $raw['badge_style'], $allowed_styles, true ) ) {
+			$output['badge_style'] = $raw['badge_style'];
+		}
+
+		$output['hide_wp_logo']         = ! empty( $raw['hide_wp_logo'] );
+		$output['hide_update_counters'] = ! empty( $raw['hide_update_counters'] );
+		$output['hide_howdy']           = ! empty( $raw['hide_howdy'] );
+		$output['hide_comments']        = ! empty( $raw['hide_comments'] );
+
+		return $output;
 	}
 }

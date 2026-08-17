@@ -59,7 +59,7 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 
 | ID | Class | Hooks |
 |----|-------|-------|
-| `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` |
+| `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` (inline CSS; preserves error/warning notices) |
 | `dashboard_widgets` | `EDMINBOOST_Dashboard` | `wp_dashboard_setup` (99), `admin_init` |
 | `admin_menu` | `EDMINBOOST_Admin_Menu` | `admin_menu` (999) |
 | `admin_footer` | `EDMINBOOST_Admin_Footer` | `admin_footer_text` |

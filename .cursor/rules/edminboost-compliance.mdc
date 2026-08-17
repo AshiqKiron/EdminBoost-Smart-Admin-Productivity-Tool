@@ -7,7 +7,7 @@ alwaysApply: true
 
 Gate before presenting final code. If any checklist item is "no", fix it first.
 
-See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality), `wordpress-php.mdc` (PHP patterns).
+See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality), `edminboost-command-center.mdc` (Command Center), `wordpress-php.mdc` (PHP patterns).
 
 ## Security
 
@@ -22,6 +22,7 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 
 - No obfuscated code, undisclosed telemetry, or hidden external requests.
 - No tracking or data transmission to external servers (current plugin behavior).
+- Badge sources (WooCommerce orders, comments, updates) read local WordPress data only — no remote API calls.
 - No public-site credit injection by default (admin footer replacement is opt-in).
 - No spammy readme, deceptive "free" behavior, or fake trial logic.
 - Any future remote integration must be documented, justified, and opt-in.

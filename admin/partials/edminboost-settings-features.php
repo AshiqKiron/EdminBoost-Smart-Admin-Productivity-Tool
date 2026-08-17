@@ -32,7 +32,7 @@ $footer_text    = isset( $features['admin_footer']['text'] ) ? $features['admin_
 			value="1"
 			<?php checked( ! empty( $features['hide_admin_notices'] ) ); ?>
 		/>
-		<?php esc_html_e( 'Hide routine admin notices on non-Edmin Boost screens. Errors and warnings remain visible.', EDMINBOOST_TEXT_DOMAIN ); ?>
+		<?php esc_html_e( 'Hide routine admin notices on non-EdminBoost screens. Errors and warnings remain visible.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
 </fieldset>
 
@@ -55,7 +55,7 @@ $footer_text    = isset( $features['admin_footer']['text'] ) ? $features['admin_
 
 <fieldset class="edminboost-fieldset">
 	<legend><?php esc_html_e( 'Admin menu', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
-	<p class="description"><?php esc_html_e( 'Hide menu items you do not need. Dashboard, Plugins, and Edmin Boost cannot be hidden.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+	<p class="description"><?php esc_html_e( 'Hide menu items you do not need. Dashboard, Plugins, and EdminBoost cannot be hidden.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 	<?php if ( empty( $menu_items ) ) : ?>
 		<p><?php esc_html_e( 'No menu items available.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 	<?php else : ?>

@@ -26,7 +26,7 @@ foreach ( $features as $feature ) {
 
 	<div class="edminboost-dashboard">
 		<div class="edminboost-card">
-			<h2><?php esc_html_e( 'Welcome to Edmin Boost', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2><?php esc_html_e( 'Welcome to EdminBoost', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p>
 				<?php esc_html_e( 'Your smart admin productivity toolkit for WordPress. Customize the dashboard, streamline workflows, and get more done in less time.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
@@ -47,7 +47,10 @@ foreach ( $features as $feature ) {
 				<?php echo esc_html( (string) count( $features ) ); ?>
 			</p>
 			<p>
-				<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . '-settings' ) ); ?>">
+				<a class="button button-primary" href="<?php echo esc_url( admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_ONBOARDING ) ); ?>">
+					<?php esc_html_e( 'Launch Command Center', EDMINBOOST_TEXT_DOMAIN ); ?>
+				</a>
+				<a class="button" href="<?php echo esc_url( admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . '-settings' ) ); ?>">
 					<?php esc_html_e( 'Open Settings', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</a>
 			</p>
@@ -69,11 +72,31 @@ foreach ( $features as $feature ) {
 		</div>
 
 		<div class="edminboost-card">
+			<h2><?php esc_html_e( 'Command Center', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<p><?php esc_html_e( 'Configure your admin top bar with persona presets, drag-and-drop layout mapping, role assignments, and visual styling.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+			<ul class="edminboost-feature-list">
+				<?php
+				$cc_links = EDMINBOOST_Command_Center::get_nav_items();
+				foreach ( $cc_links as $link ) :
+					?>
+					<li>
+						<span class="edminboost-status is-active"><?php esc_html_e( 'Go', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+						<strong>
+							<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . $link['slug'] ) ); ?>">
+								<?php echo esc_html( $link['label'] ); ?>
+							</a>
+						</strong>
+					</li>
+				<?php endforeach; ?>
+			</ul>
+		</div>
+
+		<div class="edminboost-card">
 			<h2><?php esc_html_e( 'Getting Started', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<ol class="edminboost-steps">
-				<li><?php esc_html_e( 'Enable Edmin Boost from the Settings page.', EDMINBOOST_TEXT_DOMAIN ); ?></li>
-				<li><?php esc_html_e( 'Choose the productivity features you want to use.', EDMINBOOST_TEXT_DOMAIN ); ?></li>
-				<li><?php esc_html_e( 'Enjoy a faster, cleaner WordPress admin experience.', EDMINBOOST_TEXT_DOMAIN ); ?></li>
+				<li><?php esc_html_e( 'Start with the Onboarding wizard to pick a persona preset.', EDMINBOOST_TEXT_DOMAIN ); ?></li>
+				<li><?php esc_html_e( 'Map sidebar plugins to your top bar in the Layout Studio.', EDMINBOOST_TEXT_DOMAIN ); ?></li>
+				<li><?php esc_html_e( 'Assign presets to roles and fine-tune behavior in the Command Center.', EDMINBOOST_TEXT_DOMAIN ); ?></li>
 			</ol>
 		</div>
 	</div>

@@ -6,49 +6,56 @@ alwaysApply: false
 
 # Admin Assets
 
-## JavaScript (`admin/js/`)
+## JavaScript (`admin/js/edminboost-admin.js`)
 
 - Wrap in an IIFE with `'use strict'`.
 - Guard on `window.edminboostData` before running.
 - Scope DOM queries to `.edminboost-wrap` or plugin-specific selectors.
 - No jQuery unless WordPress already loads it for the screen.
 - Use `DOMContentLoaded` for initialization.
-- On ready, set `data-edminboost-ready="true"` on `.edminboost-wrap`.
+- On `DOMContentLoaded`, set `data-edminboost-ready="true"` on `.edminboost-wrap`, then call all page inits.
+- Page-specific init functions: `initOnboarding`, `initMapper`, `initBehavior`, `initPresets` — each no-ops if target elements are absent.
+
+`edminboostData` shape:
 
 ```javascript
-( function () {
-	'use strict';
-
-	if ( typeof window.edminboostData === 'undefined' ) {
-		return;
+{
+	version: string,
+	currentPage: string,
+	optionName: 'edminboost_settings',
+	strings: {
+		ready, configureItem, removeFromTopBar, emptyCanvas, exportSuccess
 	}
-
-	document.addEventListener( 'DOMContentLoaded', function () {
-		var root = document.querySelector( '.edminboost-wrap' );
-		if ( ! root ) {
-			return;
-		}
-		root.setAttribute( 'data-edminboost-ready', 'true' );
-	} );
-} )();
+}
 ```
 
-`edminboostData` shape: `{ version: string, strings: { ready: string } }`.
-
-## CSS (`admin/css/`)
+## CSS (`admin/css/edminboost-admin.css`)
 
 - Prefix all selectors with `.edminboost-` to avoid admin conflicts.
 - Layout: `.edminboost-wrap`, `.edminboost-dashboard`, `.edminboost-card`, `.edminboost-status`.
 - Dashboard: `.edminboost-feature-list`, `.edminboost-steps`.
 - Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`.
-- Status modifiers: `.is-active`, `.is-inactive`.
-- Responsive: feature list stacks at `max-width: 782px`.
+- Command Center: `.edminboost-cc-wrap`, `.edminboost-cc-nav`, `.edminboost-cc-hero`, `.edminboost-cc-footer`.
+- Onboarding: `.edminboost-persona-grid`, `.edminboost-persona-card` (+ `.is-selected`).
+- Mapper: `.edminboost-mapper-layout`, `.edminboost-discovered-list`, `.edminboost-topbar-canvas`, `.edminboost-topbar-item`, `.edminboost-item-drawer`.
+- Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-role-matrix`.
+- Behavior: `.edminboost-badge-preview`.
+- Status modifiers: `.is-active`, `.is-inactive`, `.is-selected`, `.is-dragging`, `.is-default`.
+- Responsive: feature list stacks at `782px`; persona grid and mapper layout stack at `960px`.
 
 ## Partials (`admin/partials/`)
 
-- `edminboost-admin-page.php` — dashboard overview (status, feature list, getting started).
-- `edminboost-settings-features.php` — feature toggle fields (`EDMINBOOST_Admin::render_features_field()`).
-- Use `fieldset` + `legend` for grouped settings; label every input.
+| File | Purpose |
+|------|---------|
+| `edminboost-admin-page.php` | Dashboard overview |
+| `edminboost-settings-features.php` | Feature toggles (`render_features_field()`) |
+| `edminboost-command-center-nav.php` | CC sub-navigation |
+| `edminboost-onboarding-page.php` | Persona wizard |
+| `edminboost-mapper-page.php` | Layout studio |
+| `edminboost-presets-page.php` | Presets & role matrix |
+| `edminboost-behavior-page.php` | Behavior & style controls |
+
+Use `fieldset` + `legend` for grouped settings; label every input; `screen-reader-text` for icon-only controls.
 
 ## Enqueuing
 

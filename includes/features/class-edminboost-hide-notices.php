@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Collapses admin notices outside Edmin Boost screens.
+ * Collapses admin notices outside EdminBoost screens.
  */
 class EDMINBOOST_Hide_Notices extends EDMINBOOST_Feature_Base {
 
@@ -36,7 +36,7 @@ class EDMINBOOST_Hide_Notices extends EDMINBOOST_Feature_Base {
 	 *
 	 * @var string
 	 */
-	protected $description = 'Hide routine admin notices on non-Edmin Boost screens while keeping errors and warnings visible.';
+	protected $description = 'Hide routine admin notices on non-EdminBoost screens while keeping errors and warnings visible.';
 
 	/**
 	 * Register hooks.

@@ -6,7 +6,7 @@ alwaysApply: false
 
 # WordPress PHP Conventions
 
-See `edminboost-compliance.mdc` for the security and directory review gate.
+See `edminboost-compliance.mdc` for the security gate; `edminboost-command-center.mdc` for CC patterns.
 
 ## File Header
 
@@ -39,12 +39,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Use Settings API for options (`register_setting`, `add_settings_section`, `add_settings_field`).
 - Enqueue assets with `EDMINBOOST_VERSION` as the version string.
 - Pass data to JS via `wp_localize_script()` (object name: `edminboostData`).
-- Page slugs: use `EDMINBOOST_Admin::PAGE_SLUG` (equals `EDMINBOOST_PLUGIN_SLUG`).
+- Page slugs: use `EDMINBOOST_Admin::PAGE_SLUG` and `EDMINBOOST_Command_Center::PAGE_*` suffixes.
 
 ## Class Wiring
 
 - Bootstrap requires core classes; instantiate only via `edminboost_run_plugin()`.
 - `EDMINBOOST_Plugin` constructor: `EDMINBOOST_I18n`, `EDMINBOOST_Features`, `EDMINBOOST_Admin`.
+- Command Center: `EDMINBOOST_Command_Center` (static helpers, no hooks).
 - New modules: extend `EDMINBOOST_Feature_Base`, register in `EDMINBOOST_Features` (see `edminboost-features.mdc`).
 - Settings: `EDMINBOOST_Settings::get()`, `::is_enabled()`, `::is_feature_enabled()`, `::get_feature_settings()`.
 - Activation seeds defaults via `EDMINBOOST_Activator`; deactivation is a no-op.
@@ -53,27 +54,44 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ```php
 array(
-	'enabled'  => true,
-	'features' => array(
-		'hide_admin_notices' => false,
-		'dashboard_widgets'  => array(
-			'remove_welcome_panel', 'remove_quick_press', 'remove_activity',
-			'remove_at_a_glance', 'remove_site_health', 'remove_wp_news',
+	'enabled'        => true,
+	'command_center' => array(
+		'onboarding_completed' => false,
+		'persona'              => '',
+		'top_bar_items'        => array(),
+		'presets'              => array(),
+		'default_preset'       => 'system_client',
+		'role_assignments'     => array(),
+		'role_visibility'      => array(),
+		'behavior'             => array(
+			'drawer_width'         => 'standard',  // compact | standard | fullscreen
+			'animation_speed'      => 'normal',    // fast | normal | slow
+			'glassmorphism'        => false,
+			'autosave_interval'    => 60,
+			'badge_refresh_rate'   => 60,
+			'badge_style'          => 'pill',      // dot | pill | accent
+			'hide_wp_logo'         => false,
+			'hide_update_counters' => false,
+			'hide_howdy'           => false,
+			'hide_comments'        => false,
 		),
+	),
+	'features'       => array(
+		'hide_admin_notices' => false,
+		'dashboard_widgets'  => array( /* remove_* keys */ ),
 		'admin_menu'         => array( 'hidden_items' => array() ),
 		'admin_footer'       => array( 'enabled' => false, 'text' => '' ),
 		'disable_emojis'     => false,
-		'admin_bar'          => array(
-			'hide_wp_logo', 'hide_comments', 'hide_new_content', 'hide_customize',
-		),
+		'admin_bar'          => array( /* hide_* keys */ ),
 	),
 )
 ```
 
 ## Partials
 
-- Dashboard: `admin/partials/edminboost-admin-page.php` — expects `$settings`, `$features`.
-- Settings fields: `admin/partials/edminboost-settings-features.php` — expects `$settings`.
+- Dashboard: `edminboost-admin-page.php` — expects `$settings`, `$features`.
+- Settings: `edminboost-settings-features.php` — expects `$settings`.
+- Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
 - Document `@var` annotations at the top of partials.
 
 ## Docblocks
