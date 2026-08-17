@@ -1,0 +1,55 @@
+---
+description: Security, WordPress.org directory, and pre-ship review checklist for EdminBoost
+alwaysApply: true
+---
+
+# EdminBoost Compliance
+
+Gate before presenting final code. If any checklist item is "no", fix it first.
+
+See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality), `wordpress-php.mdc` (PHP patterns).
+
+## Security
+
+- Sanitize on input, escape on output, authorize before action, verify nonce before write.
+- Never trust browser, REST, AJAX, cron, or webhook input.
+- Use `EDMINBOOST_Settings::CAPABILITY` on admin pages and in `sanitize()`.
+- Settings API: `sanitize_callback`, `show_in_rest => false`, `wp_unslash()` on array input.
+- Custom forms/AJAX: `wp_nonce_field()` + `check_admin_referer()` / `wp_verify_nonce()`.
+- SQL: `$wpdb->prepare()` only; prefer Options API (`edminboost_*`) over custom tables.
+
+## Directory & Privacy
+
+- No obfuscated code, undisclosed telemetry, or hidden external requests.
+- No tracking or data transmission to external servers (current plugin behavior).
+- No public-site credit injection by default (admin footer replacement is opt-in).
+- No spammy readme, deceptive "free" behavior, or fake trial logic.
+- Any future remote integration must be documented, justified, and opt-in.
+
+## Code Quality
+
+- Prefer WordPress core APIs over custom hacks.
+- Keep code human-readable for directory review.
+- Follow WPCS across PHP, CSS, JS, and HTML.
+- Admin-only unless explicitly requested; enqueue assets only on plugin screens.
+- Use `edminboost` prefix (10 chars) consistently — `EDMINBOOST_` / `edminboost_`.
+
+## Self-Review Checklist
+
+- [ ] No WordPress core modifications
+- [ ] GPL-compatible
+- [ ] Human-readable, reviewable code
+- [ ] User-facing strings translatable (`EDMINBOOST_TEXT_DOMAIN`)
+- [ ] Privileged actions: capability checks + nonces
+- [ ] Input sanitized; output escaped
+- [ ] SQL prepared (if any)
+- [ ] Assets scoped; admin notices minimal and dismissible
+- [ ] No tracking without explicit consent; remotes documented
+- [ ] Public credits disabled by default; no trialware
+- [ ] Uninstall path removes plugin data safely
+- [ ] Unique `EDMINBOOST_` / `edminboost_` prefix; maintainable structure
+- [ ] Would survive WordPress.org review
+
+## Unsafe Requests
+
+If a feature conflicts with the Plugin Handbook, Coding Standards, security best practices, privacy expectations, or Directory Guidelines — refuse the unsafe approach and propose a compliant alternative.

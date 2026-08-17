@@ -1,0 +1,67 @@
+---
+description: Feature module patterns for EdminBoost productivity tools
+globs: "includes/features/**/*.php"
+alwaysApply: false
+---
+
+# EdminBoost Features
+
+## Adding a Feature
+
+1. Create `includes/features/class-edminboost-{name}.php` extending `EDMINBOOST_Feature_Base`.
+2. Set `$id`, `$name`, `$description` on the class.
+3. Implement `register_hooks()` — caller only invokes when `is_enabled()` is true.
+4. Register in `EDMINBOOST_Features::load_features()` (`require_once` + `$feature_classes` array).
+5. Add defaults in `EDMINBOOST_Settings::get_defaults()['features']`.
+6. Add enable logic in `EDMINBOOST_Settings::is_feature_enabled()` (or `edminboost_is_feature_enabled` filter).
+7. Add sanitization in `EDMINBOOST_Settings::sanitize()` for new fields.
+8. Add settings UI in `admin/partials/edminboost-settings-features.php`.
+
+## Feature Class Pattern
+
+```php
+class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
+
+	protected $id          = 'my_feature';
+	protected $name        = 'My Feature';
+	protected $description = 'What this feature does.';
+
+	public function register_hooks() {
+		add_action( 'admin_init', array( $this, 'init' ) );
+	}
+}
+```
+
+## Rules
+
+- Feature IDs: unique `snake_case` matching the `features` settings key.
+- Read settings via `EDMINBOOST_Settings::get_feature_settings( $this->get_id() )` — not `get_option()`.
+- Register hooks only in `register_hooks()`; no side effects in the constructor.
+- Scope hooks to admin unless explicitly broader (e.g. `disable_emojis` uses admin hooks only).
+- Skip plugin screens when a feature would interfere with its own UI — use `EDMINBOOST_Admin::PAGE_SLUG`.
+- Prefer WordPress APIs over inline CSS/JS; inline styles only when justified (`EDMINBOOST_Hide_Notices`).
+- For settings UI labels, expose static helpers (e.g. `get_widget_labels()`, `get_option_labels()`).
+
+## Enable Logic Types
+
+| Type | Examples | `is_feature_enabled()` behavior |
+|------|----------|--------------------------------|
+| Boolean flag | `hide_admin_notices`, `disable_emojis` | truthy option value |
+| Sub-key array | `dashboard_widgets`, `admin_bar` | any sub-key enabled |
+| Structured | `admin_menu` | `hidden_items` non-empty |
+| Structured + text | `admin_footer` | `enabled` + non-empty `text` |
+
+## Protected Menu Slugs
+
+`EDMINBOOST_Admin_Menu::get_protected_slugs()` — never hide: `index.php`, `plugins.php`, `EDMINBOOST_Admin::PAGE_SLUG`.
+
+## Current Features
+
+| ID | Class | Hooks |
+|----|-------|-------|
+| `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` |
+| `dashboard_widgets` | `EDMINBOOST_Dashboard` | `wp_dashboard_setup` (99), `admin_init` |
+| `admin_menu` | `EDMINBOOST_Admin_Menu` | `admin_menu` (999) |
+| `admin_footer` | `EDMINBOOST_Admin_Footer` | `admin_footer_text` |
+| `disable_emojis` | `EDMINBOOST_Disable_Emojis` | `admin_init` |
+| `admin_bar` | `EDMINBOOST_Admin_Bar` | `admin_bar_menu` (999) |

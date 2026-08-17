@@ -1,0 +1,71 @@
+---
+description: Coding, i18n, accessibility, UX, performance, privacy, and release standards for EdminBoost
+alwaysApply: true
+---
+
+# EdminBoost Standards
+
+Cross-cutting quality standards. See also: `edminboost-project.mdc` (architecture), `edminboost-compliance.mdc` (pre-ship gate), `edminboost-features.mdc` (modules), `wordpress-php.mdc` (PHP), `admin-assets.mdc` (JS/CSS).
+
+## Coding Standards
+
+- **PHP**: WordPress PHP Coding Standards — spacing, arrays, Yoda conditions only when required by the WPCS ruleset, docblocks where useful, clear naming.
+- **JS**: WordPress-compatible admin JS patterns; avoid unnecessary frameworks unless justified.
+- **CSS**: Scope styles to plugin UI; avoid bleeding into wp-admin or themes.
+- **HTML**: Semantic markup, accessible labels, buttons, headings; table markup only when appropriate.
+- Never output inline CSS/JS unless there is a good reason.
+- Keep lines and functions readable rather than clever.
+
+## I18N
+
+- All user-facing strings must be translatable.
+- Use `EDMINBOOST_TEXT_DOMAIN` consistently; it must match `EDMINBOOST_PLUGIN_SLUG`.
+- Use `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, etc. appropriately.
+- Feature `$name` and `$description` on `EDMINBOOST_Feature_Base` are translated via `get_name()` / `get_description()`.
+- Text domain loads from `/languages` on `plugins_loaded` via `EDMINBOOST_I18n`.
+
+## Accessibility
+
+- Every settings field must have a label.
+- Use `<button>` elements for actions, not clickable divs.
+- Respect keyboard navigation and focus states.
+- Use meaningful headings and notices.
+- Provide screen-reader text where needed (e.g. `screen-reader-text` legends on fieldsets).
+
+## Admin UX
+
+- Add notices sparingly and only when relevant.
+- Any notice must be dismissible or disappear when resolved.
+- Do not place ads or upsells outside the plugin's own screens unless absolutely necessary and policy-safe.
+- Avoid cluttering the admin menu.
+- Only load assets on this plugin's pages.
+- Features must respect the global `enabled` kill switch via `EDMINBOOST_Settings::is_enabled()`.
+- Admin footer replacement is opt-in only (enabled + non-empty text).
+
+## Performance
+
+- Load code only where needed.
+- Avoid expensive queries on every request.
+- Cache remote calls and expensive computations.
+- Avoid autoloading large options (`edminboost_settings` and `edminboost_version` are not autoloaded).
+- Avoid front-end impact unless the plugin's purpose requires it.
+
+## Privacy
+
+- No tracking, telemetry, or external data transmission.
+- If the plugin ever sends data externally, explain what is sent, why, and require explicit opt-in.
+- If personal data is stored, provide exporter/eraser integration when appropriate.
+
+## Uninstall & Lifecycle
+
+- **Deactivate**: no data removal (`EDMINBOOST_Deactivator` is a no-op; no cron to clear).
+- **Delete**: `uninstall.php` removes `edminboost_settings` and `edminboost_version`.
+- State data retention clearly in `readme.txt`.
+- If adding new options, update `uninstall.php` accordingly.
+
+## Release
+
+- Include `readme.txt` structure suitable for WordPress.org if requested.
+- Include license headers.
+- Include versioning (`EDMINBOOST_VERSION` + plugin header).
+- Ensure the plugin is complete and stable enough for review.

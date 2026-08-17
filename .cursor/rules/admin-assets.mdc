@@ -9,16 +9,17 @@ alwaysApply: false
 ## JavaScript (`admin/js/`)
 
 - Wrap in an IIFE with `'use strict'`.
-- Guard on `window.edminBoostData` before running.
+- Guard on `window.edminboostData` before running.
 - Scope DOM queries to `.edminboost-wrap` or plugin-specific selectors.
 - No jQuery unless WordPress already loads it for the screen.
 - Use `DOMContentLoaded` for initialization.
+- On ready, set `data-edminboost-ready="true"` on `.edminboost-wrap`.
 
 ```javascript
 ( function () {
 	'use strict';
 
-	if ( typeof window.edminBoostData === 'undefined' ) {
+	if ( typeof window.edminboostData === 'undefined' ) {
 		return;
 	}
 
@@ -27,17 +28,28 @@ alwaysApply: false
 		if ( ! root ) {
 			return;
 		}
-		// ...
+		root.setAttribute( 'data-edminboost-ready', 'true' );
 	} );
 } )();
 ```
 
+`edminboostData` shape: `{ version: string, strings: { ready: string } }`.
+
 ## CSS (`admin/css/`)
 
 - Prefix all selectors with `.edminboost-` to avoid admin conflicts.
-- Use existing layout classes: `.edminboost-wrap`, `.edminboost-dashboard`, `.edminboost-card`, `.edminboost-status`.
+- Layout: `.edminboost-wrap`, `.edminboost-dashboard`, `.edminboost-card`, `.edminboost-status`.
+- Dashboard: `.edminboost-feature-list`, `.edminboost-steps`.
+- Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`.
 - Status modifiers: `.is-active`, `.is-inactive`.
+- Responsive: feature list stacks at `max-width: 782px`.
+
+## Partials (`admin/partials/`)
+
+- `edminboost-admin-page.php` — dashboard overview (status, feature list, getting started).
+- `edminboost-settings-features.php` — feature toggle fields (`EDMINBOOST_Admin::render_features_field()`).
+- Use `fieldset` + `legend` for grouped settings; label every input.
 
 ## Enqueuing
 
-Scripts and styles are registered in `EDMINBOOST_Admin::enqueue_scripts()` / `enqueue_styles()`. When adding new assets, enqueue only on plugin screens and pass `EDMINBOOST_VERSION`.
+`EDMINBOOST_Admin::enqueue_scripts()` / `enqueue_styles()` — only on plugin screens (`is_plugin_screen()`), version `EDMINBOOST_VERSION`. Handle: `edminboost-admin`.

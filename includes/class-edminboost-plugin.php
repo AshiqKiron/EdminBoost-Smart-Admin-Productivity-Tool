@@ -1,6 +1,38 @@
 <?php
 /**
- * Core plugin bootstrap.
+ * Core plugin orchestrator — wires all hooks in one place.
+ *
+ * Purpose: Instantiate dependencies and register WordPress actions/filters.
+ *
+ * Architecture map
+ * -----------------
+ * Admin pages:
+ *   - edminboost-smart-admin-roductivity-tool          (Dashboard)
+ *   - edminboost-smart-admin-roductivity-tool-settings (Settings)
+ *
+ * Settings (wp_options):
+ *   - edminboost_settings  (array, Settings API group: edminboost_settings_group)
+ *   - edminboost_version   (string, schema version tracker)
+ *
+ * Core hooks (this class):
+ *   - plugins_loaded              → load text domain
+ *   - admin_menu                  → register admin pages
+ *   - admin_init                  → register settings + feature hooks
+ *   - admin_enqueue_scripts (×2)  → enqueue CSS/JS on plugin screens
+ *   - plugin_action_links_{basename} → Settings shortcut on Plugins screen
+ *
+ * Feature hooks (registered by EDMINBOOST_Features when enabled):
+ *   - hide_admin_notices → admin_enqueue_scripts
+ *   - dashboard_widgets  → wp_dashboard_setup, admin_init
+ *   - admin_menu         → admin_menu (priority 999)
+ *   - admin_footer       → admin_footer_text
+ *   - disable_emojis     → admin_init
+ *   - admin_bar          → admin_bar_menu (priority 999)
+ *
+ * REST endpoints:  none (not required; all features use core hooks)
+ * Cron events:     none (no scheduled tasks)
+ * Blocks:          none (admin-only plugin)
+ * Custom tables:   none (options API only)
  *
  * @package EdminBoost
  */
@@ -29,11 +61,19 @@ class EDMINBOOST_Plugin {
 	protected $i18n;
 
 	/**
+	 * Feature manager.
+	 *
+	 * @var EDMINBOOST_Features
+	 */
+	protected $features;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->i18n  = new EDMINBOOST_I18n();
-		$this->admin = new EDMINBOOST_Admin();
+		$this->i18n     = new EDMINBOOST_I18n();
+		$this->features = new EDMINBOOST_Features();
+		$this->admin    = new EDMINBOOST_Admin( $this->features );
 	}
 
 	/**
@@ -48,5 +88,6 @@ class EDMINBOOST_Plugin {
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
 		add_filter( 'plugin_action_links_' . EDMINBOOST_PLUGIN_BASENAME, array( $this->admin, 'add_settings_link' ) );
+		add_action( 'admin_init', array( $this->features, 'register_hooks' ) );
 	}
 }

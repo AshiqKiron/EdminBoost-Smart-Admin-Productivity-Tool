@@ -1,7 +1,7 @@
 ( function () {
 	'use strict';
 
-	if ( typeof window.edminBoostData === 'undefined' ) {
+	if ( typeof window.edminboostData === 'undefined' ) {
 		return;
 	}
 

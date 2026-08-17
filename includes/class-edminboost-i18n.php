@@ -2,6 +2,8 @@
 /**
  * Internationalization handler.
  *
+ * Purpose: Load translation files from the /languages directory on plugins_loaded.
+ *
  * @package EdminBoost
  */
 

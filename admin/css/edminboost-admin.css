@@ -41,3 +41,52 @@
 .edminboost-steps li + li {
 	margin-top: 8px;
 }
+
+.edminboost-feature-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.edminboost-feature-list li {
+	display: grid;
+	grid-template-columns: 3rem 10rem 1fr;
+	gap: 8px 12px;
+	align-items: baseline;
+	padding: 10px 0;
+	border-bottom: 1px solid #f0f0f1;
+}
+
+.edminboost-feature-list li:last-child {
+	border-bottom: 0;
+}
+
+.edminboost-fieldset {
+	margin: 0 0 24px;
+	padding: 0;
+	border: 0;
+}
+
+.edminboost-fieldset legend {
+	font-weight: 600;
+	margin-bottom: 8px;
+}
+
+.edminboost-checkbox-row {
+	display: block;
+	margin: 6px 0;
+}
+
+.edminboost-checkbox-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+	gap: 4px 16px;
+	margin-top: 8px;
+}
+
+@media screen and (max-width: 782px) {
+	.edminboost-feature-list li {
+		grid-template-columns: 1fr;
+		gap: 4px;
+	}
+}

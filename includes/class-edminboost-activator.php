@@ -2,6 +2,8 @@
 /**
  * Plugin activation handler.
  *
+ * Purpose: Seed default options on first install and record plugin version.
+ *
  * @package EdminBoost
  */
 
@@ -20,14 +22,14 @@ class EDMINBOOST_Activator {
 	 * @return void
 	 */
 	public static function activate() {
-		$defaults = array(
-			'enabled' => true,
-		);
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-settings.php';
 
-		if ( false === get_option( 'edminboost_settings', false ) ) {
-			add_option( 'edminboost_settings', $defaults, '', false );
+		$defaults = EDMINBOOST_Settings::get_defaults();
+
+		if ( false === get_option( EDMINBOOST_Settings::OPTION_NAME, false ) ) {
+			add_option( EDMINBOOST_Settings::OPTION_NAME, $defaults, '', false );
 		}
 
-		update_option( 'edminboost_version', EDMINBOOST_VERSION, false );
+		update_option( EDMINBOOST_Settings::VERSION_OPTION, EDMINBOOST_VERSION, false );
 	}
 }

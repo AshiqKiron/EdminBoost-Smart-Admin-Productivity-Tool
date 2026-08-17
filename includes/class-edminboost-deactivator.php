@@ -2,6 +2,9 @@
 /**
  * Plugin deactivation handler.
  *
+ * Purpose: Reserved for clearing scheduled hooks or transient cleanup on deactivate.
+ *          Currently no cron events are registered.
+ *
  * @package EdminBoost
  */
 
@@ -20,6 +23,6 @@ class EDMINBOOST_Deactivator {
 	 * @return void
 	 */
 	public static function deactivate() {
-		// Reserved for scheduled events or temporary cleanup.
+		// No scheduled events to clear at this time.
 	}
 }
