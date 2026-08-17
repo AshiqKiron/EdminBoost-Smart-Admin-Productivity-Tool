@@ -1,0 +1,43 @@
+---
+description: Admin JS and CSS conventions for EdminBoost
+globs: "admin/**/*.{js,css}"
+alwaysApply: false
+---
+
+# Admin Assets
+
+## JavaScript (`admin/js/`)
+
+- Wrap in an IIFE with `'use strict'`.
+- Guard on `window.edminBoostData` before running.
+- Scope DOM queries to `.edminboost-wrap` or plugin-specific selectors.
+- No jQuery unless WordPress already loads it for the screen.
+- Use `DOMContentLoaded` for initialization.
+
+```javascript
+( function () {
+	'use strict';
+
+	if ( typeof window.edminBoostData === 'undefined' ) {
+		return;
+	}
+
+	document.addEventListener( 'DOMContentLoaded', function () {
+		var root = document.querySelector( '.edminboost-wrap' );
+		if ( ! root ) {
+			return;
+		}
+		// ...
+	} );
+} )();
+```
+
+## CSS (`admin/css/`)
+
+- Prefix all selectors with `.edminboost-` to avoid admin conflicts.
+- Use existing layout classes: `.edminboost-wrap`, `.edminboost-dashboard`, `.edminboost-card`, `.edminboost-status`.
+- Status modifiers: `.is-active`, `.is-inactive`.
+
+## Enqueuing
+
+Scripts and styles are registered in `EDMINBOOST_Admin::enqueue_scripts()` / `enqueue_styles()`. When adding new assets, enqueue only on plugin screens and pass `EDMINBOOST_VERSION`.

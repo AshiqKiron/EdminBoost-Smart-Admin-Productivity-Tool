@@ -1,0 +1,22 @@
+# WordPress
+languages/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.code-workspace
+
+# Dependencies
+node_modules/
+vendor/
+
+# Build
+/build/
+/dist/
+
+# Logs
+*.log

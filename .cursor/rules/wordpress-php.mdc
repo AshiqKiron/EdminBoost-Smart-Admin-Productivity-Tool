@@ -1,0 +1,57 @@
+---
+description: WordPress PHP standards for EdminBoost
+globs: "**/*.php"
+alwaysApply: false
+---
+
+# WordPress PHP Conventions
+
+## File Header
+
+Every PHP file must start with:
+
+```php
+<?php
+/**
+ * Brief description.
+ *
+ * @package EdminBoost
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+```
+
+## Security
+
+- Check capabilities before rendering admin pages: `current_user_can( 'manage_options' )`.
+- Escape output: `esc_html()`, `esc_attr()`, `esc_url()`, `esc_html__()`, `esc_html_e()`.
+- Sanitize all settings via `sanitize_callback` in `register_setting()`.
+- Use nonces for custom form/AJAX handlers (`wp_nonce_field`, `check_admin_referer`).
+
+## WordPress APIs
+
+- Register hooks in `EDMINBOOST_Plugin::run()`, not in the bootstrap file.
+- Use Settings API for options (`register_setting`, `add_settings_section`, `add_settings_field`).
+- Enqueue assets with `EDMINBOOST_VERSION` as the version string.
+- Pass data to JS via `wp_localize_script()` (object name: `edminBoostData`).
+
+## Class Pattern
+
+```php
+class EDMINBOOST_Feature {
+
+	const OPTION_NAME = 'edminboost_feature';
+
+	public function register_hooks() {
+		add_action( 'admin_init', array( $this, 'init' ) );
+	}
+}
+```
+
+Wire new classes through `EDMINBOOST_Plugin` — require the file in bootstrap, instantiate in constructor, hook in `run()`.
+
+## Docblocks
+
+Document all public methods with `@param`, `@return`, and `@var` on class properties.

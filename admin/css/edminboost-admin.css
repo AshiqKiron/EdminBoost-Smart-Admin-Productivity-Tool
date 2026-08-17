@@ -1,0 +1,43 @@
+.edminboost-wrap {
+	max-width: 960px;
+}
+
+.edminboost-dashboard {
+	display: grid;
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.edminboost-card {
+	background: #fff;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
+	padding: 20px 24px;
+}
+
+.edminboost-card h2 {
+	margin-top: 0;
+}
+
+.edminboost-status {
+	display: inline-block;
+	font-weight: 600;
+}
+
+.edminboost-status.is-active {
+	color: #00a32a;
+}
+
+.edminboost-status.is-inactive {
+	color: #d63638;
+}
+
+.edminboost-steps {
+	margin: 0;
+	padding-left: 20px;
+}
+
+.edminboost-steps li + li {
+	margin-top: 8px;
+}

@@ -1,0 +1,39 @@
+---
+description: Core conventions for the EdminBoost WordPress plugin
+alwaysApply: true
+---
+
+# EdminBoost Project Rules
+
+WordPress admin productivity plugin. PHP 7.4+, WordPress 6.0+, GPL-3.0.
+
+## Architecture
+
+- Bootstrap: `edminBoost-smart-admin-roductivity-tool.php` defines constants and calls `edminboost_run_plugin()`.
+- Classes live in `includes/class-edminboost-{name}.php` and use the `EDMINBOOST_` prefix.
+- Admin UI: `includes/class-edminboost-admin.php` + partials in `admin/partials/`.
+- Assets: `admin/css/` and `admin/js/`, enqueued only on plugin screens via `is_plugin_screen()`.
+
+## Naming
+
+| Kind | Pattern | Example |
+|------|---------|---------|
+| Constants | `EDMINBOOST_*` | `EDMINBOOST_VERSION` |
+| Classes | `EDMINBOOST_{Name}` | `EDMINBOOST_Admin` |
+| Functions | `edminboost_{action}` | `edminboost_run_plugin()` |
+| Options | `edminboost_{key}` | `edminboost_settings` |
+| CSS/JS handles | `edminboost-{name}` | `edminboost-admin` |
+| CSS classes | `edminboost-*` | `edminboost-wrap` |
+
+Use `EDMINBOOST_TEXT_DOMAIN` for all translatable strings. Do not rename the text domain.
+
+## Scope & Change Discipline
+
+- Admin-only plugin — no frontend hooks unless explicitly requested.
+- Minimize diff scope; match existing file structure and coding style.
+- Add `index.php` silence files when creating new directories.
+- Update `readme.txt` changelog for user-facing changes.
+
+## Constants (use, don't redefine)
+
+`EDMINBOOST_VERSION`, `EDMINBOOST_PLUGIN_FILE`, `EDMINBOOST_PLUGIN_DIR`, `EDMINBOOST_PLUGIN_URL`, `EDMINBOOST_PLUGIN_BASENAME`, `EDMINBOOST_TEXT_DOMAIN`
