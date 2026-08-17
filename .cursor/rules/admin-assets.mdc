@@ -24,10 +24,32 @@ alwaysApply: false
 	currentPage: string,
 	optionName: 'edminboost_settings',
 	strings: {
-		ready, configureItem, removeFromTopBar, emptyCanvas, exportSuccess
+		ready, configureItem, removeFromTopBar, emptyCanvas, exportSuccess,
+		customLinkPathRequired, customLinkLabelRequired, customLinkPathInvalid,
+		customLinkAnchorInvalid, customLinkDuplicate
 	}
 }
 ```
+
+## Command Center bar JS (`admin/js/edminboost-command-center-bar.js`)
+
+- Separate from plugin-screen `edminboost-admin.js` — enqueued only when the live bar has drawer items.
+- Wrap in an IIFE with `'use strict'`; guard on `window.edminboostCcBar.drawerItems`.
+- Requires `#edminboost-cc-drawer` shell from `render_drawer_shell()`.
+
+`edminboostCcBar` shape:
+
+```javascript
+{
+	drawerItems: {
+		'edminboost-cc-{hash}': { slug, label, frameUrl, openUrl }
+	},
+	animationMs: number  // from behavior animation_speed
+}
+```
+
+- Opens drawer on `#wpadminbar .edminboost-cc-bar-drawer-trigger > .ab-item` click; closes on backdrop, close button, or Escape.
+- Sets iframe `src` to signed `frameUrl`; shows loading overlay until `iframe.onload`.
 
 ## CSS
 
@@ -45,10 +67,11 @@ alwaysApply: false
 - Status modifiers: `.is-active`, `.is-inactive`, `.is-selected`, `.is-dragging`, `.is-default`.
 - Responsive: feature list stacks at `782px`; persona grid and mapper layout stack at `960px`.
 
-### Live admin bar (`admin/css/edminboost-command-center-bar.css`)
+### Live admin bar + drawer (`admin/css/edminboost-command-center-bar.css`)
 
-- Scoped under `#wpadminbar` — not prefixed with `.edminboost-wrap`.
-- Classes: `.edminboost-cc-bar-item`, `.edminboost-cc-bar-badge`, `.edminboost-cc-bar-badge--dot|pill|accent`.
+- Admin bar nodes scoped under `#wpadminbar` — not prefixed with `.edminboost-wrap`.
+- Bar classes: `.edminboost-cc-bar-item`, `.edminboost-cc-bar-drawer-trigger`, `.edminboost-cc-bar-badge`, `.edminboost-cc-bar-badge--dot|pill|accent`.
+- Drawer shell (footer markup, not inside `#wpadminbar`): `.edminboost-cc-drawer`, `.edminboost-cc-drawer__panel--compact|standard|fullscreen`, optional `.is-glass`, `.is-open`; `body.edminboost-cc-drawer-active` locks scroll.
 - Enqueued by `EDMINBOOST_Command_Center_Bar::enqueue_assets()` when the bar is active (admin + front end when admin bar shows).
 
 ## Partials (`admin/partials/`)
@@ -69,10 +92,12 @@ Use `fieldset` + `legend` for grouped settings; label every input; `screen-reade
 
 Key elements: `#edminboost-mapper-form`, `#edminboost-topbar-items`, `#edminboost-topbar-canvas`, `#edminboost-discovered-list`, `#edminboost-topbar-hidden-inputs`, `#edminboost-item-drawer`.
 
-- Canvas items: drag-reorder within canvas (`dragItem`, `effectAllowed: move`).
-- Discovered rows: drag-to-canvas (`dragPayload`, `effectAllowed: copy`); checkbox and row-click toggle add/remove.
-- `setDiscoveredChecked()` keeps discovered `is-active` in sync with canvas membership.
-- `syncHiddenInputs()` writes indexed hidden fields for `top_bar_items` before form submit.
+- Canvas items: drag-reorder within canvas (`dragItem`, `effectAllowed: move`); keyed by `data-slug` + `data-anchor`.
+- Discovered rows: drag-to-canvas (`dragPayload`, `effectAllowed: copy`); checkbox and row-click toggle add/remove (skipped when anchor is set).
+- `setDiscoveredChecked()` keeps discovered `is-active` in sync with canvas membership for non-anchored slugs only.
+- `syncHiddenInputs()` writes indexed hidden fields for `top_bar_items` (including `anchor`) before form submit.
+- Custom link fields: `#edminboost-custom-link-path`, `#edminboost-custom-link-label`, `#edminboost-custom-link-anchor`; path may include `#fragment`.
+- Item drawer field: `#edminboost-item-anchor`.
 - Hidden marker input: `command_center[_layout_studio_save]` = `1` (Layout Studio partial only).
 
 ## Enqueuing
@@ -80,6 +105,7 @@ Key elements: `#edminboost-mapper-form`, `#edminboost-topbar-items`, `#edminboos
 | Handle | File | When |
 |--------|------|------|
 | `edminboost-admin` | `admin/js/edminboost-admin.js`, `admin/css/edminboost-admin.css` | Plugin screens (`EDMINBOOST_Admin::is_plugin_screen()`) |
-| `edminboost-command-center-bar` | `admin/css/edminboost-command-center-bar.css` | CC bar active (`EDMINBOOST_Command_Center_Bar::is_active()`) |
+| `edminboost-command-center-bar` (style) | `admin/css/edminboost-command-center-bar.css` | CC bar active (`EDMINBOOST_Command_Center_Bar::is_active()`) |
+| `edminboost-command-center-bar` (script) | `admin/js/edminboost-command-center-bar.js` | CC bar active and `has_drawer_items()` |
 
 Version: `EDMINBOOST_VERSION` for all handles.

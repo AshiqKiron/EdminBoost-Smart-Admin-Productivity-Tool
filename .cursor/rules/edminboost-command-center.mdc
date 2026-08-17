@@ -1,6 +1,6 @@
 ---
 description: Command Center patterns — onboarding, layout studio, presets, behavior, live admin bar
-globs: "includes/class-edminboost-command-center*.php,admin/partials/edminboost-{onboarding,mapper,presets,behavior,command-center}*.php,admin/css/edminboost-command-center-bar.css"
+globs: "includes/class-edminboost-command-center*.php,admin/partials/edminboost-{onboarding,mapper,presets,behavior,command-center}*.php,admin/{css,js}/edminboost-command-center-bar.*"
 alwaysApply: false
 ---
 
@@ -24,11 +24,22 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 
 - `register_nodes()` on `admin_bar_menu` (priority 80) — adds nodes from saved `top_bar_items` for the current user.
 - `apply_declutter()` on `admin_bar_menu` (priority 999) — removes `wp-logo`, `comments`, `my-account`, `updates` per `behavior` toggles.
-- `enqueue_assets()` on `admin_enqueue_scripts` and `wp_enqueue_scripts` — loads `edminboost-command-center-bar.css` + `dashicons` when `is_active()`.
+- `maybe_prepare_drawer_frame()` on `admin_init` — when `edminboost_drawer=1`, verifies nonce, whitelists slug+anchor via `is_drawer_slug_allowed()`, then prints iframe chrome-stripping CSS on `admin_head`.
+- `enqueue_assets()` on `admin_enqueue_scripts` and `wp_enqueue_scripts` — loads `edminboost-command-center-bar.css` + `dashicons` when `is_active()`; loads `edminboost-command-center-bar.js` + `edminboostCcBar` localize only when `has_drawer_items()`.
+- `render_drawer_shell()` on `admin_footer` and `wp_footer` — outputs `#edminboost-cc-drawer` when active and drawer items exist.
 - `is_active()` — plugin enabled, user logged in, admin bar showing, and `get_items_for_current_user()` non-empty.
+- `has_drawer_items()` — any current-user item with `interaction === drawer`.
 - `get_items_for_current_user()` — filters items by `role_visibility` (hidden slugs per role).
-- Node IDs: `edminboost-cc-{md5(slug)}`; meta class `edminboost-cc-bar-item`; badge markup `edminboost-cc-bar-badge edminboost-cc-bar-badge--{style}`.
-- URLs: `admin_url( $slug )` for slugs; full `http(s)` URLs pass through `esc_url()`.
+- Node IDs: `edminboost-cc-{md5(slug + "\0" + anchor)}`; meta class `edminboost-cc-bar-item`; drawer triggers add `edminboost-cc-bar-drawer-trigger` and use `href="#"`.
+- Badge markup: `edminboost-cc-bar-badge edminboost-cc-bar-badge--{style}`.
+- URLs: `get_item_url( $slug, $anchor )` — `admin_url( $slug )` + optional `#anchor`; full `http(s)` URLs pass through `esc_url()` with optional fragment.
+
+### Slide-out drawer
+
+- Drawer shell: `#edminboost-cc-drawer` with BEM classes `edminboost-cc-drawer__*`; width from behavior (`panel--compact|standard|fullscreen`); optional `is-glass` for glassmorphism; duration via CSS var `--edminboost-cc-drawer-duration`.
+- JS (`edminboost-command-center-bar.js`) opens drawer on admin-bar click, loads signed iframe URL, supports backdrop/close/Escape; `body.edminboost-cc-drawer-active` locks scroll.
+- Iframe URL: `get_drawer_frame_url()` adds `edminboost_drawer=1`, `edminboost_slug`, optional `edminboost_anchor`, and `_wpnonce` (action `edminboost_cc_drawer_{md5(slug + "\0" + anchor)}`).
+- Localized `edminboostCcBar.drawerItems` maps node IDs to `{ slug, label, frameUrl, openUrl }`.
 
 ## Rendering
 
@@ -44,7 +55,7 @@ CC pages submit via `options.php` with `settings_fields( EDMINBOOST_Settings::SE
 ```
 edminboost_settings[command_center][persona]
 edminboost_settings[command_center][_layout_studio_save]   # marker: 1 when Layout Studio form submits
-edminboost_settings[command_center][top_bar_items][0][slug|label|icon|interaction|badge_source]
+edminboost_settings[command_center][top_bar_items][0][slug|anchor|label|icon|interaction|badge_source]
 edminboost_settings[command_center][role_assignments][role_key]
 edminboost_settings[command_center][behavior][drawer_width|animation_speed|...]
 ```
@@ -70,12 +81,15 @@ Allowed values:
 ```php
 array(
 	'slug'         => 'edit.php',
+	'anchor'       => '',         // optional URL fragment (no leading #)
 	'label'        => 'Posts',
 	'icon'         => 'dashicons-admin-post',
 	'interaction'  => 'redirect', // or 'drawer'
 	'badge_source' => '',         // key from get_badge_sources()
 )
 ```
+
+Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when anchor is empty; anchor pattern `^[a-zA-Z0-9_\-\.]+$`.
 
 ## Partials
 
@@ -92,6 +106,8 @@ array(
 - Read settings via `EDMINBOOST_Command_Center::get_settings()` — not raw `get_option()`.
 - System presets (`system_client`, `system_ecommerce`, `system_developer`) are read-only; custom presets live in `command_center.presets`.
 - `role_visibility` stores hidden slugs per role (inverted from visible checkboxes in UI).
-- Mapper JS (`initMapper`) syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit.
-- Mapper UX: discovered rows are draggable to canvas; row click toggles checkbox (except handle/toggle areas); canvas and shell accept drops; `is-active` on discovered rows mirrors canvas membership.
+- Mapper JS (`initMapper`) syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit — includes `anchor` per item.
+- Mapper UX: discovered rows are draggable to canvas; row click toggles checkbox (except handle/toggle areas); canvas and shell accept drops; `is-active` on discovered rows mirrors canvas membership for items **without** an anchor (anchored/custom links do not toggle discovered checkboxes).
+- Custom admin link: `#edminboost-custom-link-path`, `#edminboost-custom-link-label`, `#edminboost-custom-link-anchor` — path may include `#fragment`; duplicate check uses slug+anchor.
+- Item drawer: `#edminboost-item-anchor` edits the selected canvas item's anchor.
 - Badge sources (`wc_orders`, `comments`, `forms_entries`, etc.) are local counters only — no remote API calls.

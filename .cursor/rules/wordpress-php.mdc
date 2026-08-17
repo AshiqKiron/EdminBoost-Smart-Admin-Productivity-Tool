@@ -38,7 +38,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Register hooks in `EDMINBOOST_Plugin::run()` or feature `register_hooks()` — not in the bootstrap file.
 - Use Settings API for options (`register_setting`, `add_settings_section`, `add_settings_field`).
 - Enqueue assets with `EDMINBOOST_VERSION` as the version string.
-- Pass data to JS via `wp_localize_script()` (object name: `edminboostData`).
+- Pass data to JS via `wp_localize_script()` — `edminboostData` on plugin screens; `edminboostCcBar` on the live CC bar drawer script.
 - Page slugs: use `EDMINBOOST_Admin::PAGE_SLUG` and `EDMINBOOST_Command_Center::PAGE_*` suffixes.
 
 ## Class Wiring

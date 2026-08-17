@@ -74,9 +74,10 @@
 			return Array.prototype.slice.call( canvas.querySelectorAll( '.edminboost-topbar-item' ) );
 		}
 
-		function findCanvasItemBySlug( slug ) {
+		function findCanvasItemBySlug( slug, anchor ) {
+			anchor = anchor || '';
 			return getItems().find( function ( item ) {
-				return item.dataset.slug === slug;
+				return item.dataset.slug === slug && ( item.dataset.anchor || '' ) === anchor;
 			} ) || null;
 		}
 
@@ -130,6 +131,7 @@
 			getItems().forEach( function ( item, index ) {
 				var fields = {
 					slug: item.dataset.slug || '',
+					anchor: item.dataset.anchor || '',
 					label: item.dataset.label || '',
 					icon: item.dataset.icon || 'dashicons-admin-generic',
 					interaction: item.dataset.interaction || 'redirect',
@@ -152,6 +154,7 @@
 			li.setAttribute( 'role', 'listitem' );
 			li.draggable = true;
 			li.dataset.slug = data.slug;
+			li.dataset.anchor = data.anchor || '';
 			li.dataset.label = data.label;
 			li.dataset.icon = data.icon;
 			li.dataset.interaction = data.interaction || 'redirect';
@@ -187,25 +190,31 @@
 		}
 
 		function addToCanvas( data ) {
-			if ( ! data.slug || findCanvasItemBySlug( data.slug ) ) {
+			var anchor = data.anchor || '';
+
+			if ( ! data.slug || findCanvasItemBySlug( data.slug, anchor ) ) {
 				return;
 			}
 
 			canvas.appendChild( createTopBarItem( data ) );
-			setDiscoveredChecked( data.slug, true );
+			if ( ! anchor ) {
+				setDiscoveredChecked( data.slug, true );
+			}
 			updateEmptyState();
 			syncHiddenInputs();
 		}
 
-		function removeFromCanvas( slug ) {
-			var item = findCanvasItemBySlug( slug );
+		function removeFromCanvas( slug, anchor ) {
+			var item = findCanvasItemBySlug( slug, anchor );
 			if ( item ) {
 				item.remove();
 			}
 
-			setDiscoveredChecked( slug, false );
+			if ( '' === ( anchor || '' ) ) {
+				setDiscoveredChecked( slug, false );
+			}
 
-			if ( selectedItem && selectedItem.dataset.slug === slug ) {
+			if ( selectedItem && selectedItem.dataset.slug === slug && ( selectedItem.dataset.anchor || '' ) === ( anchor || '' ) ) {
 				closeDrawer();
 			}
 
@@ -227,12 +236,21 @@
 
 			var subtitle = document.getElementById( 'edminboost-drawer-subtitle' );
 			if ( subtitle ) {
-				subtitle.textContent = item.dataset.slug;
+				var subtitleText = item.dataset.slug || '';
+				if ( item.dataset.anchor ) {
+					subtitleText += '#' + item.dataset.anchor;
+				}
+				subtitle.textContent = subtitleText;
 			}
 
 			var labelInput = document.getElementById( 'edminboost-item-label' );
 			if ( labelInput ) {
 				labelInput.value = item.dataset.label || '';
+			}
+
+			var anchorInput = document.getElementById( 'edminboost-item-anchor' );
+			if ( anchorInput ) {
+				anchorInput.value = item.dataset.anchor || '';
 			}
 
 			var interaction = item.dataset.interaction || 'redirect';
@@ -428,11 +446,13 @@
 			} );
 		}
 
-		var customLinkPathInput  = document.getElementById( 'edminboost-custom-link-path' );
-		var customLinkLabelInput = document.getElementById( 'edminboost-custom-link-label' );
-		var customLinkAddBtn     = document.getElementById( 'edminboost-custom-link-add' );
-		var customLinkError      = document.getElementById( 'edminboost-custom-link-error' );
-		var slugPattern          = /^[a-zA-Z0-9_\-\.?=&%]+$/;
+		var customLinkPathInput   = document.getElementById( 'edminboost-custom-link-path' );
+		var customLinkLabelInput  = document.getElementById( 'edminboost-custom-link-label' );
+		var customLinkAnchorInput = document.getElementById( 'edminboost-custom-link-anchor' );
+		var customLinkAddBtn      = document.getElementById( 'edminboost-custom-link-add' );
+		var customLinkError       = document.getElementById( 'edminboost-custom-link-error' );
+		var pathPattern             = /^[a-zA-Z0-9_\-\.?=&%]+$/;
+		var anchorPattern           = /^[a-zA-Z0-9_\-\.]+$/;
 
 		function showCustomLinkError( message ) {
 			if ( ! customLinkError ) {
@@ -449,17 +469,45 @@
 			customLinkError.hidden = true;
 		}
 
-		function normalizeCustomPath( value ) {
+		function parsePathAndAnchor( value ) {
 			var path = ( value || '' ).trim();
+			var hashIndex = path.indexOf( '#' );
+
+			if ( hashIndex === -1 ) {
+				return {
+					path: path,
+					anchor: ''
+				};
+			}
+
+			return {
+				path: path.substring( 0, hashIndex ),
+				anchor: path.substring( hashIndex + 1 )
+			};
+		}
+
+		function normalizeCustomPath( value ) {
+			var parsed = parsePathAndAnchor( value );
+			var path = parsed.path;
 
 			if ( 0 === path.indexOf( 'http://' ) || 0 === path.indexOf( 'https://' ) ) {
-				return path;
+				return {
+					path: path,
+					anchor: parsed.anchor
+				};
 			}
 
 			path = path.replace( /^\/?wp-admin\//, '' );
 			path = path.replace( /^\/+/, '' );
 
-			return path;
+			return {
+				path: path,
+				anchor: parsed.anchor
+			};
+		}
+
+		function normalizeAnchor( value ) {
+			return ( value || '' ).trim().replace( /^#+/, '' );
 		}
 
 		function addCustomLinkToCanvas() {
@@ -467,8 +515,10 @@
 				return;
 			}
 
-			var slug  = normalizeCustomPath( customLinkPathInput.value );
-			var label = customLinkLabelInput.value.trim();
+			var parsed  = normalizeCustomPath( customLinkPathInput.value );
+			var slug    = parsed.path;
+			var anchor  = normalizeAnchor( customLinkAnchorInput ? customLinkAnchorInput.value : '' ) || parsed.anchor;
+			var label   = customLinkLabelInput.value.trim();
 			var strings = ( window.edminboostData && window.edminboostData.strings ) || {};
 
 			showCustomLinkError( '' );
@@ -485,25 +535,37 @@
 				return;
 			}
 
-			if ( ! slugPattern.test( slug ) ) {
+			if ( ! pathPattern.test( slug ) ) {
 				showCustomLinkError( strings.customLinkPathInvalid || 'Use a relative admin path such as edit.php?post_type=page.' );
 				customLinkPathInput.focus();
 				return;
 			}
 
-			if ( findCanvasItemBySlug( slug ) ) {
+			if ( anchor && ! anchorPattern.test( anchor ) ) {
+				showCustomLinkError( strings.customLinkAnchorInvalid || 'Use letters, numbers, hyphens, underscores, or dots in the anchor.' );
+				if ( customLinkAnchorInput ) {
+					customLinkAnchorInput.focus();
+				}
+				return;
+			}
+
+			if ( findCanvasItemBySlug( slug, anchor ) ) {
 				showCustomLinkError( strings.customLinkDuplicate || 'That link is already on your top bar.' );
 				return;
 			}
 
 			addToCanvas( {
 				slug: slug,
+				anchor: anchor,
 				label: label,
 				icon: 'dashicons-admin-links'
 			} );
 
 			customLinkPathInput.value = '';
 			customLinkLabelInput.value = '';
+			if ( customLinkAnchorInput ) {
+				customLinkAnchorInput.value = '';
+			}
 			customLinkPathInput.focus();
 		}
 
@@ -529,6 +591,15 @@
 			} );
 		}
 
+		if ( customLinkAnchorInput ) {
+			customLinkAnchorInput.addEventListener( 'keydown', function ( event ) {
+				if ( 'Enter' === event.key ) {
+					event.preventDefault();
+					addCustomLinkToCanvas();
+				}
+			} );
+		}
+
 		var labelInput = document.getElementById( 'edminboost-item-label' );
 		if ( labelInput ) {
 			labelInput.addEventListener( 'input', function () {
@@ -540,6 +611,18 @@
 				if ( text ) {
 					text.textContent = labelInput.value;
 				}
+				syncHiddenInputs();
+			} );
+		}
+
+		var itemAnchorInput = document.getElementById( 'edminboost-item-anchor' );
+		if ( itemAnchorInput ) {
+			itemAnchorInput.addEventListener( 'input', function () {
+				if ( ! selectedItem ) {
+					return;
+				}
+
+				selectedItem.dataset.anchor = normalizeAnchor( itemAnchorInput.value );
 				syncHiddenInputs();
 			} );
 		}
@@ -613,7 +696,7 @@
 		if ( removeBtn ) {
 			removeBtn.addEventListener( 'click', function () {
 				if ( selectedItem ) {
-					removeFromCanvas( selectedItem.dataset.slug );
+					removeFromCanvas( selectedItem.dataset.slug, selectedItem.dataset.anchor || '' );
 				}
 			} );
 		}

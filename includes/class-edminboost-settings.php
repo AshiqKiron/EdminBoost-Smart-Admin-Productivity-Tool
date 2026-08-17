@@ -406,17 +406,34 @@ class EDMINBOOST_Settings {
 				continue;
 			}
 
-			$slug = sanitize_text_field( wp_unslash( $item['slug'] ) );
+			$slug   = sanitize_text_field( wp_unslash( $item['slug'] ) );
+			$anchor = isset( $item['anchor'] ) ? sanitize_text_field( wp_unslash( $item['anchor'] ) ) : '';
+
+			if ( false !== strpos( $slug, '#' ) ) {
+				$slug_parts = explode( '#', $slug, 2 );
+				$slug       = $slug_parts[0];
+				if ( '' === $anchor && ! empty( $slug_parts[1] ) ) {
+					$anchor = $slug_parts[1];
+				}
+			}
+
+			$anchor = ltrim( $anchor, '#' );
 
 			if ( '' === $slug || ! preg_match( '/^[a-zA-Z0-9_\-\.?=&%]+$/', $slug ) ) {
 				continue;
 			}
 
-			if ( in_array( $slug, $seen_slugs, true ) ) {
+			if ( '' !== $anchor && ! preg_match( '/^[a-zA-Z0-9_\-\.]+$/', $anchor ) ) {
 				continue;
 			}
 
-			$seen_slugs[] = $slug;
+			$item_key = $slug . "\0" . $anchor;
+
+			if ( in_array( $item_key, $seen_slugs, true ) ) {
+				continue;
+			}
+
+			$seen_slugs[] = $item_key;
 
 			$icon = isset( $item['icon'] ) ? sanitize_text_field( wp_unslash( $item['icon'] ) ) : 'dashicons-admin-generic';
 			if ( ! in_array( $icon, $allowed_icons, true ) && 0 !== strpos( $icon, 'dashicons-' ) ) {
@@ -435,6 +452,7 @@ class EDMINBOOST_Settings {
 
 			$sanitized[] = array(
 				'slug'         => $slug,
+				'anchor'       => $anchor,
 				'label'        => isset( $item['label'] ) ? sanitize_text_field( wp_unslash( $item['label'] ) ) : $slug,
 				'icon'         => $icon,
 				'interaction'  => $interaction,

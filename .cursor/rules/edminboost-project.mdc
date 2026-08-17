@@ -26,6 +26,7 @@ includes/
     class-edminboost-{feature}.php
 admin/
   css/  js/  partials/                        # css: edminboost-admin.css, edminboost-command-center-bar.css
+                                              # js: edminboost-admin.js, edminboost-command-center-bar.js
 languages/                                    # translation files (Domain Path)
 uninstall.php
 readme.txt
@@ -42,7 +43,7 @@ readme.txt
 - Version tracker: `edminboost_version` (`EDMINBOOST_Settings::VERSION_OPTION`), seeded on activation.
 - Features extend `EDMINBOOST_Feature_Base` in `includes/features/`, loaded by `EDMINBOOST_Features`.
 - Admin UI: `EDMINBOOST_Admin` + partials in `admin/partials/`.
-- Plugin-screen assets enqueued via `EDMINBOOST_Admin::is_plugin_screen()`. Admin bar CSS (`edminboost-command-center-bar`) loads only when the CC bar is active (`EDMINBOOST_Command_Center_Bar::is_active()`).
+- Plugin-screen assets enqueued via `EDMINBOOST_Admin::is_plugin_screen()`. CC bar CSS loads when active (`EDMINBOOST_Command_Center_Bar::is_active()`); CC bar JS + drawer shell load only when drawer items exist (`has_drawer_items()`). Drawer shell also renders on `wp_footer` when the admin bar shows on the front end.
 - No custom tables, REST endpoints, cron, or blocks — options API only (WPForms badge count uses a guarded read on `wpforms_entries` when WPForms is present).
 - No external requests or telemetry. Badge sources read local WP/WC data only.
 
@@ -77,7 +78,7 @@ Project prefix: `edminboost` (10 characters). Use consistently in all identifier
 | Feature IDs | `snake_case` | `hide_admin_notices` |
 | CSS/JS handles | `edminboost-{name}` | `edminboost-admin` |
 | CSS classes | `edminboost-*` | `edminboost-wrap`, `edminboost-cc-*` |
-| JS global (localized) | `edminboostData` | via `wp_localize_script()` |
+| JS global (localized) | `edminboostData` / `edminboostCcBar` | plugin screens / live CC bar drawer |
 
 `EDMINBOOST_TEXT_DOMAIN` must match `EDMINBOOST_PLUGIN_SLUG`.
 

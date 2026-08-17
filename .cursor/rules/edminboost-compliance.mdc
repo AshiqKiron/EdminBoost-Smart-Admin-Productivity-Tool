@@ -16,6 +16,7 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 - Use `EDMINBOOST_Settings::CAPABILITY` on admin pages and in `sanitize()`.
 - Settings API: `sanitize_callback`, `show_in_rest => false`, `wp_unslash()` on array input.
 - Custom forms/AJAX: `wp_nonce_field()` + `check_admin_referer()` / `wp_verify_nonce()`.
+- CC drawer iframe loads: verify `_wpnonce` against `edminboost_cc_drawer_{md5(slug + anchor)}` and whitelist slug+anchor via `is_drawer_slug_allowed()` before stripping admin chrome.
 - SQL: `$wpdb->prepare()` only; prefer Options API (`edminboost_*`) over custom tables.
 
 ## Directory & Privacy
@@ -32,7 +33,7 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 - Prefer WordPress core APIs over custom hacks.
 - Keep code human-readable for directory review.
 - Follow WPCS across PHP, CSS, JS, and HTML.
-- Admin-only unless explicitly requested; enqueue plugin-screen assets via `is_plugin_screen()`; CC bar CSS is the allowed exception when active.
+- Admin-only unless explicitly requested; enqueue plugin-screen assets via `is_plugin_screen()`; CC bar CSS/JS and drawer shell are the allowed front-end exceptions when active.
 - Use `edminboost` prefix (10 chars) consistently — `EDMINBOOST_` / `edminboost_`.
 
 ## Self-Review Checklist

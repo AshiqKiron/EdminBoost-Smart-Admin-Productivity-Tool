@@ -122,6 +122,18 @@ foreach ( $top_bar_items as $item ) {
 						/>
 					</p>
 
+					<p>
+						<label for="edminboost-custom-link-anchor"><?php esc_html_e( 'Anchor (optional)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+						<input
+							type="text"
+							id="edminboost-custom-link-anchor"
+							class="regular-text code"
+							placeholder="<?php echo esc_attr( 'woocommerce_permalink_structure' ); ?>"
+							autocomplete="off"
+						/>
+						<span class="description"><?php esc_html_e( 'Scroll to a section on the page. You can also include #fragment in the path above.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+					</p>
+
 					<p class="edminboost-custom-link__actions">
 						<button type="button" class="button button-secondary" id="edminboost-custom-link-add">
 							<?php esc_html_e( 'Add to top bar', EDMINBOOST_TEXT_DOMAIN ); ?>
@@ -145,16 +157,24 @@ foreach ( $top_bar_items as $item ) {
 							<?php foreach ( $top_bar_items as $index => $item ) : ?>
 								<?php
 								$slug         = isset( $item['slug'] ) ? $item['slug'] : '';
+								$anchor       = isset( $item['anchor'] ) ? $item['anchor'] : '';
 								$label        = isset( $item['label'] ) ? $item['label'] : $slug;
 								$icon         = isset( $item['icon'] ) ? $item['icon'] : 'dashicons-admin-generic';
 								$interaction  = isset( $item['interaction'] ) ? $item['interaction'] : 'redirect';
 								$badge_source = isset( $item['badge_source'] ) ? $item['badge_source'] : '';
+
+								if ( '' === $anchor && false !== strpos( $slug, '#' ) ) {
+									$slug_parts = explode( '#', $slug, 2 );
+									$slug       = $slug_parts[0];
+									$anchor     = isset( $slug_parts[1] ) ? $slug_parts[1] : '';
+								}
 								?>
 								<li
 									class="edminboost-topbar-item"
 									role="listitem"
 									draggable="true"
 									data-slug="<?php echo esc_attr( $slug ); ?>"
+									data-anchor="<?php echo esc_attr( $anchor ); ?>"
 									data-label="<?php echo esc_attr( $label ); ?>"
 									data-icon="<?php echo esc_attr( $icon ); ?>"
 									data-interaction="<?php echo esc_attr( $interaction ); ?>"
@@ -209,6 +229,12 @@ foreach ( $top_bar_items as $item ) {
 					<p>
 						<label for="edminboost-item-label"><?php esc_html_e( 'Label override', EDMINBOOST_TEXT_DOMAIN ); ?></label>
 						<input type="text" id="edminboost-item-label" class="regular-text" />
+					</p>
+
+					<p>
+						<label for="edminboost-item-anchor"><?php esc_html_e( 'Anchor (optional)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+						<input type="text" id="edminboost-item-anchor" class="regular-text code" placeholder="<?php echo esc_attr( 'woocommerce_permalink_structure' ); ?>" />
+						<span class="description"><?php esc_html_e( 'Scroll to a section on the page when the link is opened.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 					</p>
 
 					<fieldset class="edminboost-fieldset">
