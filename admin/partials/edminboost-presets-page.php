@@ -1,6 +1,6 @@
 <?php
 /**
- * Presets & Role Assignment Manager.
+ * Presets and role visibility manager.
  *
  * @package EdminBoost
  *
@@ -25,31 +25,34 @@ $roles             = EDMINBOOST_Command_Center::get_assignable_roles();
 $top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
 	? $cc_settings['top_bar_items']
 	: array();
+$has_layout        = ! empty( $top_bar_items );
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap edminboost-cc-wrap--wide">
-	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
-
 	<header class="edminboost-cc-hero edminboost-cc-hero--split">
 		<div>
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 			<p class="edminboost-cc-hero__lead">
-				<?php esc_html_e( 'Save layout templates and control which top-bar icons each user role can see.', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'Apply a layout template or control which top-bar icons each user role can see.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
 		</div>
 		<div class="edminboost-cc-hero__actions">
-			<button type="button" class="button" id="edminboost-save-preset-btn" disabled>
-				<?php esc_html_e( 'Save Current Layout as New Preset', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<button type="button" class="button" id="edminboost-save-preset-btn" <?php echo $has_layout ? '' : 'disabled'; ?>>
+				<?php esc_html_e( 'Save current layout as preset', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</button>
 		</div>
 	</header>
 
-	<form action="options.php" method="post" class="edminboost-cc-form">
+	<form action="options.php" method="post" class="edminboost-cc-form" id="edminboost-presets-form">
 		<?php settings_fields( EDMINBOOST_Settings::SETTINGS_GROUP ); ?>
+		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
+		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_apply_preset]" id="edminboost_apply_preset" value="" />
+		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_duplicate_preset]" id="edminboost_duplicate_preset" value="" />
+		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_save_custom_preset][name]" id="edminboost_save_custom_preset_name" value="" />
 
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-presets-heading">
-			<h2 id="edminboost-presets-heading"><?php esc_html_e( 'Active Presets Library', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-presets-heading"><?php esc_html_e( 'Preset library', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'System defaults and your custom saved templates.', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'Built-in templates and layouts you have saved.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
 
 			<div class="edminboost-preset-grid">
@@ -64,9 +67,9 @@ $top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_set
 						<header class="edminboost-preset-card__header">
 							<h3 class="edminboost-preset-card__title"><?php echo esc_html( $preset_name ); ?></h3>
 							<?php if ( $is_system ) : ?>
-								<span class="edminboost-preset-card__badge"><?php esc_html_e( 'System', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+								<span class="edminboost-preset-card__badge"><?php esc_html_e( 'Built-in', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 							<?php else : ?>
-								<span class="edminboost-preset-card__badge edminboost-preset-card__badge--custom"><?php esc_html_e( 'Custom', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+								<span class="edminboost-preset-card__badge edminboost-preset-card__badge--custom"><?php esc_html_e( 'Saved', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 							<?php endif; ?>
 							<?php if ( $is_default ) : ?>
 								<span class="edminboost-preset-card__default"><?php esc_html_e( 'Default', EDMINBOOST_TEXT_DOMAIN ); ?></span>
@@ -74,6 +77,9 @@ $top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_set
 						</header>
 						<p class="edminboost-preset-card__desc"><?php echo esc_html( $preset_desc ); ?></p>
 						<div class="edminboost-preset-card__actions">
+							<button type="button" class="button button-primary edminboost-preset-apply" data-preset-id="<?php echo esc_attr( $preset_id ); ?>">
+								<?php esc_html_e( 'Apply preset', EDMINBOOST_TEXT_DOMAIN ); ?>
+							</button>
 							<label class="screen-reader-text" for="edminboost_preset_default_<?php echo esc_attr( $preset_id ); ?>">
 								<?php esc_html_e( 'Set as default preset', EDMINBOOST_TEXT_DOMAIN ); ?>
 							</label>
@@ -102,20 +108,22 @@ $top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_set
 		</section>
 
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-roles-heading">
-			<h2 id="edminboost-roles-heading"><?php esc_html_e( 'Role-Based Visibility Matrix', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-roles-heading"><?php esc_html_e( 'Who sees what', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
 				<?php esc_html_e( 'Assign a preset per role and hide specific top-bar icons from selected roles.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
 
 			<?php if ( empty( $roles ) ) : ?>
 				<p><?php esc_html_e( 'No roles available.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+			<?php elseif ( empty( $top_bar_items ) ) : ?>
+				<p><?php esc_html_e( 'Apply a preset or build a top bar layout before configuring role visibility.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 			<?php else : ?>
 				<div class="edminboost-role-matrix-wrap">
 					<table class="widefat edminboost-role-matrix">
 						<thead>
 							<tr>
-								<th scope="col"><?php esc_html_e( 'User Role', EDMINBOOST_TEXT_DOMAIN ); ?></th>
-								<th scope="col"><?php esc_html_e( 'Assigned Preset', EDMINBOOST_TEXT_DOMAIN ); ?></th>
+								<th scope="col"><?php esc_html_e( 'User role', EDMINBOOST_TEXT_DOMAIN ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Assigned preset', EDMINBOOST_TEXT_DOMAIN ); ?></th>
 								<?php foreach ( $top_bar_items as $item ) : ?>
 									<?php
 									$item_slug  = isset( $item['slug'] ) ? $item['slug'] : '';
@@ -193,13 +201,13 @@ $top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_set
 					</table>
 				</div>
 				<p class="description">
-					<?php esc_html_e( 'Checked icons are visible for that role. Uncheck to hide developer or sensitive tools from clients.', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Checked icons are visible for that role. Uncheck to hide tools from clients or editors.', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</p>
 			<?php endif; ?>
 		</section>
 
 		<p class="submit">
-			<?php submit_button( __( 'Save Presets & Roles', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
+			<?php submit_button( __( 'Save presets', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
 		</p>
 	</form>
 </div>

@@ -14,7 +14,7 @@
  * Author URI: https://asphaltthemes.com
  * License: GPL-3.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain: edminboost-smart-admin-roductivity-tool
+ * Text Domain: edminboost-smart-admin-productivity-tool
  * Domain Path: /languages
  *
  * @package EdminBoost
@@ -29,7 +29,7 @@ define( 'EDMINBOOST_PLUGIN_FILE', __FILE__ );
 define( 'EDMINBOOST_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-define( 'EDMINBOOST_PLUGIN_SLUG', 'edminboost-smart-admin-roductivity-tool' );
+define( 'EDMINBOOST_PLUGIN_SLUG', 'edminboost-smart-admin-productivity-tool' );
 define( 'EDMINBOOST_TEXT_DOMAIN', EDMINBOOST_PLUGIN_SLUG );
 
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-activator.php';
@@ -37,7 +37,9 @@ require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-deactivator.php'
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-i18n.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-settings.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-command-center.php';
+require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-theme.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-command-center-bar.php';
+require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-menu-studio.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-features.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-admin.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-plugin.php';

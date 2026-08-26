@@ -7,8 +7,8 @@
  * Architecture map
  * -----------------
  * Admin pages:
- *   - edminboost-smart-admin-roductivity-tool          (Dashboard)
- *   - edminboost-smart-admin-roductivity-tool-settings (Settings)
+ *   - edminboost-smart-admin-productivity-tool          (Dashboard)
+ *   - edminboost-smart-admin-productivity-tool-settings (Settings)
  *
  * Settings (wp_options):
  *   - edminboost_settings  (array, Settings API group: edminboost_settings_group)
@@ -86,10 +86,13 @@ class EDMINBOOST_Plugin {
 		add_action( 'plugins_loaded', array( $this->i18n, 'load_plugin_textdomain' ) );
 		add_action( 'admin_menu', array( $this->admin, 'register_menu' ) );
 		add_action( 'admin_init', array( $this->admin, 'register_settings' ) );
+		add_action( 'wp_ajax_edminboost_save_settings', array( $this->admin, 'ajax_save_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
 		add_filter( 'plugin_action_links_' . EDMINBOOST_PLUGIN_BASENAME, array( $this->admin, 'add_settings_link' ) );
 		add_action( 'admin_init', array( $this->features, 'register_hooks' ) );
 		EDMINBOOST_Command_Center_Bar::register_hooks();
+		EDMINBOOST_Menu_Studio::register_hooks();
+		EDMINBOOST_Theme::register_hooks();
 	}
 }

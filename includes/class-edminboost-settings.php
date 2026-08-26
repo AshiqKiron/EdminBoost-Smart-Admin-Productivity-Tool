@@ -343,6 +343,41 @@ class EDMINBOOST_Settings {
 			$output['persona'] = in_array( $persona, $allowed_personas, true ) ? $persona : '';
 		}
 
+		$allowed_skins = array_keys( EDMINBOOST_Command_Center::get_look_skins() );
+
+		if ( ! empty( $raw['_apply_look_skin'] ) && empty( $raw['_keep_advanced_behavior'] ) ) {
+			$skin_id = sanitize_key( $raw['_apply_look_skin'] );
+			$skins   = EDMINBOOST_Command_Center::get_look_skins();
+			if ( isset( $skins[ $skin_id ] ) ) {
+				$output['behavior']  = self::sanitize_behavior( $skins[ $skin_id ]['behavior'] );
+				$output['look_skin'] = $skin_id;
+				$output['onboarding_completed'] = true;
+			}
+		}
+
+		if ( isset( $raw['look_skin'] ) ) {
+			$look_skin = sanitize_key( $raw['look_skin'] );
+			$output['look_skin'] = in_array( $look_skin, $allowed_skins, true ) ? $look_skin : '';
+		}
+
+		if ( ! empty( $raw['_apply_preset'] ) ) {
+			$preset_id = sanitize_key( $raw['_apply_preset'] );
+			$items     = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id );
+			if ( ! empty( $items ) ) {
+				$output['top_bar_items']        = self::sanitize_top_bar_items( $items );
+				$output['default_preset']       = $preset_id;
+				$output['onboarding_completed'] = true;
+
+				$all_presets = EDMINBOOST_Command_Center::get_all_presets();
+				if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
+					$persona = sanitize_key( $all_presets[ $preset_id ]['persona'] );
+					if ( in_array( $persona, $allowed_personas, true ) ) {
+						$output['persona'] = $persona;
+					}
+				}
+			}
+		}
+
 		if ( isset( $raw['default_preset'] ) ) {
 			$output['default_preset'] = sanitize_key( $raw['default_preset'] );
 		}
@@ -383,10 +418,307 @@ class EDMINBOOST_Settings {
 		}
 
 		if ( isset( $raw['behavior'] ) && is_array( $raw['behavior'] ) ) {
-			$output['behavior'] = self::sanitize_behavior( $raw['behavior'] );
+			if ( empty( $raw['_apply_look_skin'] ) || ! empty( $raw['_keep_advanced_behavior'] ) ) {
+				$output['behavior'] = self::sanitize_behavior( $raw['behavior'] );
+
+				if ( ! empty( $raw['_keep_advanced_behavior'] ) ) {
+					$output['look_skin'] = '';
+					$output['onboarding_completed'] = true;
+				}
+			}
+		}
+
+		if ( isset( $raw['theme'] ) && is_array( $raw['theme'] ) ) {
+			$output['theme'] = EDMINBOOST_Theme::sanitize( $raw['theme'] );
+		}
+
+		if ( isset( $raw['presets'] ) && is_array( $raw['presets'] ) ) {
+			$output['presets'] = self::sanitize_custom_presets( $raw['presets'] );
+		}
+
+		if ( ! empty( $raw['_save_custom_preset'] ) && is_array( $raw['_save_custom_preset'] ) ) {
+			$output['presets'] = self::sanitize_custom_presets(
+				array_merge(
+					isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array(),
+					self::build_custom_preset_from_request( $raw['_save_custom_preset'], $output['top_bar_items'] )
+				)
+			);
+		}
+
+		if ( ! empty( $raw['_duplicate_preset'] ) ) {
+			$source_id = sanitize_key( $raw['_duplicate_preset'] );
+			$duplicate = self::duplicate_custom_preset( $source_id, $output );
+			if ( ! empty( $duplicate ) ) {
+				$existing = isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array();
+				$output['presets'] = self::sanitize_custom_presets( array_merge( $existing, $duplicate ) );
+			}
+		}
+
+		if ( ! empty( $raw['_mark_setup_complete'] ) ) {
+			$output['onboarding_completed'] = true;
+		}
+
+		if ( ! empty( $raw['_menu_studio_save'] ) ) {
+			$output['menu_studio'] = self::sanitize_menu_studio(
+				isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) ? $raw['menu_studio'] : array()
+			);
+		} elseif ( isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) ) {
+			$output['menu_studio'] = self::sanitize_menu_studio( $raw['menu_studio'], $output['menu_studio'] ?? null );
 		}
 
 		return $output;
+	}
+
+	/**
+	 * Sanitize Menu Studio settings.
+	 *
+	 * @param array      $raw     Raw menu_studio input.
+	 * @param array|null $current Existing menu_studio settings for partial merge.
+	 * @return array
+	 */
+	private static function sanitize_menu_studio( $raw, $current = null ) {
+		$defaults = EDMINBOOST_Command_Center::get_menu_studio_defaults();
+		$output   = wp_parse_args( is_array( $current ) ? $current : array(), $defaults );
+
+		if ( isset( $raw['enabled'] ) ) {
+			$output['enabled'] = ! empty( $raw['enabled'] );
+		}
+
+		if ( isset( $raw['use_colors'] ) ) {
+			$output['use_colors'] = ! empty( $raw['use_colors'] );
+		}
+
+		if ( isset( $raw['order'] ) && is_array( $raw['order'] ) ) {
+			$order = array();
+			foreach ( $raw['order'] as $slug ) {
+				$slug = sanitize_text_field( wp_unslash( (string) $slug ) );
+				if ( '' !== $slug && ! in_array( $slug, $order, true ) ) {
+					$order[] = $slug;
+				}
+			}
+			$output['order'] = $order;
+		}
+
+		if ( isset( $raw['hidden_items'] ) && is_array( $raw['hidden_items'] ) ) {
+			$hidden = array();
+			foreach ( $raw['hidden_items'] as $slug ) {
+				$slug = sanitize_text_field( wp_unslash( (string) $slug ) );
+				if ( '' === $slug || in_array( $slug, EDMINBOOST_Admin_Menu::get_protected_slugs(), true ) ) {
+					continue;
+				}
+				if ( ! in_array( $slug, $hidden, true ) ) {
+					$hidden[] = $slug;
+				}
+			}
+			$output['hidden_items'] = $hidden;
+		}
+
+		if ( isset( $raw['submenu_order'] ) && is_array( $raw['submenu_order'] ) ) {
+			$submenu_order = array();
+			foreach ( $raw['submenu_order'] as $parent_slug => $children ) {
+				$parent_slug = sanitize_text_field( wp_unslash( (string) $parent_slug ) );
+				if ( '' === $parent_slug || ! is_array( $children ) ) {
+					continue;
+				}
+
+				$child_order = array();
+				foreach ( $children as $child_slug ) {
+					$child_slug = sanitize_text_field( wp_unslash( (string) $child_slug ) );
+					if ( '' !== $child_slug && ! in_array( $child_slug, $child_order, true ) ) {
+						$child_order[] = $child_slug;
+					}
+				}
+
+				$submenu_order[ $parent_slug ] = $child_order;
+			}
+			$output['submenu_order'] = $submenu_order;
+		}
+
+		if ( isset( $raw['custom_items'] ) && is_array( $raw['custom_items'] ) ) {
+			$output['custom_items'] = self::sanitize_menu_studio_custom_items( $raw['custom_items'] );
+		}
+
+		if ( isset( $raw['colors'] ) && is_array( $raw['colors'] ) ) {
+			$colors  = wp_parse_args( $output['colors'], $defaults['colors'] );
+			$allowed = array_keys( $defaults['colors'] );
+
+			foreach ( $allowed as $color_key ) {
+				if ( ! isset( $raw['colors'][ $color_key ] ) ) {
+					continue;
+				}
+
+				$colors[ $color_key ] = EDMINBOOST_Theme::sanitize_hex_color( $raw['colors'][ $color_key ] );
+			}
+
+			$output['colors'] = $colors;
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Sanitize Menu Studio custom sidebar links.
+	 *
+	 * @param array $items Raw custom items.
+	 * @return array
+	 */
+	private static function sanitize_menu_studio_custom_items( $items ) {
+		$sanitized     = array();
+		$allowed_icons = EDMINBOOST_Command_Center::get_dashicon_options();
+		$seen_ids      = array();
+
+		foreach ( $items as $item ) {
+			if ( ! is_array( $item ) ) {
+				continue;
+			}
+
+			$id = isset( $item['id'] ) ? sanitize_key( $item['id'] ) : '';
+			if ( '' === $id ) {
+				$id = 'custom_' . wp_generate_password( 8, false, false );
+			}
+
+			if ( in_array( $id, $seen_ids, true ) ) {
+				continue;
+			}
+
+			$label = isset( $item['label'] ) ? sanitize_text_field( wp_unslash( $item['label'] ) ) : '';
+			$path  = isset( $item['path'] ) ? sanitize_text_field( wp_unslash( $item['path'] ) ) : '';
+			$path  = ltrim( $path, '/' );
+
+			if ( '' === $label || '' === $path || preg_match( '#^https?://#i', $path ) ) {
+				continue;
+			}
+
+			if ( ! preg_match( '#^[a-zA-Z0-9_\-\./?=&%#]+$#', $path ) ) {
+				continue;
+			}
+
+			$icon = isset( $item['icon'] ) ? sanitize_text_field( wp_unslash( $item['icon'] ) ) : 'dashicons-admin-links';
+			if ( false === strpos( $icon, 'dashicons-' ) ) {
+				$icon = 'dashicons-' . $icon;
+			}
+			if ( ! in_array( $icon, $allowed_icons, true ) ) {
+				$icon = 'dashicons-admin-links';
+			}
+
+			$parent = isset( $item['parent'] ) ? sanitize_text_field( wp_unslash( $item['parent'] ) ) : '';
+
+			$sanitized[] = array(
+				'id'     => $id,
+				'label'  => $label,
+				'path'   => $path,
+				'icon'   => $icon,
+				'parent' => $parent,
+			);
+
+			$seen_ids[] = $id;
+		}
+
+		return $sanitized;
+	}
+
+	/**
+	 * Build a custom preset entry from a save request.
+	 *
+	 * @param array $raw           Raw save payload.
+	 * @param array $top_bar_items Current top bar items.
+	 * @return array
+	 */
+	private static function build_custom_preset_from_request( $raw, $top_bar_items ) {
+		$name = isset( $raw['name'] ) ? sanitize_text_field( wp_unslash( $raw['name'] ) ) : '';
+
+		if ( '' === $name || empty( $top_bar_items ) ) {
+			return array();
+		}
+
+		$id = 'custom_' . wp_generate_password( 8, false, false );
+
+		return array(
+			$id => array(
+				'name'          => $name,
+				'description'   => isset( $raw['description'] ) ? sanitize_text_field( wp_unslash( $raw['description'] ) ) : '',
+				'system'        => false,
+				'top_bar_items' => $top_bar_items,
+			),
+		);
+	}
+
+	/**
+	 * Duplicate a custom preset.
+	 *
+	 * @param string $source_id Source preset id.
+	 * @param array  $output    Current CC output.
+	 * @return array
+	 */
+	private static function duplicate_custom_preset( $source_id, $output ) {
+		$custom = isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array();
+		$all    = array_merge( EDMINBOOST_Command_Center::get_system_presets(), $custom );
+
+		if ( ! isset( $all[ $source_id ] ) || ! empty( $all[ $source_id ]['system'] ) ) {
+			return array();
+		}
+
+		$source = $all[ $source_id ];
+		$id     = 'custom_' . wp_generate_password( 8, false, false );
+		$name   = isset( $source['name'] ) ? $source['name'] : $source_id;
+
+		return array(
+			$id => array(
+				'name'          => sprintf(
+					/* translators: %s: preset name */
+					__( '%s (Copy)', EDMINBOOST_TEXT_DOMAIN ),
+					$name
+				),
+				'description'   => isset( $source['description'] ) ? $source['description'] : '',
+				'system'        => false,
+				'top_bar_items' => isset( $source['top_bar_items'] ) && is_array( $source['top_bar_items'] )
+					? $source['top_bar_items']
+					: ( isset( $output['top_bar_items'] ) ? $output['top_bar_items'] : array() ),
+			),
+		);
+	}
+
+	/**
+	 * Sanitize saved custom presets.
+	 *
+	 * @param array $presets Raw presets.
+	 * @return array
+	 */
+	private static function sanitize_custom_presets( $presets ) {
+		$sanitized = array();
+
+		foreach ( $presets as $preset_id => $preset ) {
+			if ( ! is_array( $preset ) || ! empty( $preset['system'] ) ) {
+				continue;
+			}
+
+			$preset_id = sanitize_key( $preset_id );
+			if ( '' === $preset_id || 0 !== strpos( $preset_id, 'custom_' ) ) {
+				continue;
+			}
+
+			$name = isset( $preset['name'] ) ? sanitize_text_field( wp_unslash( $preset['name'] ) ) : '';
+			if ( '' === $name ) {
+				continue;
+			}
+
+			$items = isset( $preset['top_bar_items'] ) && is_array( $preset['top_bar_items'] )
+				? self::sanitize_top_bar_items( $preset['top_bar_items'] )
+				: array();
+
+			if ( empty( $items ) ) {
+				continue;
+			}
+
+			$sanitized[ $preset_id ] = array(
+				'name'          => $name,
+				'description'   => isset( $preset['description'] ) ? sanitize_text_field( wp_unslash( $preset['description'] ) ) : '',
+				'system'        => false,
+				'top_bar_items' => $items,
+			);
+		}
+
+		return $sanitized;
 	}
 
 	/**
@@ -417,9 +749,14 @@ class EDMINBOOST_Settings {
 				}
 			}
 
+			$slug   = EDMINBOOST_Command_Center_Bar::normalize_item_slug( $slug );
 			$anchor = ltrim( $anchor, '#' );
 
-			if ( '' === $slug || ! preg_match( '/^[a-zA-Z0-9_\-\.?=&%]+$/', $slug ) ) {
+			if ( preg_match( '#^https?://#i', $slug ) ) {
+				continue;
+			}
+
+			if ( '' === $slug || ! preg_match( '/^[a-zA-Z0-9_\-.\/?=&%]+$/', $slug ) ) {
 				continue;
 			}
 
@@ -511,9 +848,19 @@ class EDMINBOOST_Settings {
 		$defaults = EDMINBOOST_Command_Center::get_defaults()['behavior'];
 		$output   = $defaults;
 
-		$allowed_widths = array( 'compact', 'standard', 'fullscreen' );
+		$allowed_widths = array( 'compact', 'standard', 'fullscreen', 'custom' );
 		if ( isset( $raw['drawer_width'] ) && in_array( $raw['drawer_width'], $allowed_widths, true ) ) {
 			$output['drawer_width'] = $raw['drawer_width'];
+		}
+
+		if ( isset( $raw['drawer_width_custom'] ) ) {
+			$output['drawer_width_custom'] = max(
+				EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MIN,
+				min(
+					EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MAX,
+					absint( $raw['drawer_width_custom'] )
+				)
+			);
 		}
 
 		$allowed_speeds = array( 'fast', 'normal', 'slow' );

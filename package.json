@@ -1,0 +1,14 @@
+{
+	"name": "edminboost-smart-admin-productivity-tool",
+	"private": true,
+	"description": "EdminBoost QA E2E tests",
+	"scripts": {
+		"test:e2e": "PLAYWRIGHT_BROWSERS_PATH=./.playwright-browsers playwright test --config=tests/e2e/playwright.config.ts",
+		"test:e2e:ui": "PLAYWRIGHT_BROWSERS_PATH=./.playwright-browsers playwright test --config=tests/e2e/playwright.config.ts --ui",
+		"test:e2e:report": "playwright show-report"
+	},
+	"devDependencies": {
+		"@playwright/test": "^1.49.0",
+		"dotenv": "^16.4.5"
+	}
+}

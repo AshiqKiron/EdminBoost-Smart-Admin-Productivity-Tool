@@ -1,0 +1,54 @@
+/**
+ * Live wp-admin sidebar color overrides for Menu Studio.
+ *
+ * Scoped to #adminmenu when body.edminboost-menu-studio-colors is present.
+ */
+
+body.edminboost-menu-studio-colors #adminmenu,
+body.edminboost-menu-studio-colors #adminmenu .wp-submenu,
+body.edminboost-menu-studio-colors #adminmenuwrap {
+	background: var(--eb-ms-parent-bg, transparent);
+}
+
+body.edminboost-menu-studio-colors #adminmenu a {
+	color: var(--eb-ms-parent-text, inherit);
+}
+
+body.edminboost-menu-studio-colors #adminmenu li.menu-top:hover,
+body.edminboost-menu-studio-colors #adminmenu li.menu-top.opensub > a.menu-top,
+body.edminboost-menu-studio-colors #adminmenu li.menu-top > a.menu-top:focus {
+	background-color: var(--eb-ms-parent-active, inherit);
+	color: var(--eb-ms-parent-text, inherit);
+}
+
+body.edminboost-menu-studio-colors #adminmenu li.current a.menu-top,
+body.edminboost-menu-studio-colors #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu {
+	background-color: var(--eb-ms-parent-active, inherit);
+	color: var(--eb-ms-parent-text, inherit);
+}
+
+body.edminboost-menu-studio-colors #adminmenu .wp-submenu,
+body.edminboost-menu-studio-colors #adminmenu .wp-submenu-wrap {
+	background-color: var(--eb-ms-submenu-bg, inherit);
+}
+
+body.edminboost-menu-studio-colors #adminmenu .wp-submenu a {
+	color: var(--eb-ms-submenu-text, inherit);
+}
+
+body.edminboost-menu-studio-colors #adminmenu .wp-submenu a:hover,
+body.edminboost-menu-studio-colors #adminmenu .wp-submenu a:focus {
+	color: var(--eb-ms-submenu-text, inherit);
+}
+
+body.edminboost-menu-studio-colors #adminmenu .awaiting-mod,
+body.edminboost-menu-studio-colors #adminmenu .update-plugins {
+	background-color: var(--eb-ms-notification-bg, inherit);
+	color: var(--eb-ms-notification-text, inherit);
+}
+
+body.edminboost-menu-studio-colors #adminmenu li a.wp-has-current-submenu .update-plugins,
+body.edminboost-menu-studio-colors #adminmenu li.current a .awaiting-mod {
+	background-color: var(--eb-ms-notification-bg, inherit);
+	color: var(--eb-ms-notification-text, inherit);
+}

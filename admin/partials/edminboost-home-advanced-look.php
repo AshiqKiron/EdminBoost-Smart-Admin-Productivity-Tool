@@ -1,24 +1,18 @@
 <?php
 /**
- * Behavior, Badges & Visual Styling.
+ * Advanced look settings (slide-out panel, badges, admin bar cleanup).
  *
  * @package EdminBoost
  *
- * @var array  $cc_settings Command Center settings.
- * @var string $current_page Current page slug.
+ * @var string $option_name Settings option name.
+ * @var array  $behavior    Current behavior settings.
+ * @var string $cc_key      Form field prefix for behavior.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$option_name = EDMINBOOST_Settings::OPTION_NAME;
-$behavior    = isset( $cc_settings['behavior'] ) && is_array( $cc_settings['behavior'] )
-	? $cc_settings['behavior']
-	: EDMINBOOST_Command_Center::get_defaults()['behavior'];
-$cc_key      = $option_name . '[command_center][behavior]';
-$theme       = EDMINBOOST_Theme::get_settings( $cc_settings );
-$theme_key   = $option_name . '[command_center][theme]';
 $drawer_width_custom = isset( $behavior['drawer_width_custom'] )
 	? (int) $behavior['drawer_width_custom']
 	: EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_DEFAULT;
@@ -27,26 +21,15 @@ $drawer_width_custom = max(
 	min( EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MAX, $drawer_width_custom )
 );
 ?>
-<div class="wrap edminboost-wrap edminboost-cc-wrap">
-	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
+<details class="edminboost-advanced-look">
+	<summary><?php esc_html_e( 'Advanced look settings', EDMINBOOST_TEXT_DOMAIN ); ?></summary>
 
-	<header class="edminboost-cc-hero">
-		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-		<p class="edminboost-cc-hero__lead">
-			<?php esc_html_e( 'Fine-tune micro-interactions, badge polling, and visual styling without dashboard bloat.', EDMINBOOST_TEXT_DOMAIN ); ?>
-		</p>
-	</header>
-
-	<form action="options.php" method="post" class="edminboost-cc-form">
-		<?php settings_fields( EDMINBOOST_Settings::SETTINGS_GROUP ); ?>
-
-		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-theme-settings.php'; ?>
-
+	<div class="edminboost-advanced-look__body">
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-drawer-settings-heading">
-			<h2 id="edminboost-drawer-settings-heading"><?php esc_html_e( 'AJAX Slide-Out Drawer Settings', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-drawer-settings-heading"><?php esc_html_e( 'Slide-out panel', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 
 			<fieldset class="edminboost-fieldset">
-				<legend><?php esc_html_e( 'Drawer width', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php esc_html_e( 'Panel width', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[drawer_width]" value="compact" <?php checked( $behavior['drawer_width'], 'compact' ); ?> />
 					<?php esc_html_e( 'Compact (400px)', EDMINBOOST_TEXT_DOMAIN ); ?>
@@ -57,7 +40,7 @@ $drawer_width_custom = max(
 				</label>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[drawer_width]" value="fullscreen" <?php checked( $behavior['drawer_width'], 'fullscreen' ); ?> />
-					<?php esc_html_e( 'Full screen modal', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Full screen', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</label>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[drawer_width]" value="custom" <?php checked( $behavior['drawer_width'], 'custom' ); ?> />
@@ -104,7 +87,7 @@ $drawer_width_custom = max(
 									id="edminboost_drawer_width_preview_drawer"
 									aria-hidden="true"
 								>
-									<span class="edminboost-drawer-width-preview__drawer-label"><?php esc_html_e( 'Drawer', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+									<span class="edminboost-drawer-width-preview__drawer-label"><?php esc_html_e( 'Panel', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 								</div>
 							</div>
 						</div>
@@ -130,11 +113,11 @@ $drawer_width_custom = max(
 					value="1"
 					<?php checked( ! empty( $behavior['glassmorphism'] ) ); ?>
 				/>
-				<?php esc_html_e( 'Enable backdrop blur (glassmorphism effect)', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'Enable backdrop blur', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</label>
 
 			<p>
-				<label for="edminboost_autosave_interval"><?php esc_html_e( 'Auto-save interval for drawer forms (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+				<label for="edminboost_autosave_interval"><?php esc_html_e( 'Auto-save interval for panel forms (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
 				<input
 					type="number"
 					class="small-text"
@@ -149,10 +132,10 @@ $drawer_width_custom = max(
 		</section>
 
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-badge-settings-heading">
-			<h2 id="edminboost-badge-settings-heading"><?php esc_html_e( 'Live Status Badge Configurations', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-badge-settings-heading"><?php esc_html_e( 'Notification badges', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 
 			<p>
-				<label for="edminboost_badge_refresh"><?php esc_html_e( 'Refresh rate / polling interval (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+				<label for="edminboost_badge_refresh"><?php esc_html_e( 'Refresh rate (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
 				<input
 					type="number"
 					class="small-text"
@@ -163,22 +146,21 @@ $drawer_width_custom = max(
 					max="600"
 					step="15"
 				/>
-				<span class="description"><?php esc_html_e( 'e.g. check every 60 seconds for unread counts.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 			</p>
 
 			<fieldset class="edminboost-fieldset">
-				<legend><?php esc_html_e( 'Notification badge styling', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php esc_html_e( 'Badge style', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[badge_style]" value="dot" <?php checked( $behavior['badge_style'], 'dot' ); ?> />
-					<?php esc_html_e( 'Dot pulse animation', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Dot', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</label>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[badge_style]" value="pill" <?php checked( $behavior['badge_style'], 'pill' ); ?> />
-					<?php esc_html_e( 'Counter pill style', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Counter pill', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</label>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[badge_style]" value="accent" <?php checked( $behavior['badge_style'], 'accent' ); ?> />
-					<?php esc_html_e( 'Accent color matcher', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Accent color', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</label>
 			</fieldset>
 
@@ -200,8 +182,8 @@ $drawer_width_custom = max(
 		</section>
 
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-declutter-heading">
-			<h2 id="edminboost-declutter-heading"><?php esc_html_e( 'Core De-clutter Toggles', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
-			<p class="description"><?php esc_html_e( 'Quick switches to clean up native WordPress admin bar clutter.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+			<h2 id="edminboost-declutter-heading"><?php esc_html_e( 'Hide admin bar items', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<p class="description"><?php esc_html_e( 'Clean up native WordPress admin bar clutter.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 
 			<div class="edminboost-checkbox-grid">
 				<label class="edminboost-checkbox-row" for="edminboost_hide_wp_logo">
@@ -222,9 +204,5 @@ $drawer_width_custom = max(
 				</label>
 			</div>
 		</section>
-
-		<p class="submit">
-			<?php submit_button( __( 'Save Behavior & Style', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
-		</p>
-	</form>
-</div>
+	</div>
+</details>

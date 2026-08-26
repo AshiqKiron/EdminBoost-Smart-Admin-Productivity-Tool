@@ -23,17 +23,16 @@ $dashicon_options = EDMINBOOST_Command_Center::get_dashicon_options();
 $active_slugs = array();
 foreach ( $top_bar_items as $item ) {
 	if ( ! empty( $item['slug'] ) ) {
-		$active_slugs[] = $item['slug'];
+		$item_anchor = isset( $item['anchor'] ) ? (string) $item['anchor'] : '';
+		$active_slugs[] = $item['slug'] . "\0" . $item_anchor;
 	}
 }
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap edminboost-cc-wrap--wide">
-	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
-
 	<header class="edminboost-cc-hero">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<p class="edminboost-cc-hero__lead">
-			<?php esc_html_e( 'Drag sidebar plugins into your top bar. Reorder, rename, and configure how each item behaves.', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<?php esc_html_e( 'Choose which admin links appear in your top bar and how they open.', EDMINBOOST_TEXT_DOMAIN ); ?>
 		</p>
 	</header>
 
@@ -64,7 +63,7 @@ foreach ( $top_bar_items as $item ) {
 					<?php else : ?>
 						<?php foreach ( $discovered as $index => $menu_item ) : ?>
 							<?php
-							$is_active = in_array( $menu_item['slug'], $active_slugs, true );
+							$is_active = in_array( $menu_item['slug'] . "\0", $active_slugs, true );
 							$item_id   = 'edminboost_discovered_' . $index;
 							$source    = isset( $menu_item['source'] ) ? $menu_item['source'] : 'top';
 							?>
@@ -76,7 +75,7 @@ foreach ( $top_bar_items as $item ) {
 							>
 								<span class="edminboost-discovered-item__handle dashicons dashicons-move" aria-hidden="true"></span>
 								<span class="edminboost-discovered-item__icon dashicons <?php echo esc_attr( $menu_item['icon'] ); ?>" aria-hidden="true"></span>
-								<span class="edminboost-discovered-item__label"><?php echo esc_html( $menu_item['label'] ); ?></span>
+								<span class="edminboost-discovered-item__label" title="<?php echo esc_attr( $menu_item['label'] ); ?>"><?php echo esc_html( $menu_item['label'] ); ?></span>
 								<label class="edminboost-discovered-item__toggle" for="<?php echo esc_attr( $item_id ); ?>">
 									<span class="screen-reader-text">
 										<?php
@@ -96,52 +95,54 @@ foreach ( $top_bar_items as $item ) {
 					<?php endif; ?>
 				</ul>
 
-				<div class="edminboost-custom-link" id="edminboost-custom-link">
-					<h3 class="edminboost-custom-link__heading"><?php esc_html_e( 'Custom admin link', EDMINBOOST_TEXT_DOMAIN ); ?></h3>
-					<p class="description"><?php esc_html_e( 'Add any admin page path that does not appear in the list above.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+				<details class="edminboost-custom-link" id="edminboost-custom-link">
+					<summary class="edminboost-custom-link__heading"><?php esc_html_e( 'Custom admin link', EDMINBOOST_TEXT_DOMAIN ); ?></summary>
+					<div class="edminboost-custom-link__body">
+						<p class="description"><?php esc_html_e( 'Add any admin page path that does not appear in the list above.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 
-					<p>
-						<label for="edminboost-custom-link-path"><?php esc_html_e( 'Admin path', EDMINBOOST_TEXT_DOMAIN ); ?></label>
-						<input
-							type="text"
-							id="edminboost-custom-link-path"
-							class="regular-text code"
-							placeholder="<?php echo esc_attr( 'edit-tags.php?taxonomy=product_tag&post_type=product' ); ?>"
-							autocomplete="off"
-						/>
-					</p>
+						<p>
+							<label for="edminboost-custom-link-path"><?php esc_html_e( 'Admin path', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<input
+								type="text"
+								id="edminboost-custom-link-path"
+								class="regular-text code"
+								placeholder="<?php echo esc_attr( 'edit-tags.php?taxonomy=product_tag&post_type=product' ); ?>"
+								autocomplete="off"
+							/>
+						</p>
 
-					<p>
-						<label for="edminboost-custom-link-label"><?php esc_html_e( 'Label', EDMINBOOST_TEXT_DOMAIN ); ?></label>
-						<input
-							type="text"
-							id="edminboost-custom-link-label"
-							class="regular-text"
-							placeholder="<?php esc_attr_e( 'Product Tags', EDMINBOOST_TEXT_DOMAIN ); ?>"
-							autocomplete="off"
-						/>
-					</p>
+						<p>
+							<label for="edminboost-custom-link-label"><?php esc_html_e( 'Label', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<input
+								type="text"
+								id="edminboost-custom-link-label"
+								class="regular-text"
+								placeholder="<?php esc_attr_e( 'Product Tags', EDMINBOOST_TEXT_DOMAIN ); ?>"
+								autocomplete="off"
+							/>
+						</p>
 
-					<p>
-						<label for="edminboost-custom-link-anchor"><?php esc_html_e( 'Anchor (optional)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
-						<input
-							type="text"
-							id="edminboost-custom-link-anchor"
-							class="regular-text code"
-							placeholder="<?php echo esc_attr( 'woocommerce_permalink_structure' ); ?>"
-							autocomplete="off"
-						/>
-						<span class="description"><?php esc_html_e( 'Scroll to a section on the page. You can also include #fragment in the path above.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
-					</p>
+						<p>
+							<label for="edminboost-custom-link-anchor"><?php esc_html_e( 'Anchor (optional)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<input
+								type="text"
+								id="edminboost-custom-link-anchor"
+								class="regular-text code"
+								placeholder="<?php echo esc_attr( 'woocommerce_permalink_structure' ); ?>"
+								autocomplete="off"
+							/>
+							<span class="description"><?php esc_html_e( 'Scroll to a section on the page. You can also include #fragment in the path above.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+						</p>
 
-					<p class="edminboost-custom-link__actions">
-						<button type="button" class="button button-secondary" id="edminboost-custom-link-add">
-							<?php esc_html_e( 'Add to top bar', EDMINBOOST_TEXT_DOMAIN ); ?>
-						</button>
-					</p>
+						<p class="edminboost-custom-link__actions">
+							<button type="button" class="button button-secondary" id="edminboost-custom-link-add">
+								<?php esc_html_e( 'Add to top bar', EDMINBOOST_TEXT_DOMAIN ); ?>
+							</button>
+						</p>
 
-					<p class="edminboost-custom-link__error description" id="edminboost-custom-link-error" hidden role="alert"></p>
-				</div>
+						<p class="edminboost-custom-link__error description" id="edminboost-custom-link-error" hidden role="alert"></p>
+					</div>
+				</details>
 			</aside>
 
 			<div class="edminboost-mapper-main">
@@ -249,6 +250,12 @@ foreach ( $top_bar_items as $item ) {
 						</label>
 					</fieldset>
 
+					<p class="edminboost-item-drawer__preview" id="edminboost-drawer-preview-wrap" hidden>
+						<button type="button" class="button button-secondary" id="edminboost-drawer-preview">
+							<?php esc_html_e( 'Preview AJAX drawer', EDMINBOOST_TEXT_DOMAIN ); ?>
+						</button>
+					</p>
+
 					<p>
 						<label for="edminboost-item-badge"><?php esc_html_e( 'Live badge binding', EDMINBOOST_TEXT_DOMAIN ); ?></label>
 						<select id="edminboost-item-badge" class="regular-text">
@@ -272,11 +279,13 @@ foreach ( $top_bar_items as $item ) {
 			</div>
 		</div>
 
+		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
 		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_layout_studio_save]" value="1" />
+		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_mark_setup_complete]" value="1" />
 		<div id="edminboost-topbar-hidden-inputs"></div>
 
 		<p class="submit">
-			<?php submit_button( __( 'Save Layout', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
+			<?php submit_button( __( 'Save top bar', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
 		</p>
 	</form>
 </div>
