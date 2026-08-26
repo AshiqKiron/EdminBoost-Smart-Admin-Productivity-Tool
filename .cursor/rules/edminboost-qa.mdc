@@ -43,15 +43,16 @@ bash bin/setup-qa-site.sh   # one-time
 composer test               # PHPUnit (uses MAMP PHP via bin/run-phpunit.sh)
 npm run test:e2e            # Playwright (PLAYWRIGHT_BROWSERS_PATH=./.playwright-browsers)
 npm run test:e2e:ui         # debug UI
+npm run test:e2e:report     # open HTML report
 ```
 
-PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from live tables). E2E reads `.env.qa` (`BASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`, `PLUGIN_SLUG`).
+PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from live tables). E2E reads `.env.qa` (`BASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`, `EDITOR_USER`, `EDITOR_PASSWORD`, `PLUGIN_SLUG`). `PLUGIN_SLUG` must match `EDMINBOOST_PLUGIN_SLUG` / bootstrap filename (`edminboost-smart-admin-productivity-tool`).
 
 ## PHPUnit Patterns
 
 - Extend `Edminboost_Test_Case` (resets options, seeds admin user).
 - Use `seed_settings( $overrides )` — merges with `EDMINBOOST_Settings::get_defaults()`.
-- Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar}Test.php`.
+- Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar,Theme}Test.php`.
 - Name tests `test_{behavior}`; target static helpers on bar/CC classes where hook tests are heavy.
 
 ## Playwright Patterns
@@ -60,12 +61,12 @@ PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from 
 - Page URLs: `fixtures/pages.ts` — built from `PLUGIN_SLUG` env var.
 - Assert plugin ready: `.edminboost-wrap[data-edminboost-ready="true"]`.
 - Settings saves: `waitForSettingsSaved()` in `fixtures/helpers.ts` (URL contains `settings-updated=true`).
-- Specs mirror admin pages: `dashboard`, `settings-features`, `command-center-onboarding`, `layout-studio`, `presets-roles`, `behavior-style`, `live-admin-bar`.
+- Specs mirror admin pages: `dashboard`, `home-setup`, `home-look`, `settings-features`, `layout-studio`, `presets-roles`, `live-admin-bar`.
 - Config: single worker, 60s timeout, chromium only, `baseURL` from `.env.qa`.
 
 ## Rules
 
-- Never commit `.env.qa`, `tests/wp-tests-config.php`, `tests/e2e/.auth/`, `vendor/`, `node_modules/`, `playwright-report/`, `test-results/`, `.playwright-browsers/`.
+- Never commit `.env.qa`, `tests/wp-tests-config.php`, `tests/e2e/.auth/`, `vendor/`, `node_modules/`, `playwright-report/`, `test-results/`, `.playwright-browsers/`, `.phpunit.result.cache`.
 - E2E selectors: prefer stable plugin IDs/classes (`#edminboost-*`, `.edminboost-*`) over wp-admin internals.
 - Add PHPUnit for new sanitization/helpers; add Playwright for new admin UI flows; update `tests/manual/regression-matrix.md` for manual-only checks.
 - Run `composer test` and `npm run test:e2e` before shipping user-facing CC or settings changes.

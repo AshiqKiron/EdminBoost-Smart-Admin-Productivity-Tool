@@ -1,6 +1,6 @@
 ---
 description: Admin JS and CSS conventions for EdminBoost
-globs: "admin/**/*.{js,css},admin/css/edminboost-command-center-bar.css"
+globs: "admin/**/*.{js,css},admin/css/edminboost-{command-center-bar,themes,admin-menu}.css"
 alwaysApply: false
 ---
 
@@ -14,7 +14,8 @@ alwaysApply: false
 - No jQuery unless WordPress already loads it for the screen.
 - Use `DOMContentLoaded` for initialization.
 - On `DOMContentLoaded`, set `data-edminboost-ready="true"` on `.edminboost-wrap`, then call all page inits.
-- Page-specific init functions: `initOnboarding`, `initMapper`, `initBehavior`, `initPresets` — each no-ops if target elements are absent.
+- Page-specific init functions: `initHome`, `initMapper`, `initMenuStudio`, `initBehavior`, `initTheme`, `initPresets`, `initCommandCenterForms`, `initSettingsForm` — each no-ops if target elements are absent.
+- `initBehavior` delegates to `initBehaviorBadgePreview` (toggle badge style previews) and `initBehaviorDrawerWidthCustom` (custom width slider + live preview).
 
 `edminboostData` shape:
 
@@ -26,8 +27,15 @@ alwaysApply: false
 	strings: {
 		ready, configureItem, removeFromTopBar, emptyCanvas, exportSuccess,
 		customLinkPathRequired, customLinkLabelRequired, customLinkPathInvalid,
-		customLinkAnchorInvalid, customLinkDuplicate, drawerPreviewFailed
+		customLinkAnchorInvalid, customLinkDuplicate, drawerPreviewFailed,
+		drawerWidthPreviewCaption, settingsSaved, settingsSaveFailed,
+		presetApplied, presetNameRequired, presetSaved, presetDuplicated, skinSaved,
+		emptyMenuCanvas, removeFromSidebar, customMenuPathRequired, customMenuLabelRequired,
+		customMenuPathInvalid, customMenuDuplicate
 	},
+	settingsSave: { ajaxUrl, action: 'edminboost_save_settings' },
+	lookSkins: object,   // from EDMINBOOST_Command_Center::get_look_skins()
+	presets: object,     // resolved preset layouts for JS
 	drawerPreview: {  // Layout Studio only
 		ajaxUrl, action: 'edminboost_cc_drawer_preview', nonce
 	}
@@ -47,11 +55,13 @@ alwaysApply: false
 	drawerItems: {
 		'edminboost-cc-{hash}': { slug, label, frameUrl, openUrl }
 	},
-	animationMs: number  // from behavior animation_speed
+	animationMs: number,  // from behavior animation_speed
+	iframeTitle: string   // accessible iframe label
 }
 ```
 
 - Opens drawer on `#wpadminbar .edminboost-cc-bar-drawer-trigger > .ab-item` click; closes on backdrop, close button, or Escape.
+- Reuses server-rendered iframes via `frameCache`; prefetches on admin-bar hover (`mouseover`); resolves node IDs with or without `wp-admin-bar-` prefix.
 - Sets iframe `src` to signed `frameUrl`; shows loading overlay until `iframe.onload`.
 - Exposes `window.edminboostCcOpenDrawer( { label, frameUrl, openUrl } )` for Layout Studio preview (mapper enqueues this script even without live drawer items).
 
@@ -67,7 +77,10 @@ alwaysApply: false
 - Onboarding: `.edminboost-persona-grid`, `.edminboost-persona-card` (+ `.is-selected`).
 - Mapper: `.edminboost-mapper-layout`, `.edminboost-mapper-search`, `.edminboost-discovered-list`, `.edminboost-discovered-item` (+ `__toggle`, `__checkbox`, `__handle`, `__icon`), `.edminboost-topbar-canvas` (+ `.is-drag-over`), `.edminboost-topbar-item`, `.edminboost-item-drawer`.
 - Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-role-matrix`.
-- Behavior: `.edminboost-badge-preview`.
+- Behavior: `.edminboost-badge-preview`, `.edminboost-drawer-width-custom`, `.edminboost-drawer-width-preview__*` (width slider live preview).
+- Home look: `.edminboost-skin-card`, `#edminboost-home-form`.
+- Menu Studio: `.edminboost-menu-studio-layout`, `.edminboost-menu-studio-panel`, `.edminboost-menu-canvas`, `.edminboost-menu-discovered-list`.
+- Theme: `.edminboost-theme-grid`, `.edminboost-theme-card`, `.edminboost-theme-custom-colors`, `.edminboost-theme-preview`.
 - Status modifiers: `.is-active`, `.is-inactive`, `.is-selected`, `.is-dragging`, `.is-default`.
 - Responsive: feature list stacks at `782px`; persona grid and mapper layout stack at `960px`.
 
@@ -75,20 +88,32 @@ alwaysApply: false
 
 - Admin bar nodes scoped under `#wpadminbar` — not prefixed with `.edminboost-wrap`.
 - Bar classes: `.edminboost-cc-bar-item`, `.edminboost-cc-bar-drawer-trigger`, `.edminboost-cc-bar-badge`, `.edminboost-cc-bar-badge--dot|pill|accent`.
-- Drawer shell (footer markup, not inside `#wpadminbar`): `.edminboost-cc-drawer`, `.edminboost-cc-drawer__panel--compact|standard|fullscreen`, optional `.is-glass`, `.is-open`; `body.edminboost-cc-drawer-active` locks scroll.
+- Drawer shell (footer markup, not inside `#wpadminbar`): `.edminboost-cc-drawer`, `.edminboost-cc-drawer__panel--compact|standard|fullscreen|custom`, optional `.is-glass`, `.is-open`; `body.edminboost-cc-drawer-active` locks scroll.
 - Enqueued by `EDMINBOOST_Command_Center_Bar::enqueue_assets()` when the bar is active (admin + front end when admin bar shows).
+
+### Theme tokens (`admin/css/edminboost-themes.css`)
+
+- CSS custom properties for presets/modes/fonts — loaded on plugin screens (`edminboost-admin` dependency) and at runtime by `EDMINBOOST_Theme::enqueue_assets()` when active.
+- Body classes from `EDMINBOOST_Theme::get_body_classes()` drive preset/mode/font variants.
+
+### Menu colors (`admin/css/edminboost-admin-menu.css`)
+
+- Loaded by `EDMINBOOST_Menu_Studio::enqueue_styles()` when Menu Studio is active and `use_colors` is on.
+- Inline CSS vars from saved `menu_studio.colors` override sidebar parent/submenu/notification colors.
 
 ## Partials (`admin/partials/`)
 
 | File | Purpose |
 |------|---------|
-| `edminboost-admin-page.php` | Dashboard overview |
+| `edminboost-admin-page.php` | Home hub (setup, look skins, advanced look) |
+| `edminboost-home-advanced-look.php` | Advanced behavior fields on Home |
 | `edminboost-settings-features.php` | Feature toggles (`render_features_field()`) |
 | `edminboost-command-center-nav.php` | CC sub-navigation |
-| `edminboost-onboarding-page.php` | Persona wizard |
-| `edminboost-mapper-page.php` | Layout studio |
+| `edminboost-mapper-page.php` | Top bar / layout studio |
 | `edminboost-presets-page.php` | Presets & role matrix |
-| `edminboost-behavior-page.php` | Behavior & style controls |
+| `edminboost-menu-studio-page.php` | Sidebar menu builder |
+| `edminboost-theme-settings.php` | Visual theme controls (shared partial) |
+| `edminboost-behavior-page.php` | Legacy behavior page (redirects to Home) |
 
 Use `fieldset` + `legend` for grouped settings; label every input; `screen-reader-text` for icon-only controls.
 
@@ -105,11 +130,26 @@ Key elements: `#edminboost-mapper-form`, `#edminboost-topbar-items`, `#edminboos
 - Hidden marker input: `command_center[_layout_studio_save]` = `1` (Layout Studio partial only).
 - Plugin search (`#edminboost-plugin-search`): filters discovered rows by visible label text.
 
+## Behavior JS (`initBehavior`)
+
+Key elements: `input[name*="[badge_style]"]`, `.edminboost-badge-preview__item`, `input[name*="[drawer_width]"]`, `#edminboost-drawer-width-custom`, `#edminboost_drawer_width_custom`, `#edminboost_drawer_width_preview_drawer`, `#edminboost-drawer-width-preview-caption`.
+
+- Badge preview: shows one `.edminboost-badge-preview__item` matching the selected `badge_style` radio.
+- Custom drawer width: toggles `#edminboost-drawer-width-custom` when `drawer_width=custom`; slider updates px label and preview drawer width (% of 1280px reference viewport); caption uses `edminboostData.strings.drawerWidthPreviewCaption`.
+
+## AJAX save (`initCommandCenterForms` / `initSettingsForm`)
+
+- Intercepts `.edminboost-cc-form` and `.edminboost-settings-form` submit; POSTs `FormData` to `edminboostData.settingsSave.ajaxUrl` with action `edminboost_save_settings`.
+- Uses nonce from form (`settings_fields()`); shows inline success/error notice; optional reload via `saveSettingsForm( form, { reload: true } )`.
+
 ## Enqueuing
 
 | Handle | File | When |
 |--------|------|------|
+| `edminboost-themes` | `admin/css/edminboost-themes.css` | Plugin screens |
 | `edminboost-admin` | `admin/js/edminboost-admin.js`, `admin/css/edminboost-admin.css` | Plugin screens (`EDMINBOOST_Admin::is_plugin_screen()`) |
+| `edminboost-admin-menu` | `admin/css/edminboost-admin-menu.css` (+ inline colors) | Menu Studio active + `use_colors` |
+| `edminboost-themes` (runtime) | `admin/css/edminboost-themes.css` | `EDMINBOOST_Theme::is_active()` (plugin screens, CC bar, mapper) |
 | `edminboost-command-center-bar` (style) | `admin/css/edminboost-command-center-bar.css` | CC bar active or Layout Studio (`is_mapper_screen()`) |
 | `edminboost-command-center-bar` (script) | `admin/js/edminboost-command-center-bar.js` | `has_drawer_items()` or Layout Studio |
 

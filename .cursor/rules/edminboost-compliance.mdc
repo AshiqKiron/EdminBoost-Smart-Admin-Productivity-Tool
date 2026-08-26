@@ -18,6 +18,7 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 - Custom forms/AJAX: `wp_nonce_field()` + `check_admin_referer()` / `wp_verify_nonce()`.
 - CC drawer iframe loads: verify `_wpnonce` against `edminboost_cc_drawer_{md5(slug + anchor)}` and whitelist slug+anchor via `is_drawer_slug_allowed()` (or `edminboost_mapper_preview=1` from Layout Studio) before stripping admin chrome.
 - CC drawer preview AJAX (`edminboost_cc_drawer_preview`): `current_user_can( CAPABILITY )`, `check_ajax_referer( 'edminboost_cc_drawer_preview' )`, `is_mapper_preview_context()`, validate slug via `is_valid_drawer_slug()`.
+- Settings save AJAX (`edminboost_save_settings`): `current_user_can( CAPABILITY )`, verify nonce against `EDMINBOOST_Settings::SETTINGS_GROUP . '-options'`, sanitize via `EDMINBOOST_Settings::sanitize()` before `update_option()`.
 - SQL: `$wpdb->prepare()` only; prefer Options API (`edminboost_*`) over custom tables.
 
 ## Directory & Privacy

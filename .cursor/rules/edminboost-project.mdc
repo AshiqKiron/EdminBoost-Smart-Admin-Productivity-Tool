@@ -12,20 +12,22 @@ See `edminboost-standards.mdc` (quality), `edminboost-compliance.mdc` (security 
 ## Directory Layout
 
 ```
-edminboost-smart-admin-roductivity-tool.php   # bootstrap + constants
+edminboost-smart-admin-productivity-tool.php   # bootstrap + constants
 includes/
   class-edminboost-plugin.php                 # hook orchestrator
   class-edminboost-admin.php                  # menus, settings UI, assets
   class-edminboost-settings.php               # options, defaults, sanitize
   class-edminboost-command-center.php         # CC defaults, presets, discovery helpers
   class-edminboost-command-center-bar.php     # live admin bar nodes + declutter
+  class-edminboost-menu-studio.php            # sidebar reorder, custom links, menu colors
+  class-edminboost-theme.php                  # visual theme presets + CSS tokens
   class-edminboost-features.php               # feature registry
   class-edminboost-{activator,deactivator,i18n}.php
   features/
     class-edminboost-feature-base.php
     class-edminboost-{feature}.php
 admin/
-  css/  js/  partials/                        # css: edminboost-admin.css, edminboost-command-center-bar.css
+  css/  js/  partials/                        # css: edminboost-admin.css, edminboost-themes.css, edminboost-admin-menu.css, edminboost-command-center-bar.css
                                               # js: edminboost-admin.js, edminboost-command-center-bar.js
 tests/                                        # phpunit/, e2e/, manual/ — see edminboost-qa.mdc
 bin/                                          # run-phpunit.sh, setup-qa-site.sh, install-wp-tests.sh
@@ -38,16 +40,19 @@ readme.txt
 ## Architecture
 
 - Bootstrap defines constants, requires core classes, registers activation/deactivation hooks, and calls `edminboost_run_plugin()`.
+- Bootstrap filename equals `EDMINBOOST_PLUGIN_SLUG . '.php'` (`edminboost-smart-admin-productivity-tool.php`).
 - `EDMINBOOST_PLUGIN_SLUG` is the canonical plugin slug; `EDMINBOOST_TEXT_DOMAIN` is set from it.
 - `EDMINBOOST_Plugin::run()` wires i18n, admin menu/settings/assets, and `EDMINBOOST_Features::register_hooks()` on `admin_init`.
 - Settings: `edminboost_settings` via `EDMINBOOST_Settings` (group `edminboost_settings_group`). Global kill switch: `enabled`.
 - Command Center config lives under `settings['command_center']`; helpers in `EDMINBOOST_Command_Center`.
 - Live admin bar: `EDMINBOOST_Command_Center_Bar` (not a feature module) — registered in `EDMINBOOST_Plugin::run()`, renders saved `top_bar_items` on `#wpadminbar` and applies behavior declutter toggles.
+- Menu Studio: `EDMINBOOST_Menu_Studio` — sidebar reorder/hide/custom links + optional menu colors; config under `command_center.menu_studio`.
+- Visual theme: `EDMINBOOST_Theme` — CSS-token presets (light/dark/auto, fonts, custom colors); config under `command_center.theme`; loads on plugin screens, live CC bar, and drawer.
 - Version tracker: `edminboost_version` (`EDMINBOOST_Settings::VERSION_OPTION`), seeded on activation.
 - Features extend `EDMINBOOST_Feature_Base` in `includes/features/`, loaded by `EDMINBOOST_Features`.
 - Admin UI: `EDMINBOOST_Admin` + partials in `admin/partials/`.
 - Plugin-screen assets enqueued via `EDMINBOOST_Admin::is_plugin_screen()`. CC bar CSS loads when active (`is_active()`) or on Layout Studio (`is_mapper_screen()`). CC bar JS + drawer shell load when `has_drawer_items()` **or** on Layout Studio (mapper drawer preview). Drawer shell also renders on `wp_footer` when the admin bar shows on the front end.
-- One privileged AJAX action: `wp_ajax_edminboost_cc_drawer_preview` — Layout Studio drawer preview only (`EDMINBOOST_Command_Center_Bar::ajax_drawer_preview()`).
+- Privileged AJAX: `wp_ajax_edminboost_cc_drawer_preview` (Layout Studio drawer preview, `EDMINBOOST_Command_Center_Bar::ajax_drawer_preview()`); `wp_ajax_edminboost_save_settings` (CC + settings AJAX save, `EDMINBOOST_Admin::ajax_save_settings()`).
 - No custom tables, REST endpoints, cron, or blocks — options API only (WPForms badge count uses a guarded read on `wpforms_entries` when WPForms is present).
 - No external requests or telemetry. Badge sources read local WP/WC data only.
 
@@ -57,12 +62,13 @@ Use `EDMINBOOST_Admin::PAGE_SLUG` (equals `EDMINBOOST_PLUGIN_SLUG`) — never ha
 
 | Page | Slug | Renderer |
 |------|------|----------|
-| Dashboard | `PAGE_SLUG` | `render_admin_page()` |
-| Onboarding | `PAGE_SLUG . PAGE_ONBOARDING` | `render_onboarding_page()` |
-| Layout Studio | `PAGE_SLUG . PAGE_MAPPER` | `render_mapper_page()` |
-| Presets & Roles | `PAGE_SLUG . PAGE_PRESETS` | `render_presets_page()` |
-| Behavior & Style | `PAGE_SLUG . PAGE_BEHAVIOR` | `render_behavior_page()` |
+| Home | `PAGE_SLUG` | `render_admin_page()` |
+| Top Bar | `PAGE_SLUG . PAGE_MAPPER` | `render_mapper_page()` |
+| Presets | `PAGE_SLUG . PAGE_PRESETS` | `render_presets_page()` |
+| Menu Studio | `PAGE_SLUG . PAGE_MENU_STUDIO` | `render_menu_studio_page()` |
 | Settings | `PAGE_SLUG . '-settings'` | `render_settings_page()` |
+
+Legacy slugs `-onboarding` and `-behavior` redirect to Home.
 
 Capability: `EDMINBOOST_Settings::CAPABILITY` (`manage_options`).
 
@@ -75,7 +81,7 @@ Project prefix: `edminboost` (10 characters). Use consistently in all identifier
 | Kind | Pattern | Example |
 |------|---------|---------|
 | Constants | `EDMINBOOST_*` | `EDMINBOOST_VERSION` |
-| Plugin slug / text domain | `edminboost-smart-admin-roductivity-tool` | `EDMINBOOST_PLUGIN_SLUG`, `EDMINBOOST_TEXT_DOMAIN` |
+| Plugin slug / text domain | `edminboost-smart-admin-productivity-tool` | `EDMINBOOST_PLUGIN_SLUG`, `EDMINBOOST_TEXT_DOMAIN` |
 | Classes | `EDMINBOOST_{Name}` | `EDMINBOOST_Admin` |
 | Functions | `edminboost_{action}` | `edminboost_run_plugin()` |
 | Options | `edminboost_{key}` | `edminboost_settings` |
