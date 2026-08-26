@@ -5,6 +5,9 @@
 		return;
 	}
 
+	var loadCommandCenterPageRef = null;
+	var syncPresetCatalogFn      = null;
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		var root = document.querySelector( '.edminboost-wrap' );
 
@@ -13,6 +16,7 @@
 		}
 
 		initCommandCenterNav();
+		initPickerCloseOnScroll();
 		reinitEdminboostPage( root );
 		primeCommandCenterHistory();
 	} );
@@ -29,6 +33,7 @@
 		initBehavior( root );
 		initTheme( root );
 		initLayoutPresetPicker( root );
+		initDashboardOverview( root );
 		initPresets( root );
 		initSetupWizard( root );
 		initCommandCenterForms( root );
@@ -51,6 +56,54 @@
 			'',
 			window.location.href
 		);
+	}
+
+	function initPickerCloseOnScroll() {
+		if ( window.edminboostPickerCloseOnScrollInit ) {
+			return;
+		}
+
+		window.edminboostPickerCloseOnScrollInit = true;
+
+		var pickerListSelector = '.edminboost-layout-preset-picker__list, .edminboost-theme-preset-picker__list, .edminboost-overview-topbar-links-picker__list';
+
+		function isPickerListScrollTarget( target ) {
+			if ( ! target || target.nodeType !== 1 ) {
+				return false;
+			}
+
+			return !! (
+				target.matches( pickerListSelector )
+				|| target.closest( pickerListSelector )
+			);
+		}
+
+		function closeOpenPickerLists() {
+			document.querySelectorAll( pickerListSelector ).forEach( function ( list ) {
+				if ( list.hidden ) {
+					return;
+				}
+
+				list.hidden = true;
+
+				var listId = list.id;
+				if ( ! listId ) {
+					return;
+				}
+
+				document.querySelectorAll( '[aria-controls="' + listId + '"]' ).forEach( function ( toggle ) {
+					toggle.setAttribute( 'aria-expanded', 'false' );
+				} );
+			} );
+		}
+
+		document.addEventListener( 'scroll', function ( event ) {
+			if ( isPickerListScrollTarget( event.target ) ) {
+				return;
+			}
+
+			closeOpenPickerLists();
+		}, { passive: true, capture: true } );
 	}
 
 	function initCommandCenterNav() {
@@ -212,6 +265,8 @@
 					}
 				} );
 		}
+
+		loadCommandCenterPageRef = loadCommandCenterPage;
 	}
 
 	function initMapper( root ) {
@@ -1842,8 +1897,13 @@
 			} );
 		}
 
-		document.addEventListener( 'click', function ( event ) {
-			if ( speedPicker && ! speedPicker.contains( event.target ) ) {
+		document.addEventListener( 'click', function onSpeedPickerOutsideClick( event ) {
+			if ( ! speedPicker || ! document.body.contains( speedPicker ) ) {
+				document.removeEventListener( 'click', onSpeedPickerOutsideClick );
+				return;
+			}
+
+			if ( ! speedPicker.contains( event.target ) ) {
 				closeSpeedList();
 			}
 		} );
@@ -1868,6 +1928,8 @@
 		if ( ! presetSelect || ! presetPicker ) {
 			return;
 		}
+
+		var skipLiveThemePreview = !! document.getElementById( 'edminboost-dashboard-overview-form' );
 
 		var themeClasses = [ 'edminboost-theme-active' ];
 
@@ -2057,17 +2119,20 @@
 			var font   = fontSelect ? fontSelect.value : 'inherit';
 			var body   = document.body;
 
-			themeClasses.forEach( function ( className ) {
-				body.classList.remove( className );
-			} );
+			if ( ! skipLiveThemePreview ) {
+				themeClasses.forEach( function ( className ) {
+					body.classList.remove( className );
+				} );
 
-			body.classList.add( 'edminboost-theme-active' );
-			body.classList.add( 'edminboost-theme--' + preset );
-			body.classList.add( 'edminboost-theme-mode--' + mode );
-			body.classList.add( 'edminboost-theme-font--' + font );
+				body.classList.add( 'edminboost-theme-active' );
+				body.classList.add( 'edminboost-theme--' + preset );
+				body.classList.add( 'edminboost-theme-mode--' + mode );
+				body.classList.add( 'edminboost-theme-font--' + font );
+
+				applyCustomColors( body );
+			}
 
 			syncPresetPickerSelection();
-			applyCustomColors( body );
 		}
 
 		function bindColorField( field ) {
@@ -2118,7 +2183,12 @@
 			} );
 		}
 
-		document.addEventListener( 'click', function ( event ) {
+		document.addEventListener( 'click', function onThemePickerOutsideClick( event ) {
+			if ( ! presetPicker || ! document.body.contains( presetPicker ) ) {
+				document.removeEventListener( 'click', onThemePickerOutsideClick );
+				return;
+			}
+
 			if ( ! presetPicker.contains( event.target ) ) {
 				closePresetList();
 			}
@@ -2133,7 +2203,12 @@
 		}
 
 		colorFields.forEach( bindColorField );
-		updateThemePreview();
+
+		if ( skipLiveThemePreview ) {
+			syncPresetPickerSelection();
+		} else {
+			updateThemePreview();
+		}
 	}
 
 	function initCommandCenterForms( root ) {
@@ -2154,10 +2229,35 @@
 		forms.forEach( function ( form ) {
 			form.addEventListener( 'submit', function ( event ) {
 				event.preventDefault();
-				var reloadAfterSave = form.id === 'edminboost-setup-wizard-form';
-				saveSettingsForm( form, { reload: reloadAfterSave } );
+				saveSettingsForm( form );
 			} );
 		} );
+	}
+
+	function applySettingsSaveResult( data, form ) {
+		if ( ! data ) {
+			return;
+		}
+
+		if ( data.presets ) {
+			edminboostData.presets = data.presets;
+
+			if ( typeof syncPresetCatalogFn === 'function' ) {
+				syncPresetCatalogFn(
+					data.presets,
+					data.selected_preset || '',
+					data.default_preset || ''
+				);
+			}
+		}
+
+		if ( data.setup_complete && form && form.id === 'edminboost-setup-wizard-form' && loadCommandCenterPageRef ) {
+			loadCommandCenterPageRef(
+				edminboostData.currentPage,
+				window.location.href,
+				{ push: false }
+			);
+		}
 	}
 
 	function saveSettingsForm( form, options ) {
@@ -2198,15 +2298,16 @@
 				showFormNotice(
 					form,
 					'success',
-					payload.data && payload.data.message
-						? payload.data.message
-						: edminboostData.strings.settingsSaved
+					options.message
+						|| ( payload.data && payload.data.message
+							? payload.data.message
+							: edminboostData.strings.settingsSaved )
 				);
 
-				if ( options.reload ) {
-					window.setTimeout( function () {
-						window.location.reload();
-					}, 600 );
+				applySettingsSaveResult( payload.data || {}, form );
+
+				if ( typeof options.onSuccess === 'function' ) {
+					options.onSuccess( payload.data || {}, form );
 				}
 			} )
 			.catch( function ( error ) {
@@ -2262,10 +2363,12 @@
 		var defaultField   = document.getElementById( 'edminboost_layout_default_preset' );
 		var defaultCheckbox = document.getElementById( 'edminboost_layout_preset_default_checkbox' );
 		var duplicateBtn   = document.getElementById( 'edminboost-preset-duplicate-btn' );
-		var previewRoot    = root.querySelector( '.edminboost-preset-picker .edminboost-overview-topbar-preview' );
+		var previewRoot    = root.querySelector( '.edminboost-preset-picker .edminboost-overview-topbar-preview' )
+			|| document.getElementById( 'edminboost-overview-layout-preview' );
 		var presetCatalog  = edminboostData.presets || {};
 		var badgeBuiltIn   = edminboostData.strings.presetBadgeBuiltIn || 'Built-in';
 		var badgeSaved     = edminboostData.strings.presetBadgeSaved || 'Saved';
+		var badgeVirtual   = edminboostData.strings.presetBadgeVirtual || 'Layout';
 
 		if ( ! presetSelect || ! presetPicker ) {
 			return;
@@ -2397,20 +2500,26 @@
 				return;
 			}
 
-			defaultCheckbox.checked = defaultField.value === getSelectedPreset();
+			var selected = getSelectedPreset();
+			defaultCheckbox.checked = selected === 'default' || defaultField.value === selected;
 		}
 
 		function syncPresetPickerSelection() {
 			var preset = getSelectedPreset();
 			var config = presetCatalog[ preset ] || {};
 			var system = isSystemPreset( preset );
+			var virtual = !! config.virtual;
 
 			if ( presetName ) {
 				presetName.textContent = config.name || preset;
 			}
 
 			if ( presetBadge ) {
-				presetBadge.textContent = system ? badgeBuiltIn : badgeSaved;
+				if ( virtual ) {
+					presetBadge.textContent = badgeVirtual;
+				} else {
+					presetBadge.textContent = system ? badgeBuiltIn : badgeSaved;
+				}
 			}
 
 			if ( presetDesc ) {
@@ -2418,7 +2527,7 @@
 			}
 
 			if ( duplicateBtn ) {
-				duplicateBtn.disabled = system;
+				duplicateBtn.disabled = system || virtual;
 			}
 
 			if ( presetList ) {
@@ -2442,6 +2551,186 @@
 			syncPresetPickerSelection();
 			presetSelect.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 		}
+
+		function getPresetDisplayOrder() {
+			var pickerRoot = presetSelect.closest( '.edminboost-preset-picker' );
+			var isWizard = pickerRoot && pickerRoot.classList.contains( 'edminboost-preset-picker--wizard' );
+
+			return isWizard ? [ 'scenario', 'workflow' ] : [ 'source', 'scenario', 'workflow', 'saved' ];
+		}
+
+		function groupPresetsForPicker( catalog ) {
+			var displayOrder = getPresetDisplayOrder();
+			var grouped = {};
+			var pickerRoot = presetSelect.closest( '.edminboost-preset-picker' );
+			var isWizard = pickerRoot && pickerRoot.classList.contains( 'edminboost-preset-picker--wizard' );
+
+			displayOrder.forEach( function ( categoryId ) {
+				grouped[ categoryId ] = {};
+			} );
+
+			Object.keys( catalog ).forEach( function ( presetId ) {
+				var preset = catalog[ presetId ];
+
+				if ( isWizard && ! preset.system ) {
+					return;
+				}
+
+				var categoryId = preset.category || ( preset.system ? 'workflow' : 'saved' );
+
+				if ( ! grouped[ categoryId ] ) {
+					grouped[ categoryId ] = {};
+				}
+
+				grouped[ categoryId ][ presetId ] = preset;
+			} );
+
+			return {
+				order: displayOrder,
+				groups: grouped
+			};
+		}
+
+		function createPresetListOption( presetId, preset, isSelected ) {
+			var isSystem = !! preset.system;
+			var isVirtual = !! preset.virtual;
+			var presetNameText = preset.name || presetId;
+			var presetDescText = preset.description || '';
+			var badgeLabel = isVirtual ? badgeVirtual : ( isSystem ? badgeBuiltIn : badgeSaved );
+			var li = document.createElement( 'li' );
+
+			li.className = 'edminboost-layout-preset-picker__option' + ( isSelected ? ' is-selected' : '' );
+			li.setAttribute( 'role', 'option' );
+			li.setAttribute( 'tabindex', '-1' );
+			li.setAttribute( 'data-value', presetId );
+			li.setAttribute( 'data-system', isSystem ? '1' : '0' );
+			li.setAttribute( 'aria-selected', isSelected ? 'true' : 'false' );
+
+			var main = document.createElement( 'span' );
+			main.className = 'edminboost-layout-preset-picker__option-main';
+
+			var nameSpan = document.createElement( 'span' );
+			nameSpan.className = 'edminboost-layout-preset-picker__option-name';
+			nameSpan.textContent = presetNameText;
+
+			var badgeSpan = document.createElement( 'span' );
+			badgeSpan.className = 'edminboost-layout-preset-picker__option-badge';
+			badgeSpan.textContent = badgeLabel;
+
+			main.appendChild( nameSpan );
+			main.appendChild( badgeSpan );
+			li.appendChild( main );
+
+			if ( presetDescText ) {
+				var descSpan = document.createElement( 'span' );
+				descSpan.className = 'edminboost-layout-preset-picker__option-desc';
+				descSpan.textContent = presetDescText;
+				li.appendChild( descSpan );
+			}
+
+			return li;
+		}
+
+		function rebuildPresetPickerOptions( catalog, selectedPreset ) {
+			if ( ! presetSelect || ! presetList ) {
+				return;
+			}
+
+			var categories = edminboostData.presetCategories || {};
+			var groupedData = groupPresetsForPicker( catalog );
+			var currentValue = selectedPreset || getSelectedPreset();
+			var hasCurrent = !! catalog[ currentValue ];
+
+			presetSelect.innerHTML = '';
+
+			groupedData.order.forEach( function ( categoryId ) {
+				var presetsInGroup = groupedData.groups[ categoryId ] || {};
+				var presetIds = Object.keys( presetsInGroup );
+
+				if ( ! presetIds.length ) {
+					return;
+				}
+
+				var optgroup = document.createElement( 'optgroup' );
+				optgroup.label = categories[ categoryId ] || categoryId;
+
+				presetIds.forEach( function ( presetId ) {
+					var preset = presetsInGroup[ presetId ];
+					var option = document.createElement( 'option' );
+					option.value = presetId;
+					option.textContent = preset.name || presetId;
+					option.setAttribute( 'data-system', preset.system ? '1' : '0' );
+
+					if ( hasCurrent && currentValue === presetId ) {
+						option.selected = true;
+					}
+
+					optgroup.appendChild( option );
+				} );
+
+				presetSelect.appendChild( optgroup );
+			} );
+
+			presetList.innerHTML = '';
+
+			groupedData.order.forEach( function ( categoryId ) {
+				var presetsInGroup = groupedData.groups[ categoryId ] || {};
+				var presetIds = Object.keys( presetsInGroup );
+
+				if ( ! presetIds.length ) {
+					return;
+				}
+
+				var groupItem = document.createElement( 'li' );
+				groupItem.className = 'edminboost-layout-preset-picker__group';
+				groupItem.setAttribute( 'role', 'presentation' );
+
+				var groupLabel = document.createElement( 'span' );
+				groupLabel.className = 'edminboost-layout-preset-picker__group-label';
+				groupLabel.id = 'edminboost-layout-preset-group-' + categoryId;
+				groupLabel.textContent = categories[ categoryId ] || categoryId;
+				groupItem.appendChild( groupLabel );
+
+				var groupList = document.createElement( 'ul' );
+				groupList.className = 'edminboost-layout-preset-picker__group-list';
+				groupList.setAttribute( 'role', 'group' );
+				groupList.setAttribute( 'aria-labelledby', groupLabel.id );
+
+				presetIds.forEach( function ( presetId ) {
+					var preset = presetsInGroup[ presetId ];
+					groupList.appendChild(
+						createPresetListOption( presetId, preset, hasCurrent && currentValue === presetId )
+					);
+				} );
+
+				groupItem.appendChild( groupList );
+				presetList.appendChild( groupItem );
+			} );
+
+			if ( hasCurrent ) {
+				presetSelect.value = currentValue;
+			}
+		}
+
+		syncPresetCatalogFn = function ( catalog, selectedPreset, defaultPreset ) {
+			presetCatalog = catalog || {};
+
+			if ( selectedPreset && presetCatalog[ selectedPreset ] ) {
+				rebuildPresetPickerOptions( presetCatalog, selectedPreset );
+				setSelectedPreset( selectedPreset );
+			} else {
+				rebuildPresetPickerOptions( presetCatalog, getSelectedPreset() );
+				syncPresetPickerSelection();
+			}
+
+			if ( defaultField && defaultPreset ) {
+				defaultField.value = defaultPreset;
+
+				if ( defaultCheckbox ) {
+					defaultCheckbox.checked = defaultField.value === getSelectedPreset();
+				}
+			}
+		};
 
 		if ( presetToggle ) {
 			presetToggle.addEventListener( 'click', function () {
@@ -2470,7 +2759,12 @@
 			} );
 		}
 
-		document.addEventListener( 'click', function ( event ) {
+		document.addEventListener( 'click', function onLayoutPickerOutsideClick( event ) {
+			if ( ! presetPicker || ! document.body.contains( presetPicker ) ) {
+				document.removeEventListener( 'click', onLayoutPickerOutsideClick );
+				return;
+			}
+
 			if ( ! presetPicker.contains( event.target ) ) {
 				closePresetList();
 			}
@@ -2478,14 +2772,394 @@
 
 		if ( defaultCheckbox && defaultField ) {
 			defaultCheckbox.addEventListener( 'change', function () {
-				if ( defaultCheckbox.checked ) {
-					defaultField.value = getSelectedPreset();
+				if ( ! defaultCheckbox.checked ) {
+					return;
+				}
+
+				var selected = getSelectedPreset();
+				if ( selected && 'default' !== selected && 'custom' !== selected ) {
+					defaultField.value = selected;
 				}
 			} );
 		}
 
 		presetSelect.addEventListener( 'change', syncPresetPickerSelection );
 		syncPresetPickerSelection();
+	}
+
+	function initDashboardOverview( root ) {
+		var form = document.getElementById( 'edminboost-dashboard-overview-form' );
+
+		if ( ! form ) {
+			return;
+		}
+
+		var applyField         = document.getElementById( 'edminboost_dashboard_apply_preset' );
+		var layoutList         = form.querySelector( '#edminboost-layout-preset-list' );
+		var themeList          = form.querySelector( '#edminboost-theme-preset-list' );
+		var topbarToggle       = document.getElementById( 'edminboost_overview_topbar_links_toggle' );
+		var topbarList         = document.getElementById( 'edminboost-overview-topbar-links-list' );
+		var topbarLinksPicker  = document.getElementById( 'edminboost-overview-topbar-links-picker' );
+		var layoutPreview      = document.getElementById( 'edminboost-overview-layout-preview' );
+		var themePreview       = document.getElementById( 'edminboost-overview-theme-preview' );
+		var topbarPreview      = document.getElementById( 'edminboost-overview-topbar-preview' );
+		var topbarDesc         = document.getElementById( 'edminboost-overview-topbar-desc' );
+		var topbarSummary      = document.getElementById( 'edminboost-overview-topbar-links-summary' );
+		var presetCatalog      = edminboostData.presets || {};
+		var themePresets       = edminboostData.themePresets || {};
+		var strings            = edminboostData.strings || {};
+		var dashboardSaving    = false;
+
+		function closeTopbarLinksList() {
+			if ( ! topbarList || ! topbarToggle ) {
+				return;
+			}
+
+			topbarList.hidden = true;
+			topbarToggle.setAttribute( 'aria-expanded', 'false' );
+		}
+
+		function openTopbarLinksList() {
+			if ( ! topbarList || ! topbarToggle ) {
+				return;
+			}
+
+			topbarList.hidden = false;
+			topbarToggle.setAttribute( 'aria-expanded', 'true' );
+		}
+
+		function toggleTopbarLinksList() {
+			if ( ! topbarList ) {
+				return;
+			}
+
+			if ( topbarList.hidden ) {
+				openTopbarLinksList();
+			} else {
+				closeTopbarLinksList();
+			}
+		}
+
+		function renderTopBarPreviewNode( previewRoot, items ) {
+			if ( ! previewRoot ) {
+				return;
+			}
+
+			var limit    = 6;
+			var visible  = [];
+			var overflow = 0;
+
+			( items || [] ).forEach( function ( item ) {
+				if ( ! item || ! item.slug ) {
+					return;
+				}
+
+				if ( visible.length >= limit ) {
+					overflow += 1;
+					return;
+				}
+
+				visible.push( item );
+			} );
+
+			previewRoot.classList.toggle( 'edminboost-overview-topbar-preview--empty', ! visible.length );
+
+			if ( ! visible.length ) {
+				previewRoot.innerHTML = '<p class="edminboost-overview-topbar-preview__empty">' +
+					( strings.emptyLayoutPreview || 'No links in this preview yet.' ) +
+					'</p>';
+				return;
+			}
+
+			var canvas = document.createElement( 'div' );
+			canvas.className = 'edminboost-overview-topbar-preview__canvas';
+			canvas.setAttribute( 'aria-hidden', 'true' );
+
+			var brand = document.createElement( 'span' );
+			brand.className = 'edminboost-overview-topbar-preview__brand';
+			brand.innerHTML = '<span class="dashicons dashicons-wordpress"></span>';
+			canvas.appendChild( brand );
+
+			var list = document.createElement( 'ul' );
+			list.className = 'edminboost-overview-topbar-preview__items';
+
+			visible.forEach( function ( item ) {
+				var li = document.createElement( 'li' );
+				var interaction = item.interaction || 'redirect';
+				li.className = 'edminboost-overview-topbar-preview__item ' +
+					( interaction === 'drawer' ? 'is-drawer' : 'is-direct' );
+
+				var icon = document.createElement( 'span' );
+				icon.className = 'dashicons ' + ( item.icon || 'dashicons-admin-generic' );
+				icon.setAttribute( 'aria-hidden', 'true' );
+
+				var label = document.createElement( 'span' );
+				label.className = 'edminboost-overview-topbar-preview__label';
+				label.textContent = item.label || item.slug || '';
+
+				li.appendChild( icon );
+				li.appendChild( label );
+				list.appendChild( li );
+			} );
+
+			canvas.appendChild( list );
+
+			if ( overflow > 0 ) {
+				var more = document.createElement( 'span' );
+				more.className = 'edminboost-overview-topbar-preview__more';
+				more.textContent = '+' + overflow;
+				canvas.appendChild( more );
+			}
+
+			var profile = document.createElement( 'span' );
+			profile.className = 'edminboost-overview-topbar-preview__profile';
+			profile.innerHTML = '<span class="dashicons dashicons-admin-users"></span>';
+			canvas.appendChild( profile );
+
+			previewRoot.innerHTML = '';
+			previewRoot.appendChild( canvas );
+		}
+
+		function buildTopBarDescription( items ) {
+			var redirectCount = 0;
+			var drawerCount   = 0;
+
+			( items || [] ).forEach( function ( item ) {
+				if ( ! item ) {
+					return;
+				}
+
+				if ( 'drawer' === ( item.interaction || 'redirect' ) ) {
+					drawerCount += 1;
+				} else {
+					redirectCount += 1;
+				}
+			} );
+
+			if ( ! items || ! items.length ) {
+				return 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer.';
+			}
+
+			var parts = [ 'Admin link shortcuts appear in your WordPress top bar.' ];
+
+			if ( redirectCount > 0 ) {
+				parts.push(
+					redirectCount === 1
+						? '1 opens directly'
+						: redirectCount + ' open directly'
+				);
+			}
+
+			if ( drawerCount > 0 ) {
+				parts.push(
+					drawerCount === 1
+						? '1 opens in a slide-out drawer'
+						: drawerCount + ' open in a slide-out drawer'
+				);
+			}
+
+			return parts.join( ' ' ) + ( parts.length > 1 ? '.' : '' );
+		}
+
+		function rebuildTopbarLinksList( items ) {
+			if ( ! topbarList || ! topbarSummary ) {
+				return;
+			}
+
+			var count = items ? items.length : 0;
+			topbarSummary.textContent = count === 0
+				? 'No links configured'
+				: count === 1
+					? '1 link configured'
+					: count + ' links configured';
+
+			topbarList.innerHTML = '';
+
+			if ( ! count ) {
+				var emptyItem = document.createElement( 'li' );
+				emptyItem.className = 'edminboost-overview-topbar-links-picker__empty';
+				emptyItem.setAttribute( 'role', 'presentation' );
+				emptyItem.textContent = 'Add links in the Top Bar editor to see them here.';
+				topbarList.appendChild( emptyItem );
+				return;
+			}
+
+			items.forEach( function ( item ) {
+				var li = document.createElement( 'li' );
+				li.className = 'edminboost-overview-topbar-links-picker__option';
+				li.setAttribute( 'role', 'option' );
+				li.setAttribute( 'tabindex', '-1' );
+				li.setAttribute( 'aria-selected', 'false' );
+
+				var main = document.createElement( 'span' );
+				main.className = 'edminboost-overview-topbar-links-picker__option-main';
+
+				var icon = document.createElement( 'span' );
+				icon.className = 'dashicons ' + ( item.icon || 'dashicons-admin-generic' );
+				icon.setAttribute( 'aria-hidden', 'true' );
+
+				var name = document.createElement( 'span' );
+				name.className = 'edminboost-overview-topbar-links-picker__option-name';
+				name.textContent = item.label || item.slug || '';
+
+				main.appendChild( icon );
+				main.appendChild( name );
+
+				var meta = document.createElement( 'span' );
+				meta.className = 'edminboost-overview-topbar-links-picker__option-meta';
+				meta.textContent = 'drawer' === ( item.interaction || 'redirect' )
+					? 'Opens in drawer'
+					: 'Opens directly';
+
+				li.appendChild( main );
+				li.appendChild( meta );
+				topbarList.appendChild( li );
+			} );
+		}
+
+		function updateThemeOverviewPreview( presetId ) {
+			if ( ! themePreview ) {
+				return;
+			}
+
+			var config = themePresets[ presetId ] || themePresets.default || {};
+			var colors = config.colors || {};
+
+			themePreview.style.setProperty( '--eb-op-accent', colors.accent || '#2271b1' );
+			themePreview.style.setProperty( '--eb-op-surface', colors.surface || '#ffffff' );
+			themePreview.style.setProperty( '--eb-op-text', colors.text || '#1d2327' );
+			themePreview.style.setProperty( '--eb-op-top', colors.topbar || '#1d2327' );
+			themePreview.style.setProperty( '--eb-op-sidebar', colors.sidebar || '#1d2327' );
+			themePreview.style.setProperty( '--eb-op-content', colors.content || '#f0f0f1' );
+
+			var swatches = themePreview.querySelectorAll( '.edminboost-overview-theme-preview__swatch' );
+			var colorKeys = [ 'accent', 'surface', 'text', 'topbar', 'sidebar', 'content' ];
+
+			swatches.forEach( function ( swatch, index ) {
+				var colorKey = colorKeys[ index ];
+				if ( colorKey && colors[ colorKey ] ) {
+					swatch.style.backgroundColor = colors[ colorKey ];
+				}
+			} );
+		}
+
+		function syncTopBarOverview( items ) {
+			renderTopBarPreviewNode( topbarPreview, items );
+			renderTopBarPreviewNode( layoutPreview, items );
+
+			if ( topbarDesc ) {
+				topbarDesc.textContent = buildTopBarDescription( items );
+			}
+
+			rebuildTopbarLinksList( items );
+		}
+
+		function saveDashboardOverview( options ) {
+			if ( dashboardSaving ) {
+				return;
+			}
+
+			dashboardSaving = true;
+
+			saveSettingsForm( form, {
+				message: options && options.message ? options.message : undefined,
+				onSuccess: function ( data ) {
+					dashboardSaving = false;
+
+					if ( applyField ) {
+						applyField.value = '';
+					}
+
+					if ( options && typeof options.onSuccess === 'function' ) {
+						options.onSuccess( data || {} );
+					}
+				}
+			} );
+
+			window.setTimeout( function () {
+				dashboardSaving = false;
+			}, 4000 );
+		}
+
+		if ( layoutList ) {
+			layoutList.addEventListener( 'click', function ( event ) {
+				var option = event.target.closest( '.edminboost-layout-preset-picker__option' );
+				if ( ! option ) {
+					return;
+				}
+
+				var presetId = option.getAttribute( 'data-value' ) || '';
+				if ( ! presetId || ! presetCatalog[ presetId ] ) {
+					return;
+				}
+
+				if ( 'custom' === presetId ) {
+					return;
+				}
+
+				window.setTimeout( function () {
+					if ( applyField ) {
+						applyField.value = presetId;
+					}
+
+					saveDashboardOverview( {
+						message: strings.presetApplied || 'Preset applied.',
+						onSuccess: function () {
+							var preset = presetCatalog[ presetId ] || {};
+							var items  = preset.top_bar_items || [];
+							syncTopBarOverview( items );
+						}
+					} );
+				}, 0 );
+			} );
+		}
+
+		if ( themeList ) {
+			themeList.addEventListener( 'click', function ( event ) {
+				var option = event.target.closest( '.edminboost-theme-preset-picker__option' );
+				if ( ! option ) {
+					return;
+				}
+
+				var presetId = option.getAttribute( 'data-value' ) || '';
+				if ( ! presetId || ! themePresets[ presetId ] ) {
+					return;
+				}
+
+				window.setTimeout( function () {
+					updateThemeOverviewPreview( presetId );
+					saveDashboardOverview();
+				}, 0 );
+			} );
+		}
+
+		if ( topbarToggle ) {
+			topbarToggle.addEventListener( 'click', function () {
+				toggleTopbarLinksList();
+			} );
+		}
+
+		if ( topbarList ) {
+			topbarList.addEventListener( 'keydown', function ( event ) {
+				if ( event.key === 'Escape' ) {
+					closeTopbarLinksList();
+					if ( topbarToggle ) {
+						topbarToggle.focus();
+					}
+				}
+			} );
+		}
+
+		document.addEventListener( 'click', function onDashboardTopbarOutsideClick( event ) {
+			if ( ! topbarLinksPicker || ! document.body.contains( topbarLinksPicker ) ) {
+				document.removeEventListener( 'click', onDashboardTopbarOutsideClick );
+				return;
+			}
+
+			if ( ! topbarLinksPicker.contains( event.target ) ) {
+				closeTopbarLinksList();
+			}
+		} );
 	}
 
 	function initSetupWizard( root ) {
@@ -2724,9 +3398,20 @@
 			}
 		}
 
+		function preparePresetAction( field, value ) {
+			clearActionFields();
+
+			if ( field ) {
+				field.value = value;
+			}
+		}
+
 		form.addEventListener( 'submit', function () {
 			if ( defaultCheckbox && defaultCheckbox.checked && defaultField ) {
-				defaultField.value = getSelectedPresetId();
+				var presetId = getSelectedPresetId();
+				if ( presetId && 'default' !== presetId && 'custom' !== presetId ) {
+					defaultField.value = presetId;
+				}
 			}
 		} );
 
@@ -2737,18 +3422,19 @@
 				}
 
 				var presetId = getSelectedPresetId();
-				if ( ! presetId ) {
+				if ( ! presetId || 'custom' === presetId ) {
 					return;
 				}
 
-				clearActionFields();
-				applyField.value = presetId;
+				preparePresetAction( applyField, presetId );
 
-				if ( defaultCheckbox && defaultCheckbox.checked && defaultField ) {
+				if ( defaultCheckbox && defaultCheckbox.checked && defaultField && 'default' !== presetId && 'custom' !== presetId ) {
 					defaultField.value = presetId;
 				}
 
-				saveSettingsForm( form, { reload: true } );
+				saveSettingsForm( form, {
+					onSuccess: clearActionFields
+				} );
 			} );
 		}
 
@@ -2763,9 +3449,10 @@
 					return;
 				}
 
-				clearActionFields();
-				duplicateField.value = presetId;
-				saveSettingsForm( form, { reload: true } );
+				preparePresetAction( duplicateField, presetId );
+				saveSettingsForm( form, {
+					onSuccess: clearActionFields
+				} );
 			} );
 		}
 
@@ -2784,9 +3471,10 @@
 					return;
 				}
 
-				clearActionFields();
-				saveNameField.value = name.trim();
-				saveSettingsForm( form, { reload: true } );
+				preparePresetAction( saveNameField, name.trim() );
+				saveSettingsForm( form, {
+					onSuccess: clearActionFields
+				} );
 			} );
 		}
 

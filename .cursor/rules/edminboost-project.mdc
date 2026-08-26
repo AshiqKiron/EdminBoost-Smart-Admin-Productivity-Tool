@@ -52,7 +52,7 @@ readme.txt
 - Features extend `EDMINBOOST_Feature_Base` in `includes/features/`, loaded by `EDMINBOOST_Features`.
 - Admin UI: `EDMINBOOST_Admin` + partials in `admin/partials/`.
 - Plugin-screen assets enqueued via `EDMINBOOST_Admin::is_plugin_screen()`. Visual theme CSS (`edminboost-themes`) loads via `EDMINBOOST_Theme::enqueue_assets()` on all wp-admin when enabled (also as dependency of `edminboost-admin` on plugin screens). CC bar CSS loads when active (`is_active()`) or on Layout Studio (`is_mapper_screen()`). CC bar JS + drawer shell load when `has_drawer_items()` **or** on Layout Studio (mapper drawer preview). Drawer shell also renders on `wp_footer` when the admin bar shows on the front end.
-- Privileged AJAX: `wp_ajax_edminboost_cc_drawer_preview` (Layout Studio drawer preview, `EDMINBOOST_Command_Center_Bar::ajax_drawer_preview()`); `wp_ajax_edminboost_save_settings` (CC + settings AJAX save, `EDMINBOOST_Admin::ajax_save_settings()`).
+- Privileged AJAX: `wp_ajax_edminboost_cc_drawer_preview` (Layout Studio drawer preview, `EDMINBOOST_Command_Center_Bar::ajax_drawer_preview()`); `wp_ajax_edminboost_save_settings` (CC + settings AJAX save, `EDMINBOOST_Admin::ajax_save_settings()`); `wp_ajax_edminboost_load_cc_page` (CC tab navigation without full reload, `EDMINBOOST_Admin::ajax_load_cc_page()`).
 - No custom tables, REST endpoints, cron, or blocks — options API only (WPForms badge count uses a guarded read on `wpforms_entries` when WPForms is present).
 - No external requests or telemetry. Badge sources read local WP/WC data only.
 

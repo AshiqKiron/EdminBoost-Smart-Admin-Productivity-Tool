@@ -54,7 +54,7 @@ $has_layout        = ! empty( $top_bar_items );
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-presets-heading">
 			<h2 id="edminboost-presets-heading"><?php esc_html_e( 'Layout preset library', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'Pick a real-life scenario or role-based template, or use layouts you have saved.', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'Pick a use-case or role-based template, or use layouts you have saved.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
 
 			<?php
@@ -134,21 +134,19 @@ $has_layout        = ! empty( $top_bar_items );
 										$field_id        = 'edminboost_vis_' . sanitize_html_class( $role_key . '_' . $item_slug );
 										?>
 										<td class="edminboost-role-matrix__check">
-											<label for="<?php echo esc_attr( $field_id ); ?>">
-												<span class="screen-reader-text">
-													<?php
+											<input
+												type="checkbox"
+												id="<?php echo esc_attr( $field_id ); ?>"
+												name="<?php echo esc_attr( $option_name ); ?>[command_center][role_visibility][<?php echo esc_attr( $role_key ); ?>][]"
+												value="<?php echo esc_attr( $item_slug ); ?>"
+												aria-label="<?php echo esc_attr( sprintf(
 													/* translators: 1: role name, 2: item label */
-													echo esc_html( sprintf( __( 'Show %2$s for %1$s', EDMINBOOST_TEXT_DOMAIN ), $role_name, isset( $item['label'] ) ? $item['label'] : $item_slug ) );
-													?>
-												</span>
-												<input
-													type="checkbox"
-													id="<?php echo esc_attr( $field_id ); ?>"
-													name="<?php echo esc_attr( $option_name ); ?>[command_center][role_visibility][<?php echo esc_attr( $role_key ); ?>][]"
-													value="<?php echo esc_attr( $item_slug ); ?>"
-													<?php checked( ! $is_hidden ); ?>
-												/>
-											</label>
+													__( 'Show %2$s for %1$s', EDMINBOOST_TEXT_DOMAIN ),
+													translate_user_role( $role_name ),
+													isset( $item['label'] ) ? $item['label'] : $item_slug
+												) ); ?>"
+												<?php checked( ! $is_hidden ); ?>
+											/>
 										</td>
 									<?php endforeach; ?>
 								</tr>

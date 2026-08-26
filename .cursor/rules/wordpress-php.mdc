@@ -36,7 +36,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 ## WordPress APIs
 
 - Register hooks in `EDMINBOOST_Plugin::run()` or feature `register_hooks()` — not in the bootstrap file.
-- Privileged AJAX: `wp_ajax_edminboost_cc_drawer_preview` on `EDMINBOOST_Command_Center_Bar` (Layout Studio drawer preview); `wp_ajax_edminboost_save_settings` on `EDMINBOOST_Admin` (CC + settings AJAX save).
+- Privileged AJAX: `wp_ajax_edminboost_cc_drawer_preview` on `EDMINBOOST_Command_Center_Bar` (Layout Studio drawer preview); `wp_ajax_edminboost_save_settings` on `EDMINBOOST_Admin` (CC + settings AJAX save); `wp_ajax_edminboost_load_cc_page` on `EDMINBOOST_Admin` (CC tab HTML without full reload).
 - Use Settings API for options (`register_setting`, `add_settings_section`, `add_settings_field`).
 - Enqueue assets with `EDMINBOOST_VERSION` as the version string.
 - Pass data to JS via `wp_localize_script()` — `edminboostData` on plugin screens; `edminboostCcBar` on the live CC bar drawer script.

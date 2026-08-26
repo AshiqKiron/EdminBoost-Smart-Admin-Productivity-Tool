@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $option_name    = EDMINBOOST_Settings::OPTION_NAME;
 $is_setup       = EDMINBOOST_Command_Center::is_setup_complete( $cc_settings );
 $theme          = EDMINBOOST_Theme::get_settings( $cc_settings );
-$theme_key      = $option_name . '[command_center][theme]';
+$theme_key      = $option_name . '[command_center][theme]'; // Used by setup wizard theme partial.
 $mapper_url     = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER );
 $presets_url    = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS );
 $appearance_url = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE );

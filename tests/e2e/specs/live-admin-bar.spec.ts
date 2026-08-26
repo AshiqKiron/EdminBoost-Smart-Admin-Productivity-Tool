@@ -22,7 +22,7 @@ test.describe( 'Live admin bar', () => {
 		await canvasItem.click();
 		await page.locator( 'input[name="edminboost_item_interaction"][value="drawer"]' ).check();
 
-		await page.getByRole( 'button', { name: 'Save Layout' } ).click();
+		await page.getByRole( 'button', { name: 'Save top bar' } ).click();
 		await waitForSettingsSaved( page );
 
 		await page.goto( pages.dashboard );

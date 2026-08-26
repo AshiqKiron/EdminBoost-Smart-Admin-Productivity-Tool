@@ -53,11 +53,14 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.3.0 =
+* Load Command Center tabs (Dashboard, Appearance, Top Bar, Layout Presets, Menu Studio, Settings) without a full page reload.
+* Fix Top Bar and Menu Studio discovered admin page lists staying empty when a tab is loaded via AJAX navigation.
 * Show Settings inside the Command Center tab navigation like other EdminBoost pages.
 * Remove the duplicate Admin menu feature from Settings; use Menu Studio to hide, reorder, and style sidebar items instead.
 * Add a four-step Dashboard setup wizard: layout preset, color theme, top bar review, and save.
 * Replace layout preset card grids with a compact dropdown picker (description + top bar preview) on the setup wizard and Layout Presets page.
 * Show layout preset, color theme, and top bar descriptions on Dashboard overview cards after setup.
+* Add Default and Custom options at the top of the layout preset dropdown on Dashboard overview and Layout Presets pages.
 * Add compact visual previews under each Dashboard overview card (layout top bar, theme colors, live top bar links).
 * Redirect to the Dashboard wizard after plugin activation when setup is incomplete.
 * Add a dedicated Appearance page for visual theme, panel behavior, badges, and admin bar cleanup.
@@ -89,6 +92,7 @@ Yes. When uninstalled, all plugin options are removed from the database.
 * Fix WordPress 6.9.1 script notice when loading admin pages inside the Command Center slide-out drawer iframe.
 * Add custom AJAX slide-out drawer width option with a 400–800px slider on Behavior & Style.
 * Save Command Center and Settings page changes without a full page reload.
+* Setup wizard launch, preset apply/duplicate/save, and all other save buttons now stay on the page after saving.
 * Fix Layout Studio drawer preview AJAX so preview works from admin-ajax requests.
 * Fix Layout Studio discovered-item active state when canvas items use slug plus anchor pairs.
 * Fix AJAX slide-out drawer for top bar items configured with drawer interaction in Layout Studio.

@@ -19,6 +19,7 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 - CC drawer iframe loads: verify `_wpnonce` against `edminboost_cc_drawer_{md5(slug + anchor)}` and whitelist slug+anchor via `is_drawer_slug_allowed()` (or `edminboost_mapper_preview=1` from Layout Studio) before stripping admin chrome.
 - CC drawer preview AJAX (`edminboost_cc_drawer_preview`): `current_user_can( CAPABILITY )`, `check_ajax_referer( 'edminboost_cc_drawer_preview' )`, `is_mapper_preview_context()`, validate slug via `is_valid_drawer_slug()`.
 - Settings save AJAX (`edminboost_save_settings`): `current_user_can( CAPABILITY )`, verify nonce against `EDMINBOOST_Settings::SETTINGS_GROUP . '-options'`, sanitize via `EDMINBOOST_Settings::sanitize()` before `update_option()`.
+- CC tab navigation AJAX (`edminboost_load_cc_page`): `current_user_can( CAPABILITY )`, `check_ajax_referer( 'edminboost_cc_nav' )`, validate `page` via `EDMINBOOST_Admin::is_valid_cc_nav_page()` (whitelist from `EDMINBOOST_Command_Center::get_nav_items()`); render server-side HTML only — no raw partial paths from the client.
 - SQL: `$wpdb->prepare()` only; prefer Options API (`edminboost_*`) over custom tables.
 
 ## Directory & Privacy

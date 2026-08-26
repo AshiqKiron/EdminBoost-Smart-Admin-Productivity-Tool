@@ -37,9 +37,13 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$this->assertSame(
 			array(
 				__( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . ')',
+				__( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_PRESETS . ')',
 				__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
+				__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
+				__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MAPPER . ')',
+				__( 'Settings', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . '-settings)',
 			),
-			array_slice( $labels, 0, 2 )
+			$labels
 		);
 	}
 

@@ -67,24 +67,6 @@ class EDMINBOOST_Admin {
 
 		add_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
-			array( $this, 'render_appearance_page' )
-		);
-
-		add_submenu_page(
-			self::PAGE_SLUG,
-			__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER,
-			array( $this, 'render_mapper_page' )
-		);
-
-		add_submenu_page(
-			self::PAGE_SLUG,
 			__( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
 			EDMINBOOST_Settings::CAPABILITY,
@@ -94,11 +76,29 @@ class EDMINBOOST_Admin {
 
 		add_submenu_page(
 			self::PAGE_SLUG,
+			__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
+			array( $this, 'render_appearance_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
 			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
 			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
 			array( $this, 'render_menu_studio_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER,
+			array( $this, 'render_mapper_page' )
 		);
 
 		add_submenu_page(
@@ -131,9 +131,7 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
-	 * Keep Dashboard first under EdminBoost and collapse duplicate parent slugs.
-	 *
-	 * Runs after Menu Studio reordering so the hub page stays pinned to the top.
+	 * Enforce canonical EdminBoost submenu order after Menu Studio reordering.
 	 *
 	 * @return void
 	 */
@@ -145,36 +143,52 @@ class EDMINBOOST_Admin {
 		}
 
 		$dashboard_label = __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN );
-		$dashboard_item  = null;
-		$others          = array();
+		$items_by_slug   = array();
 
 		foreach ( $submenu[ self::PAGE_SLUG ] as $item ) {
 			if ( empty( $item[2] ) ) {
-				$others[] = $item;
 				continue;
 			}
 
-			if ( self::PAGE_SLUG === (string) $item[2] ) {
+			$slug = (string) $item[2];
+			if ( ! isset( $items_by_slug[ $slug ] ) ) {
+				$items_by_slug[ $slug ] = $item;
+			}
+		}
+
+		$ordered = array();
+		$seen    = array();
+
+		foreach ( EDMINBOOST_Command_Center::get_page_links() as $link ) {
+			$slug = (string) $link['slug'];
+			if ( ! isset( $items_by_slug[ $slug ] ) ) {
+				continue;
+			}
+
+			$item = $items_by_slug[ $slug ];
+			if ( self::PAGE_SLUG === $slug ) {
 				$item[0] = $dashboard_label;
-				if ( null === $dashboard_item ) {
-					$dashboard_item = $item;
-				}
+			}
+
+			$ordered[]     = $item;
+			$seen[ $slug ] = true;
+		}
+
+		foreach ( $submenu[ self::PAGE_SLUG ] as $item ) {
+			if ( empty( $item[2] ) ) {
+				$ordered[] = $item;
 				continue;
 			}
 
-			$others[] = $item;
+			$slug = (string) $item[2];
+			if ( isset( $seen[ $slug ] ) ) {
+				continue;
+			}
+
+			$ordered[] = $item;
 		}
 
-		if ( null === $dashboard_item ) {
-			$dashboard_item = array(
-				$dashboard_label,
-				EDMINBOOST_Settings::CAPABILITY,
-				self::PAGE_SLUG,
-				$dashboard_label,
-			);
-		}
-
-		$submenu[ self::PAGE_SLUG ] = array_merge( array( $dashboard_item ), $others );
+		$submenu[ self::PAGE_SLUG ] = $ordered;
 	}
 
 	/**
@@ -429,11 +443,13 @@ class EDMINBOOST_Admin {
 				'saveAndLaunch'             => __( 'Save and launch', EDMINBOOST_TEXT_DOMAIN ),
 				'presetBadgeBuiltIn'        => __( 'Built-in', EDMINBOOST_TEXT_DOMAIN ),
 				'presetBadgeSaved'          => __( 'Saved', EDMINBOOST_TEXT_DOMAIN ),
+				'presetBadgeVirtual'        => __( 'Layout', EDMINBOOST_TEXT_DOMAIN ),
 				'emptyLayoutPreview'        => __( 'No links in this preview yet.', EDMINBOOST_TEXT_DOMAIN ),
 				'pageLoading'               => __( 'Loading…', EDMINBOOST_TEXT_DOMAIN ),
 				'pageLoadFailed'            => __( 'Could not load that page. Please try again.', EDMINBOOST_TEXT_DOMAIN ),
 			),
-			'presets'    => self::get_presets_for_js(),
+			'presets'          => self::get_presets_for_js(),
+			'presetCategories' => EDMINBOOST_Command_Center::get_preset_categories(),
 			'themePresets' => EDMINBOOST_Theme::get_presets_for_js(),
 			'themeColorLabels' => EDMINBOOST_Theme::get_color_labels(),
 			'settingsSave' => array(
@@ -467,11 +483,17 @@ class EDMINBOOST_Admin {
 	private function get_presets_for_js() {
 		$presets = array();
 
-		foreach ( EDMINBOOST_Command_Center::get_all_presets() as $preset_id => $preset ) {
+		foreach ( EDMINBOOST_Command_Center::get_picker_presets( true ) as $preset_id => $preset ) {
 			$presets[ $preset_id ] = array(
 				'name'          => isset( $preset['name'] ) ? $preset['name'] : $preset_id,
 				'description'   => isset( $preset['description'] ) ? $preset['description'] : '',
 				'system'        => ! empty( $preset['system'] ),
+				'virtual'       => ! empty( $preset['virtual'] ),
+				'category'      => ! empty( $preset['virtual'] )
+					? 'source'
+					: ( ! empty( $preset['system'] )
+						? ( isset( $preset['category'] ) ? $preset['category'] : 'workflow' )
+						: 'saved' ),
 				'top_bar_items' => EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id ),
 			);
 		}
@@ -737,13 +759,67 @@ class EDMINBOOST_Admin {
 			);
 		}
 
+		$before_cc = EDMINBOOST_Command_Center::get_settings();
+		$before_custom_preset_ids = isset( $before_cc['presets'] ) && is_array( $before_cc['presets'] )
+			? array_keys( $before_cc['presets'] )
+			: array();
+
 		$sanitized = EDMINBOOST_Settings::sanitize( $raw );
 		update_option( EDMINBOOST_Settings::OPTION_NAME, $sanitized, false );
 
+		$cc_raw = isset( $raw['command_center'] ) && is_array( $raw['command_center'] )
+			? $raw['command_center']
+			: array();
+
 		wp_send_json_success(
-			array(
-				'message' => __( 'Settings saved.', EDMINBOOST_TEXT_DOMAIN ),
-			)
+			$this->build_ajax_save_response( $sanitized, $cc_raw, $before_custom_preset_ids )
+		);
+	}
+
+	/**
+	 * Build the AJAX save success payload for admin JavaScript.
+	 *
+	 * @param array $sanitized               Sanitized settings after save.
+	 * @param array $cc_raw                  Raw command_center input.
+	 * @param array $before_custom_preset_ids Custom preset ids before save.
+	 * @return array
+	 */
+	private function build_ajax_save_response( $sanitized, $cc_raw, $before_custom_preset_ids ) {
+		$cc = isset( $sanitized['command_center'] ) && is_array( $sanitized['command_center'] )
+			? $sanitized['command_center']
+			: array();
+
+		$after_custom = isset( $cc['presets'] ) && is_array( $cc['presets'] )
+			? array_keys( $cc['presets'] )
+			: array();
+		$new_custom_ids = array_values( array_diff( $after_custom, $before_custom_preset_ids ) );
+
+		$selected_preset = '';
+		$message         = __( 'Settings saved.', EDMINBOOST_TEXT_DOMAIN );
+
+		if ( ! empty( $cc_raw['_setup_wizard_save'] ) ) {
+			$message = __( 'Command Center launched.', EDMINBOOST_TEXT_DOMAIN );
+		} elseif ( ! empty( $cc_raw['_apply_preset'] ) ) {
+			$selected_preset = sanitize_key( $cc_raw['_apply_preset'] );
+			$message         = __( 'Preset applied.', EDMINBOOST_TEXT_DOMAIN );
+		} elseif ( ! empty( $cc_raw['_duplicate_preset'] ) ) {
+			$selected_preset = ! empty( $new_custom_ids ) ? (string) reset( $new_custom_ids ) : '';
+			$message         = __( 'Preset duplicated.', EDMINBOOST_TEXT_DOMAIN );
+		} elseif (
+			! empty( $cc_raw['_save_custom_preset'] )
+			&& is_array( $cc_raw['_save_custom_preset'] )
+			&& ! empty( $cc_raw['_save_custom_preset']['name'] )
+		) {
+			$selected_preset = ! empty( $new_custom_ids ) ? (string) reset( $new_custom_ids ) : '';
+			$message         = __( 'Preset saved.', EDMINBOOST_TEXT_DOMAIN );
+		}
+
+		return array(
+			'message'         => $message,
+			'presets'         => $this->get_presets_for_js(),
+			'selected_preset' => $selected_preset,
+			'default_preset'  => isset( $cc['default_preset'] ) ? (string) $cc['default_preset'] : '',
+			'setup_complete'  => EDMINBOOST_Command_Center::is_setup_complete( $cc ),
 		);
 	}
 

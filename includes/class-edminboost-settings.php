@@ -360,24 +360,34 @@ class EDMINBOOST_Settings {
 
 		if ( ! empty( $raw['_apply_preset'] ) && empty( $raw['_setup_wizard_save'] ) ) {
 			$preset_id = sanitize_key( $raw['_apply_preset'] );
-			$items     = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id );
-			if ( ! empty( $items ) ) {
-				$output['top_bar_items']        = self::sanitize_top_bar_items( $items );
-				$output['default_preset']       = $preset_id;
-				$output['onboarding_completed'] = true;
 
-				$all_presets = EDMINBOOST_Command_Center::get_all_presets();
-				if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
-					$persona = sanitize_key( $all_presets[ $preset_id ]['persona'] );
-					if ( in_array( $persona, $allowed_personas, true ) ) {
-						$output['persona'] = $persona;
+			if ( 'custom' !== $preset_id ) {
+				if ( 'default' === $preset_id ) {
+					$preset_id = EDMINBOOST_Command_Center::resolve_effective_preset_id( 'default', $output );
+				}
+
+				$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id, $output );
+				if ( ! empty( $items ) ) {
+					$output['top_bar_items']        = self::sanitize_top_bar_items( $items );
+					$output['default_preset']       = $preset_id;
+					$output['onboarding_completed'] = true;
+
+					$all_presets = EDMINBOOST_Command_Center::get_all_presets();
+					if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
+						$persona = sanitize_key( $all_presets[ $preset_id ]['persona'] );
+						if ( in_array( $persona, $allowed_personas, true ) ) {
+							$output['persona'] = $persona;
+						}
 					}
 				}
 			}
 		}
 
 		if ( isset( $raw['default_preset'] ) ) {
-			$output['default_preset'] = sanitize_key( $raw['default_preset'] );
+			$default_preset = sanitize_key( $raw['default_preset'] );
+			if ( ! in_array( $default_preset, array( 'default', 'custom' ), true ) ) {
+				$output['default_preset'] = $default_preset;
+			}
 		}
 
 		if ( ! empty( $raw['_layout_studio_save'] ) ) {

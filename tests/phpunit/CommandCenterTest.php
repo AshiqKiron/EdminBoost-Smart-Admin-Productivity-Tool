@@ -91,17 +91,24 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * Page links include Dashboard, Top Bar, Presets, and Settings.
+	 * Page links follow the canonical EdminBoost submenu order.
 	 */
 	public function test_get_page_links() {
 		$items = EDMINBOOST_Command_Center::get_page_links();
 		$slugs = wp_list_pluck( $items, 'slug' );
 		$base  = EDMINBOOST_Admin::PAGE_SLUG;
 
-		$this->assertContains( $base, $slugs );
-		$this->assertContains( $base . EDMINBOOST_Command_Center::PAGE_MAPPER, $slugs );
-		$this->assertContains( $base . EDMINBOOST_Command_Center::PAGE_PRESETS, $slugs );
-		$this->assertContains( $base . '-settings', $slugs );
+		$this->assertSame(
+			array(
+				$base,
+				$base . EDMINBOOST_Command_Center::PAGE_PRESETS,
+				$base . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
+				$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
+				$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
+				$base . '-settings',
+			),
+			$slugs
+		);
 	}
 
 	/**
@@ -112,6 +119,86 @@ class CommandCenterTest extends Edminboost_Test_Case {
 
 		$this->assertNotEmpty( $items );
 		$this->assertSame( 'index.php', $items[0]['slug'] );
+	}
+
+	/**
+	 * Virtual default preset resolves to the stored site default.
+	 */
+	public function test_resolve_preset_top_bar_items_for_virtual_default() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'default_preset' => 'system_developer',
+				),
+			)
+		);
+
+		$default_items   = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( 'system_developer' );
+		$resolved_items  = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( 'default' );
+
+		$this->assertSame( $default_items, $resolved_items );
+	}
+
+	/**
+	 * Virtual custom preset resolves to saved top bar items.
+	 */
+	public function test_resolve_preset_top_bar_items_for_virtual_custom() {
+		$custom_items = array(
+			array(
+				'slug'         => 'edit.php',
+				'label'        => 'Posts',
+				'icon'         => 'dashicons-admin-post',
+				'interaction'  => 'redirect',
+				'badge_source' => '',
+			),
+		);
+
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'top_bar_items' => $custom_items,
+				),
+			)
+		);
+
+		$resolved = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( 'custom' );
+
+		$this->assertSame( $custom_items, $resolved );
+	}
+
+	/**
+	 * Active layout detection returns custom for hand-built layouts.
+	 */
+	public function test_detect_active_layout_preset_returns_custom() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'default_preset' => 'system_client',
+					'top_bar_items'  => array(
+						array(
+							'slug'         => 'plugins.php',
+							'label'        => 'Plugins',
+							'icon'         => 'dashicons-admin-plugins',
+							'interaction'  => 'drawer',
+							'badge_source' => '',
+						),
+					),
+				),
+			)
+		);
+
+		$this->assertSame( 'custom', EDMINBOOST_Command_Center::detect_active_layout_preset() );
+	}
+
+	/**
+	 * Picker catalog includes virtual default and custom entries.
+	 */
+	public function test_get_picker_presets_includes_virtual_entries() {
+		$presets = EDMINBOOST_Command_Center::get_picker_presets( true );
+
+		$this->assertArrayHasKey( 'default', $presets );
+		$this->assertArrayHasKey( 'custom', $presets );
+		$this->assertTrue( ! empty( $presets['default']['virtual'] ) );
 	}
 
 	/**
@@ -277,6 +364,22 @@ class CommandCenterTest extends Edminboost_Test_Case {
 
 		$this->assertNotEmpty( $result['command_center']['top_bar_items'] );
 		$this->assertTrue( $result['command_center']['onboarding_completed'] );
+	}
+
+	/**
+	 * Discovered menu items rebuild when admin menu globals are empty (AJAX tab loads).
+	 */
+	public function test_get_discovered_menu_items_rebuilds_empty_menu() {
+		if ( function_exists( '_add_themes_utility_last' ) ) {
+			$this->markTestSkipped( 'Admin menu bootstrap already loaded in this PHP process.' );
+		}
+
+		$items = EDMINBOOST_Command_Center::get_discovered_menu_items();
+
+		$this->assertNotEmpty( $items );
+
+		$slugs = wp_list_pluck( $items, 'slug' );
+		$this->assertContains( 'index.php', $slugs );
 	}
 
 	/**

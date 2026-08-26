@@ -61,12 +61,12 @@ PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from 
 - Page URLs: `fixtures/pages.ts` — built from `PLUGIN_SLUG` env var (`dashboard`, `appearance`, `settings`, `mapper`, `presets`; legacy `onboarding` / `behavior` for redirect tests).
 - Assert plugin ready: `.edminboost-wrap[data-edminboost-ready="true"]`.
 - Settings saves: `waitForSettingsSaved()` in `fixtures/helpers.ts` (URL contains `settings-updated=true`).
-- Specs mirror admin pages: `dashboard`, `home-setup` (setup wizard / overview), `home-look` (Appearance settings), `settings-features`, `layout-studio`, `presets-roles`, `live-admin-bar`.
+- Specs mirror admin pages: `dashboard` (overview pickers + inline save), `home-setup` (setup wizard / overview), `home-look` (Appearance settings), `settings-features`, `layout-studio`, `presets-roles`, `live-admin-bar`.
 - Config: single worker, 60s timeout, chromium only, `baseURL` from `.env.qa`.
 
 ## Rules
 
 - Never commit `.env.qa`, `tests/wp-tests-config.php`, `tests/e2e/.auth/`, `vendor/`, `node_modules/`, `playwright-report/`, `test-results/`, `.playwright-browsers/`, `.phpunit.result.cache`.
 - E2E selectors: prefer stable plugin IDs/classes (`#edminboost-*`, `.edminboost-*`) over wp-admin internals.
-- Add PHPUnit for new sanitization/helpers (e.g. `ThemeTest` for preset catalog, custom colors, body classes; `FeaturesTest::test_menu_studio_protected_slugs` for Menu Studio protected slugs; `CommandCenterTest::test_get_animation_speed_options` for drawer duration helpers); add Playwright for new admin UI flows; update `tests/manual/regression-matrix.md` for manual-only checks (e.g. CC-B-02 animation speed).
+- Add PHPUnit for new sanitization/helpers (e.g. `CommandCenterTest::test_detect_active_layout_preset`, `test_get_picker_presets`, `test_top_bar_items_match`; `ThemeTest` for preset catalog, custom colors, body classes; `FeaturesTest::test_menu_studio_protected_slugs` for Menu Studio protected slugs; `CommandCenterTest::test_get_animation_speed_options` for drawer duration helpers); add Playwright for new admin UI flows (CC tab nav, dashboard overview pickers); update `tests/manual/regression-matrix.md` for manual-only checks (e.g. CC-B-02 animation speed).
 - Run `composer test` and `npm run test:e2e` before shipping user-facing CC or settings changes.

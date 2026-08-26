@@ -232,20 +232,20 @@ class EDMINBOOST_Command_Center {
 				'label' => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
-				'slug'  => $base . self::PAGE_APPEARANCE,
-				'label' => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
-			),
-			array(
-				'slug'  => $base . self::PAGE_MAPPER,
-				'label' => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
-			),
-			array(
 				'slug'  => $base . self::PAGE_PRESETS,
 				'label' => __( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
+				'slug'  => $base . self::PAGE_APPEARANCE,
+				'label' => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
 				'slug'  => $base . self::PAGE_MENU_STUDIO,
 				'label' => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . self::PAGE_MAPPER,
+				'label' => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
 				'slug'  => $base . '-settings',
@@ -460,10 +460,159 @@ class EDMINBOOST_Command_Center {
 	 */
 	public static function get_preset_categories() {
 		return array(
-			'scenario' => __( 'Real-life scenarios', EDMINBOOST_TEXT_DOMAIN ),
+			'source'   => __( 'Current layout', EDMINBOOST_TEXT_DOMAIN ),
+			'scenario' => __( 'By use case', EDMINBOOST_TEXT_DOMAIN ),
 			'workflow' => __( 'By role', EDMINBOOST_TEXT_DOMAIN ),
 			'saved'    => __( 'Your saved layouts', EDMINBOOST_TEXT_DOMAIN ),
 		);
+	}
+
+	/**
+	 * Virtual layout presets shown at the top of picker dropdowns.
+	 *
+	 * @return array<string, array>
+	 */
+	public static function get_virtual_layout_presets() {
+		return array(
+			'default' => array(
+				'name'        => __( 'Default', EDMINBOOST_TEXT_DOMAIN ),
+				'description' => __( 'Your site\'s default layout preset.', EDMINBOOST_TEXT_DOMAIN ),
+				'virtual'     => true,
+				'category'    => 'source',
+			),
+			'custom'  => array(
+				'name'        => __( 'Custom', EDMINBOOST_TEXT_DOMAIN ),
+				'description' => __( 'Top bar links you configured in the Top Bar editor.', EDMINBOOST_TEXT_DOMAIN ),
+				'virtual'     => true,
+				'category'    => 'source',
+			),
+		);
+	}
+
+	/**
+	 * Preset catalog for picker UIs (virtual entries + system + saved).
+	 *
+	 * @param bool $include_virtual Whether to prepend Default and Custom options.
+	 * @return array<string, array>
+	 */
+	public static function get_picker_presets( $include_virtual = true ) {
+		$presets = self::get_all_presets();
+
+		if ( ! $include_virtual ) {
+			return $presets;
+		}
+
+		return array_merge( self::get_virtual_layout_presets(), $presets );
+	}
+
+	/**
+	 * Resolve a virtual preset id to a concrete preset id.
+	 *
+	 * @param string     $preset_id   Preset identifier (may be virtual).
+	 * @param array|null $cc_settings Optional Command Center settings.
+	 * @return string
+	 */
+	public static function resolve_effective_preset_id( $preset_id, $cc_settings = null ) {
+		$preset_id = sanitize_key( $preset_id );
+
+		if ( 'default' !== $preset_id ) {
+			return $preset_id;
+		}
+
+		if ( null === $cc_settings ) {
+			$cc_settings = self::get_settings();
+		}
+
+		$fallback = self::get_defaults()['default_preset'];
+
+		return isset( $cc_settings['default_preset'] ) && '' !== $cc_settings['default_preset']
+			? sanitize_key( $cc_settings['default_preset'] )
+			: $fallback;
+	}
+
+	/**
+	 * Fingerprint top bar items for layout comparison.
+	 *
+	 * @param array $item Top bar item.
+	 * @return string
+	 */
+	private static function get_top_bar_item_fingerprint( $item ) {
+		if ( ! is_array( $item ) || empty( $item['slug'] ) ) {
+			return '';
+		}
+
+		$slug        = isset( $item['slug'] ) ? (string) $item['slug'] : '';
+		$anchor      = isset( $item['anchor'] ) ? (string) $item['anchor'] : '';
+		$interaction = isset( $item['interaction'] ) ? (string) $item['interaction'] : 'redirect';
+		$badge       = isset( $item['badge_source'] ) ? (string) $item['badge_source'] : '';
+
+		return $slug . "\0" . $anchor . "\0" . $interaction . "\0" . $badge;
+	}
+
+	/**
+	 * Whether two top bar item lists are structurally equivalent.
+	 *
+	 * @param array $left  First item list.
+	 * @param array $right Second item list.
+	 * @return bool
+	 */
+	public static function top_bar_items_match( $left, $right ) {
+		$left_fps  = array();
+		$right_fps = array();
+
+		foreach ( (array) $left as $item ) {
+			$fp = self::get_top_bar_item_fingerprint( $item );
+			if ( '' !== $fp ) {
+				$left_fps[] = $fp;
+			}
+		}
+
+		foreach ( (array) $right as $item ) {
+			$fp = self::get_top_bar_item_fingerprint( $item );
+			if ( '' !== $fp ) {
+				$right_fps[] = $fp;
+			}
+		}
+
+		return $left_fps === $right_fps;
+	}
+
+	/**
+	 * Detect which picker preset matches the saved top bar layout.
+	 *
+	 * @param array|null $cc_settings Optional Command Center settings.
+	 * @return string Preset id, including virtual `default` or `custom`.
+	 */
+	public static function detect_active_layout_preset( $cc_settings = null ) {
+		if ( null === $cc_settings ) {
+			$cc_settings = self::get_settings();
+		}
+
+		$current = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
+			? $cc_settings['top_bar_items']
+			: array();
+
+		if ( empty( $current ) ) {
+			return 'default';
+		}
+
+		$default_preset = self::resolve_effective_preset_id( 'default', $cc_settings );
+		$default_items  = self::resolve_preset_top_bar_items( $default_preset, $cc_settings );
+
+		if ( self::top_bar_items_match( $current, $default_items ) ) {
+			return 'default';
+		}
+
+		foreach ( self::get_all_presets() as $preset_id => $preset ) {
+			unset( $preset );
+			$items = self::resolve_preset_top_bar_items( $preset_id, $cc_settings );
+
+			if ( self::top_bar_items_match( $current, $items ) ) {
+				return $preset_id;
+			}
+		}
+
+		return 'custom';
 	}
 
 	/**
@@ -918,7 +1067,23 @@ class EDMINBOOST_Command_Center {
 	 * @param string $preset_id Preset identifier.
 	 * @return array[]
 	 */
-	public static function resolve_preset_top_bar_items( $preset_id ) {
+	public static function resolve_preset_top_bar_items( $preset_id, $cc_settings = null ) {
+		$preset_id = sanitize_key( $preset_id );
+
+		if ( null === $cc_settings ) {
+			$cc_settings = self::get_settings();
+		}
+
+		if ( 'custom' === $preset_id ) {
+			return isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
+				? $cc_settings['top_bar_items']
+				: array();
+		}
+
+		if ( 'default' === $preset_id ) {
+			$preset_id = self::resolve_effective_preset_id( 'default', $cc_settings );
+		}
+
 		$all_presets = self::get_all_presets();
 
 		if ( isset( $all_presets[ $preset_id ]['top_bar_items'] ) && is_array( $all_presets[ $preset_id ]['top_bar_items'] ) ) {
@@ -1006,7 +1171,16 @@ class EDMINBOOST_Command_Center {
 	 */
 	public static function apply_preset( $preset_id, $mark_setup_complete = true ) {
 		$preset_id = sanitize_key( $preset_id );
-		$all       = self::get_all_presets();
+
+		if ( 'custom' === $preset_id ) {
+			return false;
+		}
+
+		if ( 'default' === $preset_id ) {
+			$preset_id = self::resolve_effective_preset_id( 'default' );
+		}
+
+		$all = self::get_all_presets();
 
 		if ( ! isset( $all[ $preset_id ] ) ) {
 			return false;
@@ -1083,11 +1257,11 @@ class EDMINBOOST_Command_Center {
 			$cc_settings = self::get_settings();
 		}
 
-		$preset_id = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : '';
-		$all       = self::get_all_presets();
+		$active = self::detect_active_layout_preset( $cc_settings );
+		$picker = self::get_picker_presets( true );
 
-		if ( isset( $all[ $preset_id ]['name'] ) ) {
-			return $all[ $preset_id ]['name'];
+		if ( isset( $picker[ $active ]['name'] ) ) {
+			return $picker[ $active ]['name'];
 		}
 
 		return __( 'Custom layout', EDMINBOOST_TEXT_DOMAIN );
@@ -1109,6 +1283,55 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
+	 * Ensure global admin menu arrays are populated for discovery.
+	 *
+	 * Command Center tab AJAX loads run through admin-ajax.php without wp-admin/menu.php,
+	 * so $menu and $submenu are empty unless built explicitly.
+	 *
+	 * @return void
+	 */
+	private static function ensure_admin_menu_globals() {
+		global $menu, $pagenow, $_wp_submenu_nopriv, $_wp_menu_nopriv;
+
+		if ( is_array( $menu ) && ! empty( $menu ) ) {
+			return;
+		}
+
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
+		// wp-admin/menu.php defines helpers at load time; including it twice is fatal.
+		if ( function_exists( '_add_themes_utility_last' ) ) {
+			return;
+		}
+
+		if ( empty( $pagenow ) ) {
+			$pagenow = 'admin.php';
+		}
+
+		if ( ! is_array( $_wp_submenu_nopriv ) ) {
+			$_wp_submenu_nopriv = array();
+		}
+
+		if ( ! is_array( $_wp_menu_nopriv ) ) {
+			$_wp_menu_nopriv = array();
+		}
+
+		if ( defined( 'WP_NETWORK_ADMIN' ) && WP_NETWORK_ADMIN ) {
+			require ABSPATH . 'wp-admin/network/menu.php';
+			return;
+		}
+
+		if ( defined( 'WP_USER_ADMIN' ) && WP_USER_ADMIN ) {
+			require ABSPATH . 'wp-admin/user/menu.php';
+			return;
+		}
+
+		require ABSPATH . 'wp-admin/menu.php';
+	}
+
+	/**
 	 * Discover installed admin menu items for the layout studio.
 	 *
 	 * Includes top-level sidebar entries and submenu pages (e.g. taxonomy screens).
@@ -1116,6 +1339,8 @@ class EDMINBOOST_Command_Center {
 	 * @return array[] Each item: slug, label, icon, source (top|submenu).
 	 */
 	public static function get_discovered_menu_items() {
+		self::ensure_admin_menu_globals();
+
 		global $menu, $submenu;
 
 		$items      = array();
@@ -1217,6 +1442,8 @@ class EDMINBOOST_Command_Center {
 	 * @return array[] Each item: slug, label, icon, children[].
 	 */
 	public static function get_discovered_menu_tree() {
+		self::ensure_admin_menu_globals();
+
 		global $menu, $submenu;
 
 		$tree = array();
