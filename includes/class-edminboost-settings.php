@@ -64,9 +64,6 @@ class EDMINBOOST_Settings {
 					'remove_site_health'     => false,
 					'remove_wp_news'         => false,
 				),
-				'admin_menu'         => array(
-					'hidden_items' => array(),
-				),
 				'admin_footer'       => array(
 					'enabled' => false,
 					'text'    => '',
@@ -184,9 +181,6 @@ class EDMINBOOST_Settings {
 				}
 				return false;
 
-			case 'admin_menu':
-				return ! empty( $features['admin_menu']['hidden_items'] );
-
 			case 'admin_footer':
 				return ! empty( $features['admin_footer']['enabled'] )
 					&& '' !== trim( (string) $features['admin_footer']['text'] );
@@ -283,20 +277,7 @@ class EDMINBOOST_Settings {
 			);
 		}
 
-		$hidden_items = array();
-		if ( ! empty( $raw_features['admin_menu']['hidden_items'] ) && is_array( $raw_features['admin_menu']['hidden_items'] ) ) {
-			foreach ( $raw_features['admin_menu']['hidden_items'] as $menu_slug ) {
-				$menu_slug = sanitize_text_field( wp_unslash( $menu_slug ) );
-				if ( '' !== $menu_slug && preg_match( '/^[a-zA-Z0-9_\-\.?=&]+$/', $menu_slug ) ) {
-					$hidden_items[] = $menu_slug;
-				}
-			}
-		}
-		$sanitized['features']['admin_menu']['hidden_items'] = array_values(
-			array_unique(
-				array_diff( $hidden_items, EDMINBOOST_Admin_Menu::get_protected_slugs() )
-			)
-		);
+		unset( $sanitized['features']['admin_menu'] );
 
 		$sanitized['features']['admin_footer']['enabled'] = ! empty( $raw_features['admin_footer']['enabled'] );
 		$sanitized['features']['admin_footer']['text']    = isset( $raw_features['admin_footer']['text'] )
@@ -518,7 +499,7 @@ class EDMINBOOST_Settings {
 			$hidden = array();
 			foreach ( $raw['hidden_items'] as $slug ) {
 				$slug = sanitize_text_field( wp_unslash( (string) $slug ) );
-				if ( '' === $slug || in_array( $slug, EDMINBOOST_Admin_Menu::get_protected_slugs(), true ) ) {
+				if ( '' === $slug || in_array( $slug, EDMINBOOST_Menu_Studio::get_protected_slugs(), true ) ) {
 					continue;
 				}
 				if ( ! in_array( $slug, $hidden, true ) ) {

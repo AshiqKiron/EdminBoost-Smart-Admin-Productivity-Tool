@@ -17,6 +17,7 @@ test.describe( 'Home setup', () => {
 		if ( await wizard.isVisible() ) {
 			await expect( page.locator( '.edminboost-setup-stepper' ) ).toBeVisible();
 			await expect( page.locator( '#edminboost-setup-step-1' ) ).toBeVisible();
+			await expect( page.locator( '#edminboost-layout-preset-picker' ) ).toBeVisible();
 		}
 	} );
 

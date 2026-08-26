@@ -146,6 +146,17 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	font-weight: 600;
 }
 
+.edminboost-cc-nav.is-loading .edminboost-cc-nav__link {
+	pointer-events: none;
+	opacity: 0.7;
+}
+
+.edminboost-wrap.is-cc-loading {
+	opacity: 0.72;
+	pointer-events: none;
+	transition: opacity 0.15s ease;
+}
+
 /* Command Center hero */
 .edminboost-cc-hero {
 	margin-bottom: 20px;
@@ -365,14 +376,166 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	margin-top: 16px;
 }
 
-.edminboost-preset-picker--wizard .edminboost-preset-card.is-selected {
-	border-color: #2271b1;
-	box-shadow: 0 0 0 1px #2271b1;
+.edminboost-preset-picker--wizard .edminboost-layout-preset-fieldset,
+.edminboost-preset-picker--full .edminboost-layout-preset-fieldset {
+	margin: 0;
+	padding: 0;
+	border: 0;
 }
 
-.edminboost-preset-card__select {
-	display: inline-block;
+.edminboost-layout-preset-picker {
+	position: relative;
+	max-width: 520px;
+	margin-top: 8px;
+}
+
+.edminboost-layout-preset-picker__toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+	min-height: 40px;
+	padding: 8px 12px;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
+	background: #fff;
+	color: #1d2327;
+	cursor: pointer;
+	text-align: left;
+}
+
+.edminboost-layout-preset-picker__toggle:hover,
+.edminboost-layout-preset-picker__toggle:focus {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+	outline: none;
+}
+
+.edminboost-layout-preset-picker__label {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-width: 0;
+}
+
+.edminboost-layout-preset-picker__name {
+	font-weight: 600;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.edminboost-layout-preset-picker__badge {
+	flex-shrink: 0;
+	font-size: 11px;
+	padding: 2px 8px;
+	border-radius: 10px;
+	background: #dcdcde;
+	color: #50575e;
+}
+
+.edminboost-layout-preset-picker__list {
+	position: absolute;
+	z-index: 30;
+	top: calc( 100% + 4px );
+	left: 0;
+	right: 0;
+	max-height: 360px;
 	margin: 0;
+	padding: 4px 0;
+	overflow: auto;
+	list-style: none;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	background: #fff;
+	box-shadow: 0 4px 16px rgba( 0, 0, 0, 0.12 );
+}
+
+.edminboost-layout-preset-picker__list[hidden] {
+	display: none !important;
+}
+
+.edminboost-layout-preset-picker__group {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.edminboost-layout-preset-picker__group-label {
+	display: block;
+	padding: 8px 12px 4px;
+	font-size: 11px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.02em;
+	color: #646970;
+}
+
+.edminboost-layout-preset-picker__group-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.edminboost-layout-preset-picker__option {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 10px 12px;
+	cursor: pointer;
+}
+
+.edminboost-layout-preset-picker__option:hover,
+.edminboost-layout-preset-picker__option:focus {
+	background: #f6f7f7;
+	outline: none;
+}
+
+.edminboost-layout-preset-picker__option.is-selected {
+	background: #f0f6fc;
+	box-shadow: inset 3px 0 0 #2271b1;
+}
+
+.edminboost-layout-preset-picker__option-main {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.edminboost-layout-preset-picker__option-name {
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.edminboost-layout-preset-picker__option-badge {
+	flex-shrink: 0;
+	font-size: 11px;
+	padding: 2px 8px;
+	border-radius: 10px;
+	background: #dcdcde;
+	color: #50575e;
+}
+
+.edminboost-layout-preset-picker__option-desc {
+	font-size: 12px;
+	line-height: 1.4;
+	color: #50575e;
+}
+
+.edminboost-preset-picker .edminboost-overview-topbar-preview {
+	margin-top: 16px;
+}
+
+.edminboost-layout-preset-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	align-items: center;
+	margin-top: 16px;
 }
 
 .edminboost-topbar-summary__list {
@@ -446,14 +609,182 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	color: #50575e;
 }
 
+.edminboost-overview-card__preview {
+	margin: 0 0 12px;
+}
+
+.edminboost-overview-topbar-preview__canvas {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 8px 10px;
+	background: #1d2327;
+	border-radius: 4px;
+	min-height: 42px;
+	overflow: hidden;
+}
+
+.edminboost-overview-topbar-preview__brand,
+.edminboost-overview-topbar-preview__profile {
+	color: #f0f0f1;
+	opacity: 0.65;
+	flex-shrink: 0;
+}
+
+.edminboost-overview-topbar-preview__brand .dashicons,
+.edminboost-overview-topbar-preview__profile .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.edminboost-overview-topbar-preview__items {
+	display: flex;
+	flex: 1;
+	gap: 4px;
+	min-width: 0;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	overflow: hidden;
+}
+
+.edminboost-overview-topbar-preview__item {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
+	padding: 4px 8px;
+	border-radius: 3px;
+	background: #2c3338;
+	color: #f0f0f1;
+	font-size: 11px;
+	line-height: 1.2;
+	white-space: nowrap;
+	flex-shrink: 0;
+}
+
+.edminboost-overview-topbar-preview__item .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+}
+
+.edminboost-overview-topbar-preview__badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 16px;
+	height: 16px;
+	border-radius: 999px;
+	background: rgba( 240, 240, 241, 0.12 );
+	color: #c3c4c7;
+	flex-shrink: 0;
+}
+
+.edminboost-overview-topbar-preview__badge .dashicons {
+	font-size: 12px;
+	width: 12px;
+	height: 12px;
+}
+
+.edminboost-overview-topbar-preview__more {
+	flex-shrink: 0;
+	padding: 2px 6px;
+	border-radius: 999px;
+	background: rgba( 240, 240, 241, 0.12 );
+	color: #c3c4c7;
+	font-size: 11px;
+	font-weight: 600;
+	line-height: 1.4;
+}
+
+.edminboost-overview-topbar-preview--empty {
+	padding: 10px 12px;
+	border: 1px dashed #c3c4c7;
+	border-radius: 4px;
+	background: #f6f7f7;
+}
+
+.edminboost-overview-topbar-preview__empty {
+	margin: 0;
+	font-size: 12px;
+	color: #646970;
+}
+
+.edminboost-overview-theme-preview {
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	overflow: hidden;
+	background: var( --eb-op-surface, #fff );
+	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.04 );
+}
+
+.edminboost-overview-theme-preview__bar {
+	height: 12px;
+	background: var( --eb-op-top, #1d2327 );
+}
+
+.edminboost-overview-theme-preview__layout {
+	display: flex;
+	height: 56px;
+}
+
+.edminboost-overview-theme-preview__sidebar {
+	width: 30%;
+	background: var( --eb-op-sidebar, #1d2327 );
+}
+
+.edminboost-overview-theme-preview__main {
+	display: flex;
+	flex: 1;
+	flex-direction: column;
+	gap: 6px;
+	padding: 10px;
+	background: var( --eb-op-content, #f0f0f1 );
+}
+
+.edminboost-overview-theme-preview__accent {
+	display: block;
+	width: 42%;
+	height: 8px;
+	border-radius: 999px;
+	background: var( --eb-op-accent, #2271b1 );
+}
+
+.edminboost-overview-theme-preview__line {
+	display: block;
+	width: 72%;
+	height: 6px;
+	border-radius: 999px;
+	background: var( --eb-op-text, #1d2327 );
+	opacity: 0.14;
+}
+
+.edminboost-overview-theme-preview__line--short {
+	width: 52%;
+}
+
+.edminboost-overview-theme-preview__swatches {
+	display: flex;
+	gap: 4px;
+	margin: 0;
+	padding: 8px 10px;
+	list-style: none;
+	border-top: 1px solid rgba( 0, 0, 0, 0.06 );
+	background: var( --eb-op-surface, #fff );
+}
+
+.edminboost-overview-theme-preview__swatch {
+	width: 16px;
+	height: 16px;
+	border-radius: 3px;
+	border: 1px solid rgba( 0, 0, 0, 0.12 );
+}
+
 .edminboost-advanced-look {
 	margin-top: 20px;
 	display: grid;
 	gap: 16px;
-}
-
-.edminboost-preset-card__actions .button-primary {
-	margin-bottom: 8px;
 }
 
 /* Layout mapper */
@@ -780,80 +1111,9 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	background: #f0f6fc;
 }
 
-/* Presets grid */
-.edminboost-preset-group + .edminboost-preset-group {
-	margin-top: 24px;
-}
-
-.edminboost-preset-group__title {
-	margin: 0 0 12px;
-	font-size: 14px;
-	font-weight: 600;
-}
-
-.edminboost-preset-grid {
-	display: grid;
-	grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-	gap: 16px;
-	margin-top: 16px;
-}
-
-.edminboost-preset-card {
-	padding: 16px;
-	border: 1px solid #dcdcde;
-	border-radius: 6px;
-	background: #f6f7f7;
-}
-
-.edminboost-preset-card.is-default {
-	border-color: #2271b1;
-	background: #fff;
-}
-
-.edminboost-preset-card__header {
-	display: flex;
-	flex-wrap: wrap;
-	align-items: center;
-	gap: 8px;
-	margin-bottom: 8px;
-}
-
-.edminboost-preset-card__title {
-	margin: 0;
-	font-size: 14px;
-	flex: 1;
-}
-
-.edminboost-preset-card__badge {
-	font-size: 11px;
-	padding: 2px 8px;
-	border-radius: 10px;
-	background: #dcdcde;
-	color: #50575e;
-}
-
-.edminboost-preset-card__badge--custom {
-	background: #dbeafe;
-	color: #1e40af;
-}
-
-.edminboost-preset-card__default {
-	font-size: 11px;
-	font-weight: 600;
-	color: #00a32a;
-}
-
-.edminboost-preset-card__desc {
-	font-size: 13px;
-	color: #50575e;
-	margin: 0 0 12px;
-}
-
-.edminboost-preset-card__actions {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 8px;
-	align-items: center;
+/* Layout preset picker */
+.edminboost-layout-preset-actions .button-primary {
+	margin-bottom: 0;
 }
 
 /* Role matrix */
@@ -1230,13 +1490,15 @@ body.edminboost-theme-active .edminboost-wrap a:focus {
 
 body.edminboost-theme-active .edminboost-wrap .edminboost-persona-card,
 body.edminboost-theme-active .edminboost-wrap .edminboost-setup-card,
-body.edminboost-theme-active .edminboost-wrap .edminboost-preset-card {
+body.edminboost-theme-active .edminboost-wrap .edminboost-layout-preset-picker__toggle,
+body.edminboost-theme-active .edminboost-wrap .edminboost-layout-preset-picker__list {
 	background: var( --eb-surface-alt, #f6f7f7 );
 	border-color: var( --eb-border, #dcdcde );
 }
 
 body.edminboost-theme-active .edminboost-wrap .edminboost-persona-card.is-selected,
-body.edminboost-theme-active .edminboost-wrap .edminboost-preset-card.is-default {
+body.edminboost-theme-active .edminboost-wrap .edminboost-layout-preset-picker__toggle:hover,
+body.edminboost-theme-active .edminboost-wrap .edminboost-layout-preset-picker__toggle:focus {
 	border-color: var( --eb-accent, #2271b1 );
 	background: var( --eb-surface, #fff );
 }

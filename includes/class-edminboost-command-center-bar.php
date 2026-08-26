@@ -143,10 +143,11 @@ class EDMINBOOST_Command_Center_Bar {
 			return;
 		}
 
-		$mapper_screen = self::is_mapper_screen();
-		$load_drawer   = self::has_drawer_items() || $mapper_screen;
+		$mapper_screen  = self::is_mapper_screen();
+		$plugin_screen  = EDMINBOOST_Admin::is_plugin_admin_page();
+		$load_drawer    = self::has_drawer_items() || $mapper_screen || $plugin_screen;
 
-		if ( ! self::is_active() && ! $mapper_screen ) {
+		if ( ! self::is_active() && ! $mapper_screen && ! $plugin_screen ) {
 			return;
 		}
 
@@ -324,7 +325,7 @@ class EDMINBOOST_Command_Center_Bar {
 			return;
 		}
 
-		if ( ! self::has_drawer_items() && ! self::is_mapper_screen() ) {
+		if ( ! self::has_drawer_items() && ! self::is_mapper_screen() && ! EDMINBOOST_Admin::is_plugin_admin_page() ) {
 			return;
 		}
 

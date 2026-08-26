@@ -18,8 +18,8 @@ Run after PHPUnit and Playwright. Mark pass/fail in the Date column.
 | F-01 | Hide notices | Enable; visit Dashboard | Success notices hidden; errors/warnings visible | |
 | F-02 | Hide notices exempt | Enable; open EdminBoost pages | Notices visible on plugin screens | |
 | F-03 | Dashboard widgets | Remove Welcome panel; save | Welcome panel absent on Dashboard | |
-| F-04 | Admin menu | Hide Posts; save | Posts missing from sidebar | |
-| F-05 | Admin menu protected | Try hide Dashboard / Plugins / EdminBoost | Protected menus remain | |
+| F-04 | Menu Studio hide | Hide Posts in Menu Studio; save | Posts missing from sidebar | |
+| F-05 | Menu Studio protected | Try hide Dashboard / Plugins / EdminBoost | Protected menus remain | |
 | F-06 | Admin footer | Enable + custom text | Footer text replaced | |
 | F-07 | Disable emojis | Enable | No emoji script in admin `<head>` | |
 | F-08 | Admin bar tweaks | Hide WP logo | `wp-logo` node removed | |

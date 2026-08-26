@@ -63,23 +63,6 @@ class SettingsTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * Admin menu feature requires hidden items.
-	 */
-	public function test_is_feature_enabled_admin_menu() {
-		$this->seed_settings(
-			array(
-				'features' => array(
-					'admin_menu' => array(
-						'hidden_items' => array( 'edit.php' ),
-					),
-				),
-			)
-		);
-
-		$this->assertTrue( EDMINBOOST_Settings::is_feature_enabled( 'admin_menu' ) );
-	}
-
-	/**
 	 * Admin footer requires enabled flag and text.
 	 */
 	public function test_is_feature_enabled_admin_footer() {
@@ -111,16 +94,18 @@ class SettingsTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * Sanitize strips protected menu slugs.
+	 * Menu Studio sanitize strips protected menu slugs from hidden items.
 	 */
-	public function test_sanitize_strips_protected_menu_slugs() {
+	public function test_sanitize_menu_studio_strips_protected_slugs() {
 		$admin_id = get_current_user_id();
 		wp_set_current_user( $admin_id );
 
 		$result = EDMINBOOST_Settings::sanitize(
 			array(
-				'features' => array(
-					'admin_menu' => array(
+				'command_center' => array(
+					'_menu_studio_save' => 1,
+					'menu_studio'       => array(
+						'enabled'      => 1,
 						'hidden_items' => array(
 							'index.php',
 							EDMINBOOST_Admin::PAGE_SLUG,
@@ -131,7 +116,10 @@ class SettingsTest extends Edminboost_Test_Case {
 			)
 		);
 
-		$this->assertSame( array( 'edit.php' ), $result['features']['admin_menu']['hidden_items'] );
+		$this->assertSame(
+			array( 'edit.php' ),
+			$result['command_center']['menu_studio']['hidden_items']
+		);
 	}
 
 	/**

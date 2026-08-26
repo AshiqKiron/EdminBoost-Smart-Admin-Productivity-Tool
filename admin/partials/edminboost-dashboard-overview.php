@@ -65,6 +65,26 @@ if ( 0 === $top_bar_count ) {
 		$top_bar_desc .= ' ' . implode( '; ', $opening_parts ) . '.';
 	}
 }
+
+$layout_preview_items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $layout_preset );
+$theme_preview_colors = isset( $theme_presets[ $active_preset ]['colors'] ) ? $theme_presets[ $active_preset ]['colors'] : $theme_presets['default']['colors'];
+
+if ( EDMINBOOST_Theme::uses_custom_colors( $theme ) ) {
+	$custom_color_map = array(
+		'accent'  => 'custom_accent',
+		'surface' => 'custom_surface',
+		'text'    => 'custom_text',
+		'topbar'  => 'custom_top',
+		'sidebar' => 'custom_sidebar',
+		'content' => 'custom_content',
+	);
+
+	foreach ( $custom_color_map as $color_key => $theme_color_key ) {
+		if ( ! empty( $theme[ $theme_color_key ] ) ) {
+			$theme_preview_colors[ $color_key ] = $theme[ $theme_color_key ];
+		}
+	}
+}
 ?>
 <div class="edminboost-dashboard-overview">
 	<div class="edminboost-overview-grid">
@@ -74,6 +94,17 @@ if ( 0 === $top_bar_count ) {
 			<?php if ( '' !== $layout_desc ) : ?>
 				<p class="edminboost-overview-card__desc"><?php echo esc_html( $layout_desc ); ?></p>
 			<?php endif; ?>
+			<?php
+			$preview_items      = $layout_preview_items;
+			$preview_id         = 'edminboost-overview-layout-preview';
+			$preview_aria_label = sprintf(
+				/* translators: %s: layout preset name */
+				__( 'Top bar preview for the %s layout preset', EDMINBOOST_TEXT_DOMAIN ),
+				$layout_name
+			);
+			$show_interaction   = false;
+			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
+			?>
 			<a class="button button-secondary" href="<?php echo esc_url( $presets_url ); ?>">
 				<?php esc_html_e( 'Manage layout presets', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</a>
@@ -84,6 +115,11 @@ if ( 0 === $top_bar_count ) {
 			<?php if ( '' !== $theme_desc ) : ?>
 				<p class="edminboost-overview-card__desc"><?php echo esc_html( $theme_desc ); ?></p>
 			<?php endif; ?>
+			<?php
+			$preview_colors = $theme_preview_colors;
+			$preview_id     = 'edminboost-overview-theme-preview';
+			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-theme-preview.php';
+			?>
 			<a class="button button-secondary" href="<?php echo esc_url( $appearance_url ); ?>">
 				<?php esc_html_e( 'Customize appearance', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</a>
@@ -100,6 +136,13 @@ if ( 0 === $top_bar_count ) {
 				?>
 			</p>
 			<p class="edminboost-overview-card__desc"><?php echo esc_html( $top_bar_desc ); ?></p>
+			<?php
+			$preview_items      = $top_bar_items;
+			$preview_id         = 'edminboost-overview-topbar-preview';
+			$preview_aria_label = __( 'Preview of your configured top bar links', EDMINBOOST_TEXT_DOMAIN );
+			$show_interaction   = true;
+			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
+			?>
 			<a class="button button-secondary" href="<?php echo esc_url( $mapper_url ); ?>">
 				<?php esc_html_e( 'Edit top bar', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</a>

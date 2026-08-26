@@ -1,6 +1,6 @@
 ---
 description: Command Center patterns — dashboard, appearance, top bar, presets, menu studio, theme, live admin bar
-globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,dashboard-overview,declutter-settings,home-advanced-look,mapper,preset-picker,presets,menu-studio,setup-review,setup-wizard,theme-settings,topbar-summary,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
+globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,dashboard-overview,declutter-settings,home-advanced-look,mapper,overview-theme-preview,overview-topbar-preview,preset-picker,presets,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
 alwaysApply: false
 ---
 
@@ -55,7 +55,8 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 
 ## Rendering
 
-- Dashboard: `render_admin_page()` → `admin/partials/edminboost-admin-page.php` — first-run setup wizard (`edminboost-setup-wizard.php`) when `! is_setup_complete()`, else post-setup overview (`edminboost-dashboard-overview.php`); CC sub-nav shown only after setup is complete
+- Dashboard: `render_admin_page()` → `admin/partials/edminboost-admin-page.php` — first-run setup wizard (`edminboost-setup-wizard.php`) when `! is_setup_complete()`, else post-setup overview (`edminboost-dashboard-overview.php` with theme/top bar preview partials); CC sub-nav shown only after setup is complete
+- Settings: `render_settings_page()` → `admin/partials/edminboost-settings-page.php` (CC sub-nav + Settings API form; feature fields via `edminboost-settings-features.php`)
 - Appearance: `render_appearance_page()` → `admin/partials/edminboost-appearance-page.php` (visual theme, panel/badges, admin bar declutter)
 - Top Bar: `render_mapper_page()` → `admin/partials/edminboost-mapper-page.php`
 - Layout Presets: `render_presets_page()` → `admin/partials/edminboost-presets-page.php`
@@ -127,7 +128,10 @@ Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when
 | `edminboost-admin-page.php` | Dashboard shell — wizard vs overview |
 | `edminboost-setup-wizard.php` | First-run 4-step stepper (`#edminboost-setup-wizard-form`) |
 | `edminboost-setup-review.php` | Wizard step 4 review summary |
-| `edminboost-dashboard-overview.php` | Post-setup overview cards |
+| `edminboost-dashboard-overview.php` | Post-setup overview cards (includes theme + top bar preview partials) |
+| `edminboost-overview-theme-preview.php` | Mini admin chrome + color swatches (`$preview_id`, `$theme`, optional `$theme_presets`) |
+| `edminboost-overview-topbar-preview.php` | Mini admin bar link strip (`$preview_id`, `$top_bar_items`, optional `$max_visible`) |
+| `edminboost-settings-page.php` | Settings page shell (CC nav + `.edminboost-settings-form`) |
 | `edminboost-appearance-page.php` | Appearance page shell + form |
 | `edminboost-preset-picker.php` | Layout preset card grid (`$preset_picker_mode`: `wizard` or `full`) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list (`$top_bar_items`, optional `$summary_id`) |
@@ -149,7 +153,7 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`.
 - `apply_menu_changes()` on `admin_menu` (998) — reorders, hides, and nests submenus per saved config.
 - `enqueue_styles()` — when active + `use_colors`, loads `edminboost-admin-menu.css` + inline color CSS vars.
 - `filter_body_class()` — adds `edminboost-menu-studio-active` (+ `edminboost-menu-studio-colors` when colors on).
-- Protected slugs (never hidden/reordered away): same as `EDMINBOOST_Admin_Menu::get_protected_slugs()`.
+- `get_protected_slugs()` — never hide or reorder away: `index.php`, `plugins.php`, `EDMINBOOST_Admin::PAGE_SLUG` (sanitizer strips these from `hidden_items`).
 
 ## Visual Theme: `EDMINBOOST_Theme`
 
@@ -176,6 +180,7 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Separate from
 - Menu Studio JS (`initMenuStudio`): mirrors mapper patterns for sidebar — `#edminboost-menu-studio-form`, `#edminboost-menu-canvas`, `#edminboost-menu-discovered-list`, `#edminboost-menu-hidden-inputs`, custom link fields `#edminboost-menu-custom-*`; marker `command_center[_menu_studio_save]` = `1`.
 - Theme JS (`initTheme`): preset dropdown / custom listbox `#edminboost-theme-preset-picker`, mode/font selects, live `#edminboost-theme-preview`; uses `edminboostData.themePresets` for swatch updates and body class preview (Appearance + setup wizard).
 - Setup wizard JS (`initSetupWizard`): `#edminboost-setup-wizard-form`, stepper `.edminboost-setup-stepper__item`, steps `.edminboost-setup-step`, `#edminboost-setup-back` / `#edminboost-setup-next` / `#edminboost-setup-submit`; syncs layout preset radios to hidden `_apply_preset` / `default_preset`, renders top bar preview via `edminboostData.presets`; marker `command_center[_setup_wizard_save]` = `1`.
+- Layout preset picker JS (`initLayoutPresetPicker`): custom listbox `#edminboost-layout-preset-picker` on setup wizard + Layout Presets page; live `.edminboost-overview-topbar-preview` from `edminboostData.presets`; duplicate/apply/save actions on Presets page stay in `initPresets`.
 - Behavior JS (`initBehaviorAnimationSpeed`): hidden `#edminboost_animation_speed` syncs with `.edminboost-animation-speed-picker` listbox; previews use `--edminboost-animation-preview-ms` per option; live drawer reads saved speed via `EDMINBOOST_Command_Center::get_animation_duration_ms()` → `edminboostCcBar.animationMs` and shell `--edminboost-cc-drawer-duration`.
 - Custom admin link: `#edminboost-custom-link-path`, `#edminboost-custom-link-label`, `#edminboost-custom-link-anchor` — path may include `#fragment`; duplicate check uses slug+anchor.
 - Item drawer: `#edminboost-item-anchor` edits the selected canvas item's anchor; `#edminboost-drawer-preview` (visible when interaction is `drawer`) triggers AJAX preview via `edminboostCcOpenDrawer`.

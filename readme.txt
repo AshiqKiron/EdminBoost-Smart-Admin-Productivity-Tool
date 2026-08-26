@@ -18,7 +18,6 @@ EdminBoost is a smart admin productivity plugin for WordPress. It helps site adm
 
 * **Hide Admin Notices** — Reduce clutter by hiding notices outside EdminBoost screens
 * **Dashboard Widget Control** — Remove selected default dashboard widgets
-* **Admin Menu Customizer** — Hide menu items you do not use
 * **Custom Admin Footer** — Replace the default WordPress footer text
 * **Disable Emojis** — Remove emoji detection scripts from the admin area
 * **Admin Bar Tweaks** — Hide selected admin bar items
@@ -54,8 +53,12 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.3.0 =
+* Show Settings inside the Command Center tab navigation like other EdminBoost pages.
+* Remove the duplicate Admin menu feature from Settings; use Menu Studio to hide, reorder, and style sidebar items instead.
 * Add a four-step Dashboard setup wizard: layout preset, color theme, top bar review, and save.
+* Replace layout preset card grids with a compact dropdown picker (description + top bar preview) on the setup wizard and Layout Presets page.
 * Show layout preset, color theme, and top bar descriptions on Dashboard overview cards after setup.
+* Add compact visual previews under each Dashboard overview card (layout top bar, theme colors, live top bar links).
 * Redirect to the Dashboard wizard after plugin activation when setup is incomplete.
 * Add a dedicated Appearance page for visual theme, panel behavior, badges, and admin bar cleanup.
 * Rename Presets menu item to Layout Presets and add consistent Command Center navigation across pages.

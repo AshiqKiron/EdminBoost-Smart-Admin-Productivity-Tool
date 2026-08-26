@@ -106,7 +106,6 @@ array(
 	'features'       => array(
 		'hide_admin_notices' => false,
 		'dashboard_widgets'  => array( /* remove_* keys */ ),
-		'admin_menu'         => array( 'hidden_items' => array() ),
 		'admin_footer'       => array( 'enabled' => false, 'text' => '' ),
 		'disable_emojis'     => false,
 		'admin_bar'          => array( /* hide_* keys */ ),
@@ -118,7 +117,7 @@ array(
 
 - Dashboard: `edminboost-admin-page.php` — expects `$cc_settings`, `$current_page`; includes setup wizard or dashboard overview.
 - Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php`, `edminboost-home-advanced-look.php` (which requires `edminboost-animation-speed-field.php`), and `edminboost-declutter-settings.php`.
-- Settings: `edminboost-settings-features.php` — expects `$settings`.
+- Settings: `edminboost-settings-page.php` — expects `$cc_settings`, `$current_page`; `do_settings_sections()` renders `edminboost-settings-features.php` via `render_features_field()`.
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
 - Setup wizard partials: `edminboost-setup-wizard.php` (includes `edminboost-preset-picker.php`, `edminboost-theme-settings.php`, `edminboost-topbar-summary.php`, `edminboost-setup-review.php`).
 - Document `@var` annotations at the top of partials.

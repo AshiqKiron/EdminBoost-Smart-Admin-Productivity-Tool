@@ -195,21 +195,6 @@ class EDMINBOOST_Admin {
 		);
 
 		add_settings_section(
-			'edminboost_general_section',
-			__( 'General', EDMINBOOST_TEXT_DOMAIN ),
-			array( $this, 'render_general_section' ),
-			self::PAGE_SLUG . '-settings'
-		);
-
-		add_settings_field(
-			'edminboost_enabled',
-			__( 'Enable EdminBoost', EDMINBOOST_TEXT_DOMAIN ),
-			array( $this, 'render_enabled_field' ),
-			self::PAGE_SLUG . '-settings',
-			'edminboost_general_section'
-		);
-
-		add_settings_section(
 			'edminboost_features_section',
 			__( 'Productivity Features', EDMINBOOST_TEXT_DOMAIN ),
 			array( $this, 'render_features_section' ),
@@ -337,31 +322,7 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function render_settings_page() {
-		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			return;
-		}
-
-		?>
-		<div class="wrap edminboost-wrap">
-			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-			<form action="options.php" method="post" class="edminboost-settings-form">
-				<?php
-				settings_fields( EDMINBOOST_Settings::SETTINGS_GROUP );
-				do_settings_sections( self::PAGE_SLUG . '-settings' );
-				submit_button();
-				?>
-			</form>
-		</div>
-		<?php
-	}
-
-	/**
-	 * Render the general settings section description.
-	 *
-	 * @return void
-	 */
-	public function render_general_section() {
-		echo '<p>' . esc_html__( 'Configure core EdminBoost behavior.', EDMINBOOST_TEXT_DOMAIN ) . '</p>';
+		$this->render_command_center_page( 'admin/partials/edminboost-settings-page.php' );
 	}
 
 	/**
@@ -370,28 +331,7 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function render_features_section() {
-		echo '<p>' . esc_html__( 'Enable individual productivity tools. All features apply only in the WordPress admin area.', EDMINBOOST_TEXT_DOMAIN ) . '</p>';
-	}
-
-	/**
-	 * Render the enabled checkbox field.
-	 *
-	 * @return void
-	 */
-	public function render_enabled_field() {
-		$settings = $this->get_settings();
-		?>
-		<label for="edminboost_enabled">
-			<input
-				type="checkbox"
-				id="edminboost_enabled"
-				name="<?php echo esc_attr( EDMINBOOST_Settings::OPTION_NAME ); ?>[enabled]"
-				value="1"
-				<?php checked( ! empty( $settings['enabled'] ) ); ?>
-			/>
-			<?php esc_html_e( 'Turn on smart admin productivity features.', EDMINBOOST_TEXT_DOMAIN ); ?>
-		</label>
-		<?php
+		// Description lives in the Settings page hero lead.
 	}
 
 	/**
@@ -487,6 +427,11 @@ class EDMINBOOST_Admin {
 				'customMenuDuplicate'       => __( 'That link is already on your sidebar.', EDMINBOOST_TEXT_DOMAIN ),
 				'selectLayoutPreset'        => __( 'Select a layout preset to continue.', EDMINBOOST_TEXT_DOMAIN ),
 				'saveAndLaunch'             => __( 'Save and launch', EDMINBOOST_TEXT_DOMAIN ),
+				'presetBadgeBuiltIn'        => __( 'Built-in', EDMINBOOST_TEXT_DOMAIN ),
+				'presetBadgeSaved'          => __( 'Saved', EDMINBOOST_TEXT_DOMAIN ),
+				'emptyLayoutPreview'        => __( 'No links in this preview yet.', EDMINBOOST_TEXT_DOMAIN ),
+				'pageLoading'               => __( 'Loading…', EDMINBOOST_TEXT_DOMAIN ),
+				'pageLoadFailed'            => __( 'Could not load that page. Please try again.', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			'presets'    => self::get_presets_for_js(),
 			'themePresets' => EDMINBOOST_Theme::get_presets_for_js(),
@@ -495,15 +440,17 @@ class EDMINBOOST_Admin {
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'action'  => 'edminboost_save_settings',
 			),
-		);
-
-		if ( self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER === $screen_page ) {
-			$localize['drawerPreview'] = array(
+			'ccNav'        => array(
+				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
+				'action'  => 'edminboost_load_cc_page',
+				'nonce'   => wp_create_nonce( 'edminboost_cc_nav' ),
+			),
+			'drawerPreview' => array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'action'  => 'edminboost_cc_drawer_preview',
 				'nonce'   => wp_create_nonce( 'edminboost_cc_drawer_preview' ),
-			);
-		}
+			),
+		);
 
 		wp_localize_script(
 			'edminboost-admin',
@@ -524,6 +471,7 @@ class EDMINBOOST_Admin {
 			$presets[ $preset_id ] = array(
 				'name'          => isset( $preset['name'] ) ? $preset['name'] : $preset_id,
 				'description'   => isset( $preset['description'] ) ? $preset['description'] : '',
+				'system'        => ! empty( $preset['system'] ),
 				'top_bar_items' => EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id ),
 			);
 		}
@@ -587,6 +535,167 @@ class EDMINBOOST_Admin {
 		array_unshift( $links, $settings_link );
 
 		return $links;
+	}
+
+	/**
+	 * Whether the given admin page slug belongs to this plugin.
+	 *
+	 * @param string|null $page Optional page slug; reads $_GET['page'] when null.
+	 * @return bool
+	 */
+	public static function is_plugin_admin_page( $page = null ) {
+		if ( null === $page ) {
+			// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- routing helper.
+			$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : '';
+		}
+
+		if ( '' === $page ) {
+			return false;
+		}
+
+		return 0 === strpos( $page, self::PAGE_SLUG );
+	}
+
+	/**
+	 * AJAX: load a Command Center tab without a full page reload.
+	 *
+	 * @return void
+	 */
+	public function ajax_load_cc_page() {
+		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'You do not have permission to view this page.', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				403
+			);
+		}
+
+		check_ajax_referer( 'edminboost_cc_nav', 'nonce' );
+
+		$page = isset( $_POST['page'] ) ? sanitize_key( wp_unslash( $_POST['page'] ) ) : '';
+
+		if ( ! $this->is_valid_cc_nav_page( $page ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Unknown Command Center page.', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				400
+			);
+		}
+
+		$html = $this->capture_cc_page_html( $page );
+
+		if ( '' === $html ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Could not load that page.', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				500
+			);
+		}
+
+		$page_title = $this->get_cc_page_title( $page );
+
+		wp_send_json_success(
+			array(
+				'html'          => $html,
+				'page'          => $page,
+				'title'         => $page_title,
+				'documentTitle' => sprintf(
+					/* translators: 1: page title, 2: site name */
+					__( '%1$s ‹ %2$s — WordPress', EDMINBOOST_TEXT_DOMAIN ),
+					$page_title,
+					get_bloginfo( 'name' )
+				),
+			)
+		);
+	}
+
+	/**
+	 * Whether a page slug is a Command Center navigation target.
+	 *
+	 * @param string $page Admin page slug.
+	 * @return bool
+	 */
+	private function is_valid_cc_nav_page( $page ) {
+		foreach ( EDMINBOOST_Command_Center::get_nav_items() as $item ) {
+			if ( isset( $item['slug'] ) && $page === $item['slug'] ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Render a Command Center page and return its HTML.
+	 *
+	 * @param string $page Admin page slug.
+	 * @return string
+	 */
+	private function capture_cc_page_html( $page ) {
+		$this->prime_cc_page_context( $page );
+
+		ob_start();
+
+		switch ( $page ) {
+			case self::PAGE_SLUG:
+				$this->render_admin_page();
+				break;
+			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE:
+				$this->render_appearance_page();
+				break;
+			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER:
+				$this->render_mapper_page();
+				break;
+			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS:
+				$this->render_presets_page();
+				break;
+			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO:
+				$this->render_menu_studio_page();
+				break;
+			case self::PAGE_SLUG . '-settings':
+				$this->render_settings_page();
+				break;
+			default:
+				ob_end_clean();
+				return '';
+		}
+
+		return (string) ob_get_clean();
+	}
+
+	/**
+	 * Prime globals used by admin page partials during AJAX renders.
+	 *
+	 * @param string $page Admin page slug.
+	 * @return void
+	 */
+	private function prime_cc_page_context( $page ) {
+		global $plugin_page, $title;
+
+		$plugin_page = $page;
+		$title       = $this->get_cc_page_title( $page );
+	}
+
+	/**
+	 * Human-readable title for a Command Center page slug.
+	 *
+	 * @param string $page Admin page slug.
+	 * @return string
+	 */
+	private function get_cc_page_title( $page ) {
+		$titles = array(
+			self::PAGE_SLUG                                              => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER     => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS    => __( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . '-settings'                                => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+		);
+
+		return isset( $titles[ $page ] ) ? $titles[ $page ] : '';
 	}
 
 	/**

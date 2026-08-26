@@ -13,8 +13,8 @@ class FeaturesTest extends Edminboost_Test_Case {
 	/**
 	 * Protected menu slugs list is stable.
 	 */
-	public function test_admin_menu_protected_slugs() {
-		$protected = EDMINBOOST_Admin_Menu::get_protected_slugs();
+	public function test_menu_studio_protected_slugs() {
+		$protected = EDMINBOOST_Menu_Studio::get_protected_slugs();
 
 		$this->assertContains( 'index.php', $protected );
 		$this->assertContains( 'plugins.php', $protected );
@@ -22,9 +22,9 @@ class FeaturesTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * hide_menu_items skips protected slugs.
+	 * apply_menu_changes skips protected slugs when hiding items.
 	 */
-	public function test_admin_menu_skips_protected_slugs() {
+	public function test_menu_studio_skips_protected_slugs() {
 		global $menu;
 
 		$menu = array(
@@ -34,16 +34,16 @@ class FeaturesTest extends Edminboost_Test_Case {
 
 		$this->seed_settings(
 			array(
-				'features' => array(
-					'admin_menu' => array(
+				'command_center' => array(
+					'menu_studio' => array(
+						'enabled'      => true,
 						'hidden_items' => array( 'index.php', 'edit.php' ),
 					),
 				),
 			)
 		);
 
-		$feature = new EDMINBOOST_Admin_Menu();
-		$feature->hide_menu_items();
+		EDMINBOOST_Menu_Studio::apply_menu_changes();
 
 		$slugs = array();
 		foreach ( $menu as $item ) {

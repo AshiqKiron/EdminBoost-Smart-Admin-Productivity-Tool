@@ -39,7 +39,6 @@ class EDMINBOOST_Features {
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-feature-base.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-hide-notices.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-dashboard.php';
-		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-admin-menu.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-admin-footer.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-disable-emojis.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-admin-bar.php';
@@ -47,7 +46,6 @@ class EDMINBOOST_Features {
 		$feature_classes = array(
 			'EDMINBOOST_Hide_Notices',
 			'EDMINBOOST_Dashboard',
-			'EDMINBOOST_Admin_Menu',
 			'EDMINBOOST_Admin_Footer',
 			'EDMINBOOST_Disable_Emojis',
 			'EDMINBOOST_Admin_Bar',

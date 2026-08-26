@@ -29,6 +29,19 @@ class EDMINBOOST_Menu_Studio {
 	}
 
 	/**
+	 * Menu slugs that must never be hidden or reordered away.
+	 *
+	 * @return string[]
+	 */
+	public static function get_protected_slugs() {
+		return array(
+			'index.php',
+			'plugins.php',
+			EDMINBOOST_Admin::PAGE_SLUG,
+		);
+	}
+
+	/**
 	 * Whether Menu Studio should apply on the current request.
 	 *
 	 * @return bool
@@ -138,7 +151,7 @@ class EDMINBOOST_Menu_Studio {
 			: array();
 
 		foreach ( $hidden as $menu_slug ) {
-			if ( in_array( $menu_slug, EDMINBOOST_Admin_Menu::get_protected_slugs(), true ) ) {
+			if ( in_array( $menu_slug, self::get_protected_slugs(), true ) ) {
 				continue;
 			}
 

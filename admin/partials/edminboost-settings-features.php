@@ -17,8 +17,6 @@ $option_name    = EDMINBOOST_Settings::OPTION_NAME;
 $features       = isset( $settings['features'] ) ? $settings['features'] : array();
 $widget_labels  = EDMINBOOST_Dashboard::get_widget_labels();
 $bar_labels     = EDMINBOOST_Admin_Bar::get_option_labels();
-$menu_items     = EDMINBOOST_Admin_Menu::get_available_menu_items();
-$hidden_menus   = isset( $features['admin_menu']['hidden_items'] ) ? $features['admin_menu']['hidden_items'] : array();
 $footer_enabled = ! empty( $features['admin_footer']['enabled'] );
 $footer_text    = isset( $features['admin_footer']['text'] ) ? $features['admin_footer']['text'] : '';
 ?>
@@ -51,34 +49,6 @@ $footer_text    = isset( $features['admin_footer']['text'] ) ? $features['admin_
 			<?php echo esc_html( $widget_label ); ?>
 		</label>
 	<?php endforeach; ?>
-</fieldset>
-
-<fieldset class="edminboost-fieldset">
-	<legend><?php esc_html_e( 'Admin menu', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
-	<p class="description"><?php esc_html_e( 'Hide menu items you do not need. Dashboard, Plugins, and EdminBoost cannot be hidden.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
-	<?php if ( empty( $menu_items ) ) : ?>
-		<p><?php esc_html_e( 'No menu items available.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
-	<?php else : ?>
-		<div class="edminboost-checkbox-grid">
-			<?php foreach ( $menu_items as $menu_slug => $menu_label ) : ?>
-				<?php
-				$is_protected = in_array( $menu_slug, EDMINBOOST_Admin_Menu::get_protected_slugs(), true );
-				$field_id     = 'edminboost_menu_' . sanitize_html_class( $menu_slug );
-				?>
-				<label class="edminboost-checkbox-row" for="<?php echo esc_attr( $field_id ); ?>">
-					<input
-						type="checkbox"
-						id="<?php echo esc_attr( $field_id ); ?>"
-						name="<?php echo esc_attr( $option_name ); ?>[features][admin_menu][hidden_items][]"
-						value="<?php echo esc_attr( $menu_slug ); ?>"
-						<?php checked( in_array( $menu_slug, $hidden_menus, true ) ); ?>
-						<?php disabled( $is_protected ); ?>
-					/>
-					<?php echo esc_html( $menu_label ); ?>
-				</label>
-			<?php endforeach; ?>
-		</div>
-	<?php endif; ?>
 </fieldset>
 
 <fieldset class="edminboost-fieldset">

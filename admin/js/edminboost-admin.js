@@ -12,17 +12,207 @@
 			return;
 		}
 
+		initCommandCenterNav();
+		reinitEdminboostPage( root );
+		primeCommandCenterHistory();
+	} );
+
+	function reinitEdminboostPage( root ) {
+		if ( ! root ) {
+			return;
+		}
+
 		root.setAttribute( 'data-edminboost-ready', 'true' );
 
 		initMapper( root );
 		initMenuStudio( root );
 		initBehavior( root );
 		initTheme( root );
+		initLayoutPresetPicker( root );
 		initPresets( root );
 		initSetupWizard( root );
 		initCommandCenterForms( root );
 		initSettingsForm( root );
-	} );
+	}
+
+	function primeCommandCenterHistory() {
+		if ( ! window.history || ! window.history.replaceState || ! edminboostData.currentPage ) {
+			return;
+		}
+
+		if ( window.history.state && window.history.state.edminboostPage ) {
+			return;
+		}
+
+		window.history.replaceState(
+			{
+				edminboostPage: edminboostData.currentPage
+			},
+			'',
+			window.location.href
+		);
+	}
+
+	function initCommandCenterNav() {
+		var navConfig = edminboostData.ccNav;
+		var strings   = edminboostData.strings || {};
+		var navRequest = null;
+
+		if ( ! navConfig ) {
+			return;
+		}
+
+		document.addEventListener( 'click', function ( event ) {
+			var link = event.target.closest( '.edminboost-cc-nav__link' );
+
+			if ( ! link ) {
+				return;
+			}
+
+			var wrap = document.querySelector( '.edminboost-wrap' );
+
+			if ( ! wrap || ! wrap.contains( link ) ) {
+				return;
+			}
+
+			if ( event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || link.target === '_blank' ) {
+				return;
+			}
+
+			if ( link.classList.contains( 'is-active' ) ) {
+				event.preventDefault();
+				return;
+			}
+
+			event.preventDefault();
+			loadCommandCenterPage( link.getAttribute( 'data-edminboost-page' ) || '', link.href, { push: true } );
+		} );
+
+		window.addEventListener( 'popstate', function ( event ) {
+			if ( ! event.state || ! event.state.edminboostPage ) {
+				return;
+			}
+
+			loadCommandCenterPage( event.state.edminboostPage, window.location.href, { push: false } );
+		} );
+
+		function loadCommandCenterPage( page, url, options ) {
+			options = options || {};
+
+			if ( ! page ) {
+				return;
+			}
+
+			var currentWrap = document.querySelector( '.edminboost-wrap' );
+			var nav         = currentWrap ? currentWrap.querySelector( '.edminboost-cc-nav' ) : null;
+
+			if ( navRequest ) {
+				navRequest.abort();
+			}
+
+			if ( nav ) {
+				nav.classList.add( 'is-loading' );
+				nav.setAttribute( 'aria-busy', 'true' );
+			}
+
+			if ( currentWrap ) {
+				currentWrap.classList.add( 'is-cc-loading' );
+			}
+
+			var controller = new window.AbortController();
+			navRequest = controller;
+
+			var formData = new window.FormData();
+			formData.append( 'action', navConfig.action );
+			formData.append( 'nonce', navConfig.nonce );
+			formData.append( 'page', page );
+
+			window.fetch( navConfig.ajaxUrl, {
+				method: 'POST',
+				body: formData,
+				credentials: 'same-origin',
+				signal: controller.signal
+			} )
+				.then( function ( response ) {
+					return response.json();
+				} )
+				.then( function ( payload ) {
+					if ( ! payload.success ) {
+						var errorMessage = payload.data && payload.data.message
+							? payload.data.message
+							: strings.pageLoadFailed;
+
+						throw new Error( errorMessage );
+					}
+
+					var data = payload.data || {};
+					var parser = new window.DOMParser();
+					var doc = parser.parseFromString( data.html || '', 'text/html' );
+					var newWrap = doc.querySelector( '.edminboost-wrap' );
+
+					if ( ! newWrap || ! currentWrap ) {
+						throw new Error( strings.pageLoadFailed );
+					}
+
+					currentWrap.replaceWith( newWrap );
+					edminboostData.currentPage = data.page || page;
+
+					if ( data.documentTitle ) {
+						document.title = data.documentTitle;
+					} else if ( data.title ) {
+						document.title = data.title;
+					}
+
+					if ( options.push && url && window.history && window.history.pushState ) {
+						window.history.pushState(
+							{
+								edminboostPage: data.page || page
+							},
+							'',
+							url
+						);
+					}
+
+					reinitEdminboostPage( newWrap );
+
+					var heading = newWrap.querySelector( 'h1' );
+					if ( heading ) {
+						heading.setAttribute( 'tabindex', '-1' );
+						heading.focus( { preventScroll: true } );
+					}
+
+					newWrap.scrollIntoView( { behavior: 'smooth', block: 'start' } );
+				} )
+				.catch( function ( error ) {
+					if ( error && error.name === 'AbortError' ) {
+						return;
+					}
+
+					window.alert( error.message || strings.pageLoadFailed );
+
+					if ( url ) {
+						window.location.assign( url );
+					}
+				} )
+				.finally( function () {
+					if ( navRequest === controller ) {
+						navRequest = null;
+					}
+
+					var activeWrap = document.querySelector( '.edminboost-wrap' );
+					var activeNav  = activeWrap ? activeWrap.querySelector( '.edminboost-cc-nav' ) : null;
+
+					if ( activeNav ) {
+						activeNav.classList.remove( 'is-loading' );
+						activeNav.removeAttribute( 'aria-busy' );
+					}
+
+					if ( activeWrap ) {
+						activeWrap.classList.remove( 'is-cc-loading' );
+					}
+				} );
+		}
+	}
 
 	function initMapper( root ) {
 		var form         = document.getElementById( 'edminboost-mapper-form' );
@@ -2061,6 +2251,243 @@
 		}
 	}
 
+	function initLayoutPresetPicker( root ) {
+		var presetSelect   = document.getElementById( 'edminboost_layout_preset' );
+		var presetPicker   = document.getElementById( 'edminboost-layout-preset-picker' );
+		var presetToggle   = document.getElementById( 'edminboost_layout_preset_toggle' );
+		var presetList     = document.getElementById( 'edminboost-layout-preset-list' );
+		var presetName     = document.getElementById( 'edminboost-layout-preset-name' );
+		var presetBadge    = document.getElementById( 'edminboost-layout-preset-badge' );
+		var presetDesc     = document.getElementById( 'edminboost-layout-preset-desc' );
+		var defaultField   = document.getElementById( 'edminboost_layout_default_preset' );
+		var defaultCheckbox = document.getElementById( 'edminboost_layout_preset_default_checkbox' );
+		var duplicateBtn   = document.getElementById( 'edminboost-preset-duplicate-btn' );
+		var previewRoot    = root.querySelector( '.edminboost-preset-picker .edminboost-overview-topbar-preview' );
+		var presetCatalog  = edminboostData.presets || {};
+		var badgeBuiltIn   = edminboostData.strings.presetBadgeBuiltIn || 'Built-in';
+		var badgeSaved     = edminboostData.strings.presetBadgeSaved || 'Saved';
+
+		if ( ! presetSelect || ! presetPicker ) {
+			return;
+		}
+
+		function getSelectedPreset() {
+			return presetSelect.value || '';
+		}
+
+		function isSystemPreset( presetId ) {
+			var config = presetCatalog[ presetId ] || {};
+			return !! config.system;
+		}
+
+		function closePresetList() {
+			if ( ! presetList || ! presetToggle ) {
+				return;
+			}
+
+			presetList.hidden = true;
+			presetToggle.setAttribute( 'aria-expanded', 'false' );
+		}
+
+		function openPresetList() {
+			if ( ! presetList || ! presetToggle ) {
+				return;
+			}
+
+			presetList.hidden = false;
+			presetToggle.setAttribute( 'aria-expanded', 'true' );
+		}
+
+		function togglePresetList() {
+			if ( ! presetList ) {
+				return;
+			}
+
+			if ( presetList.hidden ) {
+				openPresetList();
+			} else {
+				closePresetList();
+			}
+		}
+
+		function renderTopBarPreview( presetId ) {
+			if ( ! previewRoot ) {
+				return;
+			}
+
+			var preset = presetCatalog[ presetId ] || {};
+			var items  = preset.top_bar_items || [];
+			var limit  = 6;
+			var visible = [];
+			var overflow = 0;
+
+			items.forEach( function ( item ) {
+				if ( ! item || ! item.slug ) {
+					return;
+				}
+
+				if ( visible.length >= limit ) {
+					overflow += 1;
+					return;
+				}
+
+				visible.push( item );
+			} );
+
+			previewRoot.classList.toggle( 'edminboost-overview-topbar-preview--empty', ! visible.length );
+
+			if ( ! visible.length ) {
+				previewRoot.innerHTML = '<p class="edminboost-overview-topbar-preview__empty">' +
+					( edminboostData.strings.emptyLayoutPreview || 'No links in this preview yet.' ) +
+					'</p>';
+				return;
+			}
+
+			var canvas = document.createElement( 'div' );
+			canvas.className = 'edminboost-overview-topbar-preview__canvas';
+			canvas.setAttribute( 'aria-hidden', 'true' );
+
+			var brand = document.createElement( 'span' );
+			brand.className = 'edminboost-overview-topbar-preview__brand';
+			brand.innerHTML = '<span class="dashicons dashicons-wordpress"></span>';
+			canvas.appendChild( brand );
+
+			var list = document.createElement( 'ul' );
+			list.className = 'edminboost-overview-topbar-preview__items';
+
+			visible.forEach( function ( item ) {
+				var li = document.createElement( 'li' );
+				var interaction = item.interaction || 'redirect';
+				li.className = 'edminboost-overview-topbar-preview__item ' +
+					( interaction === 'drawer' ? 'is-drawer' : 'is-direct' );
+
+				var icon = document.createElement( 'span' );
+				icon.className = 'dashicons ' + ( item.icon || 'dashicons-admin-generic' );
+				icon.setAttribute( 'aria-hidden', 'true' );
+
+				var label = document.createElement( 'span' );
+				label.className = 'edminboost-overview-topbar-preview__label';
+				label.textContent = item.label || item.slug || '';
+
+				li.appendChild( icon );
+				li.appendChild( label );
+				list.appendChild( li );
+			} );
+
+			canvas.appendChild( list );
+
+			if ( overflow > 0 ) {
+				var more = document.createElement( 'span' );
+				more.className = 'edminboost-overview-topbar-preview__more';
+				more.textContent = '+' + overflow;
+				canvas.appendChild( more );
+			}
+
+			var profile = document.createElement( 'span' );
+			profile.className = 'edminboost-overview-topbar-preview__profile';
+			profile.innerHTML = '<span class="dashicons dashicons-admin-users"></span>';
+			canvas.appendChild( profile );
+
+			previewRoot.innerHTML = '';
+			previewRoot.appendChild( canvas );
+		}
+
+		function syncDefaultCheckbox() {
+			if ( ! defaultCheckbox || ! defaultField ) {
+				return;
+			}
+
+			defaultCheckbox.checked = defaultField.value === getSelectedPreset();
+		}
+
+		function syncPresetPickerSelection() {
+			var preset = getSelectedPreset();
+			var config = presetCatalog[ preset ] || {};
+			var system = isSystemPreset( preset );
+
+			if ( presetName ) {
+				presetName.textContent = config.name || preset;
+			}
+
+			if ( presetBadge ) {
+				presetBadge.textContent = system ? badgeBuiltIn : badgeSaved;
+			}
+
+			if ( presetDesc ) {
+				presetDesc.textContent = config.description || '';
+			}
+
+			if ( duplicateBtn ) {
+				duplicateBtn.disabled = system;
+			}
+
+			if ( presetList ) {
+				presetList.querySelectorAll( '.edminboost-layout-preset-picker__option' ).forEach( function ( option ) {
+					var isSelected = option.getAttribute( 'data-value' ) === preset;
+					option.classList.toggle( 'is-selected', isSelected );
+					option.setAttribute( 'aria-selected', isSelected ? 'true' : 'false' );
+				} );
+			}
+
+			renderTopBarPreview( preset );
+			syncDefaultCheckbox();
+		}
+
+		function setSelectedPreset( preset ) {
+			if ( ! presetSelect || ! presetCatalog[ preset ] ) {
+				return;
+			}
+
+			presetSelect.value = preset;
+			syncPresetPickerSelection();
+			presetSelect.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+		}
+
+		if ( presetToggle ) {
+			presetToggle.addEventListener( 'click', function () {
+				togglePresetList();
+			} );
+		}
+
+		if ( presetList ) {
+			presetList.addEventListener( 'click', function ( event ) {
+				var option = event.target.closest( '.edminboost-layout-preset-picker__option' );
+				if ( ! option ) {
+					return;
+				}
+
+				setSelectedPreset( option.getAttribute( 'data-value' ) || '' );
+				closePresetList();
+			} );
+
+			presetList.addEventListener( 'keydown', function ( event ) {
+				if ( event.key === 'Escape' ) {
+					closePresetList();
+					if ( presetToggle ) {
+						presetToggle.focus();
+					}
+				}
+			} );
+		}
+
+		document.addEventListener( 'click', function ( event ) {
+			if ( ! presetPicker.contains( event.target ) ) {
+				closePresetList();
+			}
+		} );
+
+		if ( defaultCheckbox && defaultField ) {
+			defaultCheckbox.addEventListener( 'change', function () {
+				if ( defaultCheckbox.checked ) {
+					defaultField.value = getSelectedPreset();
+				}
+			} );
+		}
+
+		presetSelect.addEventListener( 'change', syncPresetPickerSelection );
+		syncPresetPickerSelection();
+	}
+
 	function initSetupWizard( root ) {
 		var form         = document.getElementById( 'edminboost-setup-wizard-form' );
 		var backBtn      = document.getElementById( 'edminboost-setup-back' );
@@ -2070,8 +2497,7 @@
 		var defaultField = document.getElementById( 'edminboost_wizard_default_preset' );
 		var summaryRoot  = document.getElementById( 'edminboost-wizard-topbar-summary' );
 		var summaryList  = document.getElementById( 'edminboost-wizard-topbar-summary-list' );
-		var presetRadios = root.querySelectorAll( '.edminboost-wizard-preset-radio' );
-		var presetCards  = root.querySelectorAll( '.edminboost-preset-picker--wizard .edminboost-preset-card' );
+		var layoutSelect = document.getElementById( 'edminboost_layout_preset' );
 		var stepperItems = root.querySelectorAll( '.edminboost-setup-stepper__item' );
 		var steps        = root.querySelectorAll( '.edminboost-setup-step' );
 		var presetCatalog = edminboostData.presets || {};
@@ -2084,8 +2510,7 @@
 		}
 
 		function getSelectedLayoutPreset() {
-			var selected = root.querySelector( '.edminboost-wizard-preset-radio:checked' );
-			return selected ? selected.value : '';
+			return layoutSelect ? layoutSelect.value : '';
 		}
 
 		function getSelectedThemeName() {
@@ -2219,14 +2644,11 @@
 			}
 		}
 
-		presetRadios.forEach( function ( radio ) {
-			radio.addEventListener( 'change', function () {
-				presetCards.forEach( function ( card ) {
-					card.classList.toggle( 'is-selected', card.getAttribute( 'data-preset-id' ) === radio.value );
-				} );
-				syncPresetFields( radio.value );
+		if ( layoutSelect ) {
+			layoutSelect.addEventListener( 'change', function () {
+				syncPresetFields( layoutSelect.value );
 			} );
-		} );
+		}
 
 		var themePresetSelect = document.getElementById( 'edminboost_theme_preset' );
 		if ( themePresetSelect ) {
@@ -2269,15 +2691,26 @@
 	}
 
 	function initPresets( root ) {
-		var form           = document.getElementById( 'edminboost-presets-form' );
-		var applyField     = document.getElementById( 'edminboost_apply_preset' );
-		var duplicateField = document.getElementById( 'edminboost_duplicate_preset' );
-		var saveNameField  = document.getElementById( 'edminboost_save_custom_preset_name' );
-		var savePresetBtn  = document.getElementById( 'edminboost-save-preset-btn' );
-		var exportButtons  = root.querySelectorAll( '.edminboost-preset-export' );
-		var applyButtons   = root.querySelectorAll( '.edminboost-preset-apply' );
-		var duplicateButtons = root.querySelectorAll( '.edminboost-preset-duplicate' );
-		var presetCatalog  = edminboostData.presets || {};
+		var form            = document.getElementById( 'edminboost-presets-form' );
+		var applyField      = document.getElementById( 'edminboost_apply_preset' );
+		var duplicateField  = document.getElementById( 'edminboost_duplicate_preset' );
+		var saveNameField   = document.getElementById( 'edminboost_save_custom_preset_name' );
+		var savePresetBtn   = document.getElementById( 'edminboost-save-preset-btn' );
+		var applyBtn        = document.getElementById( 'edminboost-preset-apply-btn' );
+		var duplicateBtn    = document.getElementById( 'edminboost-preset-duplicate-btn' );
+		var exportBtn       = document.getElementById( 'edminboost-preset-export-btn' );
+		var layoutSelect    = document.getElementById( 'edminboost_layout_preset' );
+		var defaultField    = document.getElementById( 'edminboost_layout_default_preset' );
+		var defaultCheckbox = document.getElementById( 'edminboost_layout_preset_default_checkbox' );
+		var presetCatalog   = edminboostData.presets || {};
+
+		if ( ! form ) {
+			return;
+		}
+
+		function getSelectedPresetId() {
+			return layoutSelect ? layoutSelect.value : '';
+		}
 
 		function clearActionFields() {
 			if ( applyField ) {
@@ -2291,35 +2724,50 @@
 			}
 		}
 
-		applyButtons.forEach( function ( btn ) {
-			btn.addEventListener( 'click', function () {
-				if ( ! form || ! applyField ) {
+		form.addEventListener( 'submit', function () {
+			if ( defaultCheckbox && defaultCheckbox.checked && defaultField ) {
+				defaultField.value = getSelectedPresetId();
+			}
+		} );
+
+		if ( applyBtn ) {
+			applyBtn.addEventListener( 'click', function () {
+				if ( ! applyField ) {
+					return;
+				}
+
+				var presetId = getSelectedPresetId();
+				if ( ! presetId ) {
 					return;
 				}
 
 				clearActionFields();
-				applyField.value = btn.dataset.presetId || '';
+				applyField.value = presetId;
 
-				var defaultRadio = form.querySelector( 'input[name*="[default_preset]"][value="' + applyField.value + '"]' );
-				if ( defaultRadio ) {
-					defaultRadio.checked = true;
+				if ( defaultCheckbox && defaultCheckbox.checked && defaultField ) {
+					defaultField.value = presetId;
 				}
 
 				saveSettingsForm( form, { reload: true } );
 			} );
-		} );
+		}
 
-		duplicateButtons.forEach( function ( btn ) {
-			btn.addEventListener( 'click', function () {
-				if ( ! form || ! duplicateField ) {
+		if ( duplicateBtn ) {
+			duplicateBtn.addEventListener( 'click', function () {
+				if ( ! duplicateField || duplicateBtn.disabled ) {
+					return;
+				}
+
+				var presetId = getSelectedPresetId();
+				if ( ! presetId ) {
 					return;
 				}
 
 				clearActionFields();
-				duplicateField.value = btn.dataset.presetId || '';
+				duplicateField.value = presetId;
 				saveSettingsForm( form, { reload: true } );
 			} );
-		} );
+		}
 
 		if ( savePresetBtn ) {
 			savePresetBtn.addEventListener( 'click', function () {
@@ -2342,9 +2790,9 @@
 			} );
 		}
 
-		exportButtons.forEach( function ( btn ) {
-			btn.addEventListener( 'click', function () {
-				var presetId = btn.dataset.presetId || 'preset';
+		if ( exportBtn ) {
+			exportBtn.addEventListener( 'click', function () {
+				var presetId = getSelectedPresetId() || 'preset';
 				var preset   = presetCatalog[ presetId ] || {};
 				var payload  = {
 					id: presetId,
@@ -2362,6 +2810,6 @@
 				link.click();
 				URL.revokeObjectURL( url );
 			} );
-		} );
+		}
 	}
 } )();

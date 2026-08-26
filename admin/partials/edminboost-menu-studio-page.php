@@ -28,7 +28,7 @@ $colors        = isset( $menu_studio['colors'] ) && is_array( $menu_studio['colo
 $custom_items  = isset( $menu_studio['custom_items'] ) && is_array( $menu_studio['custom_items'] )
 	? $menu_studio['custom_items']
 	: array();
-$protected     = EDMINBOOST_Admin_Menu::get_protected_slugs();
+$protected     = EDMINBOOST_Menu_Studio::get_protected_slugs();
 
 $color_fields = array(
 	'parent_bg'         => array(

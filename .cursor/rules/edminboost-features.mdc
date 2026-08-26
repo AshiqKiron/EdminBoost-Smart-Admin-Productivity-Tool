@@ -49,12 +49,9 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 |------|----------|--------------------------------|
 | Boolean flag | `hide_admin_notices`, `disable_emojis` | truthy option value |
 | Sub-key array | `dashboard_widgets`, `admin_bar` | any sub-key enabled |
-| Structured | `admin_menu` | `hidden_items` non-empty |
 | Structured + text | `admin_footer` | `enabled` + non-empty `text` |
 
-## Protected Menu Slugs
-
-`EDMINBOOST_Admin_Menu::get_protected_slugs()` — never hide: `index.php`, `plugins.php`, `EDMINBOOST_Admin::PAGE_SLUG`.
+Sidebar hide/reorder lives in Menu Studio (`command_center.menu_studio`), not the feature registry — see `edminboost-command-center.mdc`.
 
 ## Current Features
 
@@ -62,7 +59,6 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 |----|-------|-------|
 | `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` (inline CSS; preserves error/warning notices) |
 | `dashboard_widgets` | `EDMINBOOST_Dashboard` | `wp_dashboard_setup` (99), `admin_init` |
-| `admin_menu` | `EDMINBOOST_Admin_Menu` | `admin_menu` (999) |
 | `admin_footer` | `EDMINBOOST_Admin_Footer` | `admin_footer_text` |
 | `disable_emojis` | `EDMINBOOST_Disable_Emojis` | `admin_init` |
 | `admin_bar` | `EDMINBOOST_Admin_Bar` | `admin_bar_menu` (999) |

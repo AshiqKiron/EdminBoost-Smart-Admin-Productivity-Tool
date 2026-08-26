@@ -24,6 +24,7 @@ $nav_items = EDMINBOOST_Command_Center::get_nav_items();
 				<a
 					class="edminboost-cc-nav__link<?php echo $is_active ? ' is-active' : ''; ?>"
 					href="<?php echo esc_url( $url ); ?>"
+					data-edminboost-page="<?php echo esc_attr( $item['slug'] ); ?>"
 					<?php echo $is_active ? ' aria-current="page"' : ''; ?>
 				>
 					<?php echo esc_html( $item['label'] ); ?>

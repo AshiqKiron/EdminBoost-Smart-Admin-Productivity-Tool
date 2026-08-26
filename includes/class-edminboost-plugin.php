@@ -24,7 +24,6 @@
  * Feature hooks (registered by EDMINBOOST_Features when enabled):
  *   - hide_admin_notices → admin_enqueue_scripts
  *   - dashboard_widgets  → wp_dashboard_setup, admin_init
- *   - admin_menu         → admin_menu (priority 999)
  *   - admin_footer       → admin_footer_text
  *   - disable_emojis     → admin_init
  *   - admin_bar          → admin_bar_menu (priority 999)
@@ -89,6 +88,7 @@ class EDMINBOOST_Plugin {
 		add_action( 'admin_init', array( $this->admin, 'register_settings' ) );
 		add_action( 'admin_init', array( $this->admin, 'maybe_activation_redirect' ) );
 		add_action( 'wp_ajax_edminboost_save_settings', array( $this->admin, 'ajax_save_settings' ) );
+		add_action( 'wp_ajax_edminboost_load_cc_page', array( $this->admin, 'ajax_load_cc_page' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
 		add_filter( 'admin_body_class', array( $this->admin, 'filter_admin_body_class' ) );
