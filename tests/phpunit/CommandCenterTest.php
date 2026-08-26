@@ -33,14 +33,46 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Animation speed options expose expected durations.
+	 */
+	public function test_get_animation_speed_options() {
+		$options = EDMINBOOST_Command_Center::get_animation_speed_options();
+
+		$this->assertSame( 150, $options['fast']['ms'] );
+		$this->assertSame( 300, $options['normal']['ms'] );
+		$this->assertSame( 500, $options['slow']['ms'] );
+		$this->assertSame( 300, EDMINBOOST_Command_Center::get_animation_duration_ms( 'normal' ) );
+		$this->assertSame( 150, EDMINBOOST_Command_Center::get_animation_duration_ms( 'fast' ) );
+	}
+
+	/**
 	 * Personas catalog includes expected keys.
 	 */
 	public function test_get_personas() {
 		$personas = EDMINBOOST_Command_Center::get_personas();
 
+		$this->assertArrayHasKey( 'friend', $personas );
+		$this->assertArrayHasKey( 'family', $personas );
+		$this->assertArrayHasKey( 'client_site', $personas );
+		$this->assertArrayHasKey( 'personal', $personas );
+		$this->assertArrayHasKey( 'small_business', $personas );
+		$this->assertArrayHasKey( 'nonprofit', $personas );
+		$this->assertArrayHasKey( 'agency', $personas );
 		$this->assertArrayHasKey( 'client', $personas );
 		$this->assertArrayHasKey( 'ecommerce', $personas );
 		$this->assertArrayHasKey( 'developer', $personas );
+	}
+
+	/**
+	 * Scenario presets resolve top bar items.
+	 */
+	public function test_resolve_preset_top_bar_items_for_system_friend() {
+		$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( 'system_friend' );
+
+		$this->assertNotEmpty( $items );
+		$slugs = wp_list_pluck( $items, 'slug' );
+		$this->assertContains( 'edit.php', $slugs );
+		$this->assertContains( 'edit-comments.php', $slugs );
 	}
 
 	/**
@@ -49,13 +81,17 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	public function test_get_all_presets_includes_system() {
 		$presets = EDMINBOOST_Command_Center::get_all_presets();
 
+		$this->assertArrayHasKey( 'system_friend', $presets );
+		$this->assertArrayHasKey( 'system_family', $presets );
+		$this->assertArrayHasKey( 'system_client_site', $presets );
+		$this->assertArrayHasKey( 'system_agency', $presets );
 		$this->assertArrayHasKey( 'system_client', $presets );
 		$this->assertArrayHasKey( 'system_ecommerce', $presets );
 		$this->assertArrayHasKey( 'system_developer', $presets );
 	}
 
 	/**
-	 * Page links include Home, Top Bar, Presets, and Settings.
+	 * Page links include Dashboard, Top Bar, Presets, and Settings.
 	 */
 	public function test_get_page_links() {
 		$items = EDMINBOOST_Command_Center::get_page_links();
@@ -219,5 +255,42 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertNotEmpty( $result['command_center']['top_bar_items'] );
 		$this->assertTrue( $result['command_center']['onboarding_completed'] );
 		$this->assertSame( 'system_client', $result['command_center']['default_preset'] );
+	}
+
+	/**
+	 * Wizard save applies preset and marks setup complete when layout resolves.
+	 */
+	public function test_sanitize_setup_wizard_save() {
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'_setup_wizard_save' => 1,
+					'_apply_preset'      => 'system_client',
+					'theme'              => array(
+						'preset' => 'default',
+						'mode'   => 'light',
+					),
+				),
+			)
+		);
+
+		$this->assertNotEmpty( $result['command_center']['top_bar_items'] );
+		$this->assertTrue( $result['command_center']['onboarding_completed'] );
+	}
+
+	/**
+	 * Mark setup complete without a layout must not flip onboarding flag.
+	 */
+	public function test_sanitize_mark_setup_complete_requires_layout() {
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'command_center' => array(
+					'_mark_setup_complete' => 1,
+				),
+			)
+		);
+
+		$this->assertFalse( $result['command_center']['onboarding_completed'] );
 	}
 }

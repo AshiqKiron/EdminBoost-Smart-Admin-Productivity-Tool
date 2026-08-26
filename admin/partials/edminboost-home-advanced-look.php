@@ -21,10 +21,7 @@ $drawer_width_custom = max(
 	min( EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MAX, $drawer_width_custom )
 );
 ?>
-<details class="edminboost-advanced-look">
-	<summary><?php esc_html_e( 'Advanced look settings', EDMINBOOST_TEXT_DOMAIN ); ?></summary>
-
-	<div class="edminboost-advanced-look__body">
+<div class="edminboost-advanced-look">
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-drawer-settings-heading">
 			<h2 id="edminboost-drawer-settings-heading"><?php esc_html_e( 'Slide-out panel', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 
@@ -67,43 +64,36 @@ $drawer_width_custom = max(
 						value="<?php echo esc_attr( (string) $drawer_width_custom ); ?>"
 						aria-describedby="edminboost-drawer-width-preview-caption"
 					/>
-					<div class="edminboost-drawer-width-preview" id="edminboost-drawer-width-preview">
-						<p class="edminboost-drawer-width-preview__heading">
-							<?php esc_html_e( 'Preview', EDMINBOOST_TEXT_DOMAIN ); ?>
-							<span class="screen-reader-text"><?php esc_html_e( 'Drawer width preview on a typical desktop screen.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
-						</p>
-						<div
-							class="edminboost-drawer-width-preview__viewport"
-							role="img"
-							aria-labelledby="edminboost-drawer-width-preview-caption"
-						>
-							<div class="edminboost-drawer-width-preview__adminbar" aria-hidden="true"></div>
-							<div class="edminboost-drawer-width-preview__stage">
-								<div class="edminboost-drawer-width-preview__content" aria-hidden="true">
-									<span class="edminboost-drawer-width-preview__content-label"><?php esc_html_e( 'Page', EDMINBOOST_TEXT_DOMAIN ); ?></span>
-								</div>
-								<div
-									class="edminboost-drawer-width-preview__drawer"
-									id="edminboost_drawer_width_preview_drawer"
-									aria-hidden="true"
-								>
-									<span class="edminboost-drawer-width-preview__drawer-label"><?php esc_html_e( 'Panel', EDMINBOOST_TEXT_DOMAIN ); ?></span>
-								</div>
+				</div>
+				<div class="edminboost-drawer-width-preview" id="edminboost-drawer-width-preview">
+					<p class="edminboost-drawer-width-preview__heading">
+						<?php esc_html_e( 'Preview', EDMINBOOST_TEXT_DOMAIN ); ?>
+						<span class="screen-reader-text"><?php esc_html_e( 'Drawer width preview on a typical desktop screen.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+					</p>
+					<div
+						class="edminboost-drawer-width-preview__viewport"
+						role="img"
+						aria-labelledby="edminboost-drawer-width-preview-caption"
+					>
+						<div class="edminboost-drawer-width-preview__adminbar" aria-hidden="true"></div>
+						<div class="edminboost-drawer-width-preview__stage">
+							<div class="edminboost-drawer-width-preview__content" aria-hidden="true">
+								<span class="edminboost-drawer-width-preview__content-label"><?php esc_html_e( 'Page', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+							</div>
+							<div
+								class="edminboost-drawer-width-preview__drawer"
+								id="edminboost_drawer_width_preview_drawer"
+								aria-hidden="true"
+							>
+								<span class="edminboost-drawer-width-preview__drawer-label"><?php esc_html_e( 'Panel', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 							</div>
 						</div>
-						<p class="description edminboost-drawer-width-preview__caption" id="edminboost-drawer-width-preview-caption"></p>
 					</div>
+					<p class="description edminboost-drawer-width-preview__caption" id="edminboost-drawer-width-preview-caption"></p>
 				</div>
 			</fieldset>
 
-			<fieldset class="edminboost-fieldset">
-				<legend for="edminboost_animation_speed"><?php esc_html_e( 'Animation speed', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
-				<select name="<?php echo esc_attr( $cc_key ); ?>[animation_speed]" id="edminboost_animation_speed">
-					<option value="fast" <?php selected( $behavior['animation_speed'], 'fast' ); ?>><?php esc_html_e( 'Fast (150ms)', EDMINBOOST_TEXT_DOMAIN ); ?></option>
-					<option value="normal" <?php selected( $behavior['animation_speed'], 'normal' ); ?>><?php esc_html_e( 'Normal (300ms)', EDMINBOOST_TEXT_DOMAIN ); ?></option>
-					<option value="slow" <?php selected( $behavior['animation_speed'], 'slow' ); ?>><?php esc_html_e( 'Slow (500ms)', EDMINBOOST_TEXT_DOMAIN ); ?></option>
-				</select>
-			</fieldset>
+			<?php require EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-animation-speed-field.php'; ?>
 
 			<label class="edminboost-checkbox-row" for="edminboost_glassmorphism">
 				<input
@@ -180,29 +170,4 @@ $drawer_width_custom = max(
 				</span>
 			</div>
 		</section>
-
-		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-declutter-heading">
-			<h2 id="edminboost-declutter-heading"><?php esc_html_e( 'Hide admin bar items', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
-			<p class="description"><?php esc_html_e( 'Clean up native WordPress admin bar clutter.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
-
-			<div class="edminboost-checkbox-grid">
-				<label class="edminboost-checkbox-row" for="edminboost_hide_wp_logo">
-					<input type="checkbox" id="edminboost_hide_wp_logo" name="<?php echo esc_attr( $cc_key ); ?>[hide_wp_logo]" value="1" <?php checked( ! empty( $behavior['hide_wp_logo'] ) ); ?> />
-					<?php esc_html_e( 'Hide WordPress logo', EDMINBOOST_TEXT_DOMAIN ); ?>
-				</label>
-				<label class="edminboost-checkbox-row" for="edminboost_hide_update_counters">
-					<input type="checkbox" id="edminboost_hide_update_counters" name="<?php echo esc_attr( $cc_key ); ?>[hide_update_counters]" value="1" <?php checked( ! empty( $behavior['hide_update_counters'] ) ); ?> />
-					<?php esc_html_e( 'Hide update counters', EDMINBOOST_TEXT_DOMAIN ); ?>
-				</label>
-				<label class="edminboost-checkbox-row" for="edminboost_hide_howdy">
-					<input type="checkbox" id="edminboost_hide_howdy" name="<?php echo esc_attr( $cc_key ); ?>[hide_howdy]" value="1" <?php checked( ! empty( $behavior['hide_howdy'] ) ); ?> />
-					<?php esc_html_e( 'Hide Howdy / profile text', EDMINBOOST_TEXT_DOMAIN ); ?>
-				</label>
-				<label class="edminboost-checkbox-row" for="edminboost_hide_comments">
-					<input type="checkbox" id="edminboost_hide_comments" name="<?php echo esc_attr( $cc_key ); ?>[hide_comments]" value="1" <?php checked( ! empty( $behavior['hide_comments'] ) ); ?> />
-					<?php esc_html_e( 'Hide comments shortcut', EDMINBOOST_TEXT_DOMAIN ); ?>
-				</label>
-			</div>
-		</section>
-	</div>
-</details>
+</div>

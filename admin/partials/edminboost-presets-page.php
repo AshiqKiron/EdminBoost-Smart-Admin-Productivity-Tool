@@ -28,6 +28,8 @@ $top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_set
 $has_layout        = ! empty( $top_bar_items );
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap edminboost-cc-wrap--wide">
+	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
+
 	<header class="edminboost-cc-hero edminboost-cc-hero--split">
 		<div>
 			<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
@@ -50,67 +52,21 @@ $has_layout        = ! empty( $top_bar_items );
 		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_save_custom_preset][name]" id="edminboost_save_custom_preset_name" value="" />
 
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-presets-heading">
-			<h2 id="edminboost-presets-heading"><?php esc_html_e( 'Preset library', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-presets-heading"><?php esc_html_e( 'Layout preset library', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'Built-in templates and layouts you have saved.', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'Pick a real-life scenario or role-based template, or use layouts you have saved.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
 
-			<div class="edminboost-preset-grid">
-				<?php foreach ( $all_presets as $preset_id => $preset ) : ?>
-					<?php
-					$is_system   = ! empty( $preset['system'] );
-					$is_default  = ( $default_preset === $preset_id );
-					$preset_name = isset( $preset['name'] ) ? $preset['name'] : $preset_id;
-					$preset_desc = isset( $preset['description'] ) ? $preset['description'] : '';
-					?>
-					<article class="edminboost-preset-card<?php echo $is_default ? ' is-default' : ''; ?>">
-						<header class="edminboost-preset-card__header">
-							<h3 class="edminboost-preset-card__title"><?php echo esc_html( $preset_name ); ?></h3>
-							<?php if ( $is_system ) : ?>
-								<span class="edminboost-preset-card__badge"><?php esc_html_e( 'Built-in', EDMINBOOST_TEXT_DOMAIN ); ?></span>
-							<?php else : ?>
-								<span class="edminboost-preset-card__badge edminboost-preset-card__badge--custom"><?php esc_html_e( 'Saved', EDMINBOOST_TEXT_DOMAIN ); ?></span>
-							<?php endif; ?>
-							<?php if ( $is_default ) : ?>
-								<span class="edminboost-preset-card__default"><?php esc_html_e( 'Default', EDMINBOOST_TEXT_DOMAIN ); ?></span>
-							<?php endif; ?>
-						</header>
-						<p class="edminboost-preset-card__desc"><?php echo esc_html( $preset_desc ); ?></p>
-						<div class="edminboost-preset-card__actions">
-							<button type="button" class="button button-primary edminboost-preset-apply" data-preset-id="<?php echo esc_attr( $preset_id ); ?>">
-								<?php esc_html_e( 'Apply preset', EDMINBOOST_TEXT_DOMAIN ); ?>
-							</button>
-							<label class="screen-reader-text" for="edminboost_preset_default_<?php echo esc_attr( $preset_id ); ?>">
-								<?php esc_html_e( 'Set as default preset', EDMINBOOST_TEXT_DOMAIN ); ?>
-							</label>
-							<label class="edminboost-checkbox-row">
-								<input
-									type="radio"
-									name="<?php echo esc_attr( $option_name ); ?>[command_center][default_preset]"
-									id="edminboost_preset_default_<?php echo esc_attr( $preset_id ); ?>"
-									value="<?php echo esc_attr( $preset_id ); ?>"
-									<?php checked( $is_default ); ?>
-								/>
-								<?php esc_html_e( 'Set as default', EDMINBOOST_TEXT_DOMAIN ); ?>
-							</label>
-							<?php if ( ! $is_system ) : ?>
-								<button type="button" class="button button-small edminboost-preset-duplicate" data-preset-id="<?php echo esc_attr( $preset_id ); ?>">
-									<?php esc_html_e( 'Duplicate', EDMINBOOST_TEXT_DOMAIN ); ?>
-								</button>
-							<?php endif; ?>
-							<button type="button" class="button button-small edminboost-preset-export" data-preset-id="<?php echo esc_attr( $preset_id ); ?>">
-								<?php esc_html_e( 'Export JSON', EDMINBOOST_TEXT_DOMAIN ); ?>
-							</button>
-						</div>
-					</article>
-				<?php endforeach; ?>
-			</div>
+			<?php
+			$preset_picker_mode = 'full';
+			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-preset-picker.php';
+			?>
 		</section>
 
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-roles-heading">
 			<h2 id="edminboost-roles-heading"><?php esc_html_e( 'Who sees what', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'Assign a preset per role and hide specific top-bar icons from selected roles.', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'Hide specific top-bar icons from selected roles. Per-role preset assignment is saved for a future release.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
 
 			<?php if ( empty( $roles ) ) : ?>

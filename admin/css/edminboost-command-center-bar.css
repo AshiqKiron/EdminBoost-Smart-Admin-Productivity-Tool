@@ -66,6 +66,9 @@
 
 .edminboost-cc-drawer[hidden] {
 	display: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: 0 !important;
 }
 
 .edminboost-cc-drawer.is-open {

@@ -52,16 +52,16 @@ PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from 
 
 - Extend `Edminboost_Test_Case` (resets options, seeds admin user).
 - Use `seed_settings( $overrides )` — merges with `EDMINBOOST_Settings::get_defaults()`.
-- Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar,Theme}Test.php`.
+- Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar,Theme,AdminMenuOrder}Test.php`.
 - Name tests `test_{behavior}`; target static helpers on bar/CC classes where hook tests are heavy.
 
 ## Playwright Patterns
 
 - Auth: `global.setup.ts` saves `tests/e2e/.auth/admin.json` (gitignored).
-- Page URLs: `fixtures/pages.ts` — built from `PLUGIN_SLUG` env var.
+- Page URLs: `fixtures/pages.ts` — built from `PLUGIN_SLUG` env var (`dashboard`, `appearance`, `settings`, `mapper`, `presets`; legacy `onboarding` / `behavior` for redirect tests).
 - Assert plugin ready: `.edminboost-wrap[data-edminboost-ready="true"]`.
 - Settings saves: `waitForSettingsSaved()` in `fixtures/helpers.ts` (URL contains `settings-updated=true`).
-- Specs mirror admin pages: `dashboard`, `home-setup`, `home-look`, `settings-features`, `layout-studio`, `presets-roles`, `live-admin-bar` (E2E describe blocks may still say "Home" for look/setup flows; admin menu label is Dashboard).
+- Specs mirror admin pages: `dashboard`, `home-setup` (setup wizard / overview), `home-look` (Appearance settings), `settings-features`, `layout-studio`, `presets-roles`, `live-admin-bar`.
 - Config: single worker, 60s timeout, chromium only, `baseURL` from `.env.qa`.
 
 ## Rules

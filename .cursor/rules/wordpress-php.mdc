@@ -50,6 +50,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Command Center Bar: `EDMINBOOST_Command_Center_Bar::register_hooks()` in `EDMINBOOST_Plugin::run()` — not part of the feature registry.
 - Menu Studio: `EDMINBOOST_Menu_Studio::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - Visual theme: `EDMINBOOST_Theme::register_hooks()` in `EDMINBOOST_Plugin::run()`.
+- Admin submenu order: `EDMINBOOST_Admin::normalize_plugin_submenu()` on `admin_menu` priority 999 in `EDMINBOOST_Plugin::run()`.
 - New productivity modules: extend `EDMINBOOST_Feature_Base`, register in `EDMINBOOST_Features` (see `edminboost-features.mdc`).
 - Settings: `EDMINBOOST_Settings::get()`, `::is_enabled()`, `::is_feature_enabled()`, `::get_feature_settings()`.
 - Activation seeds defaults via `EDMINBOOST_Activator`; deactivation is a no-op.
@@ -115,10 +116,11 @@ array(
 
 ## Partials
 
-- Dashboard: `edminboost-admin-page.php` — expects `$cc_settings`; includes `edminboost-theme-settings.php` and (inside look section) `edminboost-home-advanced-look.php` (which requires `edminboost-animation-speed-field.php`).
+- Dashboard: `edminboost-admin-page.php` — expects `$cc_settings`, `$current_page`; includes setup wizard or dashboard overview.
+- Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php`, `edminboost-home-advanced-look.php` (which requires `edminboost-animation-speed-field.php`), and `edminboost-declutter-settings.php`.
 - Settings: `edminboost-settings-features.php` — expects `$settings`.
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
-- Menu Studio: `edminboost-menu-studio-page.php` — includes theme partial.
+- Setup wizard partials: `edminboost-setup-wizard.php` (includes `edminboost-preset-picker.php`, `edminboost-theme-settings.php`, `edminboost-topbar-summary.php`, `edminboost-setup-review.php`).
 - Document `@var` annotations at the top of partials.
 
 ## Docblocks

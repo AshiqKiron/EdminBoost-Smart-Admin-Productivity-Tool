@@ -360,7 +360,24 @@ class EDMINBOOST_Settings {
 			$output['look_skin'] = in_array( $look_skin, $allowed_skins, true ) ? $look_skin : '';
 		}
 
-		if ( ! empty( $raw['_apply_preset'] ) ) {
+		if ( ! empty( $raw['_setup_wizard_save'] ) && ! empty( $raw['_apply_preset'] ) ) {
+			$preset_id = sanitize_key( $raw['_apply_preset'] );
+			$items     = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id );
+			if ( ! empty( $items ) ) {
+				$output['top_bar_items']  = self::sanitize_top_bar_items( $items );
+				$output['default_preset'] = $preset_id;
+
+				$all_presets = EDMINBOOST_Command_Center::get_all_presets();
+				if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
+					$persona = sanitize_key( $all_presets[ $preset_id ]['persona'] );
+					if ( in_array( $persona, $allowed_personas, true ) ) {
+						$output['persona'] = $persona;
+					}
+				}
+			}
+		}
+
+		if ( ! empty( $raw['_apply_preset'] ) && empty( $raw['_setup_wizard_save'] ) ) {
 			$preset_id = sanitize_key( $raw['_apply_preset'] );
 			$items     = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id );
 			if ( ! empty( $items ) ) {
@@ -418,14 +435,7 @@ class EDMINBOOST_Settings {
 		}
 
 		if ( isset( $raw['behavior'] ) && is_array( $raw['behavior'] ) ) {
-			if ( empty( $raw['_apply_look_skin'] ) || ! empty( $raw['_keep_advanced_behavior'] ) ) {
-				$output['behavior'] = self::sanitize_behavior( $raw['behavior'] );
-
-				if ( ! empty( $raw['_keep_advanced_behavior'] ) ) {
-					$output['look_skin'] = '';
-					$output['onboarding_completed'] = true;
-				}
-			}
+			$output['behavior'] = self::sanitize_behavior( $raw['behavior'] );
 		}
 
 		if ( isset( $raw['theme'] ) && is_array( $raw['theme'] ) ) {
@@ -454,13 +464,18 @@ class EDMINBOOST_Settings {
 			}
 		}
 
-		if ( ! empty( $raw['_mark_setup_complete'] ) ) {
+		if ( ! empty( $raw['_setup_wizard_save'] ) && ! empty( $output['top_bar_items'] ) ) {
+			$output['onboarding_completed'] = true;
+		}
+
+		if ( ! empty( $raw['_mark_setup_complete'] ) && ! empty( $output['top_bar_items'] ) ) {
 			$output['onboarding_completed'] = true;
 		}
 
 		if ( ! empty( $raw['_menu_studio_save'] ) ) {
 			$output['menu_studio'] = self::sanitize_menu_studio(
-				isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) ? $raw['menu_studio'] : array()
+				isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) ? $raw['menu_studio'] : array(),
+				isset( $output['menu_studio'] ) && is_array( $output['menu_studio'] ) ? $output['menu_studio'] : null
 			);
 		} elseif ( isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) ) {
 			$output['menu_studio'] = self::sanitize_menu_studio( $raw['menu_studio'], $output['menu_studio'] ?? null );
@@ -513,7 +528,29 @@ class EDMINBOOST_Settings {
 			$output['hidden_items'] = $hidden;
 		}
 
-		if ( isset( $raw['submenu_order'] ) && is_array( $raw['submenu_order'] ) ) {
+		if ( isset( $raw['submenu_parents'] ) && is_array( $raw['submenu_parents'] )
+			&& isset( $raw['submenu_order'] ) && is_array( $raw['submenu_order'] ) ) {
+			$submenu_order = array();
+
+			foreach ( $raw['submenu_parents'] as $parent_index => $parent_slug ) {
+				$parent_slug = sanitize_text_field( wp_unslash( (string) $parent_slug ) );
+				if ( '' === $parent_slug || ! isset( $raw['submenu_order'][ $parent_index ] ) || ! is_array( $raw['submenu_order'][ $parent_index ] ) ) {
+					continue;
+				}
+
+				$child_order = array();
+				foreach ( $raw['submenu_order'][ $parent_index ] as $child_slug ) {
+					$child_slug = sanitize_text_field( wp_unslash( (string) $child_slug ) );
+					if ( '' !== $child_slug && ! in_array( $child_slug, $child_order, true ) ) {
+						$child_order[] = $child_slug;
+					}
+				}
+
+				$submenu_order[ $parent_slug ] = $child_order;
+			}
+
+			$output['submenu_order'] = $submenu_order;
+		} elseif ( isset( $raw['submenu_order'] ) && is_array( $raw['submenu_order'] ) ) {
 			$submenu_order = array();
 			foreach ( $raw['submenu_order'] as $parent_slug => $children ) {
 				$parent_slug = sanitize_text_field( wp_unslash( (string) $parent_slug ) );

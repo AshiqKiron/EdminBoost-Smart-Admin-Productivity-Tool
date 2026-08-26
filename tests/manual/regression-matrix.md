@@ -28,9 +28,9 @@ Run after PHPUnit and Playwright. Mark pass/fail in the Date column.
 
 | ID | Check | Expected | Date |
 |----|-------|----------|------|
-| CC-H-01 | First-run cards | Preset, look, and manual setup links visible | |
-| CC-H-02 | Look skins | Skin selection saves behavior bundle | |
-| CC-H-03 | Advanced look | Custom drawer/badge/declutter settings save from Home | |
+| CC-H-01 | First-run cards | Preset and manual setup links visible | |
+| CC-H-02 | Look settings | Advanced drawer/badge/declutter settings save from Appearance page | |
+| CC-H-03 | Setup wizard | Fresh install: activation redirects to Dashboard; complete 4-step wizard; overview shows after save | |
 | CC-H-04 | Legacy URLs | `-onboarding` and `-behavior` redirect to Home | |
 
 ## Top Bar editor

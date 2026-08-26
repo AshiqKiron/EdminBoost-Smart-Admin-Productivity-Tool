@@ -54,12 +54,31 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.3.0 =
+* Add a four-step Dashboard setup wizard: layout preset, color theme, top bar review, and save.
+* Show layout preset, color theme, and top bar descriptions on Dashboard overview cards after setup.
+* Redirect to the Dashboard wizard after plugin activation when setup is incomplete.
+* Add a dedicated Appearance page for visual theme, panel behavior, badges, and admin bar cleanup.
+* Rename Presets menu item to Layout Presets and add consistent Command Center navigation across pages.
+* Fix setup completion so onboarding is only marked done when a top bar layout exists.
+* Redirect legacy Behavior & Style URLs to Appearance instead of Dashboard.
+* Add seven real-life scenario presets: Friend's Website, Family Member's Site, Client's Website, Your Own Website, Small Business Site, Nonprofit / Community, and Freelancer / Agency.
+* Group the preset library by scenario, role, and saved layouts on the Presets page.
+* Remove the Dashboard quick look skin cards (Clean, Focused, Full); use advanced look settings directly instead.
+* Rename the Home admin page to Dashboard.
+* Remove the Current setup status block from the Dashboard page.
+* Add six inspired visual theme presets: Dracula, Nord, Solarized, Sakura, Ocean, and Forest.
+* Apply the visual theme preset to the wp-admin top bar, sidebar menu, and main content background (Menu Studio custom colors still override sidebar when enabled).
+* Add custom top bar, sidebar, and content area color overrides to the visual theme settings.
+* Move visual theme preset selection to a color-swatch dropdown with short theme descriptions.
+* Add a Custom visual theme preset that reveals Accent, Surface, Text, Top bar, Sidebar, and Content area color pickers.
+* Expand visual theme font options with additional system font stacks.
+* Fix unreadable sidebar submenu text on light visual theme presets (Neon Outrun, Vapor, and similar).
 * Add Menu Studio page to reorder the wp-admin sidebar, add custom sidebar links, and style parent menu, submenu, and notification badge colors.
-* Simplify admin navigation to Home, Top Bar, Presets, and Settings.
-* Replace the dashboard and onboarding flow with a Home setup hub and quick look skins.
+* Simplify admin navigation to Dashboard, Top Bar, Presets, and Settings.
+* Replace the dashboard and onboarding flow with a Dashboard setup hub and quick look skins.
 * Make built-in presets apply real top bar layouts in one click.
-* Move advanced look settings (slide-out panel, badges, admin bar cleanup) to Home.
-* Redirect legacy Onboarding and Behavior & Style URLs to Home.
+* Move advanced look settings (slide-out panel, badges, admin bar cleanup) to Dashboard.
+* Redirect legacy Onboarding and Behavior & Style URLs to Dashboard.
 
 = 1.2.0 =
 * Fix Command Center drawer pages stuck on "Loading…" for async admin content (WooCommerce dashboard widgets, Site Health, Appearance, and similar screens).

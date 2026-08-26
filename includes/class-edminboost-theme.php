@@ -3,7 +3,7 @@
  * Visual theme presets for Command Center UI, drawer, and plugin screens.
  *
  * Purpose: CSS-token-based skins with optional custom colors, fonts, and color mode.
- * Does not change behavior settings (see look_skin for behavior bundles).
+ * Applies to wp-admin top bar, sidebar menu, Command Center UI, drawer, and plugin screens.
  *
  * @package EdminBoost
  */
@@ -31,6 +31,9 @@ class EDMINBOOST_Theme {
 			'custom_accent'     => '',
 			'custom_surface'    => '',
 			'custom_text'       => '',
+			'custom_top'        => '',
+			'custom_sidebar'    => '',
+			'custom_content'    => '',
 		);
 	}
 
@@ -54,11 +57,34 @@ class EDMINBOOST_Theme {
 	 */
 	public static function get_fonts() {
 		return array(
-			'inherit' => __( 'WordPress default', EDMINBOOST_TEXT_DOMAIN ),
-			'system'  => __( 'System UI', EDMINBOOST_TEXT_DOMAIN ),
-			'mono'    => __( 'Monospace', EDMINBOOST_TEXT_DOMAIN ),
-			'serif'   => __( 'Serif', EDMINBOOST_TEXT_DOMAIN ),
-			'rounded' => __( 'Rounded UI', EDMINBOOST_TEXT_DOMAIN ),
+			'inherit'   => __( 'WordPress default', EDMINBOOST_TEXT_DOMAIN ),
+			'system'    => __( 'System UI', EDMINBOOST_TEXT_DOMAIN ),
+			'arial'     => __( 'Arial / Helvetica', EDMINBOOST_TEXT_DOMAIN ),
+			'verdana'   => __( 'Verdana', EDMINBOOST_TEXT_DOMAIN ),
+			'tahoma'    => __( 'Tahoma', EDMINBOOST_TEXT_DOMAIN ),
+			'trebuchet' => __( 'Trebuchet MS', EDMINBOOST_TEXT_DOMAIN ),
+			'lucida'    => __( 'Lucida Sans', EDMINBOOST_TEXT_DOMAIN ),
+			'palatino'  => __( 'Palatino', EDMINBOOST_TEXT_DOMAIN ),
+			'humanist'  => __( 'Humanist sans', EDMINBOOST_TEXT_DOMAIN ),
+			'mono'      => __( 'Monospace', EDMINBOOST_TEXT_DOMAIN ),
+			'serif'     => __( 'Serif', EDMINBOOST_TEXT_DOMAIN ),
+			'rounded'   => __( 'Rounded UI', EDMINBOOST_TEXT_DOMAIN ),
+		);
+	}
+
+	/**
+	 * Labels for the five preset color tokens shown in the theme UI.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function get_color_labels() {
+		return array(
+			'accent'  => __( 'Accent', EDMINBOOST_TEXT_DOMAIN ),
+			'surface' => __( 'Surface', EDMINBOOST_TEXT_DOMAIN ),
+			'text'    => __( 'Text', EDMINBOOST_TEXT_DOMAIN ),
+			'topbar'   => __( 'Top bar', EDMINBOOST_TEXT_DOMAIN ),
+			'sidebar'  => __( 'Sidebar', EDMINBOOST_TEXT_DOMAIN ),
+			'content'  => __( 'Content area', EDMINBOOST_TEXT_DOMAIN ),
 		);
 	}
 
@@ -69,36 +95,307 @@ class EDMINBOOST_Theme {
 	 */
 	public static function get_presets() {
 		return array(
-			'default' => array(
-				'name'        => __( 'Default', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'WordPress-aligned blues and neutrals.', EDMINBOOST_TEXT_DOMAIN ),
-				'swatch'      => array( '#2271b1', '#f0f0f1', '#1d2327' ),
+			'default'     => self::build_preset(
+				__( 'Default', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'WordPress-aligned blues and neutrals.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#2271b1',
+					'surface' => '#ffffff',
+					'text'    => '#1d2327',
+					'topbar'  => '#1d2327',
+					'sidebar' => '#1d2327',
+					'content' => '#f0f0f1',
+				)
 			),
-			'midnight' => array(
-				'name'        => __( 'Midnight', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Dark neutral surfaces with soft violet accents.', EDMINBOOST_TEXT_DOMAIN ),
-				'swatch'      => array( '#8b9cff', '#1a1d24', '#e8eaed' ),
+			'midnight'    => self::build_preset(
+				__( 'Midnight', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Dark neutral surfaces with soft violet accents.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#8b9cff',
+					'surface' => '#1a1d24',
+					'text'    => '#e8eaed',
+					'topbar'  => '#12151c',
+					'sidebar' => '#12151c',
+					'content' => '#1a1d24',
+				)
 			),
-			'terminal' => array(
-				'name'        => __( 'Terminal', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Matrix-inspired green on deep black.', EDMINBOOST_TEXT_DOMAIN ),
-				'swatch'      => array( '#00ff41', '#0a0f0a', '#b8ffc8' ),
+			'terminal'    => self::build_preset(
+				__( 'Terminal', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Matrix-inspired green on deep black.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#00ff41',
+					'surface' => '#0a0f0a',
+					'text'    => '#b8ffc8',
+					'topbar'  => '#050805',
+					'sidebar' => '#050805',
+					'content' => '#0a0f0a',
+				)
 			),
-			'neon-outrun' => array(
-				'name'        => __( 'Neon Outrun', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Synthwave magenta and cyan on dark purple.', EDMINBOOST_TEXT_DOMAIN ),
-				'swatch'      => array( '#ff2bd6', '#1a0b2e', '#00f0ff' ),
+			'neon-outrun' => self::build_preset(
+				__( 'Neon Outrun', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Synthwave magenta and cyan on dark purple.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#ff2bd6',
+					'surface' => '#1a0b2e',
+					'text'    => '#00f0ff',
+					'topbar'  => '#0f061a',
+					'sidebar' => '#0f061a',
+					'content' => '#1a0b2e',
+				)
 			),
-			'vapor' => array(
-				'name'        => __( 'Vapor', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Vaporwave pastels with readable contrast.', EDMINBOOST_TEXT_DOMAIN ),
-				'swatch'      => array( '#ff6ad5', '#e8e0ff', '#2d1b4e' ),
+			'vapor'       => self::build_preset(
+				__( 'Vapor', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Vaporwave pastels with readable contrast.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#ff6ad5',
+					'surface' => '#e8e0ff',
+					'text'    => '#2d1b4e',
+					'topbar'  => '#2d1b4e',
+					'sidebar' => '#2d1b4e',
+					'content' => '#2d1b4e',
+				)
 			),
-			'desert' => array(
-				'name'        => __( 'Desert', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Warm sand tones with copper accents.', EDMINBOOST_TEXT_DOMAIN ),
-				'swatch'      => array( '#c87941', '#f5ebe0', '#3d2914' ),
+			'desert'      => self::build_preset(
+				__( 'Desert', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Warm sand tones with copper accents.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#c87941',
+					'surface' => '#f5ebe0',
+					'text'    => '#3d2914',
+					'topbar'  => '#3d2914',
+					'sidebar' => '#3d2914',
+					'content' => '#2a1c0e',
+				)
 			),
+			'dracula'     => self::build_preset(
+				__( 'Dracula', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Dracula-inspired purple accents on inky charcoal.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#bd93f9',
+					'surface' => '#282a36',
+					'text'    => '#f8f8f2',
+					'topbar'  => '#21222c',
+					'sidebar' => '#21222c',
+					'content' => '#282a36',
+				)
+			),
+			'nord'        => self::build_preset(
+				__( 'Nord', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Arctic frost blues on polar night surfaces.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#88c0d0',
+					'surface' => '#2e3440',
+					'text'    => '#eceff4',
+					'topbar'  => '#242933',
+					'sidebar' => '#242933',
+					'content' => '#2e3440',
+				)
+			),
+			'solarized'   => self::build_preset(
+				__( 'Solarized', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Solarized-inspired cream base with teal accents.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#268bd2',
+					'surface' => '#fdf6e3',
+					'text'    => '#657b83',
+					'topbar'  => '#073642',
+					'sidebar' => '#073642',
+					'content' => '#002b36',
+				)
+			),
+			'sakura'      => self::build_preset(
+				__( 'Sakura', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Cherry blossom pinks on soft blush surfaces.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#e8879a',
+					'surface' => '#fff5f7',
+					'text'    => '#4a2030',
+					'topbar'  => '#4a2030',
+					'sidebar' => '#4a2030',
+					'content' => '#fce8ec',
+				)
+			),
+			'ocean'       => self::build_preset(
+				__( 'Ocean', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Deep-sea navy with luminous aqua highlights.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#3dd6d0',
+					'surface' => '#0a1628',
+					'text'    => '#c8e6f5',
+					'topbar'  => '#061018',
+					'sidebar' => '#061018',
+					'content' => '#0a1628',
+				)
+			),
+			'forest'      => self::build_preset(
+				__( 'Forest', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Moss greens and woodland tones for a calm admin.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#6dbf6d',
+					'surface' => '#1a2e1f',
+					'text'    => '#d4e8d0',
+					'topbar'  => '#0f1a12',
+					'sidebar' => '#0f1a12',
+					'content' => '#1a2e1f',
+				)
+			),
+			'tron'        => self::build_preset(
+				__( 'Tron', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Tron-inspired electric cyan glowing on deep black grid.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#00d4ff',
+					'surface' => '#0a0a12',
+					'text'    => '#b8e8ff',
+					'topbar'  => '#050508',
+					'sidebar' => '#050508',
+					'content' => '#0a0a12',
+				)
+			),
+			'night-city'  => self::build_preset(
+				__( 'Night City', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Cyberpunk-inspired neon yellow and cyan on rain-soaked dark.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#fcee0a',
+					'surface' => '#0d0d0d',
+					'text'    => '#00f0ff',
+					'topbar'  => '#080808',
+					'sidebar' => '#080808',
+					'content' => '#0d0d0d',
+				)
+			),
+			'pip-boy'     => self::build_preset(
+				__( 'Pip-Boy', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Fallout-inspired amber CRT phosphor on wasteland green-black.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#ffb000',
+					'surface' => '#1a2e1a',
+					'text'    => '#b8d4a0',
+					'topbar'  => '#0f1a0f',
+					'sidebar' => '#0f1a0f',
+					'content' => '#1a2e1a',
+				)
+			),
+			'portal'      => self::build_preset(
+				__( 'Portal', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Portal-inspired Aperture orange with companion-core blue accents.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#ff7b00',
+					'surface' => '#f5f5f5',
+					'text'    => '#0099cc',
+					'topbar'  => '#333333',
+					'sidebar' => '#333333',
+					'content' => '#eaeaea',
+				)
+			),
+			'gotham'      => self::build_preset(
+				__( 'Gotham', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Batman-inspired charcoal shadows with striking gold highlights.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#f0c040',
+					'surface' => '#1a1a1a',
+					'text'    => '#e8e8e8',
+					'topbar'  => '#0d0d0d',
+					'sidebar' => '#0d0d0d',
+					'content' => '#1a1a1a',
+				)
+			),
+			'citadel'     => self::build_preset(
+				__( 'Citadel', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Mass Effect-inspired cerulean blues on deep space navy.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#4fc3f7',
+					'surface' => '#0d1b2a',
+					'text'    => '#b8d4e8',
+					'topbar'  => '#061018',
+					'sidebar' => '#061018',
+					'content' => '#0d1b2a',
+				)
+			),
+			'blade-noir'  => self::build_preset(
+				__( 'Blade Noir', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Blade Runner-inspired neon orange and teal in a rainy future city.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#ff6b35',
+					'surface' => '#1a1a2e',
+					'text'    => '#2ec4b6',
+					'topbar'  => '#0f0f18',
+					'sidebar' => '#0f0f18',
+					'content' => '#1a1a2e',
+				)
+			),
+			'hyrule'      => self::build_preset(
+				__( 'Hyrule', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Zelda-inspired hero green and Triforce gold on parchment stone.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#2d6a4f',
+					'surface' => '#f5f0e0',
+					'text'    => '#c8a032',
+					'topbar'  => '#3d2914',
+					'sidebar' => '#3d2914',
+					'content' => '#e8e0c8',
+				)
+			),
+			'custom'      => self::build_preset(
+				__( 'Custom', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Define your own accent, surface, text, top bar, sidebar, and content area colors.', EDMINBOOST_TEXT_DOMAIN ),
+				array(
+					'accent'  => '#2271b1',
+					'surface' => '#ffffff',
+					'text'    => '#1d2327',
+					'topbar'  => '#1d2327',
+					'sidebar' => '#1d2327',
+					'content' => '#f0f0f1',
+				)
+			),
+		);
+	}
+
+	/**
+	 * Preset catalog for admin JavaScript (colors + labels).
+	 *
+	 * @return array<string, array>
+	 */
+	public static function get_presets_for_js() {
+		$presets = array();
+
+		foreach ( self::get_presets() as $preset_id => $preset ) {
+			$presets[ $preset_id ] = array(
+				'name'        => $preset['name'],
+				'description' => $preset['description'],
+				'colors'      => $preset['colors'],
+			);
+		}
+
+		return $presets;
+	}
+
+	/**
+	 * Whether the active theme uses user-defined custom colors.
+	 *
+	 * @param array|null $theme Optional merged theme settings.
+	 * @return bool
+	 */
+	public static function uses_custom_colors( $theme = null ) {
+		if ( null === $theme ) {
+			$theme = self::get_settings();
+		}
+
+		return 'custom' === sanitize_key( $theme['preset'] ) || ! empty( $theme['use_custom_colors'] );
+	}
+
+	/**
+	 * Build a preset definition with five canonical color tokens.
+	 *
+	 * @param string $name        Preset label.
+	 * @param string $description Preset description.
+	 * @param array  $colors      accent, surface, text, topbar, sidebar, content hex values.
+	 * @return array
+	 */
+	private static function build_preset( $name, $description, $colors ) {
+		return array(
+			'name'        => $name,
+			'description' => $description,
+			'colors'      => $colors,
 		);
 	}
 
@@ -117,7 +414,13 @@ class EDMINBOOST_Theme {
 			? $cc_settings['theme']
 			: array();
 
-		return wp_parse_args( $theme, self::get_defaults() );
+		$theme = wp_parse_args( $theme, self::get_defaults() );
+
+		if ( ! empty( $theme['use_custom_colors'] ) && 'custom' !== sanitize_key( $theme['preset'] ) ) {
+			$theme['preset'] = 'custom';
+		}
+
+		return $theme;
 	}
 
 	/**
@@ -131,10 +434,7 @@ class EDMINBOOST_Theme {
 		}
 
 		if ( is_admin() ) {
-			$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-			if ( $page && false !== strpos( $page, EDMINBOOST_Admin::PAGE_SLUG ) ) {
-				return true;
-			}
+			return true;
 		}
 
 		return EDMINBOOST_Command_Center_Bar::is_active() || EDMINBOOST_Command_Center_Bar::is_mapper_screen();
@@ -243,7 +543,7 @@ class EDMINBOOST_Theme {
 		}
 
 		$theme = self::get_settings();
-		if ( empty( $theme['use_custom_colors'] ) ) {
+		if ( ! self::uses_custom_colors( $theme ) ) {
 			return;
 		}
 
@@ -266,6 +566,22 @@ class EDMINBOOST_Theme {
 		if ( $text ) {
 			$rules[] = '--eb-text: ' . $text . ';';
 			$rules[] = '--eb-drawer-header-text: ' . $text . ';';
+		}
+
+		$top = self::sanitize_hex_color( $theme['custom_top'] );
+		if ( $top ) {
+			$rules[] = '--eb-top-bar-bg: ' . $top . ';';
+		}
+
+		$sidebar = self::sanitize_hex_color( $theme['custom_sidebar'] );
+		if ( $sidebar ) {
+			$rules[] = '--eb-sidebar-bg: ' . $sidebar . ';';
+		}
+
+		$content = self::sanitize_hex_color( $theme['custom_content'] );
+		if ( $content ) {
+			$rules[] = '--eb-content-bg: ' . $content . ';';
+			$rules[] = '--eb-drawer-panel-bg: ' . $content . ';';
 		}
 
 		if ( empty( $rules ) ) {
@@ -308,6 +624,8 @@ class EDMINBOOST_Theme {
 			if ( in_array( $preset, $presets, true ) ) {
 				$output['preset'] = $preset;
 			}
+		} elseif ( ! empty( $raw['use_custom_colors'] ) ) {
+			$output['preset'] = 'custom';
 		}
 
 		if ( isset( $raw['mode'] ) ) {
@@ -324,10 +642,17 @@ class EDMINBOOST_Theme {
 			}
 		}
 
-		$output['use_custom_colors'] = ! empty( $raw['use_custom_colors'] );
+		if ( ! empty( $raw['use_custom_colors'] ) && 'custom' !== $output['preset'] ) {
+			$output['preset'] = 'custom';
+		}
+
+		$output['use_custom_colors'] = ( 'custom' === $output['preset'] );
 		$output['custom_accent']     = self::sanitize_hex_color( isset( $raw['custom_accent'] ) ? $raw['custom_accent'] : '' );
 		$output['custom_surface']    = self::sanitize_hex_color( isset( $raw['custom_surface'] ) ? $raw['custom_surface'] : '' );
 		$output['custom_text']       = self::sanitize_hex_color( isset( $raw['custom_text'] ) ? $raw['custom_text'] : '' );
+		$output['custom_top']        = self::sanitize_hex_color( isset( $raw['custom_top'] ) ? $raw['custom_top'] : '' );
+		$output['custom_sidebar']    = self::sanitize_hex_color( isset( $raw['custom_sidebar'] ) ? $raw['custom_sidebar'] : '' );
+		$output['custom_content']    = self::sanitize_hex_color( isset( $raw['custom_content'] ) ? $raw['custom_content'] : '' );
 
 		return $output;
 	}

@@ -1,6 +1,6 @@
 /**
  * EdminBoost visual theme tokens.
- * Scoped to plugin UI, Command Center drawer, and CC admin-bar nodes.
+ * Scoped to wp-admin top bar, sidebar menu, plugin UI, Command Center drawer, and CC admin-bar nodes.
  */
 
 body.edminboost-theme-active {
@@ -18,6 +18,7 @@ body.edminboost-theme-active {
 	--eb-drawer-header-muted: #c3c4c7;
 	--eb-drawer-panel-bg: #f0f0f1;
 	--eb-drawer-body-bg: #fff;
+	--eb-content-bg: var( --eb-drawer-panel-bg );
 	--eb-backdrop: rgba( 0, 0, 0, 0.45 );
 	--eb-backdrop-glass: rgba( 30, 30, 30, 0.35 );
 	--eb-nav-active: #2271b1;
@@ -32,6 +33,34 @@ body.edminboost-theme-font--system {
 	--eb-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
 }
 
+body.edminboost-theme-font--arial {
+	--eb-font-family: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+
+body.edminboost-theme-font--verdana {
+	--eb-font-family: Verdana, Geneva, sans-serif;
+}
+
+body.edminboost-theme-font--tahoma {
+	--eb-font-family: Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body.edminboost-theme-font--trebuchet {
+	--eb-font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+
+body.edminboost-theme-font--lucida {
+	--eb-font-family: "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", sans-serif;
+}
+
+body.edminboost-theme-font--palatino {
+	--eb-font-family: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
+}
+
+body.edminboost-theme-font--humanist {
+	--eb-font-family: "Gill Sans", Calibri, "Trebuchet MS", sans-serif;
+}
+
 body.edminboost-theme-font--mono {
 	--eb-font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
@@ -42,6 +71,48 @@ body.edminboost-theme-font--serif {
 
 body.edminboost-theme-font--rounded {
 	--eb-font-family: "Segoe UI", "Trebuchet MS", "Lucida Grande", sans-serif;
+}
+
+/* Custom preset uses default light tokens; inline overrides supply user colors. */
+body.edminboost-theme--custom.edminboost-theme-mode--light,
+body.edminboost-theme--custom.edminboost-theme-mode--auto {
+	--eb-accent: #2271b1;
+	--eb-accent-hover: #135e96;
+	--eb-surface: #fff;
+	--eb-surface-alt: #f6f7f7;
+	--eb-border: #c3c4c7;
+	--eb-text: #1d2327;
+	--eb-text-muted: #50575e;
+	--eb-badge-bg: #d63638;
+	--eb-badge-accent: #72aee6;
+	--eb-drawer-header-bg: #1d2327;
+	--eb-drawer-header-text: #fff;
+	--eb-drawer-header-muted: #c3c4c7;
+	--eb-drawer-panel-bg: #f0f0f1;
+	--eb-drawer-body-bg: #fff;
+	--eb-backdrop: rgba( 0, 0, 0, 0.45 );
+	--eb-nav-active: #2271b1;
+	--eb-nav-border: #2271b1;
+}
+
+body.edminboost-theme--custom.edminboost-theme-mode--dark {
+	--eb-accent: #72aee6;
+	--eb-accent-hover: #9ec5e8;
+	--eb-surface: #1d2327;
+	--eb-surface-alt: #2c3338;
+	--eb-border: #3c434a;
+	--eb-text: #f0f0f1;
+	--eb-text-muted: #a7aaad;
+	--eb-badge-bg: #e65054;
+	--eb-badge-accent: #72aee6;
+	--eb-drawer-header-bg: #101517;
+	--eb-drawer-header-text: #f0f0f1;
+	--eb-drawer-header-muted: #a7aaad;
+	--eb-drawer-panel-bg: #1d2327;
+	--eb-drawer-body-bg: #2c3338;
+	--eb-backdrop: rgba( 0, 0, 0, 0.65 );
+	--eb-nav-active: #72aee6;
+	--eb-nav-border: #72aee6;
 }
 
 /* Default */
@@ -296,6 +367,594 @@ body.edminboost-theme--desert.edminboost-theme-mode--dark {
 	--eb-nav-border: #e8a060;
 }
 
+/* Dracula */
+body.edminboost-theme--dracula.edminboost-theme-mode--light {
+	--eb-accent: #7c6adb;
+	--eb-accent-hover: #624fd4;
+	--eb-surface: #f8f8f2;
+	--eb-surface-alt: #edeef0;
+	--eb-border: #d0d0d5;
+	--eb-text: #282a36;
+	--eb-text-muted: #6272a4;
+	--eb-badge-bg: #ff5555;
+	--eb-badge-accent: #7c6adb;
+	--eb-drawer-header-bg: #44475a;
+	--eb-drawer-header-text: #f8f8f2;
+	--eb-drawer-header-muted: #6272a4;
+	--eb-drawer-panel-bg: #edeef0;
+	--eb-drawer-body-bg: #f8f8f2;
+	--eb-backdrop: rgba( 40, 42, 54, 0.5 );
+	--eb-nav-active: #7c6adb;
+	--eb-nav-border: #7c6adb;
+}
+
+body.edminboost-theme--dracula.edminboost-theme-mode--dark,
+body.edminboost-theme--dracula.edminboost-theme-mode--auto {
+	--eb-accent: #bd93f9;
+	--eb-accent-hover: #d0b3ff;
+	--eb-surface: #282a36;
+	--eb-surface-alt: #343746;
+	--eb-border: #44475a;
+	--eb-text: #f8f8f2;
+	--eb-text-muted: #6272a4;
+	--eb-badge-bg: #ff5555;
+	--eb-badge-accent: #bd93f9;
+	--eb-drawer-header-bg: #21222c;
+	--eb-drawer-header-text: #f8f8f2;
+	--eb-drawer-header-muted: #6272a4;
+	--eb-drawer-panel-bg: #282a36;
+	--eb-drawer-body-bg: #343746;
+	--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+	--eb-nav-active: #bd93f9;
+	--eb-nav-border: #bd93f9;
+}
+
+/* Nord */
+body.edminboost-theme--nord.edminboost-theme-mode--light {
+	--eb-accent: #5e81ac;
+	--eb-accent-hover: #4c6a91;
+	--eb-surface: #eceff4;
+	--eb-surface-alt: #e5e9f0;
+	--eb-border: #d8dee9;
+	--eb-text: #2e3440;
+	--eb-text-muted: #4c566a;
+	--eb-badge-bg: #bf616a;
+	--eb-badge-accent: #5e81ac;
+	--eb-drawer-header-bg: #3b4252;
+	--eb-drawer-header-text: #eceff4;
+	--eb-drawer-header-muted: #d8dee9;
+	--eb-drawer-panel-bg: #e5e9f0;
+	--eb-drawer-body-bg: #eceff4;
+	--eb-backdrop: rgba( 46, 52, 64, 0.5 );
+	--eb-nav-active: #5e81ac;
+	--eb-nav-border: #5e81ac;
+}
+
+body.edminboost-theme--nord.edminboost-theme-mode--dark,
+body.edminboost-theme--nord.edminboost-theme-mode--auto {
+	--eb-accent: #88c0d0;
+	--eb-accent-hover: #a3d0dc;
+	--eb-surface: #2e3440;
+	--eb-surface-alt: #3b4252;
+	--eb-border: #4c566a;
+	--eb-text: #eceff4;
+	--eb-text-muted: #d8dee9;
+	--eb-badge-bg: #bf616a;
+	--eb-badge-accent: #88c0d0;
+	--eb-drawer-header-bg: #242933;
+	--eb-drawer-header-text: #eceff4;
+	--eb-drawer-header-muted: #d8dee9;
+	--eb-drawer-panel-bg: #2e3440;
+	--eb-drawer-body-bg: #3b4252;
+	--eb-backdrop: rgba( 0, 0, 0, 0.7 );
+	--eb-nav-active: #88c0d0;
+	--eb-nav-border: #88c0d0;
+}
+
+/* Solarized */
+body.edminboost-theme--solarized.edminboost-theme-mode--light,
+body.edminboost-theme--solarized.edminboost-theme-mode--auto {
+	--eb-accent: #268bd2;
+	--eb-accent-hover: #1f6fab;
+	--eb-surface: #fdf6e3;
+	--eb-surface-alt: #eee8d5;
+	--eb-border: #93a1a1;
+	--eb-text: #657b83;
+	--eb-text-muted: #839496;
+	--eb-badge-bg: #dc322f;
+	--eb-badge-accent: #268bd2;
+	--eb-drawer-header-bg: #073642;
+	--eb-drawer-header-text: #fdf6e3;
+	--eb-drawer-header-muted: #93a1a1;
+	--eb-drawer-panel-bg: #eee8d5;
+	--eb-drawer-body-bg: #fdf6e3;
+	--eb-backdrop: rgba( 7, 54, 66, 0.5 );
+	--eb-nav-active: #268bd2;
+	--eb-nav-border: #268bd2;
+}
+
+body.edminboost-theme--solarized.edminboost-theme-mode--dark {
+	--eb-accent: #2aa198;
+	--eb-accent-hover: #33bdb3;
+	--eb-surface: #002b36;
+	--eb-surface-alt: #073642;
+	--eb-border: #586e75;
+	--eb-text: #839496;
+	--eb-text-muted: #657b83;
+	--eb-badge-bg: #dc322f;
+	--eb-badge-accent: #2aa198;
+	--eb-drawer-header-bg: #001f27;
+	--eb-drawer-header-text: #93a1a1;
+	--eb-drawer-header-muted: #657b83;
+	--eb-drawer-panel-bg: #002b36;
+	--eb-drawer-body-bg: #073642;
+	--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+	--eb-nav-active: #2aa198;
+	--eb-nav-border: #2aa198;
+}
+
+/* Sakura */
+body.edminboost-theme--sakura.edminboost-theme-mode--light,
+body.edminboost-theme--sakura.edminboost-theme-mode--auto {
+	--eb-accent: #e8879a;
+	--eb-accent-hover: #d66d82;
+	--eb-surface: #fff5f7;
+	--eb-surface-alt: #fce8ec;
+	--eb-border: #f0c4cf;
+	--eb-text: #4a2030;
+	--eb-text-muted: #7a4a5c;
+	--eb-badge-bg: #d4566e;
+	--eb-badge-accent: #e8879a;
+	--eb-drawer-header-bg: #4a2030;
+	--eb-drawer-header-text: #fff5f7;
+	--eb-drawer-header-muted: #d4a0ae;
+	--eb-drawer-panel-bg: #fce8ec;
+	--eb-drawer-body-bg: #fff5f7;
+	--eb-backdrop: rgba( 74, 32, 48, 0.5 );
+	--eb-nav-active: #e8879a;
+	--eb-nav-border: #e8879a;
+}
+
+body.edminboost-theme--sakura.edminboost-theme-mode--dark {
+	--eb-accent: #ff9eb5;
+	--eb-accent-hover: #ffb8c9;
+	--eb-surface: #2a1520;
+	--eb-surface-alt: #3d2030;
+	--eb-border: #6a3a50;
+	--eb-text: #fce8ec;
+	--eb-text-muted: #d4a0ae;
+	--eb-badge-bg: #ff6b8a;
+	--eb-badge-accent: #ff9eb5;
+	--eb-drawer-header-bg: #1a0c14;
+	--eb-drawer-header-text: #fce8ec;
+	--eb-drawer-header-muted: #d4a0ae;
+	--eb-drawer-panel-bg: #2a1520;
+	--eb-drawer-body-bg: #3d2030;
+	--eb-backdrop: rgba( 26, 12, 20, 0.75 );
+	--eb-nav-active: #ff9eb5;
+	--eb-nav-border: #ff9eb5;
+}
+
+/* Ocean */
+body.edminboost-theme--ocean.edminboost-theme-mode--light {
+	--eb-accent: #0077b6;
+	--eb-accent-hover: #005f92;
+	--eb-surface: #e8f4fc;
+	--eb-surface-alt: #d4eaf8;
+	--eb-border: #90c8e8;
+	--eb-text: #0a1628;
+	--eb-text-muted: #2a5070;
+	--eb-badge-bg: #e63946;
+	--eb-badge-accent: #0077b6;
+	--eb-drawer-header-bg: #0a1628;
+	--eb-drawer-header-text: #e8f4fc;
+	--eb-drawer-header-muted: #90c8e8;
+	--eb-drawer-panel-bg: #d4eaf8;
+	--eb-drawer-body-bg: #e8f4fc;
+	--eb-backdrop: rgba( 10, 22, 40, 0.5 );
+	--eb-nav-active: #0077b6;
+	--eb-nav-border: #0077b6;
+}
+
+body.edminboost-theme--ocean.edminboost-theme-mode--dark,
+body.edminboost-theme--ocean.edminboost-theme-mode--auto {
+	--eb-accent: #3dd6d0;
+	--eb-accent-hover: #5ee0db;
+	--eb-surface: #0a1628;
+	--eb-surface-alt: #122640;
+	--eb-border: #1e4060;
+	--eb-text: #c8e6f5;
+	--eb-text-muted: #7ab0d0;
+	--eb-badge-bg: #e63946;
+	--eb-badge-accent: #3dd6d0;
+	--eb-drawer-header-bg: #061018;
+	--eb-drawer-header-text: #c8e6f5;
+	--eb-drawer-header-muted: #7ab0d0;
+	--eb-drawer-panel-bg: #0a1628;
+	--eb-drawer-body-bg: #122640;
+	--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+	--eb-nav-active: #3dd6d0;
+	--eb-nav-border: #3dd6d0;
+}
+
+/* Forest */
+body.edminboost-theme--forest.edminboost-theme-mode--light {
+	--eb-accent: #4a7c59;
+	--eb-accent-hover: #3d6649;
+	--eb-surface: #f0f7ed;
+	--eb-surface-alt: #e0eed8;
+	--eb-border: #a8c8a0;
+	--eb-text: #1a2e1f;
+	--eb-text-muted: #3d5c44;
+	--eb-badge-bg: #c44d2a;
+	--eb-badge-accent: #4a7c59;
+	--eb-drawer-header-bg: #1a2e1f;
+	--eb-drawer-header-text: #f0f7ed;
+	--eb-drawer-header-muted: #8ab890;
+	--eb-drawer-panel-bg: #e0eed8;
+	--eb-drawer-body-bg: #f0f7ed;
+	--eb-backdrop: rgba( 26, 46, 31, 0.5 );
+	--eb-nav-active: #4a7c59;
+	--eb-nav-border: #4a7c59;
+}
+
+body.edminboost-theme--forest.edminboost-theme-mode--dark,
+body.edminboost-theme--forest.edminboost-theme-mode--auto {
+	--eb-accent: #6dbf6d;
+	--eb-accent-hover: #85cc85;
+	--eb-surface: #1a2e1f;
+	--eb-surface-alt: #243d28;
+	--eb-border: #3d5c44;
+	--eb-text: #d4e8d0;
+	--eb-text-muted: #8ab890;
+	--eb-badge-bg: #e87040;
+	--eb-badge-accent: #6dbf6d;
+	--eb-drawer-header-bg: #0f1a12;
+	--eb-drawer-header-text: #d4e8d0;
+	--eb-drawer-header-muted: #8ab890;
+	--eb-drawer-panel-bg: #1a2e1f;
+	--eb-drawer-body-bg: #243d28;
+	--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+	--eb-nav-active: #6dbf6d;
+	--eb-nav-border: #6dbf6d;
+}
+
+/* Tron */
+body.edminboost-theme--tron.edminboost-theme-mode--light {
+	--eb-accent: #0099cc;
+	--eb-accent-hover: #007aa3;
+	--eb-surface: #e8f8ff;
+	--eb-surface-alt: #d0f0ff;
+	--eb-border: #90d0f0;
+	--eb-text: #0a0a12;
+	--eb-text-muted: #3a5060;
+	--eb-badge-bg: #00d4ff;
+	--eb-badge-accent: #0099cc;
+	--eb-drawer-header-bg: #0a0a12;
+	--eb-drawer-header-text: #e8f8ff;
+	--eb-drawer-header-muted: #90d0f0;
+	--eb-drawer-panel-bg: #d0f0ff;
+	--eb-drawer-body-bg: #e8f8ff;
+	--eb-backdrop: rgba( 10, 10, 18, 0.55 );
+	--eb-nav-active: #0099cc;
+	--eb-nav-border: #0099cc;
+}
+
+body.edminboost-theme--tron.edminboost-theme-mode--dark,
+body.edminboost-theme--tron.edminboost-theme-mode--auto {
+	--eb-accent: #00d4ff;
+	--eb-accent-hover: #33ddff;
+	--eb-surface: #0a0a12;
+	--eb-surface-alt: #12121f;
+	--eb-border: #1e3a50;
+	--eb-text: #b8e8ff;
+	--eb-text-muted: #6090b0;
+	--eb-badge-bg: #00d4ff;
+	--eb-badge-accent: #00d4ff;
+	--eb-drawer-header-bg: #050508;
+	--eb-drawer-header-text: #00d4ff;
+	--eb-drawer-header-muted: #6090b0;
+	--eb-drawer-panel-bg: #0a0a12;
+	--eb-drawer-body-bg: #12121f;
+	--eb-backdrop: rgba( 0, 0, 0, 0.8 );
+	--eb-nav-active: #00d4ff;
+	--eb-nav-border: #00d4ff;
+}
+
+/* Night City */
+body.edminboost-theme--night-city.edminboost-theme-mode--light {
+	--eb-accent: #c8b800;
+	--eb-accent-hover: #a89800;
+	--eb-surface: #f5f5f0;
+	--eb-surface-alt: #eaeae0;
+	--eb-border: #c0c0b8;
+	--eb-text: #0d0d0d;
+	--eb-text-muted: #505050;
+	--eb-badge-bg: #e63946;
+	--eb-badge-accent: #0099aa;
+	--eb-drawer-header-bg: #0d0d0d;
+	--eb-drawer-header-text: #f5f5f0;
+	--eb-drawer-header-muted: #909090;
+	--eb-drawer-panel-bg: #eaeae0;
+	--eb-drawer-body-bg: #f5f5f0;
+	--eb-backdrop: rgba( 13, 13, 13, 0.5 );
+	--eb-nav-active: #c8b800;
+	--eb-nav-border: #c8b800;
+}
+
+body.edminboost-theme--night-city.edminboost-theme-mode--dark,
+body.edminboost-theme--night-city.edminboost-theme-mode--auto {
+	--eb-accent: #fcee0a;
+	--eb-accent-hover: #fff44f;
+	--eb-surface: #0d0d0d;
+	--eb-surface-alt: #1a1a1a;
+	--eb-border: #333333;
+	--eb-text: #e0e0e0;
+	--eb-text-muted: #909090;
+	--eb-badge-bg: #ff0055;
+	--eb-badge-accent: #00f0ff;
+	--eb-drawer-header-bg: #050505;
+	--eb-drawer-header-text: #fcee0a;
+	--eb-drawer-header-muted: #909090;
+	--eb-drawer-panel-bg: #0d0d0d;
+	--eb-drawer-body-bg: #1a1a1a;
+	--eb-backdrop: rgba( 0, 0, 0, 0.8 );
+	--eb-nav-active: #fcee0a;
+	--eb-nav-border: #fcee0a;
+}
+
+/* Pip-Boy */
+body.edminboost-theme--pip-boy.edminboost-theme-mode--light {
+	--eb-accent: #c87800;
+	--eb-accent-hover: #a86000;
+	--eb-surface: #f5f0e0;
+	--eb-surface-alt: #e8e0c8;
+	--eb-border: #c0b890;
+	--eb-text: #1a2e1a;
+	--eb-text-muted: #4a6040;
+	--eb-badge-bg: #ff6600;
+	--eb-badge-accent: #c87800;
+	--eb-drawer-header-bg: #1a2e1a;
+	--eb-drawer-header-text: #f5f0e0;
+	--eb-drawer-header-muted: #8a9a70;
+	--eb-drawer-panel-bg: #e8e0c8;
+	--eb-drawer-body-bg: #f5f0e0;
+	--eb-backdrop: rgba( 26, 46, 26, 0.55 );
+	--eb-nav-active: #c87800;
+	--eb-nav-border: #c87800;
+}
+
+body.edminboost-theme--pip-boy.edminboost-theme-mode--dark,
+body.edminboost-theme--pip-boy.edminboost-theme-mode--auto {
+	--eb-accent: #ffb000;
+	--eb-accent-hover: #ffc840;
+	--eb-surface: #1a2e1a;
+	--eb-surface-alt: #243824;
+	--eb-border: #3a5030;
+	--eb-text: #b8d4a0;
+	--eb-text-muted: #7a9a68;
+	--eb-badge-bg: #ff6600;
+	--eb-badge-accent: #ffb000;
+	--eb-drawer-header-bg: #0f1a0f;
+	--eb-drawer-header-text: #ffb000;
+	--eb-drawer-header-muted: #7a9a68;
+	--eb-drawer-panel-bg: #1a2e1a;
+	--eb-drawer-body-bg: #243824;
+	--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+	--eb-nav-active: #ffb000;
+	--eb-nav-border: #ffb000;
+}
+
+/* Portal */
+body.edminboost-theme--portal.edminboost-theme-mode--light,
+body.edminboost-theme--portal.edminboost-theme-mode--auto {
+	--eb-accent: #ff7b00;
+	--eb-accent-hover: #e06800;
+	--eb-surface: #f5f5f5;
+	--eb-surface-alt: #eaeaea;
+	--eb-border: #cccccc;
+	--eb-text: #333333;
+	--eb-text-muted: #666666;
+	--eb-badge-bg: #0099cc;
+	--eb-badge-accent: #ff7b00;
+	--eb-drawer-header-bg: #333333;
+	--eb-drawer-header-text: #f5f5f5;
+	--eb-drawer-header-muted: #aaaaaa;
+	--eb-drawer-panel-bg: #eaeaea;
+	--eb-drawer-body-bg: #f5f5f5;
+	--eb-backdrop: rgba( 51, 51, 51, 0.5 );
+	--eb-nav-active: #ff7b00;
+	--eb-nav-border: #ff7b00;
+}
+
+body.edminboost-theme--portal.edminboost-theme-mode--dark {
+	--eb-accent: #ff9933;
+	--eb-accent-hover: #ffaa55;
+	--eb-surface: #1a1a1a;
+	--eb-surface-alt: #252525;
+	--eb-border: #404040;
+	--eb-text: #e8e8e8;
+	--eb-text-muted: #aaaaaa;
+	--eb-badge-bg: #00bfff;
+	--eb-badge-accent: #ff9933;
+	--eb-drawer-header-bg: #0a0a0a;
+	--eb-drawer-header-text: #ff9933;
+	--eb-drawer-header-muted: #888888;
+	--eb-drawer-panel-bg: #1a1a1a;
+	--eb-drawer-body-bg: #252525;
+	--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+	--eb-nav-active: #ff9933;
+	--eb-nav-border: #ff9933;
+}
+
+/* Gotham */
+body.edminboost-theme--gotham.edminboost-theme-mode--light {
+	--eb-accent: #c8a032;
+	--eb-accent-hover: #a88028;
+	--eb-surface: #f0f0f0;
+	--eb-surface-alt: #e0e0e0;
+	--eb-border: #b0b0b0;
+	--eb-text: #1a1a1a;
+	--eb-text-muted: #505050;
+	--eb-badge-bg: #c44d2a;
+	--eb-badge-accent: #c8a032;
+	--eb-drawer-header-bg: #1a1a1a;
+	--eb-drawer-header-text: #f0f0f0;
+	--eb-drawer-header-muted: #909090;
+	--eb-drawer-panel-bg: #e0e0e0;
+	--eb-drawer-body-bg: #f0f0f0;
+	--eb-backdrop: rgba( 26, 26, 26, 0.55 );
+	--eb-nav-active: #c8a032;
+	--eb-nav-border: #c8a032;
+}
+
+body.edminboost-theme--gotham.edminboost-theme-mode--dark,
+body.edminboost-theme--gotham.edminboost-theme-mode--auto {
+	--eb-accent: #f0c040;
+	--eb-accent-hover: #f5d060;
+	--eb-surface: #1a1a1a;
+	--eb-surface-alt: #252525;
+	--eb-border: #404040;
+	--eb-text: #e8e8e8;
+	--eb-text-muted: #909090;
+	--eb-badge-bg: #e63946;
+	--eb-badge-accent: #f0c040;
+	--eb-drawer-header-bg: #0a0a0a;
+	--eb-drawer-header-text: #f0c040;
+	--eb-drawer-header-muted: #808080;
+	--eb-drawer-panel-bg: #1a1a1a;
+	--eb-drawer-body-bg: #252525;
+	--eb-backdrop: rgba( 0, 0, 0, 0.8 );
+	--eb-nav-active: #f0c040;
+	--eb-nav-border: #f0c040;
+}
+
+/* Citadel */
+body.edminboost-theme--citadel.edminboost-theme-mode--light {
+	--eb-accent: #0288d1;
+	--eb-accent-hover: #026aa8;
+	--eb-surface: #e3f2fd;
+	--eb-surface-alt: #bbdefb;
+	--eb-border: #90caf9;
+	--eb-text: #0d1b2a;
+	--eb-text-muted: #3a5068;
+	--eb-badge-bg: #ff6f00;
+	--eb-badge-accent: #0288d1;
+	--eb-drawer-header-bg: #0d1b2a;
+	--eb-drawer-header-text: #e3f2fd;
+	--eb-drawer-header-muted: #90caf9;
+	--eb-drawer-panel-bg: #bbdefb;
+	--eb-drawer-body-bg: #e3f2fd;
+	--eb-backdrop: rgba( 13, 27, 42, 0.5 );
+	--eb-nav-active: #0288d1;
+	--eb-nav-border: #0288d1;
+}
+
+body.edminboost-theme--citadel.edminboost-theme-mode--dark,
+body.edminboost-theme--citadel.edminboost-theme-mode--auto {
+	--eb-accent: #4fc3f7;
+	--eb-accent-hover: #7dd3f9;
+	--eb-surface: #0d1b2a;
+	--eb-surface-alt: #1b2838;
+	--eb-border: #2a4060;
+	--eb-text: #b8d4e8;
+	--eb-text-muted: #6890b0;
+	--eb-badge-bg: #ff6f00;
+	--eb-badge-accent: #4fc3f7;
+	--eb-drawer-header-bg: #061018;
+	--eb-drawer-header-text: #4fc3f7;
+	--eb-drawer-header-muted: #6890b0;
+	--eb-drawer-panel-bg: #0d1b2a;
+	--eb-drawer-body-bg: #1b2838;
+	--eb-backdrop: rgba( 0, 0, 0, 0.8 );
+	--eb-nav-active: #4fc3f7;
+	--eb-nav-border: #4fc3f7;
+}
+
+/* Blade Noir */
+body.edminboost-theme--blade-noir.edminboost-theme-mode--light {
+	--eb-accent: #e85d04;
+	--eb-accent-hover: #c44d02;
+	--eb-surface: #f0e8e0;
+	--eb-surface-alt: #e0d8d0;
+	--eb-border: #c0b8b0;
+	--eb-text: #1a1a2e;
+	--eb-text-muted: #4a4a60;
+	--eb-badge-bg: #ff6b35;
+	--eb-badge-accent: #2ec4b6;
+	--eb-drawer-header-bg: #1a1a2e;
+	--eb-drawer-header-text: #f0e8e0;
+	--eb-drawer-header-muted: #9090a8;
+	--eb-drawer-panel-bg: #e0d8d0;
+	--eb-drawer-body-bg: #f0e8e0;
+	--eb-backdrop: rgba( 26, 26, 46, 0.55 );
+	--eb-nav-active: #e85d04;
+	--eb-nav-border: #e85d04;
+}
+
+body.edminboost-theme--blade-noir.edminboost-theme-mode--dark,
+body.edminboost-theme--blade-noir.edminboost-theme-mode--auto {
+	--eb-accent: #ff6b35;
+	--eb-accent-hover: #ff8855;
+	--eb-surface: #1a1a2e;
+	--eb-surface-alt: #252540;
+	--eb-border: #3a3a58;
+	--eb-text: #e8e4dc;
+	--eb-text-muted: #9898b0;
+	--eb-badge-bg: #ff6b35;
+	--eb-badge-accent: #2ec4b6;
+	--eb-drawer-header-bg: #0f0f1a;
+	--eb-drawer-header-text: #ff6b35;
+	--eb-drawer-header-muted: #9898b0;
+	--eb-drawer-panel-bg: #1a1a2e;
+	--eb-drawer-body-bg: #252540;
+	--eb-backdrop: rgba( 15, 15, 26, 0.8 );
+	--eb-nav-active: #ff6b35;
+	--eb-nav-border: #ff6b35;
+}
+
+/* Hyrule */
+body.edminboost-theme--hyrule.edminboost-theme-mode--light,
+body.edminboost-theme--hyrule.edminboost-theme-mode--auto {
+	--eb-accent: #2d6a4f;
+	--eb-accent-hover: #245a42;
+	--eb-surface: #f5f0e0;
+	--eb-surface-alt: #e8e0c8;
+	--eb-border: #c8c0a0;
+	--eb-text: #1a3020;
+	--eb-text-muted: #4a6050;
+	--eb-badge-bg: #c44d2a;
+	--eb-badge-accent: #c8a032;
+	--eb-drawer-header-bg: #1a3020;
+	--eb-drawer-header-text: #f5f0e0;
+	--eb-drawer-header-muted: #8a9880;
+	--eb-drawer-panel-bg: #e8e0c8;
+	--eb-drawer-body-bg: #f5f0e0;
+	--eb-backdrop: rgba( 26, 48, 32, 0.5 );
+	--eb-nav-active: #2d6a4f;
+	--eb-nav-border: #2d6a4f;
+}
+
+body.edminboost-theme--hyrule.edminboost-theme-mode--dark {
+	--eb-accent: #52b788;
+	--eb-accent-hover: #6ec99e;
+	--eb-surface: #1a3020;
+	--eb-surface-alt: #254030;
+	--eb-border: #3a5848;
+	--eb-text: #d8e8c8;
+	--eb-text-muted: #8aa890;
+	--eb-badge-bg: #e87040;
+	--eb-badge-accent: #e8c547;
+	--eb-drawer-header-bg: #0f1a14;
+	--eb-drawer-header-text: #e8c547;
+	--eb-drawer-header-muted: #8aa890;
+	--eb-drawer-panel-bg: #1a3020;
+	--eb-drawer-body-bg: #254030;
+	--eb-backdrop: rgba( 15, 26, 20, 0.75 );
+	--eb-nav-active: #52b788;
+	--eb-nav-border: #52b788;
+}
+
 @media ( prefers-color-scheme: dark ) {
 	body.edminboost-theme--default.edminboost-theme-mode--auto {
 		--eb-accent: #72aee6;
@@ -416,6 +1075,286 @@ body.edminboost-theme--desert.edminboost-theme-mode--dark {
 		--eb-nav-active: #e8a060;
 		--eb-nav-border: #e8a060;
 	}
+
+	body.edminboost-theme--dracula.edminboost-theme-mode--auto {
+		--eb-accent: #bd93f9;
+		--eb-accent-hover: #d0b3ff;
+		--eb-surface: #282a36;
+		--eb-surface-alt: #343746;
+		--eb-border: #44475a;
+		--eb-text: #f8f8f2;
+		--eb-text-muted: #6272a4;
+		--eb-badge-bg: #ff5555;
+		--eb-badge-accent: #bd93f9;
+		--eb-drawer-header-bg: #21222c;
+		--eb-drawer-header-text: #f8f8f2;
+		--eb-drawer-header-muted: #6272a4;
+		--eb-drawer-panel-bg: #282a36;
+		--eb-drawer-body-bg: #343746;
+		--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+		--eb-nav-active: #bd93f9;
+		--eb-nav-border: #bd93f9;
+	}
+
+	body.edminboost-theme--nord.edminboost-theme-mode--auto {
+		--eb-accent: #88c0d0;
+		--eb-accent-hover: #a3d0dc;
+		--eb-surface: #2e3440;
+		--eb-surface-alt: #3b4252;
+		--eb-border: #4c566a;
+		--eb-text: #eceff4;
+		--eb-text-muted: #d8dee9;
+		--eb-badge-bg: #bf616a;
+		--eb-badge-accent: #88c0d0;
+		--eb-drawer-header-bg: #242933;
+		--eb-drawer-header-text: #eceff4;
+		--eb-drawer-header-muted: #d8dee9;
+		--eb-drawer-panel-bg: #2e3440;
+		--eb-drawer-body-bg: #3b4252;
+		--eb-backdrop: rgba( 0, 0, 0, 0.7 );
+		--eb-nav-active: #88c0d0;
+		--eb-nav-border: #88c0d0;
+	}
+
+	body.edminboost-theme--solarized.edminboost-theme-mode--auto {
+		--eb-accent: #2aa198;
+		--eb-accent-hover: #33bdb3;
+		--eb-surface: #002b36;
+		--eb-surface-alt: #073642;
+		--eb-border: #586e75;
+		--eb-text: #839496;
+		--eb-text-muted: #657b83;
+		--eb-badge-bg: #dc322f;
+		--eb-badge-accent: #2aa198;
+		--eb-drawer-header-bg: #001f27;
+		--eb-drawer-header-text: #93a1a1;
+		--eb-drawer-header-muted: #657b83;
+		--eb-drawer-panel-bg: #002b36;
+		--eb-drawer-body-bg: #073642;
+		--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+		--eb-nav-active: #2aa198;
+		--eb-nav-border: #2aa198;
+	}
+
+	body.edminboost-theme--sakura.edminboost-theme-mode--auto {
+		--eb-accent: #ff9eb5;
+		--eb-accent-hover: #ffb8c9;
+		--eb-surface: #2a1520;
+		--eb-surface-alt: #3d2030;
+		--eb-border: #6a3a50;
+		--eb-text: #fce8ec;
+		--eb-text-muted: #d4a0ae;
+		--eb-badge-bg: #ff6b8a;
+		--eb-badge-accent: #ff9eb5;
+		--eb-drawer-header-bg: #1a0c14;
+		--eb-drawer-header-text: #fce8ec;
+		--eb-drawer-header-muted: #d4a0ae;
+		--eb-drawer-panel-bg: #2a1520;
+		--eb-drawer-body-bg: #3d2030;
+		--eb-backdrop: rgba( 26, 12, 20, 0.75 );
+		--eb-nav-active: #ff9eb5;
+		--eb-nav-border: #ff9eb5;
+	}
+
+	body.edminboost-theme--ocean.edminboost-theme-mode--auto {
+		--eb-accent: #3dd6d0;
+		--eb-accent-hover: #5ee0db;
+		--eb-surface: #0a1628;
+		--eb-surface-alt: #122640;
+		--eb-border: #1e4060;
+		--eb-text: #c8e6f5;
+		--eb-text-muted: #7ab0d0;
+		--eb-badge-bg: #e63946;
+		--eb-badge-accent: #3dd6d0;
+		--eb-drawer-header-bg: #061018;
+		--eb-drawer-header-text: #c8e6f5;
+		--eb-drawer-header-muted: #7ab0d0;
+		--eb-drawer-panel-bg: #0a1628;
+		--eb-drawer-body-bg: #122640;
+		--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+		--eb-nav-active: #3dd6d0;
+		--eb-nav-border: #3dd6d0;
+	}
+
+	body.edminboost-theme--forest.edminboost-theme-mode--auto {
+		--eb-accent: #6dbf6d;
+		--eb-accent-hover: #85cc85;
+		--eb-surface: #1a2e1f;
+		--eb-surface-alt: #243d28;
+		--eb-border: #3d5c44;
+		--eb-text: #d4e8d0;
+		--eb-text-muted: #8ab890;
+		--eb-badge-bg: #e87040;
+		--eb-badge-accent: #6dbf6d;
+		--eb-drawer-header-bg: #0f1a12;
+		--eb-drawer-header-text: #d4e8d0;
+		--eb-drawer-header-muted: #8ab890;
+		--eb-drawer-panel-bg: #1a2e1f;
+		--eb-drawer-body-bg: #243d28;
+		--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+		--eb-nav-active: #6dbf6d;
+		--eb-nav-border: #6dbf6d;
+	}
+
+	body.edminboost-theme--tron.edminboost-theme-mode--auto {
+		--eb-accent: #00d4ff;
+		--eb-accent-hover: #33ddff;
+		--eb-surface: #0a0a12;
+		--eb-surface-alt: #12121f;
+		--eb-border: #1e3a50;
+		--eb-text: #b8e8ff;
+		--eb-text-muted: #6090b0;
+		--eb-badge-bg: #00d4ff;
+		--eb-badge-accent: #00d4ff;
+		--eb-drawer-header-bg: #050508;
+		--eb-drawer-header-text: #00d4ff;
+		--eb-drawer-header-muted: #6090b0;
+		--eb-drawer-panel-bg: #0a0a12;
+		--eb-drawer-body-bg: #12121f;
+		--eb-backdrop: rgba( 0, 0, 0, 0.8 );
+		--eb-nav-active: #00d4ff;
+		--eb-nav-border: #00d4ff;
+	}
+
+	body.edminboost-theme--night-city.edminboost-theme-mode--auto {
+		--eb-accent: #fcee0a;
+		--eb-accent-hover: #fff44f;
+		--eb-surface: #0d0d0d;
+		--eb-surface-alt: #1a1a1a;
+		--eb-border: #333333;
+		--eb-text: #e0e0e0;
+		--eb-text-muted: #909090;
+		--eb-badge-bg: #ff0055;
+		--eb-badge-accent: #00f0ff;
+		--eb-drawer-header-bg: #050505;
+		--eb-drawer-header-text: #fcee0a;
+		--eb-drawer-header-muted: #909090;
+		--eb-drawer-panel-bg: #0d0d0d;
+		--eb-drawer-body-bg: #1a1a1a;
+		--eb-backdrop: rgba( 0, 0, 0, 0.8 );
+		--eb-nav-active: #fcee0a;
+		--eb-nav-border: #fcee0a;
+	}
+
+	body.edminboost-theme--pip-boy.edminboost-theme-mode--auto {
+		--eb-accent: #ffb000;
+		--eb-accent-hover: #ffc840;
+		--eb-surface: #1a2e1a;
+		--eb-surface-alt: #243824;
+		--eb-border: #3a5030;
+		--eb-text: #b8d4a0;
+		--eb-text-muted: #7a9a68;
+		--eb-badge-bg: #ff6600;
+		--eb-badge-accent: #ffb000;
+		--eb-drawer-header-bg: #0f1a0f;
+		--eb-drawer-header-text: #ffb000;
+		--eb-drawer-header-muted: #7a9a68;
+		--eb-drawer-panel-bg: #1a2e1a;
+		--eb-drawer-body-bg: #243824;
+		--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+		--eb-nav-active: #ffb000;
+		--eb-nav-border: #ffb000;
+	}
+
+	body.edminboost-theme--portal.edminboost-theme-mode--auto {
+		--eb-accent: #ff9933;
+		--eb-accent-hover: #ffaa55;
+		--eb-surface: #1a1a1a;
+		--eb-surface-alt: #252525;
+		--eb-border: #404040;
+		--eb-text: #e8e8e8;
+		--eb-text-muted: #aaaaaa;
+		--eb-badge-bg: #00bfff;
+		--eb-badge-accent: #ff9933;
+		--eb-drawer-header-bg: #0a0a0a;
+		--eb-drawer-header-text: #ff9933;
+		--eb-drawer-header-muted: #888888;
+		--eb-drawer-panel-bg: #1a1a1a;
+		--eb-drawer-body-bg: #252525;
+		--eb-backdrop: rgba( 0, 0, 0, 0.75 );
+		--eb-nav-active: #ff9933;
+		--eb-nav-border: #ff9933;
+	}
+
+	body.edminboost-theme--gotham.edminboost-theme-mode--auto {
+		--eb-accent: #f0c040;
+		--eb-accent-hover: #f5d060;
+		--eb-surface: #1a1a1a;
+		--eb-surface-alt: #252525;
+		--eb-border: #404040;
+		--eb-text: #e8e8e8;
+		--eb-text-muted: #909090;
+		--eb-badge-bg: #e63946;
+		--eb-badge-accent: #f0c040;
+		--eb-drawer-header-bg: #0a0a0a;
+		--eb-drawer-header-text: #f0c040;
+		--eb-drawer-header-muted: #808080;
+		--eb-drawer-panel-bg: #1a1a1a;
+		--eb-drawer-body-bg: #252525;
+		--eb-backdrop: rgba( 0, 0, 0, 0.8 );
+		--eb-nav-active: #f0c040;
+		--eb-nav-border: #f0c040;
+	}
+
+	body.edminboost-theme--citadel.edminboost-theme-mode--auto {
+		--eb-accent: #4fc3f7;
+		--eb-accent-hover: #7dd3f9;
+		--eb-surface: #0d1b2a;
+		--eb-surface-alt: #1b2838;
+		--eb-border: #2a4060;
+		--eb-text: #b8d4e8;
+		--eb-text-muted: #6890b0;
+		--eb-badge-bg: #ff6f00;
+		--eb-badge-accent: #4fc3f7;
+		--eb-drawer-header-bg: #061018;
+		--eb-drawer-header-text: #4fc3f7;
+		--eb-drawer-header-muted: #6890b0;
+		--eb-drawer-panel-bg: #0d1b2a;
+		--eb-drawer-body-bg: #1b2838;
+		--eb-backdrop: rgba( 0, 0, 0, 0.8 );
+		--eb-nav-active: #4fc3f7;
+		--eb-nav-border: #4fc3f7;
+	}
+
+	body.edminboost-theme--blade-noir.edminboost-theme-mode--auto {
+		--eb-accent: #ff6b35;
+		--eb-accent-hover: #ff8855;
+		--eb-surface: #1a1a2e;
+		--eb-surface-alt: #252540;
+		--eb-border: #3a3a58;
+		--eb-text: #e8e4dc;
+		--eb-text-muted: #9898b0;
+		--eb-badge-bg: #ff6b35;
+		--eb-badge-accent: #2ec4b6;
+		--eb-drawer-header-bg: #0f0f1a;
+		--eb-drawer-header-text: #ff6b35;
+		--eb-drawer-header-muted: #9898b0;
+		--eb-drawer-panel-bg: #1a1a2e;
+		--eb-drawer-body-bg: #252540;
+		--eb-backdrop: rgba( 15, 15, 26, 0.8 );
+		--eb-nav-active: #ff6b35;
+		--eb-nav-border: #ff6b35;
+	}
+
+	body.edminboost-theme--hyrule.edminboost-theme-mode--auto {
+		--eb-accent: #52b788;
+		--eb-accent-hover: #6ec99e;
+		--eb-surface: #1a3020;
+		--eb-surface-alt: #254030;
+		--eb-border: #3a5848;
+		--eb-text: #d8e8c8;
+		--eb-text-muted: #8aa890;
+		--eb-badge-bg: #e87040;
+		--eb-badge-accent: #e8c547;
+		--eb-drawer-header-bg: #0f1a14;
+		--eb-drawer-header-text: #e8c547;
+		--eb-drawer-header-muted: #8aa890;
+		--eb-drawer-panel-bg: #1a3020;
+		--eb-drawer-body-bg: #254030;
+		--eb-backdrop: rgba( 15, 26, 20, 0.75 );
+		--eb-nav-active: #52b788;
+		--eb-nav-border: #52b788;
+	}
 }
 
 @media ( prefers-color-scheme: light ) {
@@ -478,113 +1417,434 @@ body.edminboost-theme--desert.edminboost-theme-mode--dark {
 		--eb-nav-active: #d400b8;
 		--eb-nav-border: #d400b8;
 	}
+
+	body.edminboost-theme--dracula.edminboost-theme-mode--auto {
+		--eb-accent: #7c6adb;
+		--eb-accent-hover: #624fd4;
+		--eb-surface: #f8f8f2;
+		--eb-surface-alt: #edeef0;
+		--eb-border: #d0d0d5;
+		--eb-text: #282a36;
+		--eb-text-muted: #6272a4;
+		--eb-badge-bg: #ff5555;
+		--eb-badge-accent: #7c6adb;
+		--eb-drawer-header-bg: #44475a;
+		--eb-drawer-header-text: #f8f8f2;
+		--eb-drawer-header-muted: #6272a4;
+		--eb-drawer-panel-bg: #edeef0;
+		--eb-drawer-body-bg: #f8f8f2;
+		--eb-backdrop: rgba( 40, 42, 54, 0.5 );
+		--eb-nav-active: #7c6adb;
+		--eb-nav-border: #7c6adb;
+	}
+
+	body.edminboost-theme--nord.edminboost-theme-mode--auto {
+		--eb-accent: #5e81ac;
+		--eb-accent-hover: #4c6a91;
+		--eb-surface: #eceff4;
+		--eb-surface-alt: #e5e9f0;
+		--eb-border: #d8dee9;
+		--eb-text: #2e3440;
+		--eb-text-muted: #4c566a;
+		--eb-badge-bg: #bf616a;
+		--eb-badge-accent: #5e81ac;
+		--eb-drawer-header-bg: #3b4252;
+		--eb-drawer-header-text: #eceff4;
+		--eb-drawer-header-muted: #d8dee9;
+		--eb-drawer-panel-bg: #e5e9f0;
+		--eb-drawer-body-bg: #eceff4;
+		--eb-backdrop: rgba( 46, 52, 64, 0.5 );
+		--eb-nav-active: #5e81ac;
+		--eb-nav-border: #5e81ac;
+	}
+
+	body.edminboost-theme--ocean.edminboost-theme-mode--auto {
+		--eb-accent: #0077b6;
+		--eb-accent-hover: #005f92;
+		--eb-surface: #e8f4fc;
+		--eb-surface-alt: #d4eaf8;
+		--eb-border: #90c8e8;
+		--eb-text: #0a1628;
+		--eb-text-muted: #2a5070;
+		--eb-badge-bg: #e63946;
+		--eb-badge-accent: #0077b6;
+		--eb-drawer-header-bg: #0a1628;
+		--eb-drawer-header-text: #e8f4fc;
+		--eb-drawer-header-muted: #90c8e8;
+		--eb-drawer-panel-bg: #d4eaf8;
+		--eb-drawer-body-bg: #e8f4fc;
+		--eb-backdrop: rgba( 10, 22, 40, 0.5 );
+		--eb-nav-active: #0077b6;
+		--eb-nav-border: #0077b6;
+	}
+
+	body.edminboost-theme--forest.edminboost-theme-mode--auto {
+		--eb-accent: #4a7c59;
+		--eb-accent-hover: #3d6649;
+		--eb-surface: #f0f7ed;
+		--eb-surface-alt: #e0eed8;
+		--eb-border: #a8c8a0;
+		--eb-text: #1a2e1f;
+		--eb-text-muted: #3d5c44;
+		--eb-badge-bg: #c44d2a;
+		--eb-badge-accent: #4a7c59;
+		--eb-drawer-header-bg: #1a2e1f;
+		--eb-drawer-header-text: #f0f7ed;
+		--eb-drawer-header-muted: #8ab890;
+		--eb-drawer-panel-bg: #e0eed8;
+		--eb-drawer-body-bg: #f0f7ed;
+		--eb-backdrop: rgba( 26, 46, 31, 0.5 );
+		--eb-nav-active: #4a7c59;
+		--eb-nav-border: #4a7c59;
+	}
+
+	body.edminboost-theme--tron.edminboost-theme-mode--auto {
+		--eb-accent: #0099cc;
+		--eb-accent-hover: #007aa3;
+		--eb-surface: #e8f8ff;
+		--eb-surface-alt: #d0f0ff;
+		--eb-border: #90d0f0;
+		--eb-text: #0a0a12;
+		--eb-text-muted: #3a5060;
+		--eb-badge-bg: #00d4ff;
+		--eb-badge-accent: #0099cc;
+		--eb-drawer-header-bg: #0a0a12;
+		--eb-drawer-header-text: #e8f8ff;
+		--eb-drawer-header-muted: #90d0f0;
+		--eb-drawer-panel-bg: #d0f0ff;
+		--eb-drawer-body-bg: #e8f8ff;
+		--eb-backdrop: rgba( 10, 10, 18, 0.55 );
+		--eb-nav-active: #0099cc;
+		--eb-nav-border: #0099cc;
+	}
+
+	body.edminboost-theme--night-city.edminboost-theme-mode--auto {
+		--eb-accent: #c8b800;
+		--eb-accent-hover: #a89800;
+		--eb-surface: #f5f5f0;
+		--eb-surface-alt: #eaeae0;
+		--eb-border: #c0c0b8;
+		--eb-text: #0d0d0d;
+		--eb-text-muted: #505050;
+		--eb-badge-bg: #e63946;
+		--eb-badge-accent: #0099aa;
+		--eb-drawer-header-bg: #0d0d0d;
+		--eb-drawer-header-text: #f5f5f0;
+		--eb-drawer-header-muted: #909090;
+		--eb-drawer-panel-bg: #eaeae0;
+		--eb-drawer-body-bg: #f5f5f0;
+		--eb-backdrop: rgba( 13, 13, 13, 0.5 );
+		--eb-nav-active: #c8b800;
+		--eb-nav-border: #c8b800;
+	}
+
+	body.edminboost-theme--pip-boy.edminboost-theme-mode--auto {
+		--eb-accent: #c87800;
+		--eb-accent-hover: #a86000;
+		--eb-surface: #f5f0e0;
+		--eb-surface-alt: #e8e0c8;
+		--eb-border: #c0b890;
+		--eb-text: #1a2e1a;
+		--eb-text-muted: #4a6040;
+		--eb-badge-bg: #ff6600;
+		--eb-badge-accent: #c87800;
+		--eb-drawer-header-bg: #1a2e1a;
+		--eb-drawer-header-text: #f5f0e0;
+		--eb-drawer-header-muted: #8a9a70;
+		--eb-drawer-panel-bg: #e8e0c8;
+		--eb-drawer-body-bg: #f5f0e0;
+		--eb-backdrop: rgba( 26, 46, 26, 0.55 );
+		--eb-nav-active: #c87800;
+		--eb-nav-border: #c87800;
+	}
+
+	body.edminboost-theme--gotham.edminboost-theme-mode--auto {
+		--eb-accent: #c8a032;
+		--eb-accent-hover: #a88028;
+		--eb-surface: #f0f0f0;
+		--eb-surface-alt: #e0e0e0;
+		--eb-border: #b0b0b0;
+		--eb-text: #1a1a1a;
+		--eb-text-muted: #505050;
+		--eb-badge-bg: #c44d2a;
+		--eb-badge-accent: #c8a032;
+		--eb-drawer-header-bg: #1a1a1a;
+		--eb-drawer-header-text: #f0f0f0;
+		--eb-drawer-header-muted: #909090;
+		--eb-drawer-panel-bg: #e0e0e0;
+		--eb-drawer-body-bg: #f0f0f0;
+		--eb-backdrop: rgba( 26, 26, 26, 0.55 );
+		--eb-nav-active: #c8a032;
+		--eb-nav-border: #c8a032;
+	}
+
+	body.edminboost-theme--citadel.edminboost-theme-mode--auto {
+		--eb-accent: #0288d1;
+		--eb-accent-hover: #026aa8;
+		--eb-surface: #e3f2fd;
+		--eb-surface-alt: #bbdefb;
+		--eb-border: #90caf9;
+		--eb-text: #0d1b2a;
+		--eb-text-muted: #3a5068;
+		--eb-badge-bg: #ff6f00;
+		--eb-badge-accent: #0288d1;
+		--eb-drawer-header-bg: #0d1b2a;
+		--eb-drawer-header-text: #e3f2fd;
+		--eb-drawer-header-muted: #90caf9;
+		--eb-drawer-panel-bg: #bbdefb;
+		--eb-drawer-body-bg: #e3f2fd;
+		--eb-backdrop: rgba( 13, 27, 42, 0.5 );
+		--eb-nav-active: #0288d1;
+		--eb-nav-border: #0288d1;
+	}
+
+	body.edminboost-theme--blade-noir.edminboost-theme-mode--auto {
+		--eb-accent: #e85d04;
+		--eb-accent-hover: #c44d02;
+		--eb-surface: #f0e8e0;
+		--eb-surface-alt: #e0d8d0;
+		--eb-border: #c0b8b0;
+		--eb-text: #1a1a2e;
+		--eb-text-muted: #4a4a60;
+		--eb-badge-bg: #ff6b35;
+		--eb-badge-accent: #2ec4b6;
+		--eb-drawer-header-bg: #1a1a2e;
+		--eb-drawer-header-text: #f0e8e0;
+		--eb-drawer-header-muted: #9090a8;
+		--eb-drawer-panel-bg: #e0d8d0;
+		--eb-drawer-body-bg: #f0e8e0;
+		--eb-backdrop: rgba( 26, 26, 46, 0.55 );
+		--eb-nav-active: #e85d04;
+		--eb-nav-border: #e85d04;
+	}
 }
 
 body.edminboost-theme-active .edminboost-wrap,
-body.edminboost-theme-active .edminboost-cc-drawer {
+body.edminboost-theme-active .edminboost-cc-drawer,
+body.edminboost-theme-active #wpadminbar,
+body.edminboost-theme-active #adminmenu,
+body.edminboost-theme-active #adminmenu .wp-submenu {
 	font-family: var( --eb-font-family );
 }
 
-.edminboost-theme-preview {
-	margin-top: 16px;
-	padding: 16px;
-	border: 1px solid var( --eb-border, #c3c4c7 );
-	border-radius: 6px;
-	background: var( --eb-surface, #fff );
-	color: var( --eb-text, #1d2327 );
-	box-shadow: var( --eb-card-shadow, 0 1px 1px rgba( 0, 0, 0, 0.04 ) );
+/* Admin top bar */
+body.edminboost-theme-active #wpadminbar {
+	background: var( --eb-top-bar-bg, var( --eb-drawer-header-bg, #1d2327 ) );
 }
 
-.edminboost-theme-preview__bar {
-	display: flex;
-	align-items: center;
-	gap: 8px;
-	padding: 8px 12px;
-	border-radius: 4px;
-	background: var( --eb-drawer-header-bg, #1d2327 );
+body.edminboost-theme-active #wpadminbar .ab-item,
+body.edminboost-theme-active #wpadminbar a.ab-item,
+body.edminboost-theme-active #wpadminbar > #wp-toolbar span.ab-label,
+body.edminboost-theme-active #wpadminbar > #wp-toolbar span.noticon {
 	color: var( --eb-drawer-header-text, #fff );
-	margin-bottom: 12px;
 }
 
-.edminboost-theme-preview__badge {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	min-width: 18px;
-	height: 18px;
-	padding: 0 5px;
-	border-radius: 999px;
-	background: var( --eb-badge-bg, #d63638 );
-	color: #fff;
-	font-size: 11px;
-	font-weight: 600;
+body.edminboost-theme-active #wpadminbar:not( .mobile ) .ab-top-menu > li:hover > .ab-item,
+body.edminboost-theme-active #wpadminbar:not( .mobile ) .ab-top-menu > li.hover > .ab-item,
+body.edminboost-theme-active #wpadminbar .ab-top-menu > li.menupop.hover > .ab-item,
+body.edminboost-theme-active #wpadminbar.nojq .quicklinks .ab-top-menu > li > .ab-item:focus,
+body.edminboost-theme-active #wpadminbar:not( .mobile ) li:hover .ab-icon:before,
+body.edminboost-theme-active #wpadminbar:not( .mobile ) li:hover .ab-item:before,
+body.edminboost-theme-active #wpadminbar:not( .mobile ) li:hover .ab-item:after {
+	color: var( --eb-accent, #72aee6 );
+	background: transparent;
 }
 
-.edminboost-theme-preview__accent {
-	color: var( --eb-accent, #2271b1 );
-	font-weight: 600;
+body.edminboost-theme-active #wpadminbar .ab-submenu {
+	background: var( --eb-top-bar-bg, var( --eb-drawer-header-bg, #1d2327 ) );
 }
 
-.edminboost-theme-preview__muted {
+body.edminboost-theme-active #wpadminbar .ab-submenu .ab-item {
+	color: var( --eb-drawer-header-muted, #c3c4c7 );
+}
+
+body.edminboost-theme-active #wpadminbar .ab-submenu .ab-item:hover,
+body.edminboost-theme-active #wpadminbar .ab-submenu .ab-item:focus {
+	color: var( --eb-drawer-header-text, #fff );
+}
+
+body.edminboost-theme-active #wpadminbar .quicklinks .menupop ul li a:hover,
+body.edminboost-theme-active #wpadminbar .quicklinks .menupop ul li a:focus {
+	background: var( --eb-accent, #2271b1 );
+	color: var( --eb-drawer-header-text, #fff );
+}
+
+/* Admin sidebar menu (skipped when Menu Studio custom colors are active) */
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenuwrap {
+	background: var( --eb-sidebar-bg, var( --eb-drawer-header-bg, #1d2327 ) );
+}
+
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu a {
+	color: var( --eb-drawer-header-text, #f0f0f1 );
+}
+
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu li.menu-top:hover,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu li.menu-top.opensub > a.menu-top,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu li.menu-top > a.menu-top:focus {
+	background-color: var( --eb-accent, #2271b1 );
+	color: var( --eb-drawer-header-text, #fff );
+}
+
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu li.current a.menu-top,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu li.wp-has-current-submenu a.wp-has-current-submenu {
+	background-color: var( --eb-accent, #2271b1 );
+	color: var( --eb-drawer-header-text, #fff );
+}
+
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .wp-submenu,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .wp-submenu-wrap {
+	background-color: var( --eb-surface-alt, #2c3338 );
+}
+
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .wp-submenu a {
 	color: var( --eb-text-muted, #50575e );
-	font-size: 13px;
 }
 
-.edminboost-theme-grid {
-	display: grid;
-	grid-template-columns: repeat( auto-fill, minmax( 140px, 1fr ) );
-	gap: 12px;
-	margin-top: 12px;
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .wp-submenu a:hover,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .wp-submenu a:focus,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .wp-submenu li.current a,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .wp-submenu li.current a:hover,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .wp-submenu li.current a:focus {
+	color: var( --eb-text, #1d2327 );
 }
 
-.edminboost-theme-card {
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .awaiting-mod,
+body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .update-plugins {
+	background-color: var( --eb-badge-bg, #d63638 );
+	color: #fff;
+}
+
+/* Admin content area (main wp-admin background beside the sidebar) */
+body.edminboost-theme-active #wpcontent,
+body.edminboost-theme-active #wpbody,
+body.edminboost-theme-active #wpbody-content {
+	background-color: var( --eb-content-bg, var( --eb-drawer-panel-bg, #f0f0f1 ) );
+}
+
+.edminboost-theme-preset-picker {
+	position: relative;
+	max-width: 420px;
+	margin-top: 8px;
+}
+
+.edminboost-theme-preset-picker__toggle {
 	display: flex;
-	flex-direction: column;
-	gap: 8px;
-	padding: 12px;
-	border: 2px solid #dcdcde;
-	border-radius: 6px;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+	min-height: 40px;
+	padding: 8px 12px;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
 	background: #fff;
+	color: #1d2327;
 	cursor: pointer;
-	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+	text-align: left;
 }
 
-.edminboost-theme-card.is-selected {
+.edminboost-theme-preset-picker__toggle:hover,
+.edminboost-theme-preset-picker__toggle:focus {
 	border-color: #2271b1;
 	box-shadow: 0 0 0 1px #2271b1;
+	outline: none;
 }
 
-.edminboost-theme-card__swatches {
+.edminboost-theme-preset-picker__label {
 	display: flex;
-	gap: 4px;
-}
-
-.edminboost-theme-card__swatch {
 	flex: 1;
-	height: 20px;
-	border-radius: 3px;
-	border: 1px solid rgba( 0, 0, 0, 0.08 );
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-width: 0;
 }
 
-.edminboost-theme-card__title {
+.edminboost-theme-preset-picker__name {
 	font-weight: 600;
-	font-size: 13px;
+	white-space: nowrap;
 }
 
-.edminboost-theme-card__desc {
+.edminboost-theme-preset-picker__swatches {
+	display: flex;
+	gap: 3px;
+	flex-shrink: 0;
+}
+
+.edminboost-theme-preset-picker__chip {
+	display: inline-block;
+	width: 18px;
+	height: 18px;
+	border-radius: 3px;
+	border: 1px solid rgba( 0, 0, 0, 0.12 );
+}
+
+.edminboost-theme-preset-picker__list {
+	position: absolute;
+	z-index: 30;
+	top: calc( 100% + 4px );
+	left: 0;
+	right: 0;
+	max-height: 320px;
+	margin: 0;
+	padding: 4px 0;
+	overflow: auto;
+	list-style: none;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	background: #fff;
+	box-shadow: 0 4px 16px rgba( 0, 0, 0, 0.12 );
+}
+
+.edminboost-theme-preset-picker__list[hidden] {
+	display: none !important;
+}
+
+.edminboost-theme-preset-picker__option {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	padding: 10px 12px;
+	cursor: pointer;
+}
+
+.edminboost-theme-preset-picker__option:hover,
+.edminboost-theme-preset-picker__option:focus {
+	background: #f6f7f7;
+	outline: none;
+}
+
+.edminboost-theme-preset-picker__option.is-selected {
+	background: #f0f6fc;
+	box-shadow: inset 3px 0 0 #2271b1;
+}
+
+.edminboost-theme-preset-picker__option-main {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.edminboost-theme-preset-picker__option-name {
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.edminboost-theme-preset-picker__option-desc {
 	font-size: 12px;
-	color: #50575e;
 	line-height: 1.4;
+	color: #50575e;
+}
+
+.edminboost-theme-custom-colors[hidden] {
+	display: none !important;
 }
 
 .edminboost-theme-custom-colors {
 	margin-top: 16px;
 	padding-top: 16px;
 	border-top: 1px solid #dcdcde;
-}
-
-.edminboost-theme-custom-colors[hidden] {
-	display: none !important;
 }
 
 .edminboost-theme-color-row {

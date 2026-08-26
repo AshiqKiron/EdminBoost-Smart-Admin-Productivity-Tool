@@ -63,12 +63,15 @@ Use `EDMINBOOST_Admin::PAGE_SLUG` (equals `EDMINBOOST_PLUGIN_SLUG`) — never ha
 | Page | Slug | Renderer |
 |------|------|----------|
 | Dashboard | `PAGE_SLUG` | `render_admin_page()` |
+| Appearance | `PAGE_SLUG . PAGE_APPEARANCE` | `render_appearance_page()` |
 | Top Bar | `PAGE_SLUG . PAGE_MAPPER` | `render_mapper_page()` |
-| Presets | `PAGE_SLUG . PAGE_PRESETS` | `render_presets_page()` |
+| Layout Presets | `PAGE_SLUG . PAGE_PRESETS` | `render_presets_page()` |
 | Menu Studio | `PAGE_SLUG . PAGE_MENU_STUDIO` | `render_menu_studio_page()` |
 | Settings | `PAGE_SLUG . '-settings'` | `render_settings_page()` |
 
-Legacy slugs `-onboarding` and `-behavior` redirect to Dashboard.
+Legacy slugs: `-onboarding` redirects to Dashboard; `-behavior` redirects to Appearance (hidden submenu entries, not in sidebar).
+
+`EDMINBOOST_Admin::normalize_plugin_submenu()` (priority 999 on `admin_menu`) keeps Dashboard first under EdminBoost even when Menu Studio reorders plugin submenu items.
 
 Capability: `EDMINBOOST_Settings::CAPABILITY` (`manage_options`).
 

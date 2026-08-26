@@ -14,7 +14,7 @@ alwaysApply: false
 - No jQuery unless WordPress already loads it for the screen.
 - Use `DOMContentLoaded` for initialization.
 - On `DOMContentLoaded`, set `data-edminboost-ready="true"` on `.edminboost-wrap`, then call all page inits.
-- Page-specific init functions: `initHome` (Dashboard hub), `initMapper`, `initMenuStudio`, `initBehavior`, `initTheme`, `initPresets`, `initCommandCenterForms`, `initSettingsForm` — each no-ops if target elements are absent.
+- Page-specific init functions: `initSetupWizard` (Dashboard first-run wizard), `initMapper`, `initMenuStudio`, `initBehavior` (Appearance page), `initTheme`, `initPresets`, `initCommandCenterForms`, `initSettingsForm` — each no-ops if target elements are absent.
 - `initBehavior` delegates to `initBehaviorBadgePreview` (toggle badge style previews), `initBehaviorDrawerWidthCustom` (custom width slider + live preview), and `initBehaviorAnimationSpeed` (animation speed listbox + drawer micro-previews).
 
 `edminboostData` shape:
@@ -72,14 +72,13 @@ alwaysApply: false
 
 - Prefix all selectors with `.edminboost-` to avoid admin conflicts.
 - Layout: `.edminboost-wrap`, `.edminboost-dashboard`, `.edminboost-card`, `.edminboost-status`.
-- Dashboard: `.edminboost-feature-list`, `.edminboost-steps`.
+- Dashboard: `.edminboost-home-wrap` (+ `.edminboost-home-wrap--wizard` before setup), `.edminboost-home-hero`, `.edminboost-dashboard-overview`, `.edminboost-overview-grid`, `.edminboost-overview-card`.
+- Setup wizard: `.edminboost-setup-wizard`, `.edminboost-setup-stepper` (+ `__item`, `__number`, `__label`), `.edminboost-setup-step`, `.edminboost-setup-wizard__footer`, `.edminboost-setup-review__*`, `.edminboost-preset-picker` (+ `--wizard` / `--full`).
 - Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`.
 - Command Center: `.edminboost-cc-wrap`, `.edminboost-cc-nav`, `.edminboost-cc-hero`, `.edminboost-cc-footer`.
-- Onboarding: `.edminboost-persona-grid`, `.edminboost-persona-card` (+ `.is-selected`).
-- Mapper: `.edminboost-mapper-layout`, `.edminboost-mapper-search`, `.edminboost-discovered-list`, `.edminboost-discovered-item` (+ `__toggle`, `__checkbox`, `__handle`, `__icon`), `.edminboost-topbar-canvas` (+ `.is-drag-over`), `.edminboost-topbar-item`, `.edminboost-item-drawer`.
+- Mapper: `.edminboost-mapper-layout`, `.edminboost-mapper-search`, `.edminboost-discovered-list`, `.edminboost-discovered-item` (+ `__toggle`, `__checkbox`, `__handle`, `__icon`), `.edminboost-topbar-canvas` (+ `.is-drag-over`), `.edminboost-topbar-item`, `.edminboost-item-drawer`, `.edminboost-topbar-summary`.
 - Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-role-matrix`.
-- Behavior: `.edminboost-badge-preview`, `.edminboost-drawer-width-custom`, `.edminboost-drawer-width-preview__*` (width slider live preview), `.edminboost-animation-speed-picker` (+ `__toggle`, `__list`, `__option`, `__preview`, `__preview-drawer`; duration via `--edminboost-animation-preview-ms`).
-- Dashboard look: `.edminboost-skin-card`, `#edminboost-home-form` (legacy class/id names).
+- Appearance / behavior: `.edminboost-badge-preview`, `.edminboost-drawer-width-custom`, `.edminboost-drawer-width-preview__*` (width slider live preview), `.edminboost-animation-speed-picker` (+ `__toggle`, `__list`, `__option`, `__preview`, `__preview-drawer`; duration via `--edminboost-animation-preview-ms`).
 - Menu Studio: `.edminboost-menu-studio-layout`, `.edminboost-menu-studio-panel`, `.edminboost-menu-canvas`, `.edminboost-menu-discovered-list`.
 - Theme UI (settings markup): `.edminboost-theme-preset-colors`, `.edminboost-theme-color-swatches`, `.edminboost-theme-color-swatch`, `.edminboost-theme-custom-colors`, `.edminboost-theme-color-row`, `.edminboost-theme-preview` (+ `__bar`, `__badge`, `__accent`, `__muted`).
 - Theme on plugin screens: `body.edminboost-theme-active .edminboost-wrap …` rules at end of `edminboost-admin.css` consume `--eb-*` tokens.
@@ -110,16 +109,21 @@ alwaysApply: false
 
 | File | Purpose |
 |------|---------|
-| `edminboost-admin-page.php` | Dashboard hub (setup, visual theme, look skins, advanced look) |
-| `edminboost-home-advanced-look.php` | Advanced behavior fields on Dashboard |
+| `edminboost-admin-page.php` | Dashboard shell (setup wizard or overview) |
+| `edminboost-setup-wizard.php` | First-run setup stepper |
+| `edminboost-dashboard-overview.php` | Post-setup overview cards |
+| `edminboost-appearance-page.php` | Theme, panel/badges, declutter |
+| `edminboost-home-advanced-look.php` | Panel width, badges, animation speed (Appearance) |
+| `edminboost-declutter-settings.php` | Admin bar cleanup toggles |
 | `edminboost-animation-speed-field.php` | Animation speed picker partial (`$cc_key`, `$behavior`) |
+| `edminboost-preset-picker.php` | Layout preset card grid |
+| `edminboost-topbar-summary.php` | Read-only top bar link list |
 | `edminboost-settings-features.php` | Feature toggles (`render_features_field()`) |
 | `edminboost-command-center-nav.php` | CC sub-navigation |
 | `edminboost-mapper-page.php` | Top bar / layout studio |
-| `edminboost-presets-page.php` | Presets & role matrix |
+| `edminboost-presets-page.php` | Layout presets & role matrix |
 | `edminboost-menu-studio-page.php` | Sidebar menu builder |
 | `edminboost-theme-settings.php` | Visual theme controls (shared partial) |
-| `edminboost-behavior-page.php` | Legacy behavior page (redirects to Dashboard) |
 
 Use `fieldset` + `legend` for grouped settings; label every input; `screen-reader-text` for icon-only controls.
 
@@ -138,18 +142,25 @@ Key elements: `#edminboost-mapper-form`, `#edminboost-topbar-items`, `#edminboos
 
 ## Behavior JS (`initBehavior`)
 
-Key elements: `input[name*="[badge_style]"]`, `.edminboost-badge-preview__item`, `input[name*="[drawer_width]"]`, `#edminboost-drawer-width-custom`, `#edminboost_drawer_width_custom`, `#edminboost_drawer_width_preview_drawer`, `#edminboost-drawer-width-preview-caption`.
+Runs on Appearance page (`#edminboost-appearance-form`). Key elements: `input[name*="[badge_style]"]`, `.edminboost-badge-preview__item`, `input[name*="[drawer_width]"]`, `#edminboost-drawer-width-custom`, `#edminboost_drawer_width_custom`, `#edminboost_drawer_width_preview_drawer`, `#edminboost-drawer-width-preview-caption`.
 
 - Badge preview: shows one `.edminboost-badge-preview__item` matching the selected `badge_style` radio.
 - Custom drawer width: toggles `#edminboost-drawer-width-custom` when `drawer_width=custom`; slider updates px label and preview drawer width (% of 1280px reference viewport); caption uses `edminboostData.strings.drawerWidthPreviewCaption`.
 - Animation speed: screen-reader `#edminboost_animation_speed` stays the form source of truth; `#edminboost_animation_speed_toggle` opens `#edminboost-animation-speed-list` (listbox); option click updates select + plays toggle drawer preview; list open staggers `.edminboost-animation-speed-picker__preview-drawer` demos; Escape closes list.
 
+## Setup wizard JS (`initSetupWizard`)
+
+Key elements: `#edminboost-setup-wizard-form`, `.edminboost-setup-stepper__item`, `.edminboost-setup-step`, `#edminboost-setup-back`, `#edminboost-setup-next`, `#edminboost-setup-submit`, `#edminboost_wizard_apply_preset`, `#edminboost_wizard_default_preset`, `.edminboost-wizard-preset-radio`, `#edminboost-wizard-topbar-summary`.
+
+- Four-step stepper toggles visible panels; Back/Next/Submit footer controls step navigation.
+- Layout preset selection updates hidden `_apply_preset` / `default_preset` and re-renders top bar summary from `edminboostData.presets`.
+- Final submit uses marker `command_center[_setup_wizard_save]` = `1` (sets `onboarding_completed` server-side when top bar items are saved).
+
 ## Theme JS (`initTheme`)
 
-Key elements: `#edminboost_theme_preset`, `#edminboost_theme_mode`, `#edminboost_theme_font`, `#edminboost-theme-preset-desc`, `#edminboost-theme-preset-colors`, `#edminboost-theme-custom-colors`, `#edminboost-theme-preview`, custom fields `#edminboost_custom_{accent|surface|text|top|sidebar}` + matching `*_picker` inputs.
+Key elements: hidden `#edminboost_theme_preset`, custom listbox `#edminboost-theme-preset-picker` (+ `#edminboost_theme_preset_toggle`, `#edminboost-theme-preset-list`), `#edminboost_theme_mode`, `#edminboost_theme_font`, `#edminboost-theme-preset-desc`, `#edminboost-theme-custom-colors`, `#edminboost-theme-preview`, custom fields `#edminboost_custom_{accent|surface|text|top|sidebar}` + matching `*_picker` inputs.
 
-- Preset dropdown toggles swatch panel vs custom color pickers (`preset === 'custom'`).
-- Updates preset description and five read-only swatches from `edminboostData.themePresets`.
+- Preset listbox toggles custom color pickers (`preset === 'custom'`); updates toggle swatches and description from `edminboostData.themePresets`.
 - Live preview applies body classes (`edminboost-theme--*`, `edminboost-theme-mode--*`, `edminboost-theme-font--*`) and inline `--eb-*` vars on `document.body` and `#edminboost-theme-preview`.
 - Color picker ↔ hex text sync; invalid hex leaves preview unchanged until valid.
 

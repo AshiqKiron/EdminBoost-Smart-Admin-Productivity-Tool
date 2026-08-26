@@ -31,5 +31,7 @@ class EDMINBOOST_Activator {
 		}
 
 		update_option( EDMINBOOST_Settings::VERSION_OPTION, EDMINBOOST_VERSION, false );
+
+		set_transient( 'edminboost_activation_redirect', 1, 30 );
 	}
 }

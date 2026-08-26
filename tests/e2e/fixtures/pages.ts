@@ -7,6 +7,7 @@ const pluginSlug = process.env.PLUGIN_SLUG || 'edminboost-smart-admin-productivi
 
 export const pages = {
 	dashboard: `wp-admin/admin.php?page=${ pluginSlug }`,
+	appearance: `wp-admin/admin.php?page=${ pluginSlug }-appearance`,
 	settings: `wp-admin/admin.php?page=${ pluginSlug }-settings`,
 	onboarding: `wp-admin/admin.php?page=${ pluginSlug }-onboarding`,
 	mapper: `wp-admin/admin.php?page=${ pluginSlug }-mapper`,

@@ -612,17 +612,7 @@ class EDMINBOOST_Command_Center_Bar {
 	 * @return int
 	 */
 	private static function get_animation_duration_ms() {
-		$behavior = EDMINBOOST_Command_Center::get_settings()['behavior'];
-		$speed    = isset( $behavior['animation_speed'] ) ? $behavior['animation_speed'] : 'normal';
-
-		switch ( $speed ) {
-			case 'fast':
-				return 150;
-			case 'slow':
-				return 500;
-			default:
-				return 300;
-		}
+		return EDMINBOOST_Command_Center::get_animation_duration_ms();
 	}
 
 	/**

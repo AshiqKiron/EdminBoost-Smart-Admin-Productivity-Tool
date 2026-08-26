@@ -14,72 +14,15 @@
 
 		root.setAttribute( 'data-edminboost-ready', 'true' );
 
-		initHome( root );
 		initMapper( root );
 		initMenuStudio( root );
 		initBehavior( root );
 		initTheme( root );
 		initPresets( root );
+		initSetupWizard( root );
 		initCommandCenterForms( root );
 		initSettingsForm( root );
 	} );
-
-	function initHome( root ) {
-		var skinCards = root.querySelectorAll( '.edminboost-skin-card' );
-		var homeForm  = document.getElementById( 'edminboost-home-form' );
-		var applySkin = document.getElementById( 'edminboost_apply_look_skin' );
-		var keepAdvanced = document.getElementById( 'edminboost_keep_advanced_behavior' );
-		var advancedLook = root.querySelector( '.edminboost-advanced-look' );
-
-		if ( skinCards.length ) {
-			skinCards.forEach( function ( card ) {
-				var input = card.querySelector( '.edminboost-skin-card__input' );
-
-				card.addEventListener( 'click', function () {
-					skinCards.forEach( function ( other ) {
-						other.classList.remove( 'is-selected' );
-						var otherInput = other.querySelector( '.edminboost-skin-card__input' );
-						if ( otherInput ) {
-							otherInput.checked = false;
-						}
-					} );
-
-					card.classList.add( 'is-selected' );
-					if ( input ) {
-						input.checked = true;
-					}
-				} );
-			} );
-		}
-
-		if ( ! homeForm ) {
-			return;
-		}
-
-		homeForm.addEventListener( 'submit', function () {
-			var selectedSkin = homeForm.querySelector( '.edminboost-skin-card__input:checked' );
-			var advancedOpen = advancedLook && advancedLook.open;
-
-			if ( applySkin ) {
-				applySkin.value = '';
-			}
-
-			if ( keepAdvanced ) {
-				keepAdvanced.value = '';
-			}
-
-			if ( advancedOpen ) {
-				if ( keepAdvanced ) {
-					keepAdvanced.value = '1';
-				}
-				return;
-			}
-
-			if ( selectedSkin && applySkin ) {
-				applySkin.value = selectedSkin.value;
-			}
-		} );
-	}
 
 	function initMapper( root ) {
 		var form         = document.getElementById( 'edminboost-mapper-form' );
@@ -88,7 +31,6 @@
 		var discovered   = document.getElementById( 'edminboost-discovered-list' );
 		var searchInput  = document.getElementById( 'edminboost-plugin-search' );
 		var drawer       = document.getElementById( 'edminboost-item-drawer' );
-		var mapperMain   = root.querySelector( '.edminboost-mapper-main' );
 		var emptyHint    = document.getElementById( 'edminboost-canvas-empty' );
 		var hiddenInputs = document.getElementById( 'edminboost-topbar-hidden-inputs' );
 
@@ -264,10 +206,6 @@
 
 			drawer.hidden = false;
 
-			if ( mapperMain ) {
-				mapperMain.classList.add( 'is-drawer-open' );
-			}
-
 			var subtitle = document.getElementById( 'edminboost-drawer-subtitle' );
 			if ( subtitle ) {
 				var subtitleText = item.dataset.slug || '';
@@ -324,10 +262,6 @@
 		function closeDrawer() {
 			if ( drawer ) {
 				drawer.hidden = true;
-			}
-
-			if ( mapperMain ) {
-				mapperMain.classList.remove( 'is-drawer-open' );
 			}
 
 			selectedItem = null;
@@ -812,7 +746,8 @@
 			} );
 		}
 
-		form.addEventListener( 'submit', syncHiddenInputs );
+		form.addEventListener( 'submit', syncHiddenInputs, true );
+		form.edminboostSyncHiddenInputs = syncHiddenInputs;
 		syncHiddenInputs();
 		updateEmptyState();
 	}
@@ -848,7 +783,9 @@
 		} );
 
 		function getTopItems() {
-			return Array.prototype.slice.call( canvas.querySelectorAll( ':scope > .edminboost-sidebar-item' ) );
+			return Array.prototype.filter.call( canvas.children, function ( child ) {
+				return child.classList && child.classList.contains( 'edminboost-sidebar-item' );
+			} );
 		}
 
 		function getRowData( row ) {
@@ -910,6 +847,8 @@
 			var optionName = window.edminboostData.optionName || 'edminboost_settings';
 			var msPrefix   = optionName + '[command_center][menu_studio]';
 
+			var submenuParentIndex = 0;
+
 			getTopItems().forEach( function ( item, index ) {
 				appendHiddenInput( msPrefix + '[order][' + index + ']', item.dataset.slug || '' );
 
@@ -918,13 +857,19 @@
 					return;
 				}
 
-				var parentSlug = item.dataset.slug || '';
+				appendHiddenInput(
+					msPrefix + '[submenu_parents][' + submenuParentIndex + ']',
+					item.dataset.slug || ''
+				);
+
 				Array.prototype.forEach.call( subList.querySelectorAll( '.edminboost-sidebar-subitem' ), function ( subItem, subIndex ) {
 					appendHiddenInput(
-						msPrefix + '[submenu_order][' + parentSlug + '][' + subIndex + ']',
+						msPrefix + '[submenu_order][' + submenuParentIndex + '][' + subIndex + ']',
 						subItem.dataset.slug || ''
 					);
 				} );
+
+				submenuParentIndex++;
 			} );
 
 			discovered.querySelectorAll( '.edminboost-discovered-item' ).forEach( function ( row ) {
@@ -1057,6 +1002,7 @@
 				var rect = item.getBoundingClientRect();
 				var after = event.clientY > rect.top + rect.height / 2;
 				item.parentNode.insertBefore( dragItem, after ? item.nextSibling : item );
+				syncHiddenInputs();
 			} );
 		}
 
@@ -1099,6 +1045,7 @@
 				var rect = item.getBoundingClientRect();
 				var after = event.clientY > rect.top + rect.height / 2;
 				canvas.insertBefore( dragItem, after ? item.nextSibling : item );
+				syncHiddenInputs();
 			} );
 
 			if ( subList ) {
@@ -1383,7 +1330,8 @@
 		} );
 
 		applyColorPreview();
-		form.addEventListener( 'submit', syncHiddenInputs );
+		form.addEventListener( 'submit', syncHiddenInputs, true );
+		form.edminboostSyncHiddenInputs = syncHiddenInputs;
 		syncHiddenInputs();
 		updateEmptyState();
 	}
@@ -1391,6 +1339,7 @@
 	function initBehavior( root ) {
 		initBehaviorBadgePreview( root );
 		initBehaviorDrawerWidthCustom( root );
+		initBehaviorAnimationSpeed( root );
 	}
 
 	function initBehaviorBadgePreview( root ) {
@@ -1422,16 +1371,32 @@
 	}
 
 	function initBehaviorDrawerWidthCustom( root ) {
-		var widthRadios   = root.querySelectorAll( 'input[name*="[drawer_width]"]' );
-		var customWrap    = document.getElementById( 'edminboost-drawer-width-custom' );
-		var slider        = document.getElementById( 'edminboost_drawer_width_custom' );
-		var valueEl       = document.getElementById( 'edminboost_drawer_width_custom_value' );
-		var previewDrawer = document.getElementById( 'edminboost_drawer_width_preview_drawer' );
+		var widthRadios    = root.querySelectorAll( 'input[name*="[drawer_width]"]' );
+		var customWrap     = document.getElementById( 'edminboost-drawer-width-custom' );
+		var slider         = document.getElementById( 'edminboost_drawer_width_custom' );
+		var valueEl        = document.getElementById( 'edminboost_drawer_width_custom_value' );
+		var previewDrawer  = document.getElementById( 'edminboost_drawer_width_preview_drawer' );
 		var previewCaption = document.getElementById( 'edminboost-drawer-width-preview-caption' );
 		var referenceViewport = 1280;
+		var presetWidths = {
+			compact: 400,
+			standard: 600
+		};
 
-		if ( ! widthRadios.length || ! customWrap || ! slider ) {
+		if ( ! widthRadios.length ) {
 			return;
+		}
+
+		function getSelectedWidth() {
+			var selected = 'standard';
+
+			widthRadios.forEach( function ( radio ) {
+				if ( radio.checked ) {
+					selected = radio.value;
+				}
+			} );
+
+			return selected;
 		}
 
 		function formatPreviewCaption( px, percent ) {
@@ -1447,24 +1412,42 @@
 		}
 
 		function updateCustomVisibility() {
-			var isCustom = false;
+			if ( ! customWrap ) {
+				return;
+			}
 
-			widthRadios.forEach( function ( radio ) {
-				if ( radio.checked && radio.value === 'custom' ) {
-					isCustom = true;
-				}
-			} );
-
-			customWrap.hidden = ! isCustom;
+			customWrap.hidden = getSelectedWidth() !== 'custom';
 		}
 
-		function updateSliderPreview() {
-			var px      = parseInt( slider.value, 10 );
-			var percent = Math.round( ( px / referenceViewport ) * 100 );
+		function updateWidthPreview() {
+			var selected = getSelectedWidth();
+			var px;
+			var percent;
 
-			if ( valueEl ) {
-				valueEl.textContent = px + 'px';
+			if ( 'fullscreen' === selected ) {
+				if ( previewDrawer ) {
+					previewDrawer.style.width = '100%';
+				}
+
+				if ( previewCaption ) {
+					previewCaption.textContent = edminboostData.strings.drawerWidthPreviewFullscreen
+						|| 'Drawer uses the full screen width.';
+				}
+
+				return;
 			}
+
+			if ( 'custom' === selected && slider ) {
+				px = parseInt( slider.value, 10 );
+
+				if ( valueEl ) {
+					valueEl.textContent = px + 'px';
+				}
+			} else {
+				px = presetWidths[ selected ] || presetWidths.standard;
+			}
+
+			percent = Math.round( ( px / referenceViewport ) * 100 );
 
 			if ( previewDrawer ) {
 				previewDrawer.style.width = percent + '%';
@@ -1476,75 +1459,381 @@
 		}
 
 		widthRadios.forEach( function ( radio ) {
-			radio.addEventListener( 'change', updateCustomVisibility );
+			radio.addEventListener( 'change', function () {
+				updateCustomVisibility();
+				updateWidthPreview();
+			} );
 		} );
 
-		slider.addEventListener( 'input', updateSliderPreview );
+		if ( slider ) {
+			slider.addEventListener( 'input', updateWidthPreview );
+		}
 
 		updateCustomVisibility();
-		updateSliderPreview();
+		updateWidthPreview();
 	}
 
-	function initTheme( root ) {
-		var presetRadios = root.querySelectorAll( '.edminboost-theme-card__input' );
-		var modeSelect   = document.getElementById( 'edminboost_theme_mode' );
-		var fontSelect   = document.getElementById( 'edminboost_theme_font' );
-		var useCustom    = document.getElementById( 'edminboost_use_custom_colors' );
-		var customWrap   = document.getElementById( 'edminboost-theme-custom-colors' );
-		var preview      = document.getElementById( 'edminboost-theme-preview' );
+	function initBehaviorAnimationSpeed( root ) {
+		var speedSelect   = document.getElementById( 'edminboost_animation_speed' );
+		var speedPicker   = document.getElementById( 'edminboost-animation-speed-picker' );
+		var speedToggle   = document.getElementById( 'edminboost_animation_speed_toggle' );
+		var speedList     = document.getElementById( 'edminboost-animation-speed-list' );
+		var speedName     = document.getElementById( 'edminboost-animation-speed-name' );
+		var toggleDrawer  = document.getElementById( 'edminboost_animation_speed_toggle_drawer' );
+		var togglePreview = speedToggle ? speedToggle.querySelector( '.edminboost-animation-speed-picker__preview' ) : null;
+		var previewStagger = 180;
+		var previewTimers  = [];
 
-		if ( ! presetRadios.length ) {
+		if ( ! speedSelect || ! speedPicker ) {
 			return;
 		}
 
-		var themeClasses = [
-			'edminboost-theme-active',
-			'edminboost-theme--default',
-			'edminboost-theme--midnight',
-			'edminboost-theme--terminal',
-			'edminboost-theme--neon-outrun',
-			'edminboost-theme--vapor',
-			'edminboost-theme--desert',
-			'edminboost-theme-mode--light',
-			'edminboost-theme-mode--dark',
-			'edminboost-theme-mode--auto',
-			'edminboost-theme-font--inherit',
-			'edminboost-theme-font--system',
-			'edminboost-theme-font--mono',
-			'edminboost-theme-font--serif',
-			'edminboost-theme-font--rounded'
-		];
+		function clearPreviewTimers() {
+			previewTimers.forEach( function ( timerId ) {
+				window.clearTimeout( timerId );
+			} );
+			previewTimers = [];
+		}
+
+		function getSelectedSpeed() {
+			return speedSelect.value || 'normal';
+		}
+
+		function getSpeedLabel( speed ) {
+			var option = speedSelect.querySelector( 'option[value="' + speed + '"]' );
+			return option ? option.textContent : speed;
+		}
+
+		function getSpeedMs( speed ) {
+			var listOption = speedList ? speedList.querySelector( '.edminboost-animation-speed-picker__option[data-value="' + speed + '"]' ) : null;
+			if ( listOption && listOption.dataset.ms ) {
+				return parseInt( listOption.dataset.ms, 10 ) || 300;
+			}
+
+			switch ( speed ) {
+				case 'fast':
+					return 150;
+				case 'slow':
+					return 500;
+				default:
+					return 300;
+			}
+		}
+
+		function resetDrawerPreview( drawer ) {
+			if ( ! drawer ) {
+				return;
+			}
+
+			drawer.classList.remove( 'is-open' );
+		}
+
+		function playDrawerPreview( drawer ) {
+			if ( ! drawer ) {
+				return;
+			}
+
+			resetDrawerPreview( drawer );
+			void drawer.offsetWidth;
+			drawer.classList.add( 'is-open' );
+		}
+
+		function closeSpeedList() {
+			if ( ! speedList || ! speedToggle ) {
+				return;
+			}
+
+			clearPreviewTimers();
+			speedList.hidden = true;
+			speedToggle.setAttribute( 'aria-expanded', 'false' );
+
+			if ( speedList.querySelectorAll ) {
+				speedList.querySelectorAll( '.edminboost-animation-speed-picker__preview-drawer' ).forEach( resetDrawerPreview );
+			}
+		}
+
+		function openSpeedList() {
+			if ( ! speedList || ! speedToggle ) {
+				return;
+			}
+
+			speedList.hidden = false;
+			speedToggle.setAttribute( 'aria-expanded', 'true' );
+			playListPreviews();
+		}
+
+		function toggleSpeedList() {
+			if ( ! speedList ) {
+				return;
+			}
+
+			if ( speedList.hidden ) {
+				openSpeedList();
+			} else {
+				closeSpeedList();
+			}
+		}
+
+		function playListPreviews() {
+			if ( ! speedList ) {
+				return;
+			}
+
+			var options = speedList.querySelectorAll( '.edminboost-animation-speed-picker__option' );
+
+			options.forEach( function ( option, index ) {
+				var drawer = option.querySelector( '.edminboost-animation-speed-picker__preview-drawer' );
+				var delay  = index * previewStagger;
+
+				previewTimers.push( window.setTimeout( function () {
+					playDrawerPreview( drawer );
+				}, delay ) );
+			} );
+		}
+
+		function syncSpeedPickerSelection( playToggle ) {
+			var speed = getSelectedSpeed();
+			var ms    = getSpeedMs( speed );
+
+			if ( speedName ) {
+				speedName.textContent = getSpeedLabel( speed );
+			}
+
+			if ( togglePreview ) {
+				togglePreview.style.setProperty( '--edminboost-animation-preview-ms', ms + 'ms' );
+			}
+
+			if ( speedList ) {
+				speedList.querySelectorAll( '.edminboost-animation-speed-picker__option' ).forEach( function ( option ) {
+					var isSelected = option.getAttribute( 'data-value' ) === speed;
+					option.classList.toggle( 'is-selected', isSelected );
+					option.setAttribute( 'aria-selected', isSelected ? 'true' : 'false' );
+				} );
+			}
+
+			if ( playToggle ) {
+				playDrawerPreview( toggleDrawer );
+			}
+		}
+
+		function setSelectedSpeed( speed ) {
+			if ( ! speedSelect.querySelector( 'option[value="' + speed + '"]' ) ) {
+				return;
+			}
+
+			speedSelect.value = speed;
+			syncSpeedPickerSelection( true );
+		}
+
+		if ( speedToggle ) {
+			speedToggle.addEventListener( 'click', function () {
+				toggleSpeedList();
+			} );
+		}
+
+		if ( speedList ) {
+			speedList.addEventListener( 'click', function ( event ) {
+				var option = event.target.closest( '.edminboost-animation-speed-picker__option' );
+				if ( ! option ) {
+					return;
+				}
+
+				setSelectedSpeed( option.getAttribute( 'data-value' ) );
+				closeSpeedList();
+			} );
+
+			speedList.addEventListener( 'keydown', function ( event ) {
+				if ( event.key === 'Escape' ) {
+					closeSpeedList();
+					if ( speedToggle ) {
+						speedToggle.focus();
+					}
+				}
+			} );
+		}
+
+		document.addEventListener( 'click', function ( event ) {
+			if ( speedPicker && ! speedPicker.contains( event.target ) ) {
+				closeSpeedList();
+			}
+		} );
+
+		syncSpeedPickerSelection( false );
+	}
+
+	function initTheme( root ) {
+		var presetSelect   = document.getElementById( 'edminboost_theme_preset' );
+		var presetPicker   = document.getElementById( 'edminboost-theme-preset-picker' );
+		var presetToggle   = document.getElementById( 'edminboost_theme_preset_toggle' );
+		var presetList     = document.getElementById( 'edminboost-theme-preset-list' );
+		var presetName     = document.getElementById( 'edminboost-theme-preset-name' );
+		var presetSwatches = document.getElementById( 'edminboost-theme-preset-toggle-swatches' );
+		var modeSelect     = document.getElementById( 'edminboost_theme_mode' );
+		var fontSelect     = document.getElementById( 'edminboost_theme_font' );
+		var presetDesc     = document.getElementById( 'edminboost-theme-preset-desc' );
+		var customWrap     = document.getElementById( 'edminboost-theme-custom-colors' );
+		var themePresets   = edminboostData.themePresets || {};
+		var colorKeys      = [ 'accent', 'surface', 'text', 'topbar', 'sidebar', 'content' ];
+
+		if ( ! presetSelect || ! presetPicker ) {
+			return;
+		}
+
+		var themeClasses = [ 'edminboost-theme-active' ];
+
+		Object.keys( themePresets ).forEach( function ( presetId ) {
+			themeClasses.push( 'edminboost-theme--' + presetId );
+		} );
+
+		if ( modeSelect ) {
+			Array.prototype.forEach.call( modeSelect.options, function ( option ) {
+				themeClasses.push( 'edminboost-theme-mode--' + option.value );
+			} );
+		}
+
+		if ( fontSelect ) {
+			Array.prototype.forEach.call( fontSelect.options, function ( option ) {
+				themeClasses.push( 'edminboost-theme-font--' + option.value );
+			} );
+		}
 
 		var colorFields = [
 			{ picker: 'edminboost_custom_accent_picker', text: 'edminboost_custom_accent', varName: '--eb-accent' },
 			{ picker: 'edminboost_custom_surface_picker', text: 'edminboost_custom_surface', varName: '--eb-surface' },
-			{ picker: 'edminboost_custom_text_picker', text: 'edminboost_custom_text', varName: '--eb-text' }
+			{ picker: 'edminboost_custom_text_picker', text: 'edminboost_custom_text', varName: '--eb-text' },
+			{ picker: 'edminboost_custom_top_picker', text: 'edminboost_custom_top', varName: '--eb-top-bar-bg' },
+			{ picker: 'edminboost_custom_sidebar_picker', text: 'edminboost_custom_sidebar', varName: '--eb-sidebar-bg' },
+			{ picker: 'edminboost_custom_content_picker', text: 'edminboost_custom_content', varName: '--eb-content-bg' }
 		];
 
 		function getSelectedPreset() {
-			var preset = 'default';
-			presetRadios.forEach( function ( radio ) {
-				if ( radio.checked ) {
-					preset = radio.value;
-				}
-			} );
-			return preset;
+			return presetSelect ? presetSelect.value : 'default';
 		}
 
-		function syncThemeCards() {
-			presetRadios.forEach( function ( radio ) {
-				var card = radio.closest( '.edminboost-theme-card' );
-				if ( card ) {
-					card.classList.toggle( 'is-selected', radio.checked );
-				}
+		function isCustomPreset() {
+			return getSelectedPreset() === 'custom';
+		}
+
+		function closePresetList() {
+			if ( ! presetList || ! presetToggle ) {
+				return;
+			}
+
+			presetList.hidden = true;
+			presetToggle.setAttribute( 'aria-expanded', 'false' );
+		}
+
+		function openPresetList() {
+			if ( ! presetList || ! presetToggle ) {
+				return;
+			}
+
+			presetList.hidden = false;
+			presetToggle.setAttribute( 'aria-expanded', 'true' );
+		}
+
+		function togglePresetList() {
+			if ( ! presetList ) {
+				return;
+			}
+
+			if ( presetList.hidden ) {
+				openPresetList();
+			} else {
+				closePresetList();
+			}
+		}
+
+		function renderPresetSwatches( container, colors ) {
+			if ( ! container ) {
+				return;
+			}
+
+			container.innerHTML = '';
+
+			colorKeys.forEach( function ( colorKey ) {
+				var chip = document.createElement( 'span' );
+				chip.className = 'edminboost-theme-preset-picker__chip';
+				chip.style.backgroundColor = colors && colors[ colorKey ] ? colors[ colorKey ] : '#ffffff';
+				chip.setAttribute( 'aria-hidden', 'true' );
+				container.appendChild( chip );
 			} );
+		}
+
+		function syncPresetPickerSelection() {
+			var preset = getSelectedPreset();
+			var config = themePresets[ preset ] || themePresets.default || {};
+
+			if ( presetName ) {
+				presetName.textContent = config.name || preset;
+			}
+
+			if ( presetDesc ) {
+				presetDesc.textContent = config.description || '';
+			}
+
+			if ( customWrap ) {
+				customWrap.hidden = ! isCustomPreset();
+			}
+
+			if ( isCustomPreset() ) {
+				renderPresetSwatches( presetSwatches, getCustomColorValues() );
+			} else {
+				renderPresetSwatches( presetSwatches, config.colors || {} );
+			}
+
+			if ( presetList ) {
+				presetList.querySelectorAll( '.edminboost-theme-preset-picker__option' ).forEach( function ( option ) {
+					var isSelected = option.getAttribute( 'data-value' ) === preset;
+					option.classList.toggle( 'is-selected', isSelected );
+					option.setAttribute( 'aria-selected', isSelected ? 'true' : 'false' );
+				} );
+			}
+		}
+
+		function getFieldColorValue( textId, fallback ) {
+			var input  = document.getElementById( textId );
+			var picker = document.getElementById( textId + '_picker' );
+			var value  = input && /^#[0-9a-fA-F]{3,6}$/.test( input.value ) ? input.value : '';
+
+			if ( ! value && picker && picker.value ) {
+				value = picker.value;
+			}
+
+			return value || fallback || '#ffffff';
+		}
+
+		function getCustomColorValues() {
+			var defaults = themePresets.custom && themePresets.custom.colors ? themePresets.custom.colors : {};
+
+			return {
+				accent: getFieldColorValue( 'edminboost_custom_accent', defaults.accent ),
+				surface: getFieldColorValue( 'edminboost_custom_surface', defaults.surface ),
+				text: getFieldColorValue( 'edminboost_custom_text', defaults.text ),
+				topbar: getFieldColorValue( 'edminboost_custom_top', defaults.topbar ),
+				sidebar: getFieldColorValue( 'edminboost_custom_sidebar', defaults.sidebar ),
+				content: getFieldColorValue( 'edminboost_custom_content', defaults.content )
+			};
+		}
+
+		function setSelectedPreset( preset ) {
+			if ( ! presetSelect || ! themePresets[ preset ] ) {
+				return;
+			}
+
+			presetSelect.value = preset;
+			syncPresetPickerSelection();
+			updateThemePreview();
 		}
 
 		function applyCustomColors( target ) {
-			if ( ! useCustom || ! useCustom.checked ) {
+			if ( ! isCustomPreset() ) {
 				target.style.removeProperty( '--eb-accent' );
 				target.style.removeProperty( '--eb-surface' );
 				target.style.removeProperty( '--eb-text' );
+				target.style.removeProperty( '--eb-top-bar-bg' );
+				target.style.removeProperty( '--eb-sidebar-bg' );
+				target.style.removeProperty( '--eb-content-bg' );
 				target.style.removeProperty( '--eb-badge-accent' );
 				target.style.removeProperty( '--eb-drawer-panel-bg' );
 				target.style.removeProperty( '--eb-drawer-header-text' );
@@ -1565,6 +1854,9 @@
 					if ( field.varName === '--eb-text' ) {
 						target.style.setProperty( '--eb-drawer-header-text', value );
 					}
+					if ( field.varName === '--eb-content-bg' ) {
+						target.style.setProperty( '--eb-drawer-panel-bg', value );
+					}
 				}
 			} );
 		}
@@ -1584,16 +1876,8 @@
 			body.classList.add( 'edminboost-theme-mode--' + mode );
 			body.classList.add( 'edminboost-theme-font--' + font );
 
-			if ( customWrap ) {
-				customWrap.hidden = ! useCustom || ! useCustom.checked;
-			}
-
+			syncPresetPickerSelection();
 			applyCustomColors( body );
-			if ( preview ) {
-				applyCustomColors( preview );
-			}
-
-			syncThemeCards();
 		}
 
 		function bindColorField( field ) {
@@ -1617,8 +1901,37 @@
 			} );
 		}
 
-		presetRadios.forEach( function ( radio ) {
-			radio.addEventListener( 'change', updateThemePreview );
+		if ( presetToggle ) {
+			presetToggle.addEventListener( 'click', function () {
+				togglePresetList();
+			} );
+		}
+
+		if ( presetList ) {
+			presetList.addEventListener( 'click', function ( event ) {
+				var option = event.target.closest( '.edminboost-theme-preset-picker__option' );
+				if ( ! option ) {
+					return;
+				}
+
+				setSelectedPreset( option.getAttribute( 'data-value' ) );
+				closePresetList();
+			} );
+
+			presetList.addEventListener( 'keydown', function ( event ) {
+				if ( event.key === 'Escape' ) {
+					closePresetList();
+					if ( presetToggle ) {
+						presetToggle.focus();
+					}
+				}
+			} );
+		}
+
+		document.addEventListener( 'click', function ( event ) {
+			if ( ! presetPicker.contains( event.target ) ) {
+				closePresetList();
+			}
 		} );
 
 		if ( modeSelect ) {
@@ -1627,10 +1940,6 @@
 
 		if ( fontSelect ) {
 			fontSelect.addEventListener( 'change', updateThemePreview );
-		}
-
-		if ( useCustom ) {
-			useCustom.addEventListener( 'change', updateThemePreview );
 		}
 
 		colorFields.forEach( bindColorField );
@@ -1655,7 +1964,8 @@
 		forms.forEach( function ( form ) {
 			form.addEventListener( 'submit', function ( event ) {
 				event.preventDefault();
-				saveSettingsForm( form );
+				var reloadAfterSave = form.id === 'edminboost-setup-wizard-form';
+				saveSettingsForm( form, { reload: reloadAfterSave } );
 			} );
 		} );
 	}
@@ -1664,6 +1974,11 @@
 		options = options || {};
 		var submitBtn  = form.querySelector( '[type="submit"]' );
 		var saveConfig = edminboostData.settingsSave;
+
+		if ( typeof form.edminboostSyncHiddenInputs === 'function' ) {
+			form.edminboostSyncHiddenInputs();
+		}
+
 		var formData   = new FormData( form );
 
 		formData.append( 'action', saveConfig.action );
@@ -1744,6 +2059,213 @@
 				}
 			}, 4000 );
 		}
+	}
+
+	function initSetupWizard( root ) {
+		var form         = document.getElementById( 'edminboost-setup-wizard-form' );
+		var backBtn      = document.getElementById( 'edminboost-setup-back' );
+		var nextBtn      = document.getElementById( 'edminboost-setup-next' );
+		var submitBtn    = document.getElementById( 'edminboost-setup-submit' );
+		var applyField   = document.getElementById( 'edminboost_wizard_apply_preset' );
+		var defaultField = document.getElementById( 'edminboost_wizard_default_preset' );
+		var summaryRoot  = document.getElementById( 'edminboost-wizard-topbar-summary' );
+		var summaryList  = document.getElementById( 'edminboost-wizard-topbar-summary-list' );
+		var presetRadios = root.querySelectorAll( '.edminboost-wizard-preset-radio' );
+		var presetCards  = root.querySelectorAll( '.edminboost-preset-picker--wizard .edminboost-preset-card' );
+		var stepperItems = root.querySelectorAll( '.edminboost-setup-stepper__item' );
+		var steps        = root.querySelectorAll( '.edminboost-setup-step' );
+		var presetCatalog = edminboostData.presets || {};
+		var themePresets  = edminboostData.themePresets || {};
+		var currentStep   = 1;
+		var totalSteps    = 4;
+
+		if ( ! form || ! nextBtn ) {
+			return;
+		}
+
+		function getSelectedLayoutPreset() {
+			var selected = root.querySelector( '.edminboost-wizard-preset-radio:checked' );
+			return selected ? selected.value : '';
+		}
+
+		function getSelectedThemeName() {
+			var presetSelect = document.getElementById( 'edminboost_theme_preset' );
+			if ( ! presetSelect ) {
+				return '';
+			}
+			var config = themePresets[ presetSelect.value ] || {};
+			return config.name || presetSelect.value;
+		}
+
+		function renderTopBarSummary( presetId ) {
+			if ( ! summaryRoot ) {
+				return;
+			}
+
+			var preset = presetCatalog[ presetId ] || {};
+			var items  = preset.top_bar_items || [];
+			var countEl = summaryRoot.querySelector( '.edminboost-topbar-summary__count' );
+			var emptyEl = summaryRoot.querySelector( '.edminboost-topbar-summary__empty' );
+
+			summaryRoot.setAttribute( 'data-item-count', String( items.length ) );
+
+			if ( countEl ) {
+				var countLabel = items.length === 1
+					? '1 link in your top bar'
+					: items.length + ' links in your top bar';
+				countEl.textContent = countLabel;
+			}
+
+			if ( ! summaryList ) {
+				return;
+			}
+
+			summaryList.innerHTML = '';
+
+			if ( ! items.length ) {
+				if ( emptyEl ) {
+					emptyEl.hidden = false;
+				}
+				return;
+			}
+
+			if ( emptyEl ) {
+				emptyEl.hidden = true;
+			}
+
+			items.forEach( function ( item ) {
+				var li = document.createElement( 'li' );
+				li.className = 'edminboost-topbar-summary__item';
+
+				var icon = document.createElement( 'span' );
+				icon.className = 'dashicons ' + ( item.icon || 'dashicons-admin-generic' );
+				icon.setAttribute( 'aria-hidden', 'true' );
+
+				var label = document.createElement( 'span' );
+				label.className = 'edminboost-topbar-summary__label';
+				label.textContent = item.label || item.slug || '';
+
+				li.appendChild( icon );
+				li.appendChild( label );
+				summaryList.appendChild( li );
+			} );
+		}
+
+		function updateReviewPanel() {
+			var layoutId   = getSelectedLayoutPreset();
+			var layoutName = ( presetCatalog[ layoutId ] && presetCatalog[ layoutId ].name ) || layoutId || '—';
+			var themeName  = getSelectedThemeName() || '—';
+			var itemCount  = ( presetCatalog[ layoutId ] && presetCatalog[ layoutId ].top_bar_items )
+				? presetCatalog[ layoutId ].top_bar_items.length
+				: 0;
+
+			var layoutReview = document.getElementById( 'edminboost-review-layout' );
+			var themeReview  = document.getElementById( 'edminboost-review-theme' );
+			var topbarReview = document.getElementById( 'edminboost-review-topbar' );
+
+			if ( layoutReview ) {
+				layoutReview.textContent = layoutName;
+			}
+			if ( themeReview ) {
+				themeReview.textContent = themeName;
+			}
+			if ( topbarReview ) {
+				topbarReview.textContent = itemCount
+					? String( itemCount ) + ( itemCount === 1 ? ' link' : ' links' )
+					: '—';
+			}
+		}
+
+		function syncPresetFields( presetId ) {
+			if ( applyField ) {
+				applyField.value = presetId || '';
+			}
+			if ( defaultField ) {
+				defaultField.value = presetId || '';
+			}
+			renderTopBarSummary( presetId );
+		}
+
+		function setStep( step ) {
+			currentStep = Math.max( 1, Math.min( totalSteps, step ) );
+
+			steps.forEach( function ( panel ) {
+				var panelStep = parseInt( panel.getAttribute( 'data-step' ), 10 );
+				var isActive  = panelStep === currentStep;
+				panel.classList.toggle( 'is-active', isActive );
+				panel.hidden = ! isActive;
+			} );
+
+			stepperItems.forEach( function ( item ) {
+				var itemStep = parseInt( item.getAttribute( 'data-step' ), 10 );
+				item.classList.toggle( 'is-active', itemStep === currentStep );
+				item.classList.toggle( 'is-complete', itemStep < currentStep );
+			} );
+
+			if ( backBtn ) {
+				backBtn.hidden = currentStep <= 1;
+			}
+
+			if ( nextBtn ) {
+				nextBtn.hidden = currentStep >= totalSteps;
+			}
+
+			if ( submitBtn ) {
+				submitBtn.style.display = currentStep >= totalSteps ? '' : 'none';
+			}
+
+			if ( currentStep === 4 ) {
+				updateReviewPanel();
+			}
+		}
+
+		presetRadios.forEach( function ( radio ) {
+			radio.addEventListener( 'change', function () {
+				presetCards.forEach( function ( card ) {
+					card.classList.toggle( 'is-selected', card.getAttribute( 'data-preset-id' ) === radio.value );
+				} );
+				syncPresetFields( radio.value );
+			} );
+		} );
+
+		var themePresetSelect = document.getElementById( 'edminboost_theme_preset' );
+		if ( themePresetSelect ) {
+			themePresetSelect.addEventListener( 'change', updateReviewPanel );
+		}
+
+		nextBtn.addEventListener( 'click', function () {
+			if ( currentStep === 1 && ! getSelectedLayoutPreset() ) {
+				showFormNotice(
+					form,
+					'error',
+					edminboostData.strings.selectLayoutPreset || 'Select a layout preset to continue.'
+				);
+				return;
+			}
+
+			if ( currentStep === 1 ) {
+				syncPresetFields( getSelectedLayoutPreset() );
+			}
+
+			setStep( currentStep + 1 );
+		} );
+
+		if ( backBtn ) {
+			backBtn.addEventListener( 'click', function () {
+				setStep( currentStep - 1 );
+			} );
+		}
+
+		form.addEventListener( 'submit', function () {
+			syncPresetFields( getSelectedLayoutPreset() );
+		} );
+
+		var initialPreset = getSelectedLayoutPreset();
+		if ( initialPreset ) {
+			syncPresetFields( initialPreset );
+		}
+
+		setStep( 1 );
 	}
 
 	function initPresets( root ) {

@@ -85,10 +85,13 @@ class EDMINBOOST_Plugin {
 	public function run() {
 		add_action( 'plugins_loaded', array( $this->i18n, 'load_plugin_textdomain' ) );
 		add_action( 'admin_menu', array( $this->admin, 'register_menu' ) );
+		add_action( 'admin_menu', array( $this->admin, 'normalize_plugin_submenu' ), 999 );
 		add_action( 'admin_init', array( $this->admin, 'register_settings' ) );
+		add_action( 'admin_init', array( $this->admin, 'maybe_activation_redirect' ) );
 		add_action( 'wp_ajax_edminboost_save_settings', array( $this->admin, 'ajax_save_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
+		add_filter( 'admin_body_class', array( $this->admin, 'filter_admin_body_class' ) );
 		add_filter( 'plugin_action_links_' . EDMINBOOST_PLUGIN_BASENAME, array( $this->admin, 'add_settings_link' ) );
 		add_action( 'admin_init', array( $this->features, 'register_hooks' ) );
 		EDMINBOOST_Command_Center_Bar::register_hooks();

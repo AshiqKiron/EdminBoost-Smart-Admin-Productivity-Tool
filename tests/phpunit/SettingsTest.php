@@ -302,6 +302,64 @@ class SettingsTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Menu Studio save persists top-level order and indexed submenu parents.
+	 */
+	public function test_sanitize_menu_studio_order_and_submenu_parents() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'menu_studio' => array(
+						'enabled' => true,
+						'order'   => array( 'index.php', 'edit.php' ),
+					),
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'command_center' => array(
+					'_menu_studio_save' => 1,
+					'menu_studio'       => array(
+						'enabled'         => 1,
+						'order'           => array(
+							'upload.php',
+							'index.php',
+							'edit.php',
+						),
+						'submenu_parents' => array(
+							'edit.php?post_type=page',
+						),
+						'submenu_order'   => array(
+							array(
+								'edit.php?post_type=page',
+								'post-new.php?post_type=page',
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$menu_studio = $result['command_center']['menu_studio'];
+
+		$this->assertTrue( $menu_studio['enabled'] );
+		$this->assertSame(
+			array( 'upload.php', 'index.php', 'edit.php' ),
+			$menu_studio['order']
+		);
+		$this->assertSame(
+			array(
+				'edit.php?post_type=page' => array(
+					'edit.php?post_type=page',
+					'post-new.php?post_type=page',
+				),
+			),
+			$menu_studio['submenu_order']
+		);
+	}
+
+	/**
 	 * Users without capability cannot change settings via sanitize.
 	 */
 	public function test_sanitize_requires_capability() {

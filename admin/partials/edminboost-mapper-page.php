@@ -29,6 +29,8 @@ foreach ( $top_bar_items as $item ) {
 }
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap edminboost-cc-wrap--wide">
+	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
+
 	<header class="edminboost-cc-hero">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<p class="edminboost-cc-hero__lead">
@@ -199,14 +201,13 @@ foreach ( $top_bar_items as $item ) {
 					<p class="edminboost-topbar-canvas__hint description" id="edminboost-canvas-empty" <?php echo ! empty( $top_bar_items ) ? 'hidden' : ''; ?>>
 						<?php esc_html_e( 'Toggle items from the left panel or drag them here to build your top bar.', EDMINBOOST_TEXT_DOMAIN ); ?>
 					</p>
-				</section>
 
-				<aside
-					class="edminboost-card edminboost-item-drawer"
-					id="edminboost-item-drawer"
-					aria-labelledby="edminboost-drawer-heading"
-					hidden
-				>
+					<aside
+						class="edminboost-item-drawer"
+						id="edminboost-item-drawer"
+						aria-labelledby="edminboost-drawer-heading"
+						hidden
+					>
 					<h2 id="edminboost-drawer-heading"><?php esc_html_e( 'Item Configuration', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 					<p class="description" id="edminboost-drawer-subtitle"></p>
 
@@ -275,17 +276,18 @@ foreach ( $top_bar_items as $item ) {
 							<?php esc_html_e( 'Remove from top bar', EDMINBOOST_TEXT_DOMAIN ); ?>
 						</button>
 					</p>
-				</aside>
+					</aside>
+				</section>
+
+				<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
+				<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_layout_studio_save]" value="1" />
+				<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_mark_setup_complete]" value="1" />
+				<div id="edminboost-topbar-hidden-inputs"></div>
+
+				<p class="submit edminboost-mapper-submit">
+					<?php submit_button( __( 'Save top bar', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
+				</p>
 			</div>
 		</div>
-
-		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
-		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_layout_studio_save]" value="1" />
-		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_mark_setup_complete]" value="1" />
-		<div id="edminboost-topbar-hidden-inputs"></div>
-
-		<p class="submit">
-			<?php submit_button( __( 'Save top bar', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
-		</p>
 	</form>
 </div>
