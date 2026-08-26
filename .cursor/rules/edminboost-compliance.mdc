@@ -35,7 +35,7 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 - Prefer WordPress core APIs over custom hacks.
 - Keep code human-readable for directory review.
 - Follow WPCS across PHP, CSS, JS, and HTML.
-- Admin-only unless explicitly requested; enqueue plugin-screen assets via `is_plugin_screen()`; CC bar CSS/JS and drawer shell are the allowed front-end exceptions when active.
+- Admin-only unless explicitly requested; enqueue plugin-screen assets via `is_plugin_screen()`; visual theme CSS (`edminboost-themes`), CC bar CSS/JS, and drawer shell are the allowed front-end exceptions when active.
 - Use `edminboost` prefix (10 chars) consistently — `EDMINBOOST_` / `edminboost_`.
 
 ## Self-Review Checklist

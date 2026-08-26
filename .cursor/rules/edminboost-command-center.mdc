@@ -1,6 +1,6 @@
 ---
-description: Command Center patterns — home, top bar, presets, menu studio, theme, live admin bar
-globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme}.php,admin/partials/edminboost-{admin-page,home-advanced-look,mapper,presets,menu-studio,theme-settings,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
+description: Command Center patterns — dashboard, top bar, presets, menu studio, theme, live admin bar
+globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme}.php,admin/partials/edminboost-{admin-page,animation-speed-field,home-advanced-look,mapper,presets,menu-studio,theme-settings,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
 alwaysApply: false
 ---
 
@@ -11,14 +11,15 @@ Shared config UI for top-bar layout, presets/roles, and look settings. Data stor
 ## Class: `EDMINBOOST_Command_Center`
 
 - `get_defaults()` / `get_settings()` — merged CC settings
-- `get_page_links()` / `get_nav_items()` — sidebar page links (Home, Top Bar, Presets, Menu Studio, Settings)
+- `get_page_links()` / `get_nav_items()` — sidebar page links (Dashboard, Top Bar, Presets, Menu Studio, Settings)
 - `get_menu_studio_defaults()` — default `menu_studio` shape
 - `is_setup_complete()` — whether top bar is configured
-- `get_look_skins()`, `apply_look_skin()`, `detect_look_skin()` — look-only behavior bundles on Home
+- `get_look_skins()`, `apply_look_skin()`, `detect_look_skin()` — look-only behavior bundles on Dashboard
 - `get_preset_layout_definitions()`, `resolve_preset_top_bar_items()`, `apply_preset()` — layout presets
 - `get_personas()`, `get_system_presets()`, `get_all_presets()` — preset catalog
 - `get_discovered_menu_items()` — scans global `$menu` for Top Bar editor
 - `get_assignable_roles()`, `get_badge_sources()`, `get_dashicon_options()` — UI option lists
+- `get_animation_speed_options()`, `get_animation_duration_ms( $speed = '' )` — drawer transition speeds (`fast` 150ms, `normal` 300ms, `slow` 500ms)
 - Drawer width constants: `DRAWER_CUSTOM_WIDTH_MIN` (400), `DRAWER_CUSTOM_WIDTH_MAX` (800), `DRAWER_CUSTOM_WIDTH_DEFAULT` (600)
 
 Page slug suffixes: `PAGE_ONBOARDING` (`-onboarding`), `PAGE_MAPPER` (`-mapper`), `PAGE_PRESETS` (`-presets`), `PAGE_BEHAVIOR` (`-behavior`), `PAGE_MENU_STUDIO` (`-menu`).
@@ -54,12 +55,12 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 
 ## Rendering
 
-- Home: `render_admin_page()` → `admin/partials/edminboost-admin-page.php` (setup hub + look skins + advanced look)
+- Dashboard: `render_admin_page()` → `admin/partials/edminboost-admin-page.php` (setup hub, visual theme, look skins, advanced look)
 - Top Bar: `render_mapper_page()` → `admin/partials/edminboost-mapper-page.php`
 - Presets: `render_presets_page()` → `admin/partials/edminboost-presets-page.php`
 - Menu Studio: `render_menu_studio_page()` → `admin/partials/edminboost-menu-studio-page.php`
-- Theme UI: partial `admin/partials/edminboost-theme-settings.php` (included on Home + Menu Studio)
-- Legacy `-onboarding` and `-behavior` slugs redirect to Home
+- Theme UI: partial `admin/partials/edminboost-theme-settings.php` (included on Dashboard + Menu Studio)
+- Legacy `-onboarding` and `-behavior` slugs redirect to Dashboard
 - CC partials use `.edminboost-wrap.edminboost-cc-wrap` (add `.edminboost-cc-wrap--wide` for mapper/presets)
 
 ## Settings API Forms
@@ -75,7 +76,7 @@ edminboost_settings[command_center][_layout_studio_save]     # marker: 1 when To
 edminboost_settings[command_center][top_bar_items][0][slug|anchor|label|icon|interaction|badge_source]
 edminboost_settings[command_center][role_assignments][role_key]
 edminboost_settings[command_center][behavior][drawer_width|drawer_width_custom|animation_speed|...]
-edminboost_settings[command_center][theme][preset|mode|font|use_custom_colors|custom_accent|custom_surface|custom_text]
+edminboost_settings[command_center][theme][preset|mode|font|custom_accent|custom_surface|custom_text|custom_top|custom_sidebar]
 edminboost_settings[command_center][_menu_studio_save]                              # marker: 1 when Menu Studio form submits
 edminboost_settings[command_center][menu_studio][enabled|order|submenu_order|hidden_items|custom_items|use_colors|colors]
 ```
@@ -124,10 +125,11 @@ Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when
 | `edminboost-onboarding-page.php` | Persona cards + default preset |
 | `edminboost-mapper-page.php` | Drag-and-drop top bar builder |
 | `edminboost-presets-page.php` | Preset cards + role assignment matrix |
-| `edminboost-behavior-page.php` | Behavior & style controls |
-| `edminboost-home-advanced-look.php` | Advanced look/behavior fields on Home |
+| `edminboost-behavior-page.php` | Behavior & style controls (legacy; redirects to Dashboard) |
+| `edminboost-animation-speed-field.php` | Shared animation speed picker (screen-reader `<select>` + custom listbox UI); requires `$cc_key`, `$behavior` |
+| `edminboost-home-advanced-look.php` | Advanced look/behavior fields on Dashboard (includes animation speed partial) |
 | `edminboost-menu-studio-page.php` | Sidebar reorder, hide, custom links, colors |
-| `edminboost-theme-settings.php` | Visual theme preset/mode/font/custom colors |
+| `edminboost-theme-settings.php` | Visual theme preset dropdown, color swatches, mode/font selects, custom color pickers |
 
 ## Menu Studio: `EDMINBOOST_Menu_Studio`
 
@@ -145,10 +147,15 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`.
 
 Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Separate from `look_skin` (behavior bundles).
 
-- `get_defaults()`, `get_presets()`, `get_modes()`, `get_fonts()`, `sanitize()` — preset/mode/font/custom color settings.
-- `is_active()` — plugin enabled + (plugin screen, live CC bar, or Layout Studio).
-- `register_hooks()` — body/admin body classes, `edminboost-themes.css`, inline custom color overrides.
-- Body classes: `edminboost-theme-{preset}`, `edminboost-theme-mode-{mode}`, `edminboost-theme-font-{font}`.
+- `get_defaults()`, `get_presets()`, `get_modes()`, `get_fonts()`, `get_color_labels()`, `get_presets_for_js()`, `sanitize()` — preset/mode/font/custom color settings.
+- `uses_custom_colors( $theme )` — true when `preset === 'custom'` or legacy `use_custom_colors` flag is set.
+- `is_active()` — plugin enabled + logged in + (`is_admin()` **or** live CC bar / Layout Studio on front end).
+- `register_hooks()` — body/admin body classes, `edminboost-themes.css`, inline custom color overrides via `print_custom_color_overrides()`.
+- Body classes: `edminboost-theme-active`, `edminboost-theme--{preset}`, `edminboost-theme-mode--{mode}`, `edminboost-theme-font--{font}`.
+- Preset catalog: `default`, `midnight`, `terminal`, `neon-outrun`, `vapor`, `desert`, `dracula`, `nord`, `solarized`, `sakura`, `ocean`, `forest`, `tron`, `night-city`, `pip-boy`, `portal`, `gotham`, `citadel`, `blade-noir`, `hyrule`, `custom` — each with five tokens: `accent`, `surface`, `text`, `topbar`, `sidebar`.
+- CSS custom properties (`--eb-*`) drive plugin UI, CC bar, drawer, **and** core wp-admin `#wpadminbar` / `#adminmenu` when `body.edminboost-theme-active`.
+- Menu Studio custom sidebar colors take precedence when `body.edminboost-menu-studio-colors` is present (`:not( .edminboost-menu-studio-colors )` guards in theme CSS).
+- Custom preset: selecting `custom` reveals five color pickers + hex text fields; sanitizer sets `use_custom_colors` from preset (legacy checkbox input still maps to `custom`).
 - No remote fonts — system font stacks only.
 
 ## Rules
@@ -159,7 +166,8 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Separate from
 - Mapper JS (`initMapper`) syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit — includes `anchor` per item.
 - Mapper UX: discovered rows are draggable to canvas; row click toggles checkbox (except handle/toggle areas); canvas and shell accept drops; `is-active` on discovered rows mirrors canvas membership for items **without** an anchor (anchored/custom links do not toggle discovered checkboxes). Plugin search: `#edminboost-plugin-search` filters discovered list by label.
 - Menu Studio JS (`initMenuStudio`): mirrors mapper patterns for sidebar — `#edminboost-menu-studio-form`, `#edminboost-menu-canvas`, `#edminboost-menu-discovered-list`, `#edminboost-menu-hidden-inputs`, custom link fields `#edminboost-menu-custom-*`; marker `command_center[_menu_studio_save]` = `1`.
-- Theme JS (`initTheme`): preset cards `.edminboost-theme-card`, mode/font selects, custom color pickers + text fields, live `#edminboost-theme-preview`.
+- Theme JS (`initTheme`): preset dropdown `#edminboost_theme_preset`, preset description `#edminboost-theme-preset-desc`, read-only swatches `#edminboost-theme-preset-colors`, custom pickers `#edminboost-theme-custom-colors` (shown when preset is `custom`), mode/font selects, live `#edminboost-theme-preview`; uses `edminboostData.themePresets` for swatch updates and body class preview.
+- Behavior JS (`initBehaviorAnimationSpeed`): hidden `#edminboost_animation_speed` syncs with `.edminboost-animation-speed-picker` listbox; previews use `--edminboost-animation-preview-ms` per option; live drawer reads saved speed via `EDMINBOOST_Command_Center::get_animation_duration_ms()` → `edminboostCcBar.animationMs` and shell `--edminboost-cc-drawer-duration`.
 - Custom admin link: `#edminboost-custom-link-path`, `#edminboost-custom-link-label`, `#edminboost-custom-link-anchor` — path may include `#fragment`; duplicate check uses slug+anchor.
 - Item drawer: `#edminboost-item-anchor` edits the selected canvas item's anchor; `#edminboost-drawer-preview` (visible when interaction is `drawer`) triggers AJAX preview via `edminboostCcOpenDrawer`.
 - Badge sources (`wc_orders`, `comments`, `forms_entries`, etc.) are local counters only — no remote API calls.

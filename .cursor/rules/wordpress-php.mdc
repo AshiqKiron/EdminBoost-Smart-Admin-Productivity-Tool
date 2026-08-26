@@ -72,10 +72,12 @@ array(
 			'preset'            => 'default',
 			'mode'              => 'light',   // light | dark | auto
 			'font'              => 'inherit',
-			'use_custom_colors' => false,
+			'use_custom_colors' => false,     // derived: true when preset is custom
 			'custom_accent'     => '',
 			'custom_surface'    => '',
 			'custom_text'       => '',
+			'custom_top'        => '',
+			'custom_sidebar'    => '',
 		),
 		'menu_studio'            => array(
 			'enabled'       => false,
@@ -113,7 +115,7 @@ array(
 
 ## Partials
 
-- Dashboard/Home: `edminboost-admin-page.php` — expects `$settings`, `$features`; includes `edminboost-home-advanced-look.php` and `edminboost-theme-settings.php`.
+- Dashboard: `edminboost-admin-page.php` — expects `$cc_settings`; includes `edminboost-theme-settings.php` and (inside look section) `edminboost-home-advanced-look.php` (which requires `edminboost-animation-speed-field.php`).
 - Settings: `edminboost-settings-features.php` — expects `$settings`.
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
 - Menu Studio: `edminboost-menu-studio-page.php` — includes theme partial.
