@@ -24,9 +24,11 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 
 - `register_nodes()` on `admin_bar_menu` (priority 80) — adds nodes from saved `top_bar_items` for the current user.
 - `apply_declutter()` on `admin_bar_menu` (priority 999) — removes `wp-logo`, `comments`, `my-account`, `updates` per `behavior` toggles.
-- `maybe_prepare_drawer_frame()` on `admin_init` — when `edminboost_drawer=1`, verifies nonce, whitelists slug+anchor via `is_drawer_slug_allowed()`, then prints iframe chrome-stripping CSS on `admin_head`.
-- `enqueue_assets()` on `admin_enqueue_scripts` and `wp_enqueue_scripts` — loads `edminboost-command-center-bar.css` + `dashicons` when `is_active()`; loads `edminboost-command-center-bar.js` + `edminboostCcBar` localize only when `has_drawer_items()`.
-- `render_drawer_shell()` on `admin_footer` and `wp_footer` — outputs `#edminboost-cc-drawer` when active and drawer items exist.
+- `maybe_prepare_drawer_frame()` on `admin_init` — when `edminboost_drawer=1`, verifies nonce, whitelists slug+anchor via `is_drawer_slug_allowed()` (or mapper preview via `edminboost_mapper_preview=1`), then prints iframe chrome-stripping CSS on `admin_head`.
+- `ajax_drawer_preview()` on `wp_ajax_edminboost_cc_drawer_preview` — Layout Studio only; capability + `check_ajax_referer( 'edminboost_cc_drawer_preview' )` + `is_mapper_preview_context()`; returns signed `frameUrl` / `openUrl` JSON.
+- `is_mapper_screen()` — current admin page is Layout Studio. `is_mapper_preview_context()` — mapper screen **or** AJAX referer contains mapper slug (admin-ajax has no `$_GET['page']`).
+- `enqueue_assets()` on `admin_enqueue_scripts` and `wp_enqueue_scripts` — loads bar CSS when `is_active()` or `is_mapper_screen()`; loads bar JS + `edminboostCcBar` when `has_drawer_items()` or mapper screen.
+- `render_drawer_shell()` on `admin_footer` and `wp_footer` — outputs `#edminboost-cc-drawer` when plugin enabled, user logged in, and (`has_drawer_items()` or `is_mapper_screen()`).
 - `is_active()` — plugin enabled, user logged in, admin bar showing, and `get_items_for_current_user()` non-empty.
 - `has_drawer_items()` — any current-user item with `interaction === drawer`.
 - `get_items_for_current_user()` — filters items by `role_visibility` (hidden slugs per role).
@@ -37,8 +39,9 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 ### Slide-out drawer
 
 - Drawer shell: `#edminboost-cc-drawer` with BEM classes `edminboost-cc-drawer__*`; width from behavior (`panel--compact|standard|fullscreen`); optional `is-glass` for glassmorphism; duration via CSS var `--edminboost-cc-drawer-duration`.
-- JS (`edminboost-command-center-bar.js`) opens drawer on admin-bar click, loads signed iframe URL, supports backdrop/close/Escape; `body.edminboost-cc-drawer-active` locks scroll.
-- Iframe URL: `get_drawer_frame_url()` adds `edminboost_drawer=1`, `edminboost_slug`, optional `edminboost_anchor`, and `_wpnonce` (action `edminboost_cc_drawer_{md5(slug + "\0" + anchor)}`).
+- JS (`edminboost-command-center-bar.js`) opens drawer on admin-bar click, loads signed iframe URL, supports backdrop/close/Escape; `body.edminboost-cc-drawer-active` locks scroll. Exposes `window.edminboostCcOpenDrawer( item )` for Layout Studio preview.
+- Iframe URL: `get_drawer_frame_url( $slug, $anchor, $mapper_preview )` adds `edminboost_drawer=1`, `edminboost_slug`, optional `edminboost_anchor`, `_wpnonce` (action `edminboost_cc_drawer_{md5(slug + "\0" + anchor)}`); mapper preview adds `edminboost_mapper_preview=1`.
+- Layout Studio preview: mapper JS POSTs to `admin-ajax.php` (`edminboost_cc_drawer_preview`); `edminboostData.drawerPreview` localized only on mapper screen.
 - Localized `edminboostCcBar.drawerItems` maps node IDs to `{ slug, label, frameUrl, openUrl }`.
 
 ## Rendering
@@ -107,7 +110,7 @@ Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when
 - System presets (`system_client`, `system_ecommerce`, `system_developer`) are read-only; custom presets live in `command_center.presets`.
 - `role_visibility` stores hidden slugs per role (inverted from visible checkboxes in UI).
 - Mapper JS (`initMapper`) syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit — includes `anchor` per item.
-- Mapper UX: discovered rows are draggable to canvas; row click toggles checkbox (except handle/toggle areas); canvas and shell accept drops; `is-active` on discovered rows mirrors canvas membership for items **without** an anchor (anchored/custom links do not toggle discovered checkboxes).
+- Mapper UX: discovered rows are draggable to canvas; row click toggles checkbox (except handle/toggle areas); canvas and shell accept drops; `is-active` on discovered rows mirrors canvas membership for items **without** an anchor (anchored/custom links do not toggle discovered checkboxes). Plugin search: `#edminboost-plugin-search` filters discovered list by label.
 - Custom admin link: `#edminboost-custom-link-path`, `#edminboost-custom-link-label`, `#edminboost-custom-link-anchor` — path may include `#fragment`; duplicate check uses slug+anchor.
-- Item drawer: `#edminboost-item-anchor` edits the selected canvas item's anchor.
+- Item drawer: `#edminboost-item-anchor` edits the selected canvas item's anchor; `#edminboost-drawer-preview` (visible when interaction is `drawer`) triggers AJAX preview via `edminboostCcOpenDrawer`.
 - Badge sources (`wc_orders`, `comments`, `forms_entries`, etc.) are local counters only — no remote API calls.

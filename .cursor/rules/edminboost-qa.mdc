@@ -1,0 +1,71 @@
+---
+description: QA harness — PHPUnit, Playwright E2E, manual regression, and local MAMP setup
+globs: "tests/**/*,bin/**/*,phpunit.xml.dist,composer.json,package.json,.env.qa.example"
+alwaysApply: false
+---
+
+# EdminBoost QA
+
+Three-layer local QA harness (MAMP). Full guide: `tests/README.md`.
+
+## Layout
+
+```
+bin/
+  run-phpunit.sh          # MAMP PHP wrapper
+  install-wp-tests.sh     # WP test suite bootstrap
+  setup-qa-site.sh        # QA users + plugin symlink
+tests/
+  bootstrap.php           # PHPUnit bootstrap
+  wp-tests-config.php     # local DB config (gitignored; copy from .sample)
+  phpunit/                # *Test.php classes
+  e2e/
+    playwright.config.ts
+    fixtures/             # pages.ts, helpers.ts
+    specs/                # *.spec.ts
+  manual/
+    regression-matrix.md  # post-automation checklist
+    issue-template.md
+.env.qa.example           # copy to .env.qa (gitignored)
+phpunit.xml.dist
+composer.json             # composer test
+package.json              # npm run test:e2e
+```
+
+## Commands
+
+```bash
+composer install && npm install
+cp .env.qa.example .env.qa
+cp tests/wp-tests-config.sample.php tests/wp-tests-config.php
+bash bin/setup-qa-site.sh   # one-time
+
+composer test               # PHPUnit (uses MAMP PHP via bin/run-phpunit.sh)
+npm run test:e2e            # Playwright (PLAYWRIGHT_BROWSERS_PATH=./.playwright-browsers)
+npm run test:e2e:ui         # debug UI
+```
+
+PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from live tables). E2E reads `.env.qa` (`BASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`, `PLUGIN_SLUG`).
+
+## PHPUnit Patterns
+
+- Extend `Edminboost_Test_Case` (resets options, seeds admin user).
+- Use `seed_settings( $overrides )` — merges with `EDMINBOOST_Settings::get_defaults()`.
+- Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar}Test.php`.
+- Name tests `test_{behavior}`; target static helpers on bar/CC classes where hook tests are heavy.
+
+## Playwright Patterns
+
+- Auth: `global.setup.ts` saves `tests/e2e/.auth/admin.json` (gitignored).
+- Page URLs: `fixtures/pages.ts` — built from `PLUGIN_SLUG` env var.
+- Assert plugin ready: `.edminboost-wrap[data-edminboost-ready="true"]`.
+- Settings saves: `waitForSettingsSaved()` in `fixtures/helpers.ts` (URL contains `settings-updated=true`).
+- Specs mirror admin pages: `dashboard`, `settings-features`, `command-center-onboarding`, `layout-studio`, `presets-roles`, `behavior-style`, `live-admin-bar`.
+- Config: single worker, 60s timeout, chromium only, `baseURL` from `.env.qa`.
+
+## Rules
+
+- Never commit `.env.qa`, `tests/wp-tests-config.php`, `tests/e2e/.auth/`, `vendor/`, `node_modules/`, `playwright-report/`, `test-results/`, `.playwright-browsers/`.
+- E2E selectors: prefer stable plugin IDs/classes (`#edminboost-*`, `.edminboost-*`) over wp-admin internals.
+- Add PHPUnit for new sanitization/helpers; add Playwright for new admin UI flows; update `tests/manual/regression-matrix.md` for manual-only checks.
+- Run `composer test` and `npm run test:e2e` before shipping user-facing CC or settings changes.

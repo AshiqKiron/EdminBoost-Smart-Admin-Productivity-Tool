@@ -5,7 +5,7 @@ alwaysApply: true
 
 # EdminBoost Standards
 
-Cross-cutting quality standards. See also: `edminboost-project.mdc` (architecture), `edminboost-compliance.mdc` (pre-ship gate), `edminboost-features.mdc` (modules), `edminboost-command-center.mdc` (Command Center), `wordpress-php.mdc` (PHP), `admin-assets.mdc` (JS/CSS).
+Cross-cutting quality standards. See also: `edminboost-project.mdc` (architecture), `edminboost-compliance.mdc` (pre-ship gate), `edminboost-features.mdc` (modules), `edminboost-command-center.mdc` (Command Center), `edminboost-qa.mdc` (PHPUnit + Playwright), `wordpress-php.mdc` (PHP), `admin-assets.mdc` (JS/CSS).
 
 ## Coding Standards
 
@@ -38,7 +38,7 @@ Cross-cutting quality standards. See also: `edminboost-project.mdc` (architectur
 - Any notice must be dismissible or disappear when resolved.
 - Do not place ads or upsells outside the plugin's own screens unless absolutely necessary and policy-safe.
 - Avoid cluttering the admin menu.
-- Load plugin-screen assets only on this plugin's pages; exception: `edminboost-command-center-bar` CSS when the CC bar is active and the admin bar is showing; CC bar JS + drawer shell markup when active and drawer items exist (admin + front end).
+- Load plugin-screen assets only on this plugin's pages; exception: `edminboost-command-center-bar` CSS/JS on Layout Studio (mapper drawer preview) and when the CC bar is active (admin bar showing); drawer shell when active or on mapper (admin + front end when admin bar shows).
 - Features must respect the global `enabled` kill switch via `EDMINBOOST_Settings::is_enabled()`.
 - Admin footer replacement is opt-in only (enabled + non-empty text).
 
