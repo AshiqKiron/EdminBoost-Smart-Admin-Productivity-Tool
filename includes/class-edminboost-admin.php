@@ -103,6 +103,42 @@ class EDMINBOOST_Admin {
 
 		add_submenu_page(
 			self::PAGE_SLUG,
+			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY,
+			array( $this, 'render_productivity_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY,
+			array( $this, 'render_security_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
+			array( $this, 'render_performance_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
+			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
+			array( $this, 'render_white_label_page' )
+		);
+
+		add_submenu_page(
+			self::PAGE_SLUG,
 			__( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
 			EDMINBOOST_Settings::CAPABILITY,
@@ -311,6 +347,42 @@ class EDMINBOOST_Admin {
 	 */
 	public function render_appearance_page() {
 		$this->render_command_center_page( 'admin/partials/edminboost-appearance-page.php' );
+	}
+
+	/**
+	 * Render the Productivity settings page.
+	 *
+	 * @return void
+	 */
+	public function render_productivity_page() {
+		$this->render_command_center_page( 'admin/partials/edminboost-productivity-page.php' );
+	}
+
+	/**
+	 * Render the Security settings page.
+	 *
+	 * @return void
+	 */
+	public function render_security_page() {
+		$this->render_command_center_page( 'admin/partials/edminboost-security-page.php' );
+	}
+
+	/**
+	 * Render the Performance settings page.
+	 *
+	 * @return void
+	 */
+	public function render_performance_page() {
+		$this->render_command_center_page( 'admin/partials/edminboost-performance-page.php' );
+	}
+
+	/**
+	 * Render the White Label settings page.
+	 *
+	 * @return void
+	 */
+	public function render_white_label_page() {
+		$this->render_command_center_page( 'admin/partials/edminboost-white-label-page.php' );
 	}
 
 	/**
@@ -677,6 +749,18 @@ class EDMINBOOST_Admin {
 			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO:
 				$this->render_menu_studio_page();
 				break;
+			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY:
+				$this->render_productivity_page();
+				break;
+			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY:
+				$this->render_security_page();
+				break;
+			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE:
+				$this->render_performance_page();
+				break;
+			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL:
+				$this->render_white_label_page();
+				break;
 			case self::PAGE_SLUG . '-settings':
 				$this->render_settings_page();
 				break;
@@ -714,6 +798,10 @@ class EDMINBOOST_Admin {
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER     => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS    => __( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY => __( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE  => __( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL  => __( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . '-settings'                                => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
 		);
 
@@ -831,6 +919,50 @@ class EDMINBOOST_Admin {
 	 */
 	private function is_plugin_screen( $hook_suffix ) {
 		return false !== strpos( $hook_suffix, self::PAGE_SLUG );
+	}
+
+	/**
+	 * AJAX: export plugin settings as JSON.
+	 *
+	 * @return void
+	 */
+	public function ajax_export_settings() {
+		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', EDMINBOOST_TEXT_DOMAIN ) ), 403 );
+		}
+
+		check_ajax_referer( 'edminboost_export_settings', 'nonce' );
+
+		wp_send_json_success(
+			array(
+				'json' => wp_json_encode( EDMINBOOST_Settings::get(), JSON_PRETTY_PRINT ),
+			)
+		);
+	}
+
+	/**
+	 * AJAX: import plugin settings from JSON.
+	 *
+	 * @return void
+	 */
+	public function ajax_import_settings() {
+		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', EDMINBOOST_TEXT_DOMAIN ) ), 403 );
+		}
+
+		check_ajax_referer( 'edminboost_import_settings', 'nonce' );
+
+		$json = isset( $_POST['json'] ) ? wp_unslash( $_POST['json'] ) : '';
+		$data = json_decode( $json, true );
+
+		if ( ! is_array( $data ) ) {
+			wp_send_json_error( array( 'message' => __( 'Invalid JSON payload.', EDMINBOOST_TEXT_DOMAIN ) ), 400 );
+		}
+
+		$sanitized = EDMINBOOST_Settings::sanitize( $data );
+		update_option( EDMINBOOST_Settings::OPTION_NAME, $sanitized, false );
+
+		wp_send_json_success( array( 'message' => __( 'Settings imported.', EDMINBOOST_TEXT_DOMAIN ) ) );
 	}
 
 	/**

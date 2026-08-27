@@ -38,6 +38,7 @@
 		initSetupWizard( root );
 		initCommandCenterForms( root );
 		initSettingsForm( root );
+		initBackupSettings( root );
 	}
 
 	function primeCommandCenterHistory() {
@@ -3497,6 +3498,61 @@
 				link.download = presetId + '.json';
 				link.click();
 				URL.revokeObjectURL( url );
+			} );
+		}
+	}
+
+	function initBackupSettings( root ) {
+		var exportBtn = root.querySelector( '#edminboost-export-settings' );
+		var importBtn = root.querySelector( '#edminboost-import-settings' );
+		var importArea = root.querySelector( '#edminboost-import-json' );
+
+		if ( exportBtn ) {
+			exportBtn.addEventListener( 'click', function () {
+				var formData = new FormData();
+				formData.append( 'action', 'edminboost_export_settings' );
+				formData.append( 'nonce', exportBtn.getAttribute( 'data-nonce' ) || '' );
+
+				window.fetch( edminboostData.settingsSave.ajaxUrl, {
+					method: 'POST',
+					body: formData,
+					credentials: 'same-origin'
+				} )
+					.then( function ( response ) { return response.json(); } )
+					.then( function ( payload ) {
+						if ( ! payload.success || ! payload.data || ! payload.data.json ) {
+							return;
+						}
+
+						var blob = new Blob( [ payload.data.json ], { type: 'application/json' } );
+						var url  = URL.createObjectURL( blob );
+						var link = document.createElement( 'a' );
+						link.href = url;
+						link.download = 'edminboost-settings.json';
+						link.click();
+						URL.revokeObjectURL( url );
+					} );
+			} );
+		}
+
+		if ( importBtn && importArea ) {
+			importBtn.addEventListener( 'click', function () {
+				var formData = new FormData();
+				formData.append( 'action', 'edminboost_import_settings' );
+				formData.append( 'nonce', importBtn.getAttribute( 'data-nonce' ) || '' );
+				formData.append( 'json', importArea.value );
+
+				window.fetch( edminboostData.settingsSave.ajaxUrl, {
+					method: 'POST',
+					body: formData,
+					credentials: 'same-origin'
+				} )
+					.then( function ( response ) { return response.json(); } )
+					.then( function ( payload ) {
+						if ( payload.success ) {
+							window.location.reload();
+						}
+					} );
 			} );
 		}
 	}

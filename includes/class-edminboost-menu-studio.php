@@ -291,10 +291,6 @@ class EDMINBOOST_Menu_Studio {
 
 		$settings = self::get_settings();
 
-		if ( empty( $settings['use_colors'] ) ) {
-			return;
-		}
-
 		wp_enqueue_style(
 			'edminboost-admin-menu',
 			EDMINBOOST_PLUGIN_URL . 'admin/css/edminboost-admin-menu.css',
@@ -302,7 +298,7 @@ class EDMINBOOST_Menu_Studio {
 			EDMINBOOST_VERSION
 		);
 
-		$css = self::build_inline_css( $settings['colors'] );
+		$css = self::build_inline_css( $settings );
 
 		if ( '' !== $css ) {
 			wp_add_inline_style( 'edminboost-admin-menu', $css );
@@ -328,21 +324,23 @@ class EDMINBOOST_Menu_Studio {
 			$classes .= ' edminboost-menu-studio-colors';
 		}
 
+		$mode = isset( $settings['display_mode'] ) ? sanitize_key( $settings['display_mode'] ) : 'both';
+		if ( in_array( $mode, array( 'icon', 'text' ), true ) ) {
+			$classes .= ' edminboost-menu-studio-display--' . $mode;
+		}
+
 		return $classes;
 	}
 
 	/**
-	 * Build inline CSS for menu color tokens.
+	 * Build inline CSS for menu color and typography tokens.
 	 *
-	 * @param array $colors Color settings.
+	 * @param array $settings Menu Studio settings.
 	 * @return string
 	 */
-	private static function build_inline_css( $colors ) {
-		if ( ! is_array( $colors ) ) {
-			return '';
-		}
-
-		$map = array(
+	private static function build_inline_css( $settings ) {
+		$colors = isset( $settings['colors'] ) ? $settings['colors'] : array();
+		$map    = array(
 			'parent_bg'         => '--eb-ms-parent-bg',
 			'parent_text'       => '--eb-ms-parent-text',
 			'parent_active'     => '--eb-ms-parent-active',
@@ -354,25 +352,55 @@ class EDMINBOOST_Menu_Studio {
 
 		$rules = array();
 
-		foreach ( $map as $key => $var ) {
-			if ( empty( $colors[ $key ] ) ) {
-				continue;
+		if ( ! empty( $settings['menu_width'] ) ) {
+			$rules[] = '--eb-ms-width:' . absint( $settings['menu_width'] ) . 'px';
+		}
+		if ( ! empty( $settings['font_size'] ) ) {
+			$rules[] = '--eb-ms-font-size:' . absint( $settings['font_size'] ) . 'px';
+		}
+		if ( isset( $settings['line_height'] ) ) {
+			$rules[] = '--eb-ms-line-height:' . absint( $settings['line_height'] ) . 'px';
+		}
+		if ( isset( $settings['letter_spacing'] ) ) {
+			$rules[] = '--eb-ms-letter-spacing:' . (int) $settings['letter_spacing'] . 'px';
+		}
+
+		if ( ! empty( $settings['use_colors'] ) && is_array( $colors ) ) {
+			foreach ( $map as $key => $var ) {
+				if ( empty( $colors[ $key ] ) ) {
+					continue;
+				}
+
+				$color = EDMINBOOST_Theme::sanitize_hex_color( $colors[ $key ] );
+				if ( '' !== $color ) {
+					$rules[] = $var . ':' . $color;
+				}
 			}
+		}
 
-			$color = EDMINBOOST_Theme::sanitize_hex_color( $colors[ $key ] );
-
-			if ( '' === $color ) {
-				continue;
+		if ( isset( $settings['padding'] ) && is_array( $settings['padding'] ) ) {
+			$pad_map = array(
+				'wrapper_top'    => '--eb-ms-wrap-pt',
+				'wrapper_right'  => '--eb-ms-wrap-pr',
+				'wrapper_bottom' => '--eb-ms-wrap-pb',
+				'wrapper_left'   => '--eb-ms-wrap-pl',
+				'submenu_top'    => '--eb-ms-sub-pt',
+				'submenu_right'  => '--eb-ms-sub-pr',
+				'submenu_bottom' => '--eb-ms-sub-pb',
+				'submenu_left'   => '--eb-ms-sub-pl',
+			);
+			foreach ( $pad_map as $key => $var ) {
+				if ( isset( $settings['padding'][ $key ] ) ) {
+					$rules[] = $var . ':' . absint( $settings['padding'][ $key ] ) . 'px';
+				}
 			}
-
-			$rules[] = $var . ':' . $color;
 		}
 
 		if ( empty( $rules ) ) {
 			return '';
 		}
 
-		return 'body.edminboost-menu-studio-colors{' . implode( ';', $rules ) . ';}';
+		return 'body.edminboost-menu-studio-active{' . implode( ';', $rules ) . ';}';
 	}
 
 	/**

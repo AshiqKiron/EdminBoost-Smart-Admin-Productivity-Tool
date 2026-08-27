@@ -54,28 +54,8 @@ class EDMINBOOST_Settings {
 		$defaults = array(
 			'enabled'         => true,
 			'command_center'  => EDMINBOOST_Command_Center::get_defaults(),
-			'features'        => array(
-				'hide_admin_notices' => false,
-				'dashboard_widgets'  => array(
-					'remove_welcome_panel'   => false,
-					'remove_quick_press'     => false,
-					'remove_activity'        => false,
-					'remove_at_a_glance'     => false,
-					'remove_site_health'     => false,
-					'remove_wp_news'         => false,
-				),
-				'admin_footer'       => array(
-					'enabled' => false,
-					'text'    => '',
-				),
-				'disable_emojis'     => false,
-				'admin_bar'          => array(
-					'hide_wp_logo'    => false,
-					'hide_comments'   => false,
-					'hide_new_content' => false,
-					'hide_customize'  => false,
-				),
-			),
+			'features'        => EDMINBOOST_Feature_Settings::get_defaults(),
+			'white_label'     => EDMINBOOST_White_Label::get_defaults(),
 		);
 
 		/**
@@ -118,19 +98,20 @@ class EDMINBOOST_Settings {
 		}
 
 		if ( isset( $settings['features'] ) && is_array( $settings['features'] ) ) {
-			$settings['features'] = wp_parse_args( $settings['features'], $defaults['features'] );
-
-			foreach ( $defaults['features'] as $feature_key => $feature_defaults ) {
-				if ( is_array( $feature_defaults ) && isset( $settings['features'][ $feature_key ] ) ) {
-					$settings['features'][ $feature_key ] = wp_parse_args(
-						$settings['features'][ $feature_key ],
-						$feature_defaults
-					);
-				}
-			}
+			$settings['features'] = EDMINBOOST_Feature_Settings::normalize(
+				wp_parse_args( $settings['features'], $defaults['features'] )
+			);
 		} else {
 			$settings['features'] = $defaults['features'];
 		}
+
+		if ( isset( $settings['white_label'] ) && is_array( $settings['white_label'] ) ) {
+			$settings['white_label'] = wp_parse_args( $settings['white_label'], $defaults['white_label'] );
+		} else {
+			$settings['white_label'] = $defaults['white_label'];
+		}
+
+		$settings = self::migrate_legacy_admin_bar( $settings );
 
 		/**
 		 * Filter plugin settings after merge.
@@ -165,52 +146,7 @@ class EDMINBOOST_Settings {
 		$settings = self::get();
 		$features = isset( $settings['features'] ) ? $settings['features'] : array();
 
-		switch ( $feature_id ) {
-			case 'hide_admin_notices':
-			case 'disable_emojis':
-				return ! empty( $features[ $feature_id ] );
-
-			case 'dashboard_widgets':
-				if ( empty( $features['dashboard_widgets'] ) || ! is_array( $features['dashboard_widgets'] ) ) {
-					return false;
-				}
-				foreach ( $features['dashboard_widgets'] as $enabled ) {
-					if ( ! empty( $enabled ) ) {
-						return true;
-					}
-				}
-				return false;
-
-			case 'admin_footer':
-				return ! empty( $features['admin_footer']['enabled'] )
-					&& '' !== trim( (string) $features['admin_footer']['text'] );
-
-			case 'admin_bar':
-				if ( empty( $features['admin_bar'] ) || ! is_array( $features['admin_bar'] ) ) {
-					return false;
-				}
-				foreach ( $features['admin_bar'] as $enabled ) {
-					if ( ! empty( $enabled ) ) {
-						return true;
-					}
-				}
-				return false;
-
-			default:
-				/**
-				 * Filter whether a custom feature is enabled.
-				 *
-				 * @param bool   $enabled    Whether the feature is enabled.
-				 * @param string $feature_id Feature identifier.
-				 * @param array  $features   Feature settings.
-				 */
-				return (bool) apply_filters(
-					'edminboost_is_feature_enabled',
-					false,
-					$feature_id,
-					$features
-				);
-		}
+		return EDMINBOOST_Feature_Settings::is_enabled( $feature_id, $features );
 	}
 
 	/**
@@ -222,12 +158,54 @@ class EDMINBOOST_Settings {
 	public static function get_feature_settings( $feature_id ) {
 		$settings = self::get();
 		$features = isset( $settings['features'] ) ? $settings['features'] : array();
+		$features = EDMINBOOST_Feature_Settings::normalize( $features );
 
 		if ( isset( $features[ $feature_id ] ) && is_array( $features[ $feature_id ] ) ) {
 			return $features[ $feature_id ];
 		}
 
+		if ( isset( $features[ $feature_id ] ) ) {
+			return array( 'enabled' => (bool) $features[ $feature_id ] );
+		}
+
 		return array();
+	}
+
+	/**
+	 * Migrate legacy admin_bar feature toggles into Command Center behavior.
+	 *
+	 * @param array $settings Plugin settings.
+	 * @return array
+	 */
+	private static function migrate_legacy_admin_bar( $settings ) {
+		if ( empty( $settings['features']['admin_bar'] ) || ! is_array( $settings['features']['admin_bar'] ) ) {
+			return $settings;
+		}
+
+		$legacy   = $settings['features']['admin_bar'];
+		$behavior = isset( $settings['command_center']['behavior'] ) && is_array( $settings['command_center']['behavior'] )
+			? $settings['command_center']['behavior']
+			: array();
+
+		if ( ! empty( $legacy['hide_wp_logo'] ) ) {
+			$behavior['hide_wp_logo'] = true;
+		}
+		if ( ! empty( $legacy['hide_comments'] ) ) {
+			$behavior['hide_comments'] = true;
+		}
+		if ( ! empty( $legacy['hide_new_content'] ) ) {
+			$behavior['hide_new_content'] = true;
+		}
+		if ( ! empty( $legacy['hide_customize'] ) ) {
+			$behavior['hide_customize'] = true;
+		}
+
+		$settings['command_center']['behavior'] = wp_parse_args(
+			$behavior,
+			EDMINBOOST_Command_Center::get_defaults()['behavior']
+		);
+
+		return $settings;
 	}
 
 	/**
@@ -261,35 +239,15 @@ class EDMINBOOST_Settings {
 			);
 		}
 
+		if ( isset( $input['white_label'] ) && is_array( $input['white_label'] ) ) {
+			$sanitized['white_label'] = EDMINBOOST_White_Label::sanitize( $input['white_label'] );
+		}
+
 		if ( ! isset( $input['features'] ) || ! is_array( $input['features'] ) ) {
 			return $sanitized;
 		}
 
-		$raw_features = $input['features'];
-
-		$sanitized['features']['hide_admin_notices'] = ! empty( $raw_features['hide_admin_notices'] );
-		$sanitized['features']['disable_emojis']     = ! empty( $raw_features['disable_emojis'] );
-
-		$widget_keys = array_keys( $defaults['features']['dashboard_widgets'] );
-		foreach ( $widget_keys as $widget_key ) {
-			$sanitized['features']['dashboard_widgets'][ $widget_key ] = ! empty(
-				$raw_features['dashboard_widgets'][ $widget_key ]
-			);
-		}
-
-		unset( $sanitized['features']['admin_menu'] );
-
-		$sanitized['features']['admin_footer']['enabled'] = ! empty( $raw_features['admin_footer']['enabled'] );
-		$sanitized['features']['admin_footer']['text']    = isset( $raw_features['admin_footer']['text'] )
-			? sanitize_text_field( wp_unslash( $raw_features['admin_footer']['text'] ) )
-			: '';
-
-		$bar_keys = array_keys( $defaults['features']['admin_bar'] );
-		foreach ( $bar_keys as $bar_key ) {
-			$sanitized['features']['admin_bar'][ $bar_key ] = ! empty(
-				$raw_features['admin_bar'][ $bar_key ]
-			);
-		}
+		$sanitized['features'] = EDMINBOOST_Feature_Settings::sanitize( $input['features'], $sanitized );
 
 		/**
 		 * Filter sanitized settings before save.
@@ -492,6 +450,36 @@ class EDMINBOOST_Settings {
 
 		if ( isset( $raw['use_colors'] ) ) {
 			$output['use_colors'] = ! empty( $raw['use_colors'] );
+		}
+
+		if ( isset( $raw['menu_width'] ) ) {
+			$output['menu_width'] = max( 120, min( 300, absint( $raw['menu_width'] ) ) );
+		}
+
+		if ( isset( $raw['font_size'] ) ) {
+			$output['font_size'] = max( 10, min( 24, absint( $raw['font_size'] ) ) );
+		}
+
+		if ( isset( $raw['line_height'] ) ) {
+			$output['line_height'] = max( 12, min( 36, absint( $raw['line_height'] ) ) );
+		}
+
+		if ( isset( $raw['letter_spacing'] ) ) {
+			$output['letter_spacing'] = max( -2, min( 6, (int) $raw['letter_spacing'] ) );
+		}
+
+		if ( isset( $raw['display_mode'] ) ) {
+			$mode = sanitize_key( $raw['display_mode'] );
+			$output['display_mode'] = in_array( $mode, array( 'both', 'icon', 'text' ), true ) ? $mode : 'both';
+		}
+
+		if ( isset( $raw['padding'] ) && is_array( $raw['padding'] ) ) {
+			$padding_keys = array_keys( $defaults['padding'] );
+			foreach ( $padding_keys as $pad_key ) {
+				if ( isset( $raw['padding'][ $pad_key ] ) ) {
+					$output['padding'][ $pad_key ] = max( 0, min( 40, absint( $raw['padding'][ $pad_key ] ) ) );
+				}
+			}
 		}
 
 		if ( isset( $raw['order'] ) && is_array( $raw['order'] ) ) {
@@ -915,6 +903,8 @@ class EDMINBOOST_Settings {
 		$output['hide_update_counters'] = ! empty( $raw['hide_update_counters'] );
 		$output['hide_howdy']           = ! empty( $raw['hide_howdy'] );
 		$output['hide_comments']        = ! empty( $raw['hide_comments'] );
+		$output['hide_new_content']     = ! empty( $raw['hide_new_content'] );
+		$output['hide_customize']       = ! empty( $raw['hide_customize'] );
 
 		return $output;
 	}

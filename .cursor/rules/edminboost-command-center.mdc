@@ -1,6 +1,6 @@
 ---
-description: Command Center patterns — dashboard, appearance, top bar, presets, menu studio, theme, live admin bar
-globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,dashboard-overview,declutter-settings,home-advanced-look,mapper,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,preset-picker,presets,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
+description: Command Center patterns — dashboard, appearance, top bar, presets, menu studio, theme, feature pages, white label, live admin bar
+globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,dashboard-overview,declutter-settings,feature-fields,home-advanced-look,mapper,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,white-label-page,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
 alwaysApply: false
 ---
 
@@ -11,7 +11,8 @@ Shared config UI for top-bar layout, presets/roles, and look settings. Data stor
 ## Class: `EDMINBOOST_Command_Center`
 
 - `get_defaults()` / `get_settings()` — merged CC settings
-- `get_page_links()` / `get_nav_items()` — CC sub-nav links (Dashboard, Layout Presets, Appearance, Menu Studio, Top Bar, Settings)
+- `get_page_links()` / `get_nav_items()` — CC sub-nav links (Dashboard, Layout Presets, Appearance, Menu Studio, Top Bar, Productivity, Security, Performance, White Label, Settings)
+- `resolve_top_bar_items_for_user( $cc_settings )` — applies `role_assignments` preset layouts at runtime before `role_visibility` filtering
 - `get_menu_studio_defaults()` — default `menu_studio` shape
 - `is_setup_complete()` — whether top bar is configured
 - `get_look_skins()`, `apply_look_skin()`, `detect_look_skin()` — look-only behavior bundles (stored in `look_skin`; legacy/API helpers, not shown on Dashboard UI)
@@ -24,7 +25,7 @@ Shared config UI for top-bar layout, presets/roles, and look settings. Data stor
 - `get_animation_speed_options()`, `get_animation_duration_ms( $speed = '' )` — drawer transition speeds (`fast` 150ms, `normal` 300ms, `slow` 500ms)
 - Drawer width constants: `DRAWER_CUSTOM_WIDTH_MIN` (400), `DRAWER_CUSTOM_WIDTH_MAX` (800), `DRAWER_CUSTOM_WIDTH_DEFAULT` (600)
 
-Page slug suffixes: `PAGE_ONBOARDING` (`-onboarding`, legacy redirect), `PAGE_MAPPER` (`-mapper`), `PAGE_PRESETS` (`-presets`), `PAGE_BEHAVIOR` (`-behavior`, legacy redirect), `PAGE_APPEARANCE` (`-appearance`), `PAGE_MENU_STUDIO` (`-menu`).
+Page slug suffixes: `PAGE_ONBOARDING` (`-onboarding`, legacy redirect), `PAGE_MAPPER` (`-mapper`), `PAGE_PRESETS` (`-presets`), `PAGE_BEHAVIOR` (`-behavior`, legacy redirect), `PAGE_APPEARANCE` (`-appearance`), `PAGE_MENU_STUDIO` (`-menu`), `PAGE_PRODUCTIVITY` (`-productivity`), `PAGE_SECURITY` (`-security`), `PAGE_PERFORMANCE` (`-performance`), `PAGE_WHITE_LABEL` (`-white-label`).
 
 ## Live Admin Bar: `EDMINBOOST_Command_Center_Bar`
 
@@ -32,7 +33,7 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 
 - `normalize_item_slug( $slug )` — public wrapper for `resolve_admin_slug()`; normalizes relative paths and full admin URLs (used in top-bar sanitization).
 - `register_nodes()` on `admin_bar_menu` (priority 80) — adds nodes from saved `top_bar_items` for the current user.
-- `apply_declutter()` on `admin_bar_menu` (priority 999) — removes `wp-logo`, `comments`, `my-account`, `updates` per `behavior` toggles.
+- `apply_declutter()` on `admin_bar_menu` (priority 999) — removes `wp-logo`, `comments`, `my-account`, `updates`, `new-content`, `customize` per `behavior` toggles.
 - `maybe_prepare_drawer_frame()` on `admin_init` — when `edminboost_drawer=1`, verifies nonce, whitelists slug+anchor via `is_drawer_slug_allowed()` (or mapper preview via `edminboost_mapper_preview=1`), then prints iframe chrome-stripping CSS on `admin_head`.
 - `ajax_drawer_preview()` on `wp_ajax_edminboost_cc_drawer_preview` — Layout Studio only; capability + `check_ajax_referer( 'edminboost_cc_drawer_preview' )` + `is_mapper_preview_context()`; returns signed `frameUrl` / `openUrl` JSON.
 - `is_mapper_screen()` — current admin page is Layout Studio. `is_mapper_preview_context()` — mapper screen **or** AJAX referer contains mapper slug (admin-ajax has no `$_GET['page']`).
@@ -58,7 +59,11 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 ## Rendering
 
 - Dashboard: `render_admin_page()` → `admin/partials/edminboost-admin-page.php` — first-run setup wizard (`edminboost-setup-wizard.php`) when `! is_setup_complete()`, else post-setup overview (`edminboost-dashboard-overview.php` with inline layout/theme pickers + preview partials); CC sub-nav shown only after setup is complete
-- Settings: `render_settings_page()` → `admin/partials/edminboost-settings-page.php` (CC sub-nav + Settings API form; feature fields via `edminboost-settings-features.php`)
+- Settings: `render_settings_page()` → `admin/partials/edminboost-settings-page.php` (CC sub-nav; global kill switch + JSON export/import only)
+- Productivity: `render_productivity_page()` → `admin/partials/edminboost-productivity-page.php` (feature fields via `edminboost-feature-fields.php`, `$section = productivity`)
+- Security: `render_security_page()` → `admin/partials/edminboost-security-page.php` (`$section = security`)
+- Performance: `render_performance_page()` → `admin/partials/edminboost-performance-page.php` (`$section = performance`)
+- White Label: `render_white_label_page()` → `admin/partials/edminboost-white-label-page.php`
 - Appearance: `render_appearance_page()` → `admin/partials/edminboost-appearance-page.php` (visual theme, panel/badges, admin bar declutter)
 - Top Bar: `render_mapper_page()` → `admin/partials/edminboost-mapper-page.php`
 - Layout Presets: `render_presets_page()` → `admin/partials/edminboost-presets-page.php`
@@ -81,9 +86,10 @@ edminboost_settings[command_center][_layout_studio_save]     # marker: 1 when To
 edminboost_settings[command_center][top_bar_items][0][slug|anchor|label|icon|interaction|badge_source]
 edminboost_settings[command_center][role_assignments][role_key]
 edminboost_settings[command_center][behavior][drawer_width|drawer_width_custom|animation_speed|...]
-edminboost_settings[command_center][theme][preset|mode|font|custom_accent|custom_surface|custom_text|custom_top|custom_sidebar]
+edminboost_settings[command_center][theme][preset|mode|font|font_size|admin_favicon_id|admin_bg_color|schedule_dark_mode|custom_accent|custom_surface|custom_text|custom_top|custom_sidebar|status_*]
 edminboost_settings[command_center][_menu_studio_save]                              # marker: 1 when Menu Studio form submits
-edminboost_settings[command_center][menu_studio][enabled|order|submenu_order|hidden_items|custom_items|use_colors|colors]
+edminboost_settings[command_center][menu_studio][enabled|order|submenu_order|hidden_items|custom_items|use_colors|colors|menu_width|font_size|icon_display|text_display|padding]
+edminboost_settings[white_label][enabled|hide_wp_footer_credit|show_*|login_*|admin_logo_*|plugin_*|menu_label|lock_white_label]
 ```
 
 CC + settings forms use class `.edminboost-cc-form` or `.edminboost-settings-form`; JS intercepts submit and POSTs to `wp_ajax_edminboost_save_settings` (nonce from `settings_fields()`).
@@ -135,7 +141,12 @@ Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when
 | `edminboost-overview-theme-preview.php` | Mini admin chrome + color swatches (`$preview_id`, `$theme`, optional `$theme_presets`) |
 | `edminboost-overview-topbar-links-picker.php` | Read-only top bar links dropdown (`$top_bar_items`) |
 | `edminboost-overview-topbar-preview.php` | Mini admin bar link strip (`$preview_id`, `$top_bar_items`, optional `$max_visible`, `$show_interaction`) |
-| `edminboost-settings-page.php` | Settings page shell (CC nav + `.edminboost-settings-form`) |
+| `edminboost-settings-page.php` | Settings page shell (global toggle + backup/import) |
+| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: `productivity`, `security`, `performance`) |
+| `edminboost-productivity-page.php` | Productivity feature page shell |
+| `edminboost-security-page.php` | Security feature page shell |
+| `edminboost-performance-page.php` | Performance feature page shell |
+| `edminboost-white-label-page.php` | White-label branding, login, plugin row, system status footer |
 | `edminboost-appearance-page.php` | Appearance page shell + form |
 | `edminboost-preset-picker.php` | Layout preset dropdown (`$preset_picker_mode`: `wizard`, `full`, or `overview`; grouped by `get_preset_categories()`) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list (`$top_bar_items`, optional `$summary_id`) |
@@ -163,7 +174,7 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`.
 
 Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Separate from `look_skin` (behavior bundles).
 
-- `get_defaults()`, `get_presets()`, `get_modes()`, `get_fonts()`, `get_color_labels()`, `get_presets_for_js()`, `sanitize()` — preset/mode/font/custom color settings.
+- `get_defaults()`, `get_presets()`, `get_modes()`, `get_fonts()`, `get_color_labels()`, `get_presets_for_js()`, `sanitize()` — preset/mode/font/custom color settings; also `font_size`, `admin_favicon_id`, `admin_bg_color`, `schedule_dark_mode`, post status color tokens.
 - `uses_custom_colors( $theme )` — true when `preset === 'custom'` or legacy `use_custom_colors` flag is set.
 - `is_active()` — plugin enabled + logged in + (`is_admin()` **or** live CC bar / Layout Studio on front end).
 - `register_hooks()` — body/admin body classes, `edminboost-themes.css`, inline custom color overrides via `print_custom_color_overrides()`.
@@ -174,10 +185,22 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Separate from
 - Custom preset: selecting `custom` reveals five color pickers + hex text fields; sanitizer sets `use_custom_colors` from preset (legacy checkbox input still maps to `custom`).
 - No remote fonts — system font stacks only.
 
+## White Label: `EDMINBOOST_White_Label`
+
+Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Config under `settings['white_label']`.
+
+- `get_defaults()`, `get_settings()`, `sanitize()`, `is_active()` — branding + login + footer helpers.
+- `filter_admin_footer_text()` / `filter_update_footer()` — system status footer lines when enabled.
+- `login_styles()`, `login_header_url()`, `login_header_text()` — login screen branding.
+- `filter_plugin_row()` — rename plugin on Plugins screen; `filter_menu_label()` — rename EdminBoost menu item.
+- `print_admin_favicon()` — admin favicon from `admin_logo_light_id` / `admin_logo_dark_id`.
+- `lock_white_label` hides White Label page from non-super-admins when set.
+
 ## Rules
 
 - Read settings via `EDMINBOOST_Command_Center::get_settings()` — not raw `get_option()`.
 - System presets (`system_client`, `system_ecommerce`, `system_developer`) are read-only; custom presets live in `command_center.presets`.
+- `role_assignments` stores preset IDs per role; `resolve_top_bar_items_for_user()` applies the first matching role's preset layout at runtime.
 - `role_visibility` stores hidden slugs per role (inverted from visible checkboxes in UI).
 - Mapper JS (`initMapper`) syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit — includes `anchor` per item.
 - CC tab navigation JS (`initCommandCenterNav`): intercepts `.edminboost-cc-nav__link` clicks; POSTs to `edminboostData.ccNav` (`edminboost_load_cc_page`); swaps `.edminboost-wrap` HTML, updates `history.pushState`, calls `reinitEdminboostPage()`; falls back to full navigation on failure. Nav links use `data-edminboost-page` + `href` for deep links.

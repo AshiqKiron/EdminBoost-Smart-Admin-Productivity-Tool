@@ -276,6 +276,34 @@ $color_fields = array(
 					</p>
 				</section>
 
+				<section class="edminboost-card edminboost-menu-studio-panel" aria-labelledby="edminboost-menu-styles-heading">
+					<h2 id="edminboost-menu-styles-heading"><?php esc_html_e( 'Sidebar layout & typography', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+					<p>
+						<label for="edminboost_menu_width"><?php esc_html_e( 'Menu width (px)', EDMINBOOST_TEXT_DOMAIN ); ?>
+							<input type="number" class="small-text" id="edminboost_menu_width" name="<?php echo esc_attr( $ms_key ); ?>[menu_width]" value="<?php echo esc_attr( $menu_studio['menu_width'] ?? 160 ); ?>" min="120" max="300" />
+						</label>
+					</p>
+					<p>
+						<label for="edminboost_menu_font_size"><?php esc_html_e( 'Font size (px)', EDMINBOOST_TEXT_DOMAIN ); ?>
+							<input type="number" class="small-text" id="edminboost_menu_font_size" name="<?php echo esc_attr( $ms_key ); ?>[font_size]" value="<?php echo esc_attr( $menu_studio['font_size'] ?? 14 ); ?>" min="10" max="24" />
+						</label>
+						<label for="edminboost_menu_line_height"><?php esc_html_e( 'Line height (px)', EDMINBOOST_TEXT_DOMAIN ); ?>
+							<input type="number" class="small-text" id="edminboost_menu_line_height" name="<?php echo esc_attr( $ms_key ); ?>[line_height]" value="<?php echo esc_attr( $menu_studio['line_height'] ?? 20 ); ?>" min="12" max="36" />
+						</label>
+						<label for="edminboost_menu_letter_spacing"><?php esc_html_e( 'Letter spacing (px)', EDMINBOOST_TEXT_DOMAIN ); ?>
+							<input type="number" class="small-text" id="edminboost_menu_letter_spacing" name="<?php echo esc_attr( $ms_key ); ?>[letter_spacing]" value="<?php echo esc_attr( $menu_studio['letter_spacing'] ?? 0 ); ?>" min="-2" max="6" />
+						</label>
+					</p>
+					<p>
+						<label for="edminboost_menu_display_mode"><?php esc_html_e( 'Menu item display', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+						<select id="edminboost_menu_display_mode" name="<?php echo esc_attr( $ms_key ); ?>[display_mode]">
+							<option value="both" <?php selected( $menu_studio['display_mode'] ?? 'both', 'both' ); ?>><?php esc_html_e( 'Icon and text', EDMINBOOST_TEXT_DOMAIN ); ?></option>
+							<option value="icon" <?php selected( $menu_studio['display_mode'] ?? 'both', 'icon' ); ?>><?php esc_html_e( 'Icon only', EDMINBOOST_TEXT_DOMAIN ); ?></option>
+							<option value="text" <?php selected( $menu_studio['display_mode'] ?? 'both', 'text' ); ?>><?php esc_html_e( 'Text only', EDMINBOOST_TEXT_DOMAIN ); ?></option>
+						</select>
+					</p>
+				</section>
+
 				<section class="edminboost-card edminboost-menu-studio-panel edminboost-menu-studio-colors" aria-labelledby="edminboost-menu-colors-heading">
 					<h2 id="edminboost-menu-colors-heading"><?php esc_html_e( 'Sidebar Colors', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 					<p class="description"><?php esc_html_e( 'Customize parent menu, submenu, and notification badge colors across wp-admin.', EDMINBOOST_TEXT_DOMAIN ); ?></p>

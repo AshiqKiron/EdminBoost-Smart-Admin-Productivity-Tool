@@ -52,3 +52,22 @@ body.edminboost-menu-studio-colors #adminmenu li.current a .awaiting-mod {
 	background-color: var(--eb-ms-notification-bg, inherit);
 	color: var(--eb-ms-notification-text, inherit);
 }
+
+body.edminboost-menu-studio-active #adminmenuwrap,
+body.edminboost-menu-studio-active #adminmenuback {
+	width: var(--eb-ms-width, 160px);
+}
+
+body.edminboost-menu-studio-active #adminmenu a {
+	font-size: var(--eb-ms-font-size, inherit);
+	line-height: var(--eb-ms-line-height, inherit);
+	letter-spacing: var(--eb-ms-letter-spacing, normal);
+}
+
+body.edminboost-menu-studio-display--icon #adminmenu .wp-menu-name {
+	display: none;
+}
+
+body.edminboost-menu-studio-display--text #adminmenu .wp-menu-image {
+	display: none;
+}

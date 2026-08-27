@@ -59,6 +59,34 @@ class EDMINBOOST_Command_Center {
 	const PAGE_MENU_STUDIO = '-menu';
 
 	/**
+	 * Productivity settings page slug suffix.
+	 *
+	 * @var string
+	 */
+	const PAGE_PRODUCTIVITY = '-productivity';
+
+	/**
+	 * Security settings page slug suffix.
+	 *
+	 * @var string
+	 */
+	const PAGE_SECURITY = '-security';
+
+	/**
+	 * Performance settings page slug suffix.
+	 *
+	 * @var string
+	 */
+	const PAGE_PERFORMANCE = '-performance';
+
+	/**
+	 * White Label settings page slug suffix.
+	 *
+	 * @var string
+	 */
+	const PAGE_WHITE_LABEL = '-white-label';
+
+	/**
 	 * Minimum custom drawer width in pixels.
 	 *
 	 * @var int
@@ -107,6 +135,8 @@ class EDMINBOOST_Command_Center {
 				'hide_update_counters' => false,
 				'hide_howdy'           => false,
 				'hide_comments'        => false,
+				'hide_new_content'     => false,
+				'hide_customize'       => false,
 			),
 			'menu_studio'            => self::get_menu_studio_defaults(),
 		);
@@ -125,6 +155,21 @@ class EDMINBOOST_Command_Center {
 			'hidden_items'   => array(),
 			'custom_items'   => array(),
 			'use_colors'     => false,
+			'menu_width'     => 160,
+			'font_size'      => 14,
+			'line_height'    => 20,
+			'letter_spacing' => 0,
+			'display_mode'   => 'both',
+			'padding'        => array(
+				'wrapper_top'    => 0,
+				'wrapper_right'  => 0,
+				'wrapper_bottom' => 0,
+				'wrapper_left'   => 0,
+				'submenu_top'    => 0,
+				'submenu_right'  => 0,
+				'submenu_bottom' => 0,
+				'submenu_left'   => 0,
+			),
 			'colors'         => array(
 				'parent_bg'         => '',
 				'parent_text'       => '',
@@ -246,6 +291,22 @@ class EDMINBOOST_Command_Center {
 			array(
 				'slug'  => $base . self::PAGE_MAPPER,
 				'label' => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . self::PAGE_PRODUCTIVITY,
+				'label' => __( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . self::PAGE_SECURITY,
+				'label' => __( 'Security', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . self::PAGE_PERFORMANCE,
+				'label' => __( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . self::PAGE_WHITE_LABEL,
+				'label' => __( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
 				'slug'  => $base . '-settings',
@@ -1059,6 +1120,44 @@ class EDMINBOOST_Command_Center {
 				),
 			),
 		);
+	}
+
+	/**
+	 * Resolve top bar items for the current user, honoring role preset assignments.
+	 *
+	 * @param array|null $cc_settings Optional CC settings.
+	 * @return array[]
+	 */
+	public static function resolve_top_bar_items_for_user( $cc_settings = null ) {
+		if ( null === $cc_settings ) {
+			$cc_settings = self::get_settings();
+		}
+
+		$items = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
+			? $cc_settings['top_bar_items']
+			: array();
+
+		$user = wp_get_current_user();
+		if ( empty( $user->roles ) ) {
+			return $items;
+		}
+
+		$assignments = isset( $cc_settings['role_assignments'] ) && is_array( $cc_settings['role_assignments'] )
+			? $cc_settings['role_assignments']
+			: array();
+
+		foreach ( $user->roles as $role ) {
+			if ( empty( $assignments[ $role ] ) ) {
+				continue;
+			}
+
+			$preset_items = self::resolve_preset_top_bar_items( $assignments[ $role ], $cc_settings );
+			if ( ! empty( $preset_items ) ) {
+				return $preset_items;
+			}
+		}
+
+		return $items;
 	}
 
 	/**

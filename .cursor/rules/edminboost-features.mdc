@@ -12,10 +12,10 @@ alwaysApply: false
 2. Set `$id`, `$name`, `$description` on the class.
 3. Implement `register_hooks()` — caller only invokes when `is_enabled()` is true.
 4. Register in `EDMINBOOST_Features::load_features()` (`require_once` + `$feature_classes` array).
-5. Add defaults in `EDMINBOOST_Settings::get_defaults()['features']`.
-6. Add enable logic in `EDMINBOOST_Settings::is_feature_enabled()` (or `edminboost_is_feature_enabled` filter).
-7. Add sanitization in `EDMINBOOST_Settings::sanitize()` for new fields.
-8. Add settings UI in `admin/partials/edminboost-settings-features.php`.
+5. Add defaults in `EDMINBOOST_Feature_Settings::get_defaults()`.
+6. Add enable logic in `EDMINBOOST_Feature_Settings::is_enabled()` (delegated by `EDMINBOOST_Settings::is_feature_enabled()`; `edminboost_is_feature_enabled` filter).
+7. Add sanitization in `EDMINBOOST_Feature_Settings::sanitize()` (delegated by `EDMINBOOST_Settings::sanitize()`).
+8. Add settings UI in `admin/partials/edminboost-feature-fields.php` under the correct `$section` (`productivity`, `security`, or `performance`).
 
 ## Feature Class Pattern
 
@@ -47,18 +47,56 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 
 | Type | Examples | `is_feature_enabled()` behavior |
 |------|----------|--------------------------------|
-| Boolean flag | `hide_admin_notices`, `disable_emojis` | truthy option value |
-| Sub-key array | `dashboard_widgets`, `admin_bar` | any sub-key enabled |
+| Boolean flag | `hide_admin_notices`, `disable_xmlrpc` | truthy option value |
+| Sub-key array | `dashboard_widgets`, `rest_api_hardening` | any sub-key enabled |
 | Structured + text | `admin_footer` | `enabled` + non-empty `text` |
+| Structured + scope | `disable_emojis` | `enabled` + `scope` (`admin`, `frontend`, `both`) |
+| Structured + post types | `post_duplicator`, `disable_comments`, `post_order` | `enabled` + selected post types |
 
-Sidebar hide/reorder lives in Menu Studio (`command_center.menu_studio`), not the feature registry — see `edminboost-command-center.mdc`.
+Sidebar hide/reorder lives in Menu Studio (`command_center.menu_studio`), not the feature registry — see `edminboost-command-center.mdc`. Admin bar cleanup toggles live in Appearance (`command_center.behavior`), not the feature registry — legacy `features.admin_bar` migrates on read.
+
+## Feature Pages
+
+| Page | Partial | `$section` |
+|------|---------|------------|
+| Productivity | `edminboost-productivity-page.php` | `productivity` |
+| Security | `edminboost-security-page.php` | `security` |
+| Performance | `edminboost-performance-page.php` | `performance` |
+
+Shared fields: `admin/partials/edminboost-feature-fields.php`. Settings page (`edminboost-settings-page.php`) is global kill switch + JSON export/import only.
 
 ## Current Features
+
+### Productivity
 
 | ID | Class | Hooks |
 |----|-------|-------|
 | `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` (inline CSS; preserves error/warning notices) |
+| `hide_screen_help` | `EDMINBOOST_Hide_Screen_Help` | `admin_head` (hides Screen Options + Help tabs) |
 | `dashboard_widgets` | `EDMINBOOST_Dashboard` | `wp_dashboard_setup` (99), `admin_init` |
 | `admin_footer` | `EDMINBOOST_Admin_Footer` | `admin_footer_text` |
-| `disable_emojis` | `EDMINBOOST_Disable_Emojis` | `admin_init` |
-| `admin_bar` | `EDMINBOOST_Admin_Bar` | `admin_bar_menu` (999) |
+| `post_duplicator` | `EDMINBOOST_Post_Duplicator` | `post_row_actions`, `page_row_actions`, `admin_action_edminboost_duplicate_post` |
+| `classic_widgets` | `EDMINBOOST_Classic_Widgets` | `after_setup_theme` (disables block widgets) |
+| `custom_admin_columns` | `EDMINBOOST_Custom_Admin_Columns` | `manage_*_posts_columns`, `manage_*_posts_custom_column` |
+| `menu_duplicator` | `EDMINBOOST_Menu_Duplicator` | `admin_menu` (duplicate nav menu action) |
+| `post_order` | `EDMINBOOST_Post_Order` | `pre_get_posts`, list table Order column + drag handle |
+
+### Security
+
+| ID | Class | Hooks |
+|----|-------|-------|
+| `disable_xmlrpc` | `EDMINBOOST_Disable_Xmlrpc` | `xmlrpc_enabled`, `wp_headers` |
+| `disable_feeds` | `EDMINBOOST_Disable_Feeds` | `do_feed*` actions |
+| `rest_api_hardening` | `EDMINBOOST_Rest_Api_Hardening` | `rest_authentication_errors`, `rest_index` |
+| `login_redirects` | `EDMINBOOST_Login_Redirects` | `login_redirect`, `wp_logout` |
+| `disable_comments` | `EDMINBOOST_Disable_Comments` | `admin_init`, `wp_before_admin_bar_render`, filters on comments |
+
+### Performance
+
+| ID | Class | Hooks |
+|----|-------|-------|
+| `disable_emojis` | `EDMINBOOST_Disable_Emojis` | `init` / `admin_init` per `scope` |
+| `remove_asset_versions` | `EDMINBOOST_Remove_Asset_Versions` | `style_loader_src`, `script_loader_src` |
+| `remove_dashicons_frontend` | `EDMINBOOST_Remove_Dashicons_Frontend` | `wp_enqueue_scripts` |
+| `heartbeat_control` | `EDMINBOOST_Heartbeat_Control` | `heartbeat_settings` filter per context |
+| `disable_embeds` | `EDMINBOOST_Disable_Embeds` | `wp_enqueue_scripts`, `tiny_mce_plugins`, oEmbed filters |

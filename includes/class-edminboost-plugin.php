@@ -89,13 +89,16 @@ class EDMINBOOST_Plugin {
 		add_action( 'admin_init', array( $this->admin, 'maybe_activation_redirect' ) );
 		add_action( 'wp_ajax_edminboost_save_settings', array( $this->admin, 'ajax_save_settings' ) );
 		add_action( 'wp_ajax_edminboost_load_cc_page', array( $this->admin, 'ajax_load_cc_page' ) );
+		add_action( 'wp_ajax_edminboost_export_settings', array( $this->admin, 'ajax_export_settings' ) );
+		add_action( 'wp_ajax_edminboost_import_settings', array( $this->admin, 'ajax_import_settings' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
 		add_filter( 'admin_body_class', array( $this->admin, 'filter_admin_body_class' ) );
 		add_filter( 'plugin_action_links_' . EDMINBOOST_PLUGIN_BASENAME, array( $this->admin, 'add_settings_link' ) );
-		add_action( 'admin_init', array( $this->features, 'register_hooks' ) );
+		add_action( 'init', array( $this->features, 'register_hooks' ) );
 		EDMINBOOST_Command_Center_Bar::register_hooks();
 		EDMINBOOST_Menu_Studio::register_hooks();
 		EDMINBOOST_Theme::register_hooks();
+		EDMINBOOST_White_Label::register_hooks();
 	}
 }

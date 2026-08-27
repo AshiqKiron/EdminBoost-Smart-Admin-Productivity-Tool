@@ -4,7 +4,7 @@ Tags: admin, dashboard, productivity, admin-tools, admin-menu
 Requires at least: 6.0
 Tested up to: 6.9
 Requires PHP: 7.4
-Stable tag: 1.2.0
+Stable tag: 1.4.0
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -51,6 +51,18 @@ No. EdminBoost does not track users or send site data to external servers.
 Yes. When uninstalled, all plugin options are removed from the database.
 
 == Changelog ==
+
+= 1.4.0 =
+* Add Productivity, Security, Performance, and White Label Command Center pages.
+* Add post duplicator, hide screen options/help, classic widgets, custom admin columns, and menu duplicator.
+* Add security tools: disable XML-RPC, disable feeds, REST API hardening, login/logout redirects, and disable comments.
+* Add performance tools: emoji scope toggle, remove asset versions, front-end Dashicons removal, Heartbeat control, and disable embeds.
+* Add manual post ordering via list table Order column.
+* Apply layout preset role assignments at runtime for the top bar.
+* Consolidate admin bar cleanup toggles into Appearance (including New content and Customize).
+* Extend visual theme with admin favicon, background, font size, post status colors, and schedule tokens.
+* Extend Menu Studio with width, typography, padding tokens, and icon/text display modes.
+* Add white-label branding, login customization, system status footer, and settings JSON export/import.
 
 = 1.3.0 =
 * Load Command Center tabs (Dashboard, Appearance, Top Bar, Layout Presets, Menu Studio, Settings) without a full page reload.

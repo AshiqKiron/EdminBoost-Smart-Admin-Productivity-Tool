@@ -232,3 +232,49 @@ $custom_colors  = isset( $theme_presets['custom']['colors'] ) ? $theme_presets['
 		</div>
 	</div>
 </section>
+
+<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-theme-extras-heading">
+	<h2 id="edminboost-theme-extras-heading"><?php esc_html_e( 'Appearance extras', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+	<p>
+		<label for="edminboost_admin_favicon_id"><?php esc_html_e( 'Admin favicon attachment ID', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<input type="number" class="small-text" id="edminboost_admin_favicon_id" name="<?php echo esc_attr( $theme_key ); ?>[admin_favicon_id]" value="<?php echo esc_attr( $theme['admin_favicon_id'] ?? 0 ); ?>" min="0" />
+		</label>
+	</p>
+	<p>
+		<label for="edminboost_font_size"><?php esc_html_e( 'Admin font size (px)', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<input type="number" class="small-text" id="edminboost_font_size" name="<?php echo esc_attr( $theme_key ); ?>[font_size]" value="<?php echo esc_attr( $theme['font_size'] ?? 14 ); ?>" min="12" max="20" />
+		</label>
+	</p>
+	<p>
+		<label for="edminboost_admin_bg_color"><?php esc_html_e( 'Admin background color', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<input type="text" class="regular-text" id="edminboost_admin_bg_color" name="<?php echo esc_attr( $theme_key ); ?>[admin_bg_color]" value="<?php echo esc_attr( $theme['admin_bg_color'] ?? '' ); ?>" placeholder="#f0f0f1" />
+		</label>
+	</p>
+	<p>
+		<label for="edminboost_admin_bg_image_id"><?php esc_html_e( 'Admin background image attachment ID', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<input type="number" class="small-text" id="edminboost_admin_bg_image_id" name="<?php echo esc_attr( $theme_key ); ?>[admin_bg_image_id]" value="<?php echo esc_attr( $theme['admin_bg_image_id'] ?? 0 ); ?>" min="0" />
+		</label>
+	</p>
+	<label class="edminboost-checkbox-row" for="edminboost_schedule_dark_mode">
+		<input type="checkbox" id="edminboost_schedule_dark_mode" name="<?php echo esc_attr( $theme_key ); ?>[schedule_dark_mode]" value="1" <?php checked( ! empty( $theme['schedule_dark_mode'] ) ); ?> />
+		<?php esc_html_e( 'Enable scheduled dark mode window (stores schedule tokens for auto mode).', EDMINBOOST_TEXT_DOMAIN ); ?>
+	</label>
+	<p>
+		<label for="edminboost_dark_mode_start"><?php esc_html_e( 'Dark mode start (HH:MM)', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<input type="text" class="small-text" id="edminboost_dark_mode_start" name="<?php echo esc_attr( $theme_key ); ?>[dark_mode_start]" value="<?php echo esc_attr( $theme['dark_mode_start'] ?? '18:00' ); ?>" />
+		</label>
+		<label for="edminboost_dark_mode_end"><?php esc_html_e( 'Dark mode end (HH:MM)', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<input type="text" class="small-text" id="edminboost_dark_mode_end" name="<?php echo esc_attr( $theme_key ); ?>[dark_mode_end]" value="<?php echo esc_attr( $theme['dark_mode_end'] ?? '06:00' ); ?>" />
+		</label>
+	</p>
+	<fieldset class="edminboost-fieldset">
+		<legend><?php esc_html_e( 'Post status row colors', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+		<?php foreach ( ( $theme['status_colors'] ?? array() ) as $status => $color ) : ?>
+			<p>
+				<label for="edminboost_status_<?php echo esc_attr( $status ); ?>"><?php echo esc_html( ucfirst( $status ) ); ?>
+					<input type="text" class="small-text" id="edminboost_status_<?php echo esc_attr( $status ); ?>" name="<?php echo esc_attr( $theme_key ); ?>[status_colors][<?php echo esc_attr( $status ); ?>]" value="<?php echo esc_attr( $color ); ?>" placeholder="#ffffff" />
+				</label>
+			</p>
+		<?php endforeach; ?>
+	</fieldset>
+</section>

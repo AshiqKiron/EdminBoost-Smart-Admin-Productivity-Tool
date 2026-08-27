@@ -38,17 +38,45 @@ class EDMINBOOST_Features {
 	protected function load_features() {
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-feature-base.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-hide-notices.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-hide-screen-help.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-dashboard.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-admin-footer.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-disable-emojis.php';
-		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-admin-bar.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-post-duplicator.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-classic-widgets.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-disable-xmlrpc.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-rest-api-hardening.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-disable-feeds.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-login-redirects.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-remove-asset-versions.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-remove-dashicons-frontend.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-heartbeat-control.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-custom-admin-columns.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-menu-duplicator.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-disable-comments.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-disable-embeds.php';
+		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-post-order.php';
 
 		$feature_classes = array(
 			'EDMINBOOST_Hide_Notices',
+			'EDMINBOOST_Hide_Screen_Help',
 			'EDMINBOOST_Dashboard',
 			'EDMINBOOST_Admin_Footer',
 			'EDMINBOOST_Disable_Emojis',
-			'EDMINBOOST_Admin_Bar',
+			'EDMINBOOST_Post_Duplicator',
+			'EDMINBOOST_Classic_Widgets',
+			'EDMINBOOST_Disable_Xmlrpc',
+			'EDMINBOOST_Rest_Api_Hardening',
+			'EDMINBOOST_Disable_Feeds',
+			'EDMINBOOST_Login_Redirects',
+			'EDMINBOOST_Remove_Asset_Versions',
+			'EDMINBOOST_Remove_Dashicons_Frontend',
+			'EDMINBOOST_Heartbeat_Control',
+			'EDMINBOOST_Custom_Admin_Columns',
+			'EDMINBOOST_Menu_Duplicator',
+			'EDMINBOOST_Disable_Comments',
+			'EDMINBOOST_Disable_Embeds',
+			'EDMINBOOST_Post_Order',
 		);
 
 		/**
@@ -84,10 +112,6 @@ class EDMINBOOST_Features {
 	 * @return void
 	 */
 	public function register_hooks() {
-		if ( ! is_admin() ) {
-			return;
-		}
-
 		foreach ( $this->features as $feature ) {
 			if ( $feature->is_enabled() ) {
 				$feature->register_hooks();

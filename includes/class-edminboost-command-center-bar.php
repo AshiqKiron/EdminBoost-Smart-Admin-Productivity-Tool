@@ -131,6 +131,14 @@ class EDMINBOOST_Command_Center_Bar {
 		if ( ! empty( $behavior['hide_update_counters'] ) ) {
 			$admin_bar->remove_node( 'updates' );
 		}
+
+		if ( ! empty( $behavior['hide_new_content'] ) ) {
+			$admin_bar->remove_node( 'new-content' );
+		}
+
+		if ( ! empty( $behavior['hide_customize'] ) ) {
+			$admin_bar->remove_node( 'customize' );
+		}
 	}
 
 	/**
@@ -623,9 +631,7 @@ class EDMINBOOST_Command_Center_Bar {
 	 */
 	public static function get_items_for_current_user() {
 		$cc_settings = EDMINBOOST_Command_Center::get_settings();
-		$items       = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
-			? $cc_settings['top_bar_items']
-			: array();
+		$items       = EDMINBOOST_Command_Center::resolve_top_bar_items_for_user( $cc_settings );
 
 		if ( empty( $items ) ) {
 			return array();

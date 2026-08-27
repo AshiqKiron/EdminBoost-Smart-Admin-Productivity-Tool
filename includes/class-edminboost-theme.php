@@ -27,6 +27,7 @@ class EDMINBOOST_Theme {
 			'preset'            => 'default',
 			'mode'              => 'light',
 			'font'              => 'inherit',
+			'font_size'         => 14,
 			'use_custom_colors' => false,
 			'custom_accent'     => '',
 			'custom_surface'    => '',
@@ -34,6 +35,20 @@ class EDMINBOOST_Theme {
 			'custom_top'        => '',
 			'custom_sidebar'    => '',
 			'custom_content'    => '',
+			'admin_favicon_id'  => 0,
+			'admin_bg_color'    => '',
+			'admin_bg_image_id' => 0,
+			'schedule_dark_mode' => false,
+			'dark_mode_start'   => '18:00',
+			'dark_mode_end'     => '06:00',
+			'status_colors'     => array(
+				'publish' => '',
+				'pending' => '',
+				'future'  => '',
+				'private' => '',
+				'draft'   => '',
+				'trash'   => '',
+			),
 		);
 	}
 
@@ -416,6 +431,10 @@ class EDMINBOOST_Theme {
 
 		$theme = wp_parse_args( $theme, self::get_defaults() );
 
+		if ( isset( $theme['status_colors'] ) && is_array( $theme['status_colors'] ) ) {
+			$theme['status_colors'] = wp_parse_args( $theme['status_colors'], self::get_defaults()['status_colors'] );
+		}
+
 		if ( ! empty( $theme['use_custom_colors'] ) && 'custom' !== sanitize_key( $theme['preset'] ) ) {
 			$theme['preset'] = 'custom';
 		}
@@ -452,6 +471,7 @@ class EDMINBOOST_Theme {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ), 5 );
 		add_action( 'admin_head', array( __CLASS__, 'print_custom_color_overrides' ), 20 );
 		add_action( 'wp_head', array( __CLASS__, 'print_custom_color_overrides' ), 20 );
+		add_action( 'admin_head', array( __CLASS__, 'print_theme_extras' ), 25 );
 	}
 
 	/**
@@ -653,7 +673,81 @@ class EDMINBOOST_Theme {
 		$output['custom_top']        = self::sanitize_hex_color( isset( $raw['custom_top'] ) ? $raw['custom_top'] : '' );
 		$output['custom_sidebar']    = self::sanitize_hex_color( isset( $raw['custom_sidebar'] ) ? $raw['custom_sidebar'] : '' );
 		$output['custom_content']    = self::sanitize_hex_color( isset( $raw['custom_content'] ) ? $raw['custom_content'] : '' );
+		$output['admin_favicon_id']  = absint( $raw['admin_favicon_id'] ?? 0 );
+		$output['admin_bg_color']    = self::sanitize_hex_color( $raw['admin_bg_color'] ?? '' );
+		$output['admin_bg_image_id'] = absint( $raw['admin_bg_image_id'] ?? 0 );
+		$output['font_size']         = max( 12, min( 20, absint( $raw['font_size'] ?? 14 ) ) );
+		$output['schedule_dark_mode'] = ! empty( $raw['schedule_dark_mode'] );
+		$output['dark_mode_start']   = self::sanitize_time( $raw['dark_mode_start'] ?? '18:00' );
+		$output['dark_mode_end']     = self::sanitize_time( $raw['dark_mode_end'] ?? '06:00' );
+
+		if ( isset( $raw['status_colors'] ) && is_array( $raw['status_colors'] ) ) {
+			foreach ( array_keys( $output['status_colors'] ) as $status_key ) {
+				if ( isset( $raw['status_colors'][ $status_key ] ) ) {
+					$output['status_colors'][ $status_key ] = self::sanitize_hex_color( $raw['status_colors'][ $status_key ] );
+				}
+			}
+		}
 
 		return $output;
+	}
+
+	/**
+	 * Sanitize HH:MM time string.
+	 *
+	 * @param string $time Raw time.
+	 * @return string
+	 */
+	private static function sanitize_time( $time ) {
+		$time = sanitize_text_field( wp_unslash( (string) $time ) );
+		return preg_match( '/^\d{2}:\d{2}$/', $time ) ? $time : '00:00';
+	}
+
+	/**
+	 * Print status colors, background, font size, and scheduled dark mode CSS.
+	 *
+	 * @return void
+	 */
+	public static function print_theme_extras() {
+		if ( ! self::is_active() ) {
+			return;
+		}
+
+		$theme = self::get_settings();
+		$rules = array();
+
+		if ( ! empty( $theme['font_size'] ) ) {
+			$rules[] = 'body.edminboost-theme-active{font-size:' . absint( $theme['font_size'] ) . 'px;}';
+		}
+
+		if ( ! empty( $theme['admin_bg_color'] ) ) {
+			$rules[] = 'body.edminboost-theme-active{background-color:' . $theme['admin_bg_color'] . ';}';
+		}
+
+		if ( ! empty( $theme['admin_bg_image_id'] ) ) {
+			$url = wp_get_attachment_image_url( $theme['admin_bg_image_id'], 'full' );
+			if ( $url ) {
+				$rules[] = 'body.edminboost-theme-active{background-image:url(' . esc_url( $url ) . ');background-size:cover;background-attachment:fixed;}';
+			}
+		}
+
+		foreach ( $theme['status_colors'] as $status => $color ) {
+			if ( $color ) {
+				$rules[] = 'body.edminboost-theme-active .wp-list-table tr.status-' . sanitize_key( $status ) . '{background-color:' . $color . ';}';
+			}
+		}
+
+		if ( ! empty( $theme['schedule_dark_mode'] ) ) {
+			$start = $theme['dark_mode_start'];
+			$end   = $theme['dark_mode_end'];
+			$rules[] = '@media (prefers-color-scheme: no-preference),(prefers-color-scheme: light){body.edminboost-theme-mode--auto.edminboost-theme-active{} }';
+			$rules[] = 'body.edminboost-theme-mode--auto.edminboost-theme-active{--eb-schedule-start:' . esc_attr( $start ) . ';--eb-schedule-end:' . esc_attr( $end ) . ';}';
+		}
+
+		if ( empty( $rules ) ) {
+			return;
+		}
+
+		echo '<style id="edminboost-theme-extras">' . wp_strip_all_tags( implode( '', $rules ) ) . '</style>';
 	}
 }
