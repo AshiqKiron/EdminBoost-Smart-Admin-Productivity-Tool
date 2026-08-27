@@ -95,7 +95,7 @@ alwaysApply: false
 - CC dependent sections: `.edminboost-cc-section.is-disabled` (opacity + pointer-events off; used on White Label until master toggle is on).
 - White Label rebrand: `.edminboost-wl-rebrand-layout` (+ `__fields`, `__row`, `__field`), `.edminboost-wl-rebrand-preview` (+ `__lead`, `__panel`, `__heading`, `__plugin-row`, `__plugin-title`, `__plugin-version`, `__plugin-meta`, `__plugin-author`, `__menu`, `__menu-item.is-target`); stacks at `960px`.
 - Setup wizard: `.edminboost-setup-wizard`, `.edminboost-setup-stepper` (+ `__item`, `__number`, `__label`), `.edminboost-setup-step`, `.edminboost-setup-wizard__footer`, `.edminboost-setup-review__*`, `.edminboost-preset-picker` (+ `--wizard` / `--full`, compact listbox + embedded top bar preview).
-- Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`.
+- Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`, `.edminboost-select-rows` (+ `.edminboost-select-row` two-column label/select grid for grouped dropdowns such as Heartbeat control).
 - Command Center: `.edminboost-cc-wrap`, `.edminboost-cc-nav`, `.edminboost-cc-hero`, `.edminboost-cc-footer`.
 - Billing: `.edminboost-billing-current`, `.edminboost-billing-plans`, `.edminboost-billing-plan` (+ `__badge`, `__header`, `__price`, `__features`, `__footer`, `__upgrade`; modifiers `.is-featured`, `.is-current`).
 - Mapper: `.edminboost-mapper-layout`, `.edminboost-mapper-search`, `.edminboost-discovered-list`, `.edminboost-discovered-item` (+ `__toggle`, `__checkbox`, `__handle`, `__icon`), `.edminboost-topbar-canvas` (+ `.is-drag-over`), `.edminboost-topbar-item`, `.edminboost-item-drawer`, `.edminboost-topbar-summary`.
@@ -146,7 +146,7 @@ alwaysApply: false
 | `edminboost-animation-speed-field.php` | Animation speed picker partial (`$cc_key`, `$behavior`) |
 | `edminboost-preset-picker.php` | Layout preset dropdown (`wizard` / `full` / `overview` modes) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list |
-| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: productivity, security, performance) |
+| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: productivity, security, performance); checkbox rows place `EDMINBOOST_Setting_Help::echo_icon()` before the input; multi-select groups (e.g. Heartbeat) use `.edminboost-select-rows` with per-field help keys |
 | `edminboost-command-center-nav.php` | CC sub-navigation |
 | `edminboost-mapper-page.php` | Top bar / layout studio |
 | `edminboost-presets-page.php` | Layout presets & role matrix |

@@ -131,7 +131,7 @@ array(
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
 - Setup wizard partials: `edminboost-setup-wizard.php` (includes `edminboost-preset-picker.php`, `edminboost-theme-settings.php`, `edminboost-topbar-summary.php`, `edminboost-setup-review.php`).
 - Dashboard overview previews: `edminboost-overview-topbar-preview.php` (`$preview_items`, `$preview_id`, optional `$preview_limit`, `$show_interaction`, `$compact_preview`; icon tips via `__tip` + child `__tooltip` spans, not `title`), `edminboost-overview-sidebar-preview.php` (`$sidebar_items`, `$preview_id`, `$preview_limit`).
-- Setting help: call `EDMINBOOST_Setting_Help::echo_icon( $key )` beside labels on non-Dashboard CC/feature pages.
+- Setting help: call `EDMINBOOST_Setting_Help::echo_icon( $key )` beside labels on non-Dashboard CC/feature pages; checkbox rows put the icon before the input; grouped selects use `.edminboost-select-rows` with one registry key per sub-field when help text differs.
 - Document `@var` annotations at the top of partials.
 
 ## Docblocks

@@ -216,6 +216,9 @@ class EDMINBOOST_Setting_Help {
 			'remove_dashicons_frontend'  => __( 'Dequeues Dashicons for visitors who are not logged in.', EDMINBOOST_TEXT_DOMAIN ),
 			'disable_embeds'             => __( 'Disables oEmbed discovery, embed rewrite rules, and the wp-embed script.', EDMINBOOST_TEXT_DOMAIN ),
 			'heartbeat_control'          => __( 'Slow or disable the Heartbeat API on admin screens, the post editor, or the front end.', EDMINBOOST_TEXT_DOMAIN ),
+			'heartbeat_admin'            => __( 'Applies to wp-admin screens outside the post editor, such as list tables and settings pages. Default keeps the standard ~15 second interval. Slow reduces polling to 60 seconds. Disable removes the Heartbeat script entirely.', EDMINBOOST_TEXT_DOMAIN ),
+			'heartbeat_editor'           => __( 'Applies to the post and page editor (post.php and post-new.php). WordPress uses Heartbeat for autosave, post locking, and revision checks. Slow reduces polling to 60 seconds. Disable may affect autosave and collaborative editing.', EDMINBOOST_TEXT_DOMAIN ),
+			'heartbeat_frontend'         => __( 'Applies when logged-in users browse the public site. WordPress uses Heartbeat for session checks and admin bar updates. Default keeps the standard interval. Slow reduces polling to 60 seconds. Disable removes the script on the front end.', EDMINBOOST_TEXT_DOMAIN ),
 
 			// White label.
 			'wl_enabled'                 => __( 'Master switch for white-label branding in wp-admin: sidebar menu label, Plugins screen row, and admin footer options below.', EDMINBOOST_TEXT_DOMAIN ),

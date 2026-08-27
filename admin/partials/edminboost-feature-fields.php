@@ -189,8 +189,8 @@ $post_types = get_post_types( array( 'public' => true ), 'objects' );
 <fieldset class="edminboost-fieldset">
 	<legend><?php esc_html_e( 'Emoji scripts', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 	<label class="edminboost-checkbox-row" for="edminboost_disable_emojis_enabled">
-		<input type="checkbox" id="edminboost_disable_emojis_enabled" name="<?php echo esc_attr( $features_key ); ?>[disable_emojis][enabled]" value="1" <?php checked( ! empty( $features['disable_emojis']['enabled'] ) ); ?> />
 		<?php EDMINBOOST_Setting_Help::echo_icon( 'disable_emojis' ); ?>
+		<input type="checkbox" id="edminboost_disable_emojis_enabled" name="<?php echo esc_attr( $features_key ); ?>[disable_emojis][enabled]" value="1" <?php checked( ! empty( $features['disable_emojis']['enabled'] ) ); ?> />
 		<?php esc_html_e( 'Disable emoji detection scripts.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
 	<p>
@@ -235,16 +235,18 @@ $post_types = get_post_types( array( 'public' => true ), 'objects' );
 		'slow'    => __( 'Slow (60s)', EDMINBOOST_TEXT_DOMAIN ),
 		'disable' => __( 'Disable', EDMINBOOST_TEXT_DOMAIN ),
 	);
-	foreach ( $hb_labels as $ctx => $label ) :
-		?>
-		<p>
-			<label for="edminboost_heartbeat_<?php echo esc_attr( $ctx ); ?>"><?php echo esc_html( $label ); ?></label>
-			<select id="edminboost_heartbeat_<?php echo esc_attr( $ctx ); ?>" name="<?php echo esc_attr( $features_key ); ?>[heartbeat_control][<?php echo esc_attr( $ctx ); ?>]">
-				<?php foreach ( $hb_options as $val => $opt_label ) : ?>
-					<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $features['heartbeat_control'][ $ctx ] ?? 'default', $val ); ?>><?php echo esc_html( $opt_label ); ?></option>
-				<?php endforeach; ?>
-			</select>
-		</p>
-	<?php endforeach; ?>
+	?>
+	<div class="edminboost-select-rows">
+		<?php foreach ( $hb_labels as $ctx => $label ) : ?>
+			<div class="edminboost-select-row">
+				<label for="edminboost_heartbeat_<?php echo esc_attr( $ctx ); ?>"><?php EDMINBOOST_Setting_Help::echo_icon( 'heartbeat_' . $ctx ); ?><?php echo esc_html( $label ); ?></label>
+				<select id="edminboost_heartbeat_<?php echo esc_attr( $ctx ); ?>" name="<?php echo esc_attr( $features_key ); ?>[heartbeat_control][<?php echo esc_attr( $ctx ); ?>]">
+					<?php foreach ( $hb_options as $val => $opt_label ) : ?>
+						<option value="<?php echo esc_attr( $val ); ?>" <?php selected( $features['heartbeat_control'][ $ctx ] ?? 'default', $val ); ?>><?php echo esc_html( $opt_label ); ?></option>
+					<?php endforeach; ?>
+				</select>
+			</div>
+		<?php endforeach; ?>
+	</div>
 </fieldset>
 <?php endif; ?>
