@@ -104,11 +104,6 @@ class EDMINBOOST_Setting_Help {
 	 */
 	protected static function get_tooltips() {
 		return array(
-			// Settings page.
-			'enabled'                    => __( 'Master switch for EdminBoost features, the Command Center bar, Menu Studio, visual theme, and productivity modules.', EDMINBOOST_TEXT_DOMAIN ),
-			'export_settings'            => __( 'Download all EdminBoost options as JSON for backup or migration. Media files referenced by attachment IDs are not included.', EDMINBOOST_TEXT_DOMAIN ),
-			'import_settings'            => __( 'Paste exported JSON to restore settings on this site. Existing values are replaced after validation.', EDMINBOOST_TEXT_DOMAIN ),
-
 			// Theme settings.
 			'theme_preset'               => __( 'Choose a color palette for wp-admin, the Command Center bar, slide-out drawer, and EdminBoost screens.', EDMINBOOST_TEXT_DOMAIN ),
 			'theme_mode'                 => __( 'Force light or dark styling, follow the system preference, or use scheduled dark mode when enabled below.', EDMINBOOST_TEXT_DOMAIN ),
@@ -239,6 +234,11 @@ class EDMINBOOST_Setting_Help {
 			'wl_plugin_uri'              => __( 'Replaces the plugin website link on the Plugins screen.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_menu_label'              => __( 'Replaces the EdminBoost item label in the wp-admin sidebar menu.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_lock'                    => __( 'Hides the White Label settings page from other administrators until the plugin is reactivated.', EDMINBOOST_TEXT_DOMAIN ),
+
+			// Settings page.
+			'enabled'                    => __( 'Master switch for EdminBoost features, the Command Center bar, Menu Studio, and visual theme.', EDMINBOOST_TEXT_DOMAIN ),
+			'export_settings'            => __( 'Download all EdminBoost options as JSON for backup or migration. Media files referenced by attachment IDs are not included.', EDMINBOOST_TEXT_DOMAIN ),
+			'import_settings'            => __( 'Restore settings from exported JSON by pasting the payload or uploading a .json file. Existing values are replaced after validation.', EDMINBOOST_TEXT_DOMAIN ),
 		);
 	}
 }

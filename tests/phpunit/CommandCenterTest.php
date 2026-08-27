@@ -190,7 +190,6 @@ class CommandCenterTest extends Edminboost_Test_Case {
 				$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
 				$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
 				$base . EDMINBOOST_Command_Center::PAGE_BILLING,
-				$base . '-settings',
 			),
 			$slugs
 		);
@@ -216,7 +215,6 @@ class CommandCenterTest extends Edminboost_Test_Case {
 				$base . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
 				$base . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
 				$base . EDMINBOOST_Command_Center::PAGE_BILLING,
-				$base . '-settings',
 			),
 			$slugs
 		);
@@ -540,6 +538,60 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertSame( 'system_client', $result['command_center']['default_preset'] );
 		$this->assertTrue( $result['command_center']['menu_studio']['enabled'] );
 		$this->assertNotEmpty( $result['command_center']['menu_studio']['order'] );
+		$this->assertNotSame(
+			'custom',
+			EDMINBOOST_Command_Center::detect_active_layout_preset( $result['command_center'] )
+		);
+	}
+
+	/**
+	 * Applying preset replaces prior custom Menu Studio config instead of merging it.
+	 */
+	public function test_sanitize_apply_preset_replaces_custom_menu_studio() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'menu_studio' => array(
+						'enabled'       => true,
+						'order'         => array( 'plugins.php', 'themes.php', 'index.php' ),
+						'submenu_order' => array(
+							'plugins.php' => array( 'plugin-install.php' ),
+						),
+						'hidden_items'  => array( 'edit.php' ),
+						'custom_items'  => array(
+							array(
+								'id'    => 'custom_link',
+								'label' => 'Custom',
+								'path'  => 'edit.php?post_type=page',
+								'icon'  => 'dashicons-admin-page',
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'_apply_preset' => 'system_client',
+				),
+			)
+		);
+
+		$expected_menu = EDMINBOOST_Command_Center::resolve_preset_menu_studio( 'system_client', $result['command_center'] );
+
+		$this->assertSame(
+			$expected_menu['order'],
+			$result['command_center']['menu_studio']['order']
+		);
+		$this->assertSame( array(), $result['command_center']['menu_studio']['submenu_order'] );
+		$this->assertSame( array(), $result['command_center']['menu_studio']['custom_items'] );
+		$this->assertNotSame(
+			'custom',
+			EDMINBOOST_Command_Center::detect_active_layout_preset( $result['command_center'] )
+		);
 	}
 
 	/**

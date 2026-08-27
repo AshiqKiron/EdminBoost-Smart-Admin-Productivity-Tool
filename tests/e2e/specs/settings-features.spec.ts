@@ -2,11 +2,11 @@ import { test, expect } from '@playwright/test';
 import { pages } from '../fixtures/pages';
 import { waitForSettingsSaved } from '../fixtures/helpers';
 
-test.describe( 'Settings & features', () => {
-	test( 'settings page loads and saves a feature toggle', async ( { page } ) => {
-		await page.goto( pages.settings );
+test.describe( 'Productivity features', () => {
+	test( 'productivity page loads and saves a feature toggle', async ( { page } ) => {
+		await page.goto( pages.productivity );
 		await expect( page.locator( '.edminboost-wrap' ) ).toBeVisible();
-		await expect( page.locator( '.edminboost-cc-nav__link.is-active' ) ).toHaveText( 'Settings' );
+		await expect( page.locator( '.edminboost-cc-nav__link.is-active' ) ).toHaveText( 'Productivity' );
 
 		const noticesCheckbox = page.locator(
 			'input[name="edminboost_settings[features][hide_admin_notices]"]'
@@ -32,7 +32,7 @@ test.describe( 'Settings & features', () => {
 	} );
 
 	test( 'hide admin notices checkbox is present', async ( { page } ) => {
-		await page.goto( pages.settings );
+		await page.goto( pages.productivity );
 		await expect(
 			page.locator( 'input[name="edminboost_settings[features][hide_admin_notices]"]' )
 		).toBeVisible();

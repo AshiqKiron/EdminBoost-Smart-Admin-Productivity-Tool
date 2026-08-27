@@ -387,6 +387,78 @@ class SettingsTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Dashboard theme preset change clears stale custom-color state from merged saves.
+	 */
+	public function test_sanitize_dashboard_theme_preset_clears_stale_custom_flag() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'theme' => array(
+						'preset'            => 'custom',
+						'use_custom_colors' => true,
+						'mode'              => 'light',
+						'font'              => 'inherit',
+						'custom_accent'     => '#ff0000',
+					),
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'command_center' => array(
+					'theme' => array(
+						'preset' => 'midnight',
+						'mode'   => 'light',
+						'font'   => 'inherit',
+					),
+				),
+			)
+		);
+
+		$theme = $result['command_center']['theme'];
+
+		$this->assertSame( 'midnight', $theme['preset'] );
+		$this->assertFalse( $theme['use_custom_colors'] );
+		$this->assertSame( '#ff0000', $theme['custom_accent'] );
+	}
+
+	/**
+	 * Dashboard overview AJAX save omits features but still saves theme and layout apply.
+	 */
+	public function test_sanitize_dashboard_overview_payload_without_features() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'theme' => array(
+						'preset' => 'default',
+						'mode'   => 'light',
+						'font'   => 'inherit',
+					),
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'_apply_preset' => 'system_client',
+					'theme'         => array(
+						'preset' => 'midnight',
+						'mode'   => 'light',
+						'font'   => 'inherit',
+					),
+				),
+			)
+		);
+
+		$this->assertSame( 'midnight', $result['command_center']['theme']['preset'] );
+		$this->assertNotEmpty( $result['command_center']['top_bar_items'] );
+		$this->assertSame( 'system_client', $result['command_center']['default_preset'] );
+	}
+
+	/**
 	 * Users without capability cannot change settings via sanitize.
 	 */
 	public function test_sanitize_requires_capability() {

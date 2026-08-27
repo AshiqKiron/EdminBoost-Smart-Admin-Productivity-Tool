@@ -5,8 +5,10 @@
 		return;
 	}
 
-	var loadCommandCenterPageRef = null;
-	var syncPresetCatalogFn      = null;
+	var loadCommandCenterPageRef     = null;
+	var syncPresetCatalogFn          = null;
+	var syncThemeSettingsFn          = null;
+	var pendingDashboardOverviewSave = null;
 
 	function resolveThemePreviewMode( mode ) {
 		if ( 'auto' !== mode ) {
@@ -61,16 +63,32 @@
 		var tip = document.createElement( 'span' );
 		tip.className = 'edminboost-overview-topbar-preview__tip';
 
-		if ( title ) {
-			tip.setAttribute( 'title', title );
-		}
-
 		var icon = document.createElement( 'span' );
 		icon.className = 'dashicons ' + ( iconClass || 'dashicons-admin-generic' );
 		icon.setAttribute( 'aria-hidden', 'true' );
 		tip.appendChild( icon );
 
+		if ( title ) {
+			var tooltip = document.createElement( 'span' );
+			tooltip.className = 'edminboost-overview-topbar-preview__tooltip';
+			tooltip.setAttribute( 'role', 'tooltip' );
+			tooltip.textContent = title;
+			tip.appendChild( tooltip );
+		}
+
 		return tip;
+	}
+
+	function appendTopBarPreviewTooltip( element, title ) {
+		if ( ! element || ! title ) {
+			return;
+		}
+
+		var tooltip = document.createElement( 'span' );
+		tooltip.className = 'edminboost-overview-topbar-preview__tooltip';
+		tooltip.setAttribute( 'role', 'tooltip' );
+		tooltip.textContent = title;
+		element.appendChild( tooltip );
 	}
 
 	document.addEventListener( 'DOMContentLoaded', function () {
@@ -216,6 +234,29 @@
 		} );
 
 		function loadCommandCenterPage( page, url, options ) {
+			options = options || {};
+
+			if ( ! page ) {
+				return;
+			}
+
+			var beginLoad = function () {
+				loadCommandCenterPageNow( page, url, options );
+			};
+
+			if ( pendingDashboardOverviewSave ) {
+				pendingDashboardOverviewSave
+					.catch( function () {
+						return null;
+					} )
+					.then( beginLoad );
+				return;
+			}
+
+			beginLoad();
+		}
+
+		function loadCommandCenterPageNow( page, url, options ) {
 			options = options || {};
 
 			if ( ! page ) {
@@ -1990,7 +2031,6 @@
 		var customWrap     = document.getElementById( 'edminboost-theme-custom-colors' );
 		var themePresets   = edminboostData.themePresets || {};
 		var colorKeys      = [ 'accent', 'surface', 'text', 'topbar', 'sidebar', 'content' ];
-		var skipLiveThemePreview = document.getElementById( 'edminboost-dashboard-overview-form' );
 
 		if ( ! presetSelect || ! presetPicker ) {
 			return;
@@ -2196,11 +2236,6 @@
 		}
 
 		function updateThemePreview() {
-			if ( skipLiveThemePreview ) {
-				syncPresetPickerSelection();
-				return;
-			}
-
 			var preset = getSelectedPreset();
 			var mode   = modeSelect ? modeSelect.value : 'light';
 			var font   = fontSelect ? fontSelect.value : 'inherit';
@@ -2286,7 +2321,62 @@
 			fontSelect.addEventListener( 'change', updateThemePreview );
 		}
 
+		presetSelect.addEventListener( 'change', updateThemePreview );
+
 		colorFields.forEach( bindColorField );
+
+		syncThemeSettingsFn = function ( themeSettings ) {
+			if ( ! themeSettings || typeof themeSettings !== 'object' ) {
+				return;
+			}
+
+			if ( themeSettings.preset && themePresets[ themeSettings.preset ] ) {
+				presetSelect.value = themeSettings.preset;
+			}
+
+			if ( themeSettings.mode && modeSelect ) {
+				modeSelect.value = themeSettings.mode;
+			}
+
+			if ( themeSettings.font && fontSelect ) {
+				fontSelect.value = themeSettings.font;
+			}
+
+			colorFields.forEach( function ( field ) {
+				var colorKey = field.text.replace( 'edminboost_custom_', 'custom_' );
+				if ( ! themeSettings[ colorKey ] ) {
+					return;
+				}
+
+				var textInput = document.getElementById( field.text );
+				var pickerInput = document.getElementById( field.picker );
+
+				if ( textInput ) {
+					textInput.value = themeSettings[ colorKey ];
+				}
+
+				if ( pickerInput ) {
+					pickerInput.value = themeSettings[ colorKey ];
+				}
+			} );
+
+			updateThemePreview();
+		};
+
+		if ( edminboostData.themeSettings ) {
+			edminboostData.themeSettings.preset = getSelectedPreset();
+
+			if ( modeSelect ) {
+				edminboostData.themeSettings.mode = modeSelect.value;
+			}
+
+			if ( fontSelect ) {
+				edminboostData.themeSettings.font = fontSelect.value;
+			}
+
+			edminboostData.themeSettings.use_custom_colors = isCustomPreset();
+		}
+
 		updateThemePreview();
 	}
 
@@ -2322,11 +2412,27 @@
 			edminboostData.presets = data.presets;
 
 			if ( typeof syncPresetCatalogFn === 'function' ) {
-				syncPresetCatalogFn(
-					data.presets,
-					data.selected_preset || '',
-					data.default_preset || ''
-				);
+				var layoutPreset = data.active_layout_preset || data.selected_preset || '';
+
+				if ( layoutPreset ) {
+					syncPresetCatalogFn(
+						data.presets,
+						layoutPreset,
+						data.default_preset || ''
+					);
+				}
+			}
+		}
+
+		if ( data.theme && typeof data.theme === 'object' ) {
+			edminboostData.themeSettings = data.theme;
+
+			if (
+				typeof syncThemeSettingsFn === 'function'
+				&& form
+				&& form.id !== 'edminboost-dashboard-overview-form'
+			) {
+				syncThemeSettingsFn( data.theme );
 			}
 		}
 
@@ -2344,12 +2450,18 @@
 		var submitBtn  = options.submitBtn || form.querySelector( '[type="submit"]' );
 		var saveConfig = edminboostData.settingsSave;
 
+		if ( ! saveConfig ) {
+			return window.Promise.resolve();
+		}
+
 		if ( typeof form.edminboostSyncHiddenInputs === 'function' ) {
 			form.edminboostSyncHiddenInputs();
 		}
 
-		var formData   = new FormData( form );
+		var formData = new FormData( form );
 
+		// settings_fields() adds action=update for options.php; remove it so admin-ajax uses the plugin handler.
+		formData.delete( 'action' );
 		formData.append( 'action', saveConfig.action );
 
 		if ( submitBtn ) {
@@ -2357,7 +2469,7 @@
 			submitBtn.classList.add( 'is-saving' );
 		}
 
-		window.fetch( saveConfig.ajaxUrl, {
+		return window.fetch( saveConfig.ajaxUrl, {
 			method: 'POST',
 			body: formData,
 			credentials: 'same-origin'
@@ -2374,20 +2486,24 @@
 					throw new Error( errorMessage );
 				}
 
-				showFormNotice(
-					form,
-					'success',
-					options.message
-						|| ( payload.data && payload.data.message
-							? payload.data.message
-							: edminboostData.strings.settingsSaved )
-				);
+				if ( ! options.silent ) {
+					showFormNotice(
+						form,
+						'success',
+						options.message
+							|| ( payload.data && payload.data.message
+								? payload.data.message
+								: edminboostData.strings.settingsSaved )
+					);
+				}
 
 				applySettingsSaveResult( payload.data || {}, form );
 
 				if ( typeof options.onSuccess === 'function' ) {
 					options.onSuccess( payload.data || {}, form );
 				}
+
+				return payload.data || {};
 			} )
 			.catch( function ( error ) {
 				showFormNotice(
@@ -2395,6 +2511,7 @@
 					'error',
 					error.message || edminboostData.strings.settingsSaveFailed
 				);
+				throw error;
 			} )
 			.finally( function () {
 				if ( submitBtn ) {
@@ -2625,9 +2742,10 @@
 
 			if ( overflow > 0 ) {
 				var more = document.createElement( 'span' );
+				var moreLabel = overflow === 1 ? '1 more link' : overflow + ' more links';
 				more.className = 'edminboost-overview-topbar-preview__more';
 				more.textContent = '+' + overflow;
-				more.title = overflow === 1 ? '1 more link' : overflow + ' more links';
+				appendTopBarPreviewTooltip( more, moreLabel );
 				canvas.appendChild( more );
 			}
 
@@ -2955,6 +3073,7 @@
 		var topbarPreview      = document.getElementById( 'edminboost-overview-topbar-preview' );
 		var topbarDesc         = document.getElementById( 'edminboost-overview-topbar-desc' );
 		var topbarSummary      = document.getElementById( 'edminboost-overview-topbar-links-summary' );
+		var themePresetSelect  = document.getElementById( 'edminboost_theme_preset' );
 		var presetCatalog      = edminboostData.presets || {};
 		var themePresets       = edminboostData.themePresets || {};
 		var strings            = edminboostData.strings || {};
@@ -3121,9 +3240,10 @@
 
 			if ( overflow > 0 ) {
 				var more = document.createElement( 'span' );
+				var moreLabel = overflow === 1 ? '1 more link' : overflow + ' more links';
 				more.className = 'edminboost-overview-topbar-preview__more';
 				more.textContent = '+' + overflow;
-				more.title = overflow === 1 ? '1 more link' : overflow + ' more links';
+				appendTopBarPreviewTooltip( more, moreLabel );
 				canvas.appendChild( more );
 			}
 
@@ -3275,31 +3395,54 @@
 			rebuildTopbarLinksList( items );
 		}
 
-		function saveDashboardOverview( options ) {
-			if ( dashboardSaving ) {
-				return;
+		function prepareDashboardOverviewFormForSave() {
+			if (
+				themePresetSelect
+				&& edminboostData.themeSettings
+				&& edminboostData.themeSettings.preset
+			) {
+				themePresetSelect.value = edminboostData.themeSettings.preset;
 			}
+		}
 
-			dashboardSaving = true;
+		function saveDashboardOverview( options ) {
+			options = options || {};
 
-			saveSettingsForm( form, {
-				message: options && options.message ? options.message : undefined,
-				onSuccess: function ( data ) {
+			function runSave() {
+				dashboardSaving = true;
+				prepareDashboardOverviewFormForSave();
+
+				var savePromise = saveSettingsForm( form, {
+					silent: !! options.silent,
+					message: options.message,
+					onSuccess: function ( data ) {
+						if ( applyField && data && data.selected_preset ) {
+							applyField.value = '';
+						}
+
+						if ( typeof options.onSuccess === 'function' ) {
+							options.onSuccess( data || {} );
+						}
+					}
+				} ).finally( function () {
 					dashboardSaving = false;
 
-					if ( applyField ) {
-						applyField.value = '';
+					if ( pendingDashboardOverviewSave === savePromise ) {
+						pendingDashboardOverviewSave = null;
 					}
+				} );
 
-					if ( options && typeof options.onSuccess === 'function' ) {
-						options.onSuccess( data || {} );
-					}
-				}
-			} );
+				pendingDashboardOverviewSave = savePromise;
+				return savePromise;
+			}
 
-			window.setTimeout( function () {
-				dashboardSaving = false;
-			}, 4000 );
+			if ( dashboardSaving && pendingDashboardOverviewSave ) {
+				return pendingDashboardOverviewSave.then( function () {
+					return runSave();
+				} );
+			}
+
+			return runSave();
 		}
 
 		if ( layoutList ) {
@@ -3314,18 +3457,36 @@
 					return;
 				}
 
-				window.setTimeout( function () {
-					if ( applyField ) {
-						applyField.value = presetId;
-					}
+				if ( applyField ) {
+					applyField.value = presetId;
+				}
 
-					saveDashboardOverview( {
-						message: strings.presetApplied || 'Preset applied.',
-						onSuccess: function () {
-							window.location.reload();
+				saveDashboardOverview( {
+					message: strings.presetApplied || 'Preset applied.',
+					onSuccess: function ( data ) {
+						var activePreset = ( data && ( data.active_layout_preset || data.selected_preset ) )
+							? ( data.active_layout_preset || data.selected_preset )
+							: '';
+
+						if ( ! activePreset ) {
+							return;
 						}
-					} );
-				}, 0 );
+
+						if ( data.presets ) {
+							presetCatalog = data.presets;
+						}
+
+						syncLayoutOverview( presetCatalog[ activePreset ] || {} );
+
+						if ( typeof syncPresetCatalogFn === 'function' ) {
+							syncPresetCatalogFn(
+								presetCatalog,
+								activePreset,
+								data.default_preset || ''
+							);
+						}
+					}
+				} );
 			} );
 		}
 
@@ -3341,10 +3502,23 @@
 					return;
 				}
 
-				window.setTimeout( function () {
-					updateThemeOverviewPreview( presetId );
-					saveDashboardOverview();
-				}, 0 );
+				if ( ! edminboostData.themeSettings ) {
+					edminboostData.themeSettings = {};
+				}
+
+				edminboostData.themeSettings.preset           = presetId;
+				edminboostData.themeSettings.use_custom_colors = ( presetId === 'custom' );
+
+				if ( themePresetSelect ) {
+					themePresetSelect.value = presetId;
+				}
+
+				if ( typeof syncThemeSettingsFn === 'function' ) {
+					syncThemeSettingsFn( edminboostData.themeSettings );
+				}
+
+				updateThemeOverviewPreview( presetId );
+				saveDashboardOverview( { silent: true } );
 			} );
 		}
 
@@ -3376,7 +3550,6 @@
 			}
 		} );
 
-		var themePresetSelect = document.getElementById( 'edminboost_theme_preset' );
 		if ( themePresetSelect ) {
 			updateThemeOverviewPreview( themePresetSelect.value );
 		}
@@ -3895,9 +4068,18 @@
 	}
 
 	function initBackupSettings( root ) {
-		var exportBtn = root.querySelector( '#edminboost-export-settings' );
-		var importBtn = root.querySelector( '#edminboost-import-settings' );
-		var importArea = root.querySelector( '#edminboost-import-json' );
+		var backupSection = root.querySelector( '#edminboost-backup-section' );
+
+		if ( ! backupSection ) {
+			return;
+		}
+
+		var exportBtn = backupSection.querySelector( '#edminboost-export-settings' );
+		var importBtn = backupSection.querySelector( '#edminboost-import-settings' );
+		var importArea = backupSection.querySelector( '#edminboost-import-json' );
+		var importFile = backupSection.querySelector( '#edminboost-import-file' );
+		var fileRadio = backupSection.querySelector( '#edminboost-import-method-file' );
+		var strings = edminboostData.strings || {};
 
 		if ( exportBtn ) {
 			exportBtn.addEventListener( 'click', function () {
@@ -3916,34 +4098,81 @@
 							return;
 						}
 
-						var blob = new Blob( [ payload.data.json ], { type: 'application/json' } );
-						var url  = URL.createObjectURL( blob );
-						var link = document.createElement( 'a' );
+						var blob     = new Blob( [ payload.data.json ], { type: 'application/json' } );
+						var url      = URL.createObjectURL( blob );
+						var link     = document.createElement( 'a' );
+						var exportDate = new Date();
+						var dateStamp  = exportDate.getFullYear()
+							+ '-' + String( exportDate.getMonth() + 1 ).padStart( 2, '0' )
+							+ '-' + String( exportDate.getDate() ).padStart( 2, '0' );
 						link.href = url;
-						link.download = 'edminboost-settings.json';
+						link.download = 'export-' + dateStamp + '.json';
 						link.click();
 						URL.revokeObjectURL( url );
 					} );
 			} );
 		}
 
-		if ( importBtn && importArea ) {
-			importBtn.addEventListener( 'click', function () {
-				var formData = new FormData();
-				formData.append( 'action', 'edminboost_import_settings' );
-				formData.append( 'nonce', importBtn.getAttribute( 'data-nonce' ) || '' );
-				formData.append( 'json', importArea.value );
+		function readImportJson() {
+			var useFile = fileRadio && fileRadio.checked;
 
-				window.fetch( edminboostData.settingsSave.ajaxUrl, {
-					method: 'POST',
-					body: formData,
-					credentials: 'same-origin'
-				} )
+			if ( ! useFile ) {
+				return Promise.resolve( importArea ? importArea.value : '' );
+			}
+
+			if ( ! importFile || ! importFile.files || ! importFile.files.length ) {
+				return Promise.reject( new Error( strings.importFileRequired || 'Choose a JSON file to import.' ) );
+			}
+
+			return new Promise( function ( resolve, reject ) {
+				var reader = new FileReader();
+
+				reader.onload = function () {
+					resolve( reader.result );
+				};
+
+				reader.onerror = function () {
+					reject( new Error( strings.importReadFailed || 'Could not read the selected file.' ) );
+				};
+
+				reader.readAsText( importFile.files[0] );
+			} );
+		}
+
+		if ( importBtn ) {
+			importBtn.addEventListener( 'click', function () {
+				readImportJson()
+					.then( function ( json ) {
+						if ( ! json || ! String( json ).trim() ) {
+							throw new Error( strings.importJsonRequired || 'Paste exported JSON or choose a file to import.' );
+						}
+
+						var formData = new FormData();
+						formData.append( 'action', 'edminboost_import_settings' );
+						formData.append( 'nonce', importBtn.getAttribute( 'data-nonce' ) || '' );
+						formData.append( 'json', json );
+
+						return window.fetch( edminboostData.settingsSave.ajaxUrl, {
+							method: 'POST',
+							body: formData,
+							credentials: 'same-origin'
+						} );
+					} )
 					.then( function ( response ) { return response.json(); } )
 					.then( function ( payload ) {
 						if ( payload.success ) {
 							window.location.reload();
+							return;
 						}
+
+						var message = payload.data && payload.data.message
+							? payload.data.message
+							: ( strings.importFailed || 'Could not import settings. Check the JSON and try again.' );
+
+						window.alert( message );
+					} )
+					.catch( function ( error ) {
+						window.alert( error.message || strings.importFailed || 'Could not import settings. Check the JSON and try again.' );
 					} );
 			} );
 		}

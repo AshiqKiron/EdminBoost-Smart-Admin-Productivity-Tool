@@ -80,7 +80,7 @@ $has_matrix        = ! empty( $matrix_items );
 		</section>
 
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-roles-heading">
-			<h2 id="edminboost-roles-heading"><?php esc_html_e( 'Who sees what', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'role_visibility' ); ?></h2>
+			<h2 id="edminboost-roles-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'role_visibility' ); ?><?php esc_html_e( 'Who sees what', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
 				<?php esc_html_e( 'Assign a layout preset per role to customize both the top bar and admin sidebar for that role. Changing a preset updates the menu checkboxes for that role; you can still fine-tune visibility before saving.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
@@ -96,7 +96,7 @@ $has_matrix        = ! empty( $matrix_items );
 							<tr>
 								<th scope="col" class="edminboost-role-matrix__role-col"><?php esc_html_e( 'User role', EDMINBOOST_TEXT_DOMAIN ); ?></th>
 								<th scope="col" class="edminboost-role-matrix__preset-col">
-									<?php esc_html_e( 'Assigned preset', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'role_assignments' ); ?>
+									<?php EDMINBOOST_Setting_Help::echo_icon( 'role_assignments' ); ?><?php esc_html_e( 'Assigned preset', EDMINBOOST_TEXT_DOMAIN ); ?>
 								</th>
 								<?php foreach ( $matrix_items as $item ) : ?>
 									<?php

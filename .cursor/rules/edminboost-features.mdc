@@ -63,7 +63,7 @@ Sidebar hide/reorder lives in Menu Studio (`command_center.menu_studio`), not th
 | Security | `edminboost-security-page.php` | `security` |
 | Performance | `edminboost-performance-page.php` | `performance` |
 
-Shared fields: `admin/partials/edminboost-feature-fields.php`. Settings page (`edminboost-settings-page.php`) is global kill switch + JSON export/import only.
+Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, Security, and Performance pages. Settings page (`edminboost-settings-page.php`) is JSON backup/import only.
 
 ## Current Features
 

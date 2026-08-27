@@ -7,8 +7,7 @@
  * Architecture map
  * -----------------
  * Admin pages:
- *   - edminboost-smart-admin-productivity-tool          (Dashboard)
- *   - edminboost-smart-admin-productivity-tool-settings (Settings)
+ *   - edminboost-smart-admin-productivity-tool (Dashboard)
  *
  * Settings (wp_options):
  *   - edminboost_settings  (array, Settings API group: edminboost_settings_group)

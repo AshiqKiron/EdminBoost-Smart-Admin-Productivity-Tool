@@ -2334,19 +2334,18 @@ class EDMINBOOST_Command_Center {
 			? $settings['command_center']
 			: self::get_defaults();
 
-		$cc['top_bar_items']          = $items;
-		$cc['default_preset']         = $preset_id;
-		$cc['onboarding_completed']   = $mark_setup_complete;
-		$cc['menu_studio']            = self::resolve_preset_menu_studio( $preset_id, $cc );
+		$preserve_onboarding = ! $mark_setup_complete && empty( $cc['onboarding_completed'] );
 
-		if ( ! empty( $all[ $preset_id ]['persona'] ) ) {
-			$cc['persona'] = sanitize_key( $all[ $preset_id ]['persona'] );
-		}
-
-		$settings['command_center'] = $cc;
-		$settings['enabled']        = true;
+		$settings['command_center']               = $cc;
+		$settings['command_center']['_apply_preset'] = $preset_id;
+		$settings['enabled']                    = true;
 
 		$sanitized = EDMINBOOST_Settings::sanitize( $settings );
+
+		if ( $preserve_onboarding ) {
+			$sanitized['command_center']['onboarding_completed'] = false;
+		}
+
 		update_option( EDMINBOOST_Settings::OPTION_NAME, $sanitized, false );
 
 		return true;
@@ -2467,7 +2466,7 @@ class EDMINBOOST_Command_Center {
 		}
 
 		if ( ! did_action( 'admin_menu' ) ) {
-		 do_action( 'admin_menu' );
+			do_action( 'admin_menu' );
 		}
 
 		self::cache_admin_menu_snapshot();

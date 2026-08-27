@@ -46,133 +46,172 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function register_menu() {
-		add_menu_page(
-			__( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'EdminBoost', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
-			self::PAGE_SLUG,
-			array( $this, 'render_admin_page' ),
-			'dashicons-performance',
-			72
+		$dashboard_title = __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN );
+
+		$this->bind_admin_page_title(
+			add_menu_page(
+				$dashboard_title,
+				__( 'EdminBoost', EDMINBOOST_TEXT_DOMAIN ),
+				EDMINBOOST_Settings::CAPABILITY,
+				self::PAGE_SLUG,
+				array( $this, 'render_admin_page' ),
+				'dashicons-performance',
+				72
+			),
+			$dashboard_title
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
+			$dashboard_title,
+			$dashboard_title,
 			self::PAGE_SLUG,
 			array( $this, 'render_admin_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
 			__( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS,
 			array( $this, 'render_presets_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
 			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
 			array( $this, 'render_appearance_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
 			__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER,
 			array( $this, 'render_mapper_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
 			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
 			array( $this, 'render_menu_studio_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
 			__( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING,
 			array( $this, 'render_billing_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
 			__( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . '-settings',
 			array( $this, 'render_settings_page' )
 		);
 
 		// Tab-only pages — registered but not shown in the sidebar.
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			null,
 			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY,
 			array( $this, 'render_productivity_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			null,
 			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY,
 			array( $this, 'render_security_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			null,
 			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
 			array( $this, 'render_performance_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			null,
 			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
 			array( $this, 'render_white_label_page' )
 		);
 
 		// Legacy slugs — redirect to Dashboard (not shown in sidebar).
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			null,
-			__( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
+			$dashboard_title,
+			$dashboard_title,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_ONBOARDING,
 			array( $this, 'render_onboarding_page' )
 		);
 
-		add_submenu_page(
+		$this->register_plugin_submenu_page(
 			null,
 			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
 			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BEHAVIOR,
 			array( $this, 'render_behavior_page' )
+		);
+	}
+
+	/**
+	 * Register a plugin submenu page and bind its document title.
+	 *
+	 * @param string|null        $parent_slug Parent menu slug (null for tab-only pages).
+	 * @param string             $page_title  Document title for the screen.
+	 * @param string             $menu_title  Sidebar menu label.
+	 * @param string             $menu_slug   Unique page slug.
+	 * @param callable           $callback    Page render callback.
+	 * @return void
+	 */
+	private function register_plugin_submenu_page( $parent_slug, $page_title, $menu_title, $menu_slug, $callback ) {
+		$this->bind_admin_page_title(
+			add_submenu_page(
+				$parent_slug,
+				$page_title,
+				$menu_title,
+				EDMINBOOST_Settings::CAPABILITY,
+				$menu_slug,
+				$callback
+			),
+			$page_title
+		);
+	}
+
+	/**
+	 * Ensure admin-header.php receives a string page title (PHP 8.1+).
+	 *
+	 * Hidden submenu pages (null parent) are not resolved by get_admin_page_title().
+	 *
+	 * @param string|false $hook_suffix Hook suffix from add_menu_page / add_submenu_page.
+	 * @param string       $page_title  Document title when the screen loads.
+	 * @return void
+	 */
+	private function bind_admin_page_title( $hook_suffix, $page_title ) {
+		if ( ! $hook_suffix ) {
+			return;
+		}
+
+		add_action(
+			"load-{$hook_suffix}",
+			static function () use ( $page_title ) {
+				global $title;
+				$title = $page_title;
+			}
 		);
 	}
 
@@ -252,21 +291,6 @@ class EDMINBOOST_Admin {
 				'default'           => EDMINBOOST_Settings::get_defaults(),
 				'show_in_rest'      => false,
 			)
-		);
-
-		add_settings_section(
-			'edminboost_features_section',
-			__( 'Productivity Features', EDMINBOOST_TEXT_DOMAIN ),
-			array( $this, 'render_features_section' ),
-			self::PAGE_SLUG . '-settings'
-		);
-
-		add_settings_field(
-			'edminboost_features',
-			__( 'Feature Controls', EDMINBOOST_TEXT_DOMAIN ),
-			array( $this, 'render_features_field' ),
-			self::PAGE_SLUG . '-settings',
-			'edminboost_features_section'
 		);
 	}
 
@@ -452,26 +476,6 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
-	 * Render the features settings section description.
-	 *
-	 * @return void
-	 */
-	public function render_features_section() {
-		// Description lives in the Settings page hero lead.
-	}
-
-	/**
-	 * Render feature control fields.
-	 *
-	 * @return void
-	 */
-	public function render_features_field() {
-		$settings = $this->get_settings();
-
-		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-settings-features.php';
-	}
-
-	/**
 	 * Enqueue admin styles.
 	 *
 	 * @param string $hook_suffix Current admin page hook.
@@ -562,6 +566,10 @@ class EDMINBOOST_Admin {
 				'previewProfile'            => __( 'My account', EDMINBOOST_TEXT_DOMAIN ),
 				'pageLoading'               => __( 'Loading…', EDMINBOOST_TEXT_DOMAIN ),
 				'pageLoadFailed'            => __( 'Could not load that page. Please try again.', EDMINBOOST_TEXT_DOMAIN ),
+				'importJsonRequired'        => __( 'Paste exported JSON or choose a file to import.', EDMINBOOST_TEXT_DOMAIN ),
+				'importFileRequired'        => __( 'Choose a JSON file to import.', EDMINBOOST_TEXT_DOMAIN ),
+				'importReadFailed'          => __( 'Could not read the selected file.', EDMINBOOST_TEXT_DOMAIN ),
+				'importFailed'              => __( 'Could not import settings. Check the JSON and try again.', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			'presets'          => self::get_presets_for_js(),
 			'roleMatrix'       => array(
@@ -570,8 +578,9 @@ class EDMINBOOST_Admin {
 				'accessibleSlugsByRole' => EDMINBOOST_Command_Center::get_role_accessible_menu_slugs(),
 			),
 			'presetCategories' => EDMINBOOST_Command_Center::get_preset_categories(),
-			'themePresets' => EDMINBOOST_Theme::get_presets_for_js(),
+			'themePresets'     => EDMINBOOST_Theme::get_presets_for_js(),
 			'themeColorLabels' => EDMINBOOST_Theme::get_color_labels(),
+			'themeSettings'    => EDMINBOOST_Theme::get_settings(),
 			'settingsSave' => array(
 				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 				'action'  => 'edminboost_save_settings',
@@ -961,11 +970,13 @@ class EDMINBOOST_Admin {
 		}
 
 		return array(
-			'message'         => $message,
-			'presets'         => $this->get_presets_for_js(),
-			'selected_preset' => $selected_preset,
-			'default_preset'  => isset( $cc['default_preset'] ) ? (string) $cc['default_preset'] : '',
-			'setup_complete'  => EDMINBOOST_Command_Center::is_setup_complete( $cc ),
+			'message'              => $message,
+			'presets'              => $this->get_presets_for_js(),
+			'selected_preset'      => $selected_preset,
+			'active_layout_preset' => EDMINBOOST_Command_Center::detect_active_layout_preset( $cc ),
+			'default_preset'       => isset( $cc['default_preset'] ) ? (string) $cc['default_preset'] : '',
+			'theme'                => EDMINBOOST_Theme::get_settings( $cc ),
+			'setup_complete'       => EDMINBOOST_Command_Center::is_setup_complete( $cc ),
 		);
 	}
 

@@ -81,4 +81,22 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$this->assertSame( $slug, $first[2] );
 		$this->assertSame( __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ), wp_strip_all_tags( $first[0] ) );
 	}
+
+	/**
+	 * Tab-only CC pages set a string admin title before admin-header loads.
+	 */
+	public function test_tab_only_pages_bind_admin_title() {
+		global $title;
+
+		$title = null;
+		do_action( 'admin_menu' );
+
+		$slug = EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY;
+		$hook = get_plugin_page_hookname( $slug, null );
+
+		$title = null;
+		do_action( "load-{$hook}" );
+
+		$this->assertSame( __( 'Productivity', EDMINBOOST_TEXT_DOMAIN ), $title );
+	}
 }

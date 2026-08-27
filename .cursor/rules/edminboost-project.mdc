@@ -50,7 +50,7 @@ readme.txt
 - Command Center config lives under `settings['command_center']`; helpers in `EDMINBOOST_Command_Center`.
 - Live admin bar: `EDMINBOOST_Command_Center_Bar` (not a feature module) — registered in `EDMINBOOST_Plugin::run()`, renders saved `top_bar_items` on `#wpadminbar` and applies behavior declutter toggles.
 - Menu Studio: `EDMINBOOST_Menu_Studio` — sidebar reorder/hide/custom links + optional menu colors; config under `command_center.menu_studio`; runtime config resolved via `EDMINBOOST_Command_Center::resolve_menu_studio_for_user()` (role preset assignments + `role_visibility` filtering).
-- Layout presets configure both the top bar (`top_bar_items`) and sidebar (`menu_studio`); `apply_preset()` writes both. Use Top Bar and Menu Studio for granular overrides.
+- Layout presets configure both the top bar (`top_bar_items`) and sidebar (`menu_studio`); `apply_preset()` and form `_apply_preset` saves replace both via `EDMINBOOST_Settings::sanitize_command_center()` (preset sidebar replaces prior `menu_studio`, does not merge). Use Top Bar and Menu Studio for granular overrides.
 - Setting help: `EDMINBOOST_Setting_Help` — accessible info-icon tooltips on CC/feature pages (hidden on Dashboard); registry keyed by setting ID; call `echo_icon( $key )` beside labels.
 - Visual theme: `EDMINBOOST_Theme` — CSS-token presets (20+ skins + Custom, light/dark/auto mode, scheduled dark mode, system fonts, font size, admin favicon/background, post status colors, five color tokens); config under `command_center.theme`; loads on all wp-admin when enabled, plus live CC bar and drawer on the front end.
 - White label: `EDMINBOOST_White_Label` — plugin row/menu branding, login screen, admin favicon, system status footer; config under `white_label`; registered in `EDMINBOOST_Plugin::run()`.
@@ -59,7 +59,7 @@ readme.txt
 - Features extend `EDMINBOOST_Feature_Base` in `includes/features/`, loaded by `EDMINBOOST_Features`.
 - Admin UI: `EDMINBOOST_Admin` + partials in `admin/partials/`.
 - Plugin-screen assets enqueued via `EDMINBOOST_Admin::is_plugin_screen()`. Visual theme CSS (`edminboost-themes`) loads via `EDMINBOOST_Theme::enqueue_assets()` on all wp-admin when enabled (also as dependency of `edminboost-admin` on plugin screens). CC bar CSS loads when active (`is_active()`) or on Layout Studio (`is_mapper_screen()`). CC bar JS + drawer shell load when `has_drawer_items()` **or** on Layout Studio (mapper drawer preview). Drawer shell also renders on `wp_footer` when the admin bar shows on the front end.
-- Privileged AJAX: `wp_ajax_edminboost_cc_drawer_preview` (Layout Studio drawer preview, `EDMINBOOST_Command_Center_Bar::ajax_drawer_preview()`); `wp_ajax_edminboost_save_settings` (CC + settings AJAX save, `EDMINBOOST_Admin::ajax_save_settings()`); `wp_ajax_edminboost_load_cc_page` (CC tab navigation without full reload, `EDMINBOOST_Admin::ajax_load_cc_page()`); `wp_ajax_edminboost_export_settings` / `wp_ajax_edminboost_import_settings` (Settings JSON backup, `EDMINBOOST_Admin::ajax_export_settings()` / `ajax_import_settings()`).
+- Privileged AJAX: `wp_ajax_edminboost_cc_drawer_preview` (Layout Studio drawer preview, `EDMINBOOST_Command_Center_Bar::ajax_drawer_preview()`); `wp_ajax_edminboost_save_settings` (CC + settings AJAX save, `EDMINBOOST_Admin::ajax_save_settings()` — success payload from `build_ajax_save_response()` includes `presets`, `selected_preset`, `active_layout_preset`, `default_preset`, `theme`, `setup_complete`, `message`); `wp_ajax_edminboost_load_cc_page` (CC tab HTML without full reload, `EDMINBOOST_Admin::ajax_load_cc_page()` — calls `prime_cc_page_context()` / `ensure_discovery_menu_snapshot()` before render); `wp_ajax_edminboost_export_settings` / `wp_ajax_edminboost_import_settings` (Settings JSON backup, `EDMINBOOST_Admin::ajax_export_settings()` / `ajax_import_settings()`).
 - No custom tables, REST endpoints, cron, or blocks — options API only (WPForms badge count uses a guarded read on `wpforms_entries` when WPForms is present).
 - No external requests or telemetry. Badge sources read local WP/WC data only. Billing page is informational UI only — no checkout or license API calls until explicitly implemented.
 
@@ -83,7 +83,7 @@ Use `EDMINBOOST_Admin::PAGE_SLUG` (equals `EDMINBOOST_PLUGIN_SLUG`) — never ha
 | Security | `PAGE_SLUG . PAGE_SECURITY` | `render_security_page()` | tab-only |
 | Performance | `PAGE_SLUG . PAGE_PERFORMANCE` | `render_performance_page()` | tab-only |
 | White Label | `PAGE_SLUG . PAGE_WHITE_LABEL` | `render_white_label_page()` | tab-only |
-| Settings | `PAGE_SLUG . '-settings'` | `render_settings_page()` | yes |
+| Settings | `PAGE_SLUG . '-settings'` | `render_settings_page()` (JSON backup/import) | yes |
 
 Legacy slugs: `-onboarding` redirects to Dashboard; `-behavior` redirects to Appearance (hidden submenu entries, not in sidebar).
 
@@ -107,7 +107,7 @@ Project prefix: `edminboost` (10 characters). Use consistently in all identifier
 | Feature IDs | `snake_case` | `hide_admin_notices` |
 | CSS/JS handles | `edminboost-{name}` | `edminboost-admin` |
 | CSS classes | `edminboost-*` | `edminboost-wrap`, `edminboost-cc-*` |
-| JS global (localized) | `edminboostData` / `edminboostCcBar` | plugin screens / live CC bar drawer |
+| JS global (localized) | `edminboostData` / `edminboostCcBar` | plugin screens (`themeSettings`, `presets`, `ccNav`, …) / live CC bar drawer |
 
 `EDMINBOOST_TEXT_DOMAIN` must match `EDMINBOOST_PLUGIN_SLUG`.
 

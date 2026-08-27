@@ -15,7 +15,8 @@ alwaysApply: false
 - Use `DOMContentLoaded` for initialization.
 - On `DOMContentLoaded`, call `initCommandCenterNav()`, `initPickerCloseOnScroll()`, `reinitEdminboostPage( root )`, and `primeCommandCenterHistory()`.
 - `reinitEdminboostPage( root )` sets `data-edminboost-ready="true"` and runs all page inits — also called after CC tab AJAX swaps.
-- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Appearance page), `initTheme`, `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm` — each no-ops if target elements are absent.
+- Module refs: `syncPresetCatalogFn`, `syncThemeSettingsFn` (set by `initLayoutPresetPicker` / `initTheme`; called from `applySettingsSaveResult()`), `pendingDashboardOverviewSave` (in-flight overview save Promise; CC nav waits before swapping tabs).
+- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Appearance page), `initTheme`, `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initBackupSettings` (Settings export/import) — each no-ops if target elements are absent.
 - `initBehavior` delegates to `initBehaviorBadgePreview` (toggle badge style previews), `initBehaviorDrawerWidthCustom` (custom width slider + live preview), and `initBehaviorAnimationSpeed` (animation speed listbox + drawer micro-previews).
 
 `edminboostData` shape:
@@ -44,6 +45,7 @@ alwaysApply: false
 	presetCategories: object, // category labels from EDMINBOOST_Command_Center::get_preset_categories()
 	themePresets: object,     // from EDMINBOOST_Theme::get_presets_for_js()
 	themeColorLabels: object, // from EDMINBOOST_Theme::get_color_labels()
+	themeSettings: object,    // from EDMINBOOST_Theme::get_settings() — current theme preset/mode/font/custom colors
 	settingsSave: { ajaxUrl, action: 'edminboost_save_settings' },
 	ccNav: {                   // CC tab navigation without full reload
 		ajaxUrl, action: 'edminboost_load_cc_page', nonce
@@ -85,7 +87,8 @@ alwaysApply: false
 - Prefix all selectors with `.edminboost-` to avoid admin conflicts.
 - Layout: `.edminboost-wrap`, `.edminboost-dashboard`, `.edminboost-card`, `.edminboost-status`.
 - Dashboard: `.edminboost-home-wrap` (+ `.edminboost-home-wrap--wizard` before setup), `.edminboost-home-hero`, `.edminboost-dashboard-overview`, `.edminboost-overview-grid`, `.edminboost-overview-card`, `.edminboost-overview-card__preview`.
-- Overview previews: `.edminboost-overview-theme-preview` (+ `__bar`, `__layout`, `__sidebar`, `__main`, `__accent`, `__line`, `__swatches`, `__swatch`), `.edminboost-overview-topbar-preview` (+ `__canvas`, `__brand`, `__items`, `__item`, `__badge`, `__more`, `__profile`, `--empty`), `.edminboost-overview-sidebar-preview` (+ `__list`, `__item`, `__label`, `__more`, `__empty`, `--empty`).
+- Overview previews: `.edminboost-overview-theme-preview` (+ `__bar`, `__layout`, `__sidebar`, `__main`, `__accent`, `__line`, `__swatches`, `__swatch`), `.edminboost-overview-topbar-preview` (+ `__canvas`, `__brand`, `__items`, `__item`, `__tip`, `__tooltip`, `__badge`, `__more`, `__profile`, `--compact`, `--empty`), `.edminboost-overview-sidebar-preview` (+ `__list`, `__item`, `__label`, `__more`, `__empty`, `--empty`).
+- Top bar preview tooltips: use child `<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip">` (not `title`); visible on hover/focus-within in `--compact` mode only; canvas/items use `overflow: visible` so tooltips are not clipped.
 - Setting help: `.edminboost-setting-info` (+ `__trigger`, `__tooltip`); hover/focus reveals tooltip.
 - Overview pickers: `.edminboost-overview-theme-picker`, `.edminboost-overview-topbar-links-picker` (+ `__toggle`, `__label`, `__list`, `__option`, `__option-main`, `__option-name`, `__option-meta`, `__empty`).
 - CC tab loading: `.edminboost-cc-nav.is-loading`, `.edminboost-wrap.is-cc-loading`.
@@ -134,14 +137,14 @@ alwaysApply: false
 | `edminboost-overview-topbar-links-picker.php` | Read-only top bar links dropdown |
 | `edminboost-overview-topbar-preview.php` | Top bar mini-preview partial |
 | `edminboost-overview-sidebar-preview.php` | Sidebar mini-preview partial |
-| `edminboost-settings-page.php` | Settings page shell (CC nav + form) |
+| `edminboost-settings-page.php` | Settings page shell (CC nav + JSON backup/import; no settings form) |
 | `edminboost-appearance-page.php` | Theme, panel/badges, declutter |
 | `edminboost-home-advanced-look.php` | Panel width, badges, animation speed (Appearance) |
 | `edminboost-declutter-settings.php` | Admin bar cleanup toggles |
 | `edminboost-animation-speed-field.php` | Animation speed picker partial (`$cc_key`, `$behavior`) |
 | `edminboost-preset-picker.php` | Layout preset dropdown (`wizard` / `full` / `overview` modes) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list |
-| `edminboost-settings-features.php` | Feature toggles (`render_features_field()`) |
+| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: productivity, security, performance) |
 | `edminboost-command-center-nav.php` | CC sub-navigation |
 | `edminboost-mapper-page.php` | Top bar / layout studio |
 | `edminboost-presets-page.php` | Layout presets & role matrix |
@@ -175,6 +178,7 @@ Runs on Appearance page (`#edminboost-appearance-form`). Key elements: `input[na
 ## CC tab navigation JS (`initCommandCenterNav`)
 
 - Intercepts `.edminboost-cc-nav__link` inside `.edminboost-wrap` (skips modified clicks / `_blank`).
+- If `pendingDashboardOverviewSave` is set, waits for that Promise before loading the next tab (`loadCommandCenterPageNow`).
 - POSTs `page` to `edminboostData.ccNav` (`edminboost_load_cc_page`); replaces `.edminboost-wrap` with parsed response HTML.
 - Updates `document.title`, `edminboostData.currentPage`, and `history.pushState` / `popstate`; calls `reinitEdminboostPage()`.
 - Nav links use `data-edminboost-page` + `href`; loading state on `.edminboost-cc-nav` (`is-loading`, `aria-busy`) and wrap (`is-cc-loading`).
@@ -185,7 +189,7 @@ Runs on Appearance page (`#edminboost-appearance-form`). Key elements: `input[na
 Key elements: `#edminboost_layout_preset`, `#edminboost-layout-preset-picker`, `#edminboost_layout_preset_toggle`, `#edminboost-layout-preset-list`, `#edminboost-layout-preset-name`, `#edminboost-layout-preset-badge`, `#edminboost-layout-preset-desc`, `.edminboost-preset-picker .edminboost-overview-topbar-preview`, `.edminboost-preset-picker .edminboost-overview-sidebar-preview`, `#edminboost-overview-layout-preview`, `#edminboost-overview-layout-sidebar-preview`.
 
 - Custom listbox mirrors theme preset picker UX; options grouped by `edminboostData.presetCategories`.
-- `renderTopBarPreview( presetId )` rebuilds embedded mini admin bar (max 4 links + overflow) from resolved preset `top_bar_items`.
+- `renderTopBarPreview( presetId )` rebuilds embedded mini admin bar (max 4 links + overflow) from resolved preset `top_bar_items`; icon tips use `createTopBarPreviewTip()` / overflow uses `appendTopBarPreviewTooltip()` (accessible tooltip spans, not `title`).
 - `renderSidebarPreview( presetId )` rebuilds `.edminboost-overview-sidebar-preview` from preset `sidebar_items` (max 5 + overflow).
 - `syncPresetCatalogFn` rebuilds grouped options when AJAX save returns refreshed `presets`.
 - Used on setup wizard step 1, Layout Presets page, and Dashboard overview (`preset_picker_mode === 'overview'`); Presets page apply/duplicate/export stays in `initPresets`.
@@ -194,10 +198,10 @@ Key elements: `#edminboost_layout_preset`, `#edminboost-layout-preset-picker`, `
 
 Key elements: `#edminboost-dashboard-overview-form`, `#edminboost_dashboard_apply_preset`, `#edminboost-layout-preset-list`, `#edminboost-theme-preset-list`, `#edminboost-overview-topbar-links-picker`, `#edminboost_overview_topbar_links_toggle`, `#edminboost-overview-layout-preview`, `#edminboost-overview-layout-sidebar-preview`, `#edminboost-overview-theme-preview`, `#edminboost-overview-topbar-preview`.
 
-- Layout preset option click sets `_apply_preset` hidden field and AJAX-saves; refreshes top bar + sidebar previews and links list from `edminboostData.presets`.
-- Theme preset option click AJAX-saves theme preset without full reload; updates theme preview swatches.
+- Layout preset option click sets `_apply_preset` hidden field and AJAX-saves; success reloads the page (preset apply).
+- Theme preset option click updates `edminboostData.themeSettings.preset`, syncs hidden `#edminboost_theme_preset`, calls `syncThemeSettingsFn()` (live body preview via `initTheme`), updates `#edminboost-overview-theme-preview` swatches, and AJAX-saves with `{ silent: true }`.
+- `saveDashboardOverview()` returns a Promise, queues concurrent saves via `pendingDashboardOverviewSave`, and syncs `#edminboost_theme_preset` from `edminboostData.themeSettings` before submit.
 - Read-only top bar links picker toggles `#edminboost-overview-topbar-links-list` (closes on scroll via `initPickerCloseOnScroll`).
-- Skips live `document.body` theme preview in `initTheme` when overview form is present.
 
 ## Setup wizard JS (`initSetupWizard`)
 
@@ -212,14 +216,26 @@ Key elements: `#edminboost-setup-wizard-form`, `.edminboost-setup-stepper__item`
 Key elements: hidden `#edminboost_theme_preset`, custom listbox `#edminboost-theme-preset-picker` (+ `#edminboost_theme_preset_toggle`, `#edminboost-theme-preset-list`), `#edminboost_theme_mode`, `#edminboost_theme_font`, `#edminboost-theme-preset-desc`, `#edminboost-theme-custom-colors`, `#edminboost-theme-preview`, custom fields `#edminboost_custom_{accent|surface|text|top|sidebar}` + matching `*_picker` inputs.
 
 - Preset listbox toggles custom color pickers (`preset === 'custom'`); updates toggle swatches and description from `edminboostData.themePresets`.
+- `#edminboost_theme_preset` `change` listener runs `updateThemePreview()` (including Dashboard overview when the hidden select is synced from the overview theme picker).
+- Exposes `syncThemeSettingsFn( themeSettings )` — syncs preset/mode/font/custom color fields then calls `updateThemePreview()`; bootstraps from `edminboostData.themeSettings` when preset differs from the hidden select.
 - Live preview applies body classes (`edminboost-theme--*`, `edminboost-theme-mode--*`, `edminboost-theme-font--*`) and inline `--eb-*` vars on `document.body` and `#edminboost-theme-preview`.
 - Color picker ↔ hex text sync; invalid hex leaves preview unchanged until valid.
 
 ## AJAX save (`initCommandCenterForms` / `initSettingsForm`)
 
 - Intercepts `.edminboost-cc-form` and `.edminboost-settings-form` submit; POSTs `FormData` to `edminboostData.settingsSave.ajaxUrl` with action `edminboost_save_settings`.
-- Uses nonce from form (`settings_fields()`); shows inline success/error notice; optional reload via `saveSettingsForm( form, { reload: true } )`.
-- Success payload may include `presets`, `selected_preset`, `default_preset`, `setup_complete`, `message` — `applySettingsSaveResult()` syncs `edminboostData.presets` and reloads Dashboard via CC nav when wizard completes.
+- Strips `action` from `FormData` first (`settings_fields()` adds `update` for options.php) before appending the plugin AJAX action.
+- `saveSettingsForm( form, options )` returns a `Promise`; options: `reload`, `silent` (skip success notice), `message`, `onSuccess`.
+- Uses nonce from form (`settings_fields()`); shows inline success/error notice unless `silent`; optional reload via `{ reload: true }`.
+- Success payload may include `presets`, `selected_preset`, `active_layout_preset`, `default_preset`, `theme`, `setup_complete`, `message` — `applySettingsSaveResult()` syncs `edminboostData.presets` (and `syncPresetCatalogFn` when `active_layout_preset` or `selected_preset` is set), updates `edminboostData.themeSettings` + calls `syncThemeSettingsFn` on non-dashboard forms, and reloads Dashboard via CC nav when wizard completes.
+
+## Backup/import JS (`initBackupSettings`)
+
+Key elements: `#edminboost-backup-section`, `#edminboost-export-settings`, `#edminboost-import-settings`, `#edminboost-import-method-paste` / `#edminboost-import-method-file`, `#edminboost-import-paste-panel`, `#edminboost-import-file-panel`, `#edminboost-import-json`, `#edminboost-import-file`.
+
+- Export POSTs to `edminboost_export_settings` and downloads `export-YYYY-MM-DD.json`.
+- Import reads pasted JSON or a selected `.json` file (`FileReader`), POSTs to `edminboost_import_settings`, reloads on success; errors use `window.alert()`.
+- Paste vs file panels toggle via CSS `:has( #edminboost-import-method-paste:checked )` on `#edminboost-backup-section` (no extra JS).
 
 ## Presets page JS (`initPresets` / `initRoleMatrix`)
 

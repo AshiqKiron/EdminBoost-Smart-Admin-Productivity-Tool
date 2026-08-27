@@ -35,7 +35,7 @@ $appearance_url = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . E
 			</p>
 		<?php else : ?>
 			<p class="edminboost-home-hero__lead">
-				<?php esc_html_e( 'Your Command Center is active. Use the links below to adjust layout, appearance, or the top bar.', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'All your major admin tools in one place. Configure layout, appearance, and your top bar to build a workflow that works for you.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
 		<?php endif; ?>
 	</header>

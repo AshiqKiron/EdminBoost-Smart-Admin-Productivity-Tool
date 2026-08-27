@@ -55,6 +55,7 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	border-radius: 4px;
 	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 	padding: 20px 24px;
+	overflow: visible;
 }
 
 .edminboost-card h2 {
@@ -106,6 +107,7 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	margin: 0 0 24px;
 	padding: 0;
 	border: 0;
+	overflow: visible;
 }
 
 .edminboost-fieldset legend {
@@ -121,7 +123,7 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	position: relative;
 	display: inline-flex;
 	vertical-align: middle;
-	margin-left: 2px;
+	margin-right: 4px;
 }
 
 .edminboost-setting-info__trigger {
@@ -155,10 +157,10 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 .edminboost-setting-info__tooltip {
 	position: absolute;
 	bottom: calc(100% + 8px);
-	left: 50%;
-	z-index: 100;
+	left: 0;
+	z-index: 100000;
 	width: max-content;
-	max-width: min(280px, 70vw);
+	max-width: min(280px, calc(100vw - 48px));
 	padding: 8px 12px;
 	background: #1d2327;
 	color: #fff;
@@ -171,7 +173,7 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	pointer-events: none;
 	opacity: 0;
 	visibility: hidden;
-	transform: translateX(-50%);
+	transform: none;
 	transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
@@ -179,8 +181,7 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	content: "";
 	position: absolute;
 	top: 100%;
-	left: 50%;
-	margin-left: -5px;
+	left: 10px;
 	border: 5px solid transparent;
 	border-top-color: #1d2327;
 }
@@ -193,12 +194,31 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 
 .edminboost-checkbox-row .edminboost-setting-info,
 label .edminboost-setting-info,
-h2 .edminboost-setting-info {
-	margin-left: 4px;
+h2 .edminboost-setting-info,
+legend .edminboost-setting-info,
+th .edminboost-setting-info,
+summary .edminboost-setting-info,
+.edminboost-setting-inline .edminboost-setting-info {
+	margin-right: 4px;
+	margin-left: 0;
+}
+
+.edminboost-setting-inline {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.edminboost-setting-inline .edminboost-setting-info {
+	margin-right: 0;
 }
 
 .edminboost-checkbox-row {
-	display: block;
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 6px;
 	margin: 6px 0;
 }
 
@@ -207,6 +227,22 @@ h2 .edminboost-setting-info {
 	grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
 	gap: 4px 16px;
 	margin-top: 8px;
+}
+
+#edminboost-backup-section .edminboost-import-panel--paste {
+	display: none;
+}
+
+#edminboost-backup-section .edminboost-import-panel--file {
+	display: block;
+}
+
+#edminboost-backup-section:has( #edminboost-import-method-paste:checked ) .edminboost-import-panel--paste {
+	display: block;
+}
+
+#edminboost-backup-section:has( #edminboost-import-method-paste:checked ) .edminboost-import-panel--file {
+	display: none;
 }
 
 @media screen and (max-width: 782px) {
@@ -1169,6 +1205,11 @@ h2 .edminboost-setting-info {
 
 .edminboost-overview-card__preview {
 	margin: 0 0 18px;
+	overflow: visible;
+}
+
+.edminboost-overview-topbar-preview {
+	overflow: visible;
 }
 
 .edminboost-overview-card .edminboost-overview-topbar-preview__canvas {
@@ -1282,12 +1323,12 @@ h2 .edminboost-setting-info {
 	cursor: help;
 }
 
-.edminboost-overview-topbar-preview__tip::after {
-	content: attr(title);
+.edminboost-overview-topbar-preview__tooltip {
 	position: absolute;
-	bottom: calc(100% + 6px);
-	left: 50%;
-	z-index: 20;
+	top: 50%;
+	right: calc(100% + 6px);
+	left: auto;
+	z-index: 100;
 	width: max-content;
 	max-width: min(220px, 70vw);
 	padding: 4px 8px;
@@ -1296,20 +1337,36 @@ h2 .edminboost-setting-info {
 	font-size: 11px;
 	font-weight: 400;
 	line-height: 1.35;
-	text-align: center;
+	text-align: left;
 	border-radius: 4px;
 	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
 	pointer-events: none;
 	opacity: 0;
 	visibility: hidden;
-	transform: translateX(-50%);
+	transform: translateY(-50%);
 	transition: opacity 0.15s ease, visibility 0.15s ease;
+	white-space: nowrap;
 }
 
-.edminboost-overview-topbar-preview__tip:hover::after,
-.edminboost-overview-topbar-preview__tip:focus-visible::after {
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__brand .edminboost-overview-topbar-preview__tooltip {
+	top: auto;
+	bottom: calc(100% + 6px);
+	right: auto;
+	left: 50%;
+	transform: translateX(-50%);
+	text-align: center;
+}
+
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__tip:hover .edminboost-overview-topbar-preview__tooltip,
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__tip:focus-within .edminboost-overview-topbar-preview__tooltip,
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__more:hover .edminboost-overview-topbar-preview__tooltip,
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__more:focus-within .edminboost-overview-topbar-preview__tooltip {
 	opacity: 1;
 	visibility: visible;
+}
+
+.edminboost-overview-topbar-preview:not(.edminboost-overview-topbar-preview--compact) .edminboost-overview-topbar-preview__tooltip {
+	display: none;
 }
 
 .edminboost-overview-topbar-preview__brand,
@@ -1334,7 +1391,7 @@ h2 .edminboost-setting-info {
 	margin: 0;
 	padding: 0;
 	list-style: none;
-	overflow: hidden;
+	overflow: visible;
 }
 
 .edminboost-overview-topbar-preview__item {
@@ -1349,6 +1406,7 @@ h2 .edminboost-setting-info {
 	line-height: 1.2;
 	white-space: nowrap;
 	flex-shrink: 0;
+	overflow: visible;
 }
 
 .edminboost-overview-topbar-preview__item .dashicons {
@@ -1376,6 +1434,7 @@ h2 .edminboost-setting-info {
 }
 
 .edminboost-overview-topbar-preview__more {
+	position: relative;
 	flex-shrink: 0;
 	padding: 2px 6px;
 	border-radius: 999px;

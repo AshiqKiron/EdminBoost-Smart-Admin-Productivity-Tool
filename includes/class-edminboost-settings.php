@@ -270,7 +270,9 @@ class EDMINBOOST_Settings {
 		$current  = isset( $sanitized['command_center'] ) && is_array( $sanitized['command_center'] )
 			? $sanitized['command_center']
 			: $defaults;
-		$output   = wp_parse_args( $current, $defaults );
+		$output              = wp_parse_args( $current, $defaults );
+		$preset_menu_applied = false;
+		$preset_layout_applied = false;
 
 		if ( isset( $raw['onboarding_completed'] ) ) {
 			$output['onboarding_completed'] = ! empty( $raw['onboarding_completed'] );
@@ -307,8 +309,10 @@ class EDMINBOOST_Settings {
 				$output['default_preset'] = $preset_id;
 				$output['menu_studio']    = self::sanitize_menu_studio(
 					EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id, $output ),
-					isset( $output['menu_studio'] ) && is_array( $output['menu_studio'] ) ? $output['menu_studio'] : null
+					null
 				);
+				$preset_menu_applied      = true;
+				$preset_layout_applied    = true;
 
 				$all_presets = EDMINBOOST_Command_Center::get_all_presets();
 				if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
@@ -334,8 +338,10 @@ class EDMINBOOST_Settings {
 				$output['onboarding_completed'] = true;
 				$output['menu_studio']          = self::sanitize_menu_studio(
 					EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id, $output ),
-					isset( $output['menu_studio'] ) && is_array( $output['menu_studio'] ) ? $output['menu_studio'] : null
+					null
 				);
+				$preset_menu_applied            = true;
+				$preset_layout_applied          = true;
 
 				$all_presets = EDMINBOOST_Command_Center::get_all_presets();
 				if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
@@ -358,7 +364,7 @@ class EDMINBOOST_Settings {
 			$output['top_bar_items'] = isset( $raw['top_bar_items'] ) && is_array( $raw['top_bar_items'] )
 				? self::sanitize_top_bar_items( $raw['top_bar_items'] )
 				: array();
-		} elseif ( isset( $raw['top_bar_items'] ) && is_array( $raw['top_bar_items'] ) ) {
+		} elseif ( isset( $raw['top_bar_items'] ) && is_array( $raw['top_bar_items'] ) && ! $preset_layout_applied ) {
 			$output['top_bar_items'] = self::sanitize_top_bar_items( $raw['top_bar_items'] );
 		}
 
@@ -396,6 +402,16 @@ class EDMINBOOST_Settings {
 		if ( isset( $raw['theme'] ) && is_array( $raw['theme'] ) ) {
 			$existing_theme = EDMINBOOST_Theme::get_settings( $current );
 			$merged_theme   = array_merge( $existing_theme, $raw['theme'] );
+
+			// Dashboard and partial theme saves submit a preset but omit use_custom_colors.
+			// Drop stale custom state so an explicit built-in preset is not forced back to custom.
+			if ( isset( $raw['theme']['preset'] ) ) {
+				$incoming_preset = sanitize_key( $raw['theme']['preset'] );
+				if ( 'custom' !== $incoming_preset && in_array( $incoming_preset, array_keys( EDMINBOOST_Theme::get_presets() ), true ) ) {
+					$merged_theme['use_custom_colors'] = false;
+				}
+			}
+
 			$output['theme'] = EDMINBOOST_Theme::sanitize( $merged_theme );
 		}
 
@@ -434,7 +450,7 @@ class EDMINBOOST_Settings {
 				isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) ? $raw['menu_studio'] : array(),
 				isset( $output['menu_studio'] ) && is_array( $output['menu_studio'] ) ? $output['menu_studio'] : null
 			);
-		} elseif ( isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) ) {
+		} elseif ( isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) && ! $preset_menu_applied ) {
 			$output['menu_studio'] = self::sanitize_menu_studio( $raw['menu_studio'], $output['menu_studio'] ?? null );
 		}
 

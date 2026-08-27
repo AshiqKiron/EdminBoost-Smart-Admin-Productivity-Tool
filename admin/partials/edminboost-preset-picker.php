@@ -84,7 +84,7 @@ $preview_aria    = sprintf(
 ?>
 <div class="edminboost-preset-picker edminboost-preset-picker--<?php echo esc_attr( $preset_picker_mode ); ?>">
 	<fieldset class="edminboost-fieldset edminboost-layout-preset-fieldset">
-		<legend><?php esc_html_e( 'Layout preset', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'layout_preset' ); ?></legend>
+		<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'layout_preset' ); ?><?php esc_html_e( 'Layout preset', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 
 		<select
 			id="edminboost_layout_preset"

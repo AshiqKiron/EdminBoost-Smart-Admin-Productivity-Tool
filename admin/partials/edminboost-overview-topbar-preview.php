@@ -51,8 +51,9 @@ foreach ( $preview_items as $preview_item ) {
 		</p>
 	<?php else : ?>
 		<div class="edminboost-overview-topbar-preview__canvas">
-			<span class="edminboost-overview-topbar-preview__tip edminboost-overview-topbar-preview__brand" title="<?php esc_attr_e( 'WordPress', EDMINBOOST_TEXT_DOMAIN ); ?>">
+			<span class="edminboost-overview-topbar-preview__tip edminboost-overview-topbar-preview__brand">
 				<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>
+				<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip"><?php esc_html_e( 'WordPress', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 			</span>
 			<ul class="edminboost-overview-topbar-preview__items">
 				<?php foreach ( $visible_items as $preview_item ) : ?>
@@ -63,8 +64,9 @@ foreach ( $preview_items as $preview_item ) {
 					$is_drawer        = ( 'drawer' === $item_interaction );
 					?>
 					<li class="edminboost-overview-topbar-preview__item<?php echo $is_drawer ? ' is-drawer' : ' is-direct'; ?>">
-						<span class="edminboost-overview-topbar-preview__tip" title="<?php echo esc_attr( $item_label ); ?>">
+						<span class="edminboost-overview-topbar-preview__tip">
 							<span class="dashicons <?php echo esc_attr( $item_icon ); ?>" aria-hidden="true"></span>
+							<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip"><?php echo esc_html( $item_label ); ?></span>
 						</span>
 						<span class="edminboost-overview-topbar-preview__label"><?php echo esc_html( $item_label ); ?></span>
 						<?php if ( $show_interaction && $is_drawer ) : ?>
@@ -76,16 +78,14 @@ foreach ( $preview_items as $preview_item ) {
 				<?php endforeach; ?>
 			</ul>
 			<?php if ( $overflow_count > 0 ) : ?>
-				<span
-					class="edminboost-overview-topbar-preview__more"
-					title="<?php echo esc_attr(
-						sprintf(
-							/* translators: %d: number of additional top bar links not shown in the preview */
-							_n( '%d more link', '%d more links', $overflow_count, EDMINBOOST_TEXT_DOMAIN ),
-							(int) $overflow_count
-						)
-					); ?>"
-				>
+				<?php
+				$overflow_label = sprintf(
+					/* translators: %d: number of additional top bar links not shown in the preview */
+					_n( '%d more link', '%d more links', $overflow_count, EDMINBOOST_TEXT_DOMAIN ),
+					(int) $overflow_count
+				);
+				?>
+				<span class="edminboost-overview-topbar-preview__more">
 					<?php
 					printf(
 						/* translators: %d: number of additional top bar links not shown in the preview */
@@ -93,10 +93,12 @@ foreach ( $preview_items as $preview_item ) {
 						(int) $overflow_count
 					);
 					?>
+					<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip"><?php echo esc_html( $overflow_label ); ?></span>
 				</span>
 			<?php endif; ?>
-			<span class="edminboost-overview-topbar-preview__tip edminboost-overview-topbar-preview__profile" title="<?php esc_attr_e( 'My account', EDMINBOOST_TEXT_DOMAIN ); ?>">
+			<span class="edminboost-overview-topbar-preview__tip edminboost-overview-topbar-preview__profile">
 				<span class="dashicons dashicons-admin-users" aria-hidden="true"></span>
+				<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip"><?php esc_html_e( 'My account', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 			</span>
 		</div>
 	<?php endif; ?>
