@@ -121,6 +121,7 @@
 		initSetupWizard( root );
 		initWhiteLabel( root );
 		initSecurityFeatures( root );
+		initProductivityFeatures( root );
 		initCommandCenterForms( root );
 		initSettingsForm( root );
 		initBackupSettings( root );
@@ -1705,38 +1706,66 @@
 		}
 
 		function syncLoginRedirectsOptions() {
-			var isEnabled = enabledToggle.checked;
-
-			optionsSection.classList.toggle( 'is-disabled', ! isEnabled );
-			optionsSection.setAttribute( 'aria-disabled', isEnabled ? 'false' : 'true' );
-
-			optionsSection.querySelectorAll( 'input, textarea, select, button, a[href]' ).forEach( function ( control ) {
-				if ( isEnabled ) {
-					if ( Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
-						if ( '' === control.dataset.edminboostDependentTabindex ) {
-							control.removeAttribute( 'tabindex' );
-						} else {
-							control.setAttribute( 'tabindex', control.dataset.edminboostDependentTabindex );
-						}
-
-						delete control.dataset.edminboostDependentTabindex;
-					}
-
-					control.removeAttribute( 'aria-disabled' );
-					return;
-				}
-
-				if ( ! Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
-					control.dataset.edminboostDependentTabindex = control.getAttribute( 'tabindex' ) || '';
-				}
-
-				control.setAttribute( 'tabindex', '-1' );
-				control.setAttribute( 'aria-disabled', 'true' );
-			} );
+			syncDependentSection( optionsSection, enabledToggle.checked );
 		}
 
 		enabledToggle.addEventListener( 'change', syncLoginRedirectsOptions );
 		syncLoginRedirectsOptions();
+	}
+
+	function initProductivityFeatures( root ) {
+		var dashboardWidgetsToggle = root.querySelector( '#edminboost_dashboard_widgets_enabled' );
+		var dashboardWidgetsSection = root.querySelector( '#edminboost-dashboard-widgets-options' );
+
+		if ( dashboardWidgetsToggle && dashboardWidgetsSection ) {
+			function syncDashboardWidgetsOptions() {
+				syncDependentSection( dashboardWidgetsSection, dashboardWidgetsToggle.checked );
+			}
+
+			dashboardWidgetsToggle.addEventListener( 'change', syncDashboardWidgetsOptions );
+			syncDashboardWidgetsOptions();
+		}
+
+		var adminFooterToggle = root.querySelector( '#edminboost_admin_footer_enabled' );
+		var adminFooterSection = root.querySelector( '#edminboost-admin-footer-options' );
+
+		if ( adminFooterToggle && adminFooterSection ) {
+			function syncAdminFooterOptions() {
+				syncDependentSection( adminFooterSection, adminFooterToggle.checked );
+			}
+
+			adminFooterToggle.addEventListener( 'change', syncAdminFooterOptions );
+			syncAdminFooterOptions();
+		}
+	}
+
+	function syncDependentSection( section, isEnabled ) {
+		section.classList.toggle( 'is-disabled', ! isEnabled );
+		section.setAttribute( 'aria-disabled', isEnabled ? 'false' : 'true' );
+
+		section.querySelectorAll( 'input, textarea, select, button, a[href]' ).forEach( function ( control ) {
+			if ( isEnabled ) {
+				if ( Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
+					if ( '' === control.dataset.edminboostDependentTabindex ) {
+						control.removeAttribute( 'tabindex' );
+					} else {
+						control.setAttribute( 'tabindex', control.dataset.edminboostDependentTabindex );
+					}
+
+					delete control.dataset.edminboostDependentTabindex;
+				}
+
+				control.removeAttribute( 'aria-disabled' );
+				return;
+			}
+
+			if ( ! Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
+				control.dataset.edminboostDependentTabindex = control.getAttribute( 'tabindex' ) || '';
+			}
+
+			control.setAttribute( 'tabindex', '-1' );
+			control.setAttribute( 'aria-disabled', 'true' );
+		} );
 	}
 
 	function initWhiteLabel( root ) {

@@ -24,6 +24,7 @@ class EDMINBOOST_Feature_Settings {
 			'hide_admin_notices'        => false,
 			'hide_screen_help'          => false,
 			'dashboard_widgets'         => array(
+				'enabled'              => false,
 				'remove_welcome_panel' => false,
 				'remove_quick_press'   => false,
 				'remove_activity'      => false,
@@ -102,6 +103,17 @@ class EDMINBOOST_Feature_Settings {
 
 		foreach ( $defaults as $key => $default ) {
 			if ( is_array( $default ) && isset( $features[ $key ] ) && is_array( $features[ $key ] ) ) {
+				if ( 'dashboard_widgets' === $key && ! array_key_exists( 'enabled', $features[ $key ] ) ) {
+					$any_widget = false;
+					foreach ( $features[ $key ] as $widget_enabled ) {
+						if ( ! empty( $widget_enabled ) ) {
+							$any_widget = true;
+							break;
+						}
+					}
+					$features[ $key ]['enabled'] = $any_widget;
+				}
+
 				$features[ $key ] = wp_parse_args( $features[ $key ], $default );
 			}
 		}
@@ -147,12 +159,7 @@ class EDMINBOOST_Feature_Settings {
 				return ! empty( $features['post_duplicator']['enabled'] );
 
 			case 'dashboard_widgets':
-				foreach ( $features['dashboard_widgets'] as $enabled ) {
-					if ( ! empty( $enabled ) ) {
-						return true;
-					}
-				}
-				return false;
+				return ! empty( $features['dashboard_widgets']['enabled'] );
 
 			case 'admin_footer':
 				return ! empty( $features['admin_footer']['enabled'] )
@@ -211,7 +218,12 @@ class EDMINBOOST_Feature_Settings {
 		$output['menu_duplicator']           = ! empty( $raw['menu_duplicator'] );
 		$output['disable_embeds']            = ! empty( $raw['disable_embeds'] );
 
+		$output['dashboard_widgets']['enabled'] = ! empty( $raw['dashboard_widgets']['enabled'] );
 		foreach ( array_keys( $defaults['dashboard_widgets'] ) as $widget_key ) {
+			if ( 'enabled' === $widget_key ) {
+				continue;
+			}
+
 			$output['dashboard_widgets'][ $widget_key ] = ! empty( $raw['dashboard_widgets'][ $widget_key ] );
 		}
 

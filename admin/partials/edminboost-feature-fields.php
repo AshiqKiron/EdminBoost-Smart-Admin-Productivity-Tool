@@ -23,78 +23,98 @@ $post_types = get_post_types( array( 'public' => true ), 'objects' );
 <fieldset class="edminboost-fieldset">
 	<legend><?php esc_html_e( 'Admin notices', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 	<label class="edminboost-checkbox-row" for="edminboost_hide_admin_notices">
-		<input type="checkbox" id="edminboost_hide_admin_notices" name="<?php echo esc_attr( $features_key ); ?>[hide_admin_notices]" value="1" <?php checked( ! empty( $features['hide_admin_notices'] ) ); ?> />
 		<?php EDMINBOOST_Setting_Help::echo_icon( 'hide_admin_notices' ); ?>
+		<input type="checkbox" id="edminboost_hide_admin_notices" name="<?php echo esc_attr( $features_key ); ?>[hide_admin_notices]" value="1" <?php checked( ! empty( $features['hide_admin_notices'] ) ); ?> />
 		<?php esc_html_e( 'Hide routine admin notices. Errors and warnings remain visible.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
 	<label class="edminboost-checkbox-row" for="edminboost_hide_screen_help">
-		<input type="checkbox" id="edminboost_hide_screen_help" name="<?php echo esc_attr( $features_key ); ?>[hide_screen_help]" value="1" <?php checked( ! empty( $features['hide_screen_help'] ) ); ?> />
 		<?php EDMINBOOST_Setting_Help::echo_icon( 'hide_screen_help' ); ?>
+		<input type="checkbox" id="edminboost_hide_screen_help" name="<?php echo esc_attr( $features_key ); ?>[hide_screen_help]" value="1" <?php checked( ! empty( $features['hide_screen_help'] ) ); ?> />
 		<?php esc_html_e( 'Hide Screen Options and Help tabs.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
 </fieldset>
 
+<?php
+$dashboard_widgets_enabled = ! empty( $features['dashboard_widgets']['enabled'] );
+$dashboard_widgets_options_class = 'edminboost-dependent-section' . ( $dashboard_widgets_enabled ? '' : ' is-disabled' );
+$dashboard_widgets_options_aria  = $dashboard_widgets_enabled ? 'false' : 'true';
+?>
 <fieldset class="edminboost-fieldset">
-	<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'dashboard_widgets' ); ?><?php esc_html_e( 'Dashboard widgets', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
-	<?php foreach ( $widget_labels as $widget_key => $widget_label ) : ?>
-		<label class="edminboost-checkbox-row" for="edminboost_widget_<?php echo esc_attr( $widget_key ); ?>">
-			<input type="checkbox" id="edminboost_widget_<?php echo esc_attr( $widget_key ); ?>" name="<?php echo esc_attr( $features_key ); ?>[dashboard_widgets][<?php echo esc_attr( $widget_key ); ?>]" value="1" <?php checked( ! empty( $features['dashboard_widgets'][ $widget_key ] ) ); ?> />
-			<?php echo esc_html( $widget_label ); ?>
-		</label>
-	<?php endforeach; ?>
+	<legend><?php esc_html_e( 'Dashboard widgets', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+	<label class="edminboost-checkbox-row" for="edminboost_dashboard_widgets_enabled">
+		<?php EDMINBOOST_Setting_Help::echo_icon( 'dashboard_widgets_enabled' ); ?>
+		<input type="checkbox" id="edminboost_dashboard_widgets_enabled" name="<?php echo esc_attr( $features_key ); ?>[dashboard_widgets][enabled]" value="1" <?php checked( $dashboard_widgets_enabled ); ?> />
+		<?php esc_html_e( 'Remove selected default dashboard widgets.', EDMINBOOST_TEXT_DOMAIN ); ?>
+	</label>
+	<div id="edminboost-dashboard-widgets-options" class="<?php echo esc_attr( $dashboard_widgets_options_class ); ?>" aria-disabled="<?php echo esc_attr( $dashboard_widgets_options_aria ); ?>">
+		<?php foreach ( $widget_labels as $widget_key => $widget_label ) : ?>
+			<label class="edminboost-checkbox-row" for="edminboost_widget_<?php echo esc_attr( $widget_key ); ?>">
+				<input type="checkbox" id="edminboost_widget_<?php echo esc_attr( $widget_key ); ?>" name="<?php echo esc_attr( $features_key ); ?>[dashboard_widgets][<?php echo esc_attr( $widget_key ); ?>]" value="1" <?php checked( ! empty( $features['dashboard_widgets'][ $widget_key ] ) ); ?> />
+				<?php echo esc_html( $widget_label ); ?>
+			</label>
+		<?php endforeach; ?>
+	</div>
 </fieldset>
 
+<?php
+$admin_footer_enabled = ! empty( $features['admin_footer']['enabled'] );
+$admin_footer_options_class = 'edminboost-dependent-section' . ( $admin_footer_enabled ? '' : ' is-disabled' );
+$admin_footer_options_aria  = $admin_footer_enabled ? 'false' : 'true';
+?>
 <fieldset class="edminboost-fieldset">
 	<legend><?php esc_html_e( 'Admin footer', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 	<label class="edminboost-checkbox-row" for="edminboost_admin_footer_enabled">
-		<input type="checkbox" id="edminboost_admin_footer_enabled" name="<?php echo esc_attr( $features_key ); ?>[admin_footer][enabled]" value="1" <?php checked( ! empty( $features['admin_footer']['enabled'] ) ); ?> />
 		<?php EDMINBOOST_Setting_Help::echo_icon( 'admin_footer_enabled' ); ?>
+		<input type="checkbox" id="edminboost_admin_footer_enabled" name="<?php echo esc_attr( $features_key ); ?>[admin_footer][enabled]" value="1" <?php checked( $admin_footer_enabled ); ?> />
 		<?php esc_html_e( 'Replace the default admin footer text.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
-	<p>
-		<label for="edminboost_admin_footer_text">
-			<?php EDMINBOOST_Setting_Help::echo_icon( 'admin_footer_text' ); ?>
-			<span class="screen-reader-text"><?php esc_html_e( 'Custom footer text', EDMINBOOST_TEXT_DOMAIN ); ?></span>
-			<input type="text" class="regular-text" id="edminboost_admin_footer_text" name="<?php echo esc_attr( $features_key ); ?>[admin_footer][text]" value="<?php echo esc_attr( $features['admin_footer']['text'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Custom footer text', EDMINBOOST_TEXT_DOMAIN ); ?>" />
-		</label>
-	</p>
+	<div id="edminboost-admin-footer-options" class="<?php echo esc_attr( $admin_footer_options_class ); ?>" aria-disabled="<?php echo esc_attr( $admin_footer_options_aria ); ?>">
+		<p>
+			<label for="edminboost_admin_footer_text">
+				<?php EDMINBOOST_Setting_Help::echo_icon( 'admin_footer_text' ); ?>
+				<span class="screen-reader-text"><?php esc_html_e( 'Custom footer text', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+				<input type="text" class="regular-text" id="edminboost_admin_footer_text" name="<?php echo esc_attr( $features_key ); ?>[admin_footer][text]" value="<?php echo esc_attr( $features['admin_footer']['text'] ?? '' ); ?>" placeholder="<?php esc_attr_e( 'Custom footer text', EDMINBOOST_TEXT_DOMAIN ); ?>" />
+			</label>
+		</p>
+	</div>
 </fieldset>
 
 <fieldset class="edminboost-fieldset">
 	<legend><?php esc_html_e( 'Workflow tools', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 	<label class="edminboost-checkbox-row" for="edminboost_post_duplicator">
-		<input type="checkbox" id="edminboost_post_duplicator" name="<?php echo esc_attr( $features_key ); ?>[post_duplicator][enabled]" value="1" <?php checked( ! empty( $features['post_duplicator']['enabled'] ) ); ?> />
 		<?php EDMINBOOST_Setting_Help::echo_icon( 'post_duplicator' ); ?>
+		<input type="checkbox" id="edminboost_post_duplicator" name="<?php echo esc_attr( $features_key ); ?>[post_duplicator][enabled]" value="1" <?php checked( ! empty( $features['post_duplicator']['enabled'] ) ); ?> />
 		<?php esc_html_e( 'Enable post and page duplicator row action.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
 	<label class="edminboost-checkbox-row" for="edminboost_classic_widgets">
-		<input type="checkbox" id="edminboost_classic_widgets" name="<?php echo esc_attr( $features_key ); ?>[classic_widgets]" value="1" <?php checked( ! empty( $features['classic_widgets'] ) ); ?> />
 		<?php EDMINBOOST_Setting_Help::echo_icon( 'classic_widgets' ); ?>
+		<input type="checkbox" id="edminboost_classic_widgets" name="<?php echo esc_attr( $features_key ); ?>[classic_widgets]" value="1" <?php checked( ! empty( $features['classic_widgets'] ) ); ?> />
 		<?php esc_html_e( 'Use the classic widgets screen.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
 	<label class="edminboost-checkbox-row" for="edminboost_menu_duplicator">
-		<input type="checkbox" id="edminboost_menu_duplicator" name="<?php echo esc_attr( $features_key ); ?>[menu_duplicator]" value="1" <?php checked( ! empty( $features['menu_duplicator'] ) ); ?> />
 		<?php EDMINBOOST_Setting_Help::echo_icon( 'menu_duplicator' ); ?>
+		<input type="checkbox" id="edminboost_menu_duplicator" name="<?php echo esc_attr( $features_key ); ?>[menu_duplicator]" value="1" <?php checked( ! empty( $features['menu_duplicator'] ) ); ?> />
 		<?php esc_html_e( 'Enable navigation menu duplication.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
 </fieldset>
 
 <fieldset class="edminboost-fieldset">
-	<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_admin_columns' ); ?><?php esc_html_e( 'Custom list columns', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+	<legend><?php esc_html_e( 'Custom list columns', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 	<label class="edminboost-checkbox-row" for="edminboost_custom_columns">
+		<?php EDMINBOOST_Setting_Help::echo_icon( 'custom_admin_columns' ); ?>
 		<input type="checkbox" id="edminboost_custom_columns" name="<?php echo esc_attr( $features_key ); ?>[custom_admin_columns][enabled]" value="1" <?php checked( ! empty( $features['custom_admin_columns']['enabled'] ) ); ?> />
 		<?php esc_html_e( 'Add optional columns to post and page list tables.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
 	<?php foreach ( array( 'post', 'page' ) as $pt ) : ?>
 		<p><strong><?php echo esc_html( $pt ); ?></strong></p>
 		<label class="edminboost-checkbox-row">
-			<input type="checkbox" name="<?php echo esc_attr( $features_key ); ?>[custom_admin_columns][<?php echo esc_attr( $pt ); ?>][thumbnail]" value="1" <?php checked( ! empty( $features['custom_admin_columns'][ $pt ]['thumbnail'] ) ); ?> />
 			<?php EDMINBOOST_Setting_Help::echo_icon( 'column_thumbnail' ); ?>
+			<input type="checkbox" name="<?php echo esc_attr( $features_key ); ?>[custom_admin_columns][<?php echo esc_attr( $pt ); ?>][thumbnail]" value="1" <?php checked( ! empty( $features['custom_admin_columns'][ $pt ]['thumbnail'] ) ); ?> />
 			<?php esc_html_e( 'Featured image', EDMINBOOST_TEXT_DOMAIN ); ?>
 		</label>
 		<label class="edminboost-checkbox-row">
-			<input type="checkbox" name="<?php echo esc_attr( $features_key ); ?>[custom_admin_columns][<?php echo esc_attr( $pt ); ?>][id]" value="1" <?php checked( ! empty( $features['custom_admin_columns'][ $pt ]['id'] ) ); ?> />
 			<?php EDMINBOOST_Setting_Help::echo_icon( 'column_id' ); ?>
+			<input type="checkbox" name="<?php echo esc_attr( $features_key ); ?>[custom_admin_columns][<?php echo esc_attr( $pt ); ?>][id]" value="1" <?php checked( ! empty( $features['custom_admin_columns'][ $pt ]['id'] ) ); ?> />
 			<?php esc_html_e( 'Post ID', EDMINBOOST_TEXT_DOMAIN ); ?>
 		</label>
 		<p>
@@ -108,8 +128,9 @@ $post_types = get_post_types( array( 'public' => true ), 'objects' );
 </fieldset>
 
 <fieldset class="edminboost-fieldset">
-	<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'post_order' ); ?><?php esc_html_e( 'Post ordering', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+	<legend><?php esc_html_e( 'Post ordering', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 	<label class="edminboost-checkbox-row" for="edminboost_post_order">
+		<?php EDMINBOOST_Setting_Help::echo_icon( 'post_order' ); ?>
 		<input type="checkbox" id="edminboost_post_order" name="<?php echo esc_attr( $features_key ); ?>[post_order][enabled]" value="1" <?php checked( ! empty( $features['post_order']['enabled'] ) ); ?> />
 		<?php esc_html_e( 'Enable manual ordering via the Order column.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>

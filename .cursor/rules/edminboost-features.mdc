@@ -48,7 +48,8 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 | Type | Examples | `is_feature_enabled()` behavior |
 |------|----------|--------------------------------|
 | Boolean flag | `hide_admin_notices`, `disable_xmlrpc` | truthy option value |
-| Sub-key array | `dashboard_widgets`, `rest_api_hardening` | any sub-key enabled |
+| Sub-key array | `rest_api_hardening` | any sub-key enabled |
+| Structured + sub-keys | `dashboard_widgets` | `enabled` master toggle (legacy: infer `enabled` from any widget flag on read) |
 | Structured + text | `admin_footer` | `enabled` + non-empty `text` |
 | Structured + scope | `disable_emojis` | `enabled` + `scope` (`admin`, `frontend`, `both`) |
 | Structured + post types | `post_duplicator`, `disable_comments`, `post_order` | `enabled` + selected post types |
@@ -73,8 +74,8 @@ Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, S
 |----|-------|-------|
 | `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` (inline CSS; preserves error/warning notices) |
 | `hide_screen_help` | `EDMINBOOST_Hide_Screen_Help` | `admin_head` (hides Screen Options + Help tabs) |
-| `dashboard_widgets` | `EDMINBOOST_Dashboard` | `wp_dashboard_setup` (99), `admin_init` |
-| `admin_footer` | `EDMINBOOST_Admin_Footer` | `admin_footer_text` |
+| `dashboard_widgets` | `EDMINBOOST_Dashboard` | `wp_dashboard_setup` (99), `admin_init`; Productivity UI: master `#edminboost_dashboard_widgets_enabled` + dependent `#edminboost-dashboard-widgets-options` (`.edminboost-dependent-section`; disabled until toggle on — see `initProductivityFeatures` in `admin-assets.mdc`) |
+| `admin_footer` | `EDMINBOOST_Admin_Footer` | `admin_footer_text`; Productivity UI: master `#edminboost_admin_footer_enabled` + dependent `#edminboost-admin-footer-options` (`.edminboost-dependent-section`) |
 | `post_duplicator` | `EDMINBOOST_Post_Duplicator` | `post_row_actions`, `page_row_actions`, `admin_action_edminboost_duplicate_post` |
 | `classic_widgets` | `EDMINBOOST_Classic_Widgets` | `after_setup_theme` (disables block widgets) |
 | `custom_admin_columns` | `EDMINBOOST_Custom_Admin_Columns` | `manage_*_posts_columns`, `manage_*_posts_custom_column` |

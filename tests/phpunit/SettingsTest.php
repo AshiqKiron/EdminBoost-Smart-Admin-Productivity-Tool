@@ -45,15 +45,51 @@ class SettingsTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * Dashboard widgets enabled when any widget is removed.
+	 * Dashboard widgets enabled when master toggle is on.
 	 */
 	public function test_is_feature_enabled_dashboard_widgets() {
 		$this->seed_settings(
 			array(
 				'features' => array(
 					'dashboard_widgets' => array(
+						'enabled'              => true,
 						'remove_welcome_panel' => true,
 						'remove_quick_press'   => false,
+					),
+				),
+			)
+		);
+
+		$this->assertTrue( EDMINBOOST_Settings::is_feature_enabled( 'dashboard_widgets' ) );
+	}
+
+	/**
+	 * Dashboard widgets stay off when master toggle is off.
+	 */
+	public function test_is_feature_enabled_dashboard_widgets_disabled() {
+		$this->seed_settings(
+			array(
+				'features' => array(
+					'dashboard_widgets' => array(
+						'enabled'              => false,
+						'remove_welcome_panel' => true,
+					),
+				),
+			)
+		);
+
+		$this->assertFalse( EDMINBOOST_Settings::is_feature_enabled( 'dashboard_widgets' ) );
+	}
+
+	/**
+	 * Legacy dashboard widget selections infer the master toggle on read.
+	 */
+	public function test_normalize_dashboard_widgets_legacy_enabled() {
+		$this->seed_settings(
+			array(
+				'features' => array(
+					'dashboard_widgets' => array(
+						'remove_welcome_panel' => true,
 					),
 				),
 			)

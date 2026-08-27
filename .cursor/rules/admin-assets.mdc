@@ -16,7 +16,7 @@ alwaysApply: false
 - On `DOMContentLoaded`, call `initCommandCenterNav()`, `initPickerCloseOnScroll()`, `reinitEdminboostPage( root )`, and `primeCommandCenterHistory()`.
 - `reinitEdminboostPage( root )` sets `data-edminboost-ready="true"` and runs all page inits — also called after CC tab AJAX swaps.
 - Module refs: `syncPresetCatalogFn`, `syncThemeSettingsFn` (set by `initLayoutPresetPicker` / `initTheme`; called from `applySettingsSaveResult()`), `pendingDashboardOverviewSave` (in-flight overview save Promise; CC nav waits before swapping tabs).
-- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Appearance page), `initTheme`, `initWhiteLabel` (White Label master toggle + live rebrand preview), `initSecurityFeatures` (Security login redirects master toggle), `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initBackupSettings` (Settings export/import) — each no-ops if target elements are absent.
+- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Appearance page), `initTheme`, `initWhiteLabel` (White Label master toggle + live rebrand preview), `initSecurityFeatures` (Security login redirects master toggle), `initProductivityFeatures` (Productivity dashboard widgets + admin footer master toggles), `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initBackupSettings` (Settings export/import) — each no-ops if target elements are absent.
 - `initBehavior` delegates to `initBehaviorBadgePreview` (toggle badge style previews), `initBehaviorDrawerWidthCustom` (custom width slider + live preview), and `initBehaviorAnimationSpeed` (animation speed listbox + drawer micro-previews).
 
 `edminboostData` shape:
@@ -92,7 +92,7 @@ alwaysApply: false
 - Setting help: `.edminboost-setting-info` (+ `__trigger`, `__tooltip`); hover/focus reveals tooltip.
 - Overview pickers: `.edminboost-overview-theme-picker`, `.edminboost-overview-topbar-links-picker` (+ `__toggle`, `__label`, `__list`, `__option`, `__option-main`, `__option-name`, `__option-meta`, `__empty`).
 - CC tab loading: `.edminboost-cc-nav.is-loading`, `.edminboost-wrap.is-cc-loading`.
-- Dependent sections: `.edminboost-cc-section.is-disabled`, `.edminboost-dependent-section.is-disabled` (opacity + pointer-events off + `user-select: none`; White Label uses `.edminboost-cc-section`; Security login redirects use `.edminboost-dependent-section` on `#edminboost-login-redirects-options`).
+- Dependent sections: `.edminboost-cc-section.is-disabled`, `.edminboost-dependent-section.is-disabled` (opacity + pointer-events off + `user-select: none`; White Label uses `.edminboost-cc-section`; Security login redirects, dashboard widgets, and admin footer use `.edminboost-dependent-section` on `#edminboost-login-redirects-options`, `#edminboost-dashboard-widgets-options`, and `#edminboost-admin-footer-options`).
 - White Label rebrand: `.edminboost-wl-rebrand-layout` (+ `__fields`, `__row`, `__field`), `.edminboost-wl-rebrand-preview` (+ `__lead`, `__panel`, `__heading`, `__plugin-row`, `__plugin-title`, `__plugin-version`, `__plugin-meta`, `__plugin-author`, `__menu`, `__menu-item.is-target`); stacks at `960px`.
 - Setup wizard: `.edminboost-setup-wizard`, `.edminboost-setup-stepper` (+ `__item`, `__number`, `__label`), `.edminboost-setup-step`, `.edminboost-setup-wizard__footer`, `.edminboost-setup-review__*`, `.edminboost-preset-picker` (+ `--wizard` / `--full`, compact listbox + embedded top bar preview).
 - Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`, `.edminboost-select-rows` (+ `.edminboost-select-row` two-column label/select grid for grouped dropdowns such as Heartbeat control).
@@ -146,7 +146,7 @@ alwaysApply: false
 | `edminboost-animation-speed-field.php` | Animation speed picker partial (`$cc_key`, `$behavior`) |
 | `edminboost-preset-picker.php` | Layout preset dropdown (`wizard` / `full` / `overview` modes) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list |
-| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: productivity, security, performance); checkbox rows place `EDMINBOOST_Setting_Help::echo_icon()` before the input; multi-select groups (e.g. Heartbeat) use `.edminboost-select-rows` with per-field help keys; Security login redirects wrap URL fields in `#edminboost-login-redirects-options.edminboost-dependent-section` (`.is-disabled` when master toggle off) |
+| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: productivity, security, performance); checkbox rows place `EDMINBOOST_Setting_Help::echo_icon()` before the input; multi-select groups (e.g. Heartbeat) use `.edminboost-select-rows` with per-field help keys; master toggles wrap nested fields in `.edminboost-dependent-section` (`.is-disabled` when off): `#edminboost-login-redirects-options`, `#edminboost-dashboard-widgets-options`, `#edminboost-admin-footer-options` |
 | `edminboost-command-center-nav.php` | CC sub-navigation |
 | `edminboost-mapper-page.php` | Top bar / layout studio |
 | `edminboost-presets-page.php` | Layout presets & role matrix |
@@ -215,9 +215,9 @@ Key elements: `#edminboost-setup-wizard-form`, `.edminboost-setup-stepper__item`
 - Layout preset selection updates hidden `_apply_preset` / `default_preset` and re-renders top bar summary from `edminboostData.presets`.
 - Final submit uses marker `command_center[_setup_wizard_save]` = `1` (sets `onboarding_completed` server-side when top bar items are saved).
 
-## Dependent section toggles (`initWhiteLabel`, `initSecurityFeatures`)
+## Dependent section toggles (`syncDependentSection`, `initWhiteLabel`, `initSecurityFeatures`, `initProductivityFeatures`)
 
-Shared pattern for master toggles that disable nested fields until enabled: add `.is-disabled` + `aria-disabled="true"` on the section wrapper; set `tabindex="-1"` / `aria-disabled="true"` on nested `input`, `textarea`, `select`, `button`, and `a[href]` controls (store prior `tabindex` in `data-edminboost-dependent-tabindex` and restore when re-enabled).
+Shared helper `syncDependentSection( section, isEnabled )` applies the master-toggle pattern: add `.is-disabled` + `aria-disabled="true"` on the section wrapper; set `tabindex="-1"` / `aria-disabled="true"` on nested `input`, `textarea`, `select`, `button`, and `a[href]` controls (store prior `tabindex` in `data-edminboost-dependent-tabindex` and restore when re-enabled). Used by Security login redirects and Productivity dashboard widgets / admin footer.
 
 ### White Label (`initWhiteLabel`)
 
@@ -233,6 +233,13 @@ Key elements: `#edminboost_login_redirects_enabled`, `#edminboost-login-redirect
 
 - Master toggle disables redirect URL fields (default login/logout + per-role URLs) when login redirects are off.
 - Server-rendered initial state mirrors toggle (`is-disabled` + `aria-disabled` on `#edminboost-login-redirects-options` in `edminboost-feature-fields.php`).
+
+### Productivity dependents (`initProductivityFeatures`)
+
+Key elements: `#edminboost_dashboard_widgets_enabled`, `#edminboost-dashboard-widgets-options`; `#edminboost_admin_footer_enabled`, `#edminboost-admin-footer-options` (both `.edminboost-dependent-section`).
+
+- Dashboard widgets master toggle disables per-widget checkboxes when off; admin footer master toggle disables the custom text field when off.
+- Server-rendered initial state mirrors each toggle in `edminboost-feature-fields.php`.
 
 ## Theme JS (`initTheme`)
 

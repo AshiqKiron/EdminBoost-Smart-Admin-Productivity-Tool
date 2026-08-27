@@ -184,16 +184,16 @@ class EDMINBOOST_Setting_Help {
 			// Productivity features.
 			'hide_admin_notices'         => __( 'Moves routine success and info notices out of view. Errors and warnings stay visible.', EDMINBOOST_TEXT_DOMAIN ),
 			'hide_screen_help'           => __( 'Hides the Screen Options and Help tabs in wp-admin.', EDMINBOOST_TEXT_DOMAIN ),
-			'dashboard_widgets'          => __( 'Choose which core Dashboard widgets remain available. Unchecked widgets are removed for all users.', EDMINBOOST_TEXT_DOMAIN ),
+			'dashboard_widgets_enabled'  => __( 'Remove selected core Dashboard widgets for all users. Choose which widgets to hide below.', EDMINBOOST_TEXT_DOMAIN ),
 			'admin_footer_enabled'       => __( 'Replace the default “Thank you for creating with WordPress” footer text in wp-admin.', EDMINBOOST_TEXT_DOMAIN ),
 			'admin_footer_text'          => __( 'Custom HTML-safe text shown in the admin footer when replacement is enabled.', EDMINBOOST_TEXT_DOMAIN ),
 			'post_duplicator'            => __( 'Adds a Duplicate row action to posts and pages in list tables.', EDMINBOOST_TEXT_DOMAIN ),
 			'classic_widgets'            => __( 'Restores the pre-block classic widgets screen under Appearance.', EDMINBOOST_TEXT_DOMAIN ),
 			'menu_duplicator'            => __( 'Adds a duplicate action when editing navigation menus.', EDMINBOOST_TEXT_DOMAIN ),
-			'custom_admin_columns'       => __( 'Adds optional columns to post and page list tables.', EDMINBOOST_TEXT_DOMAIN ),
-			'column_thumbnail'           => __( 'Shows the featured image thumbnail in the list table.', EDMINBOOST_TEXT_DOMAIN ),
-			'column_id'                    => __( 'Shows the numeric post ID in the list table.', EDMINBOOST_TEXT_DOMAIN ),
-			'column_meta_key'            => __( 'Shows values for a custom post meta key. Enter the meta key name.', EDMINBOOST_TEXT_DOMAIN ),
+			'custom_admin_columns'       => __( 'Adds optional columns to the Posts and Pages list tables in wp-admin. Enable the feature, then configure each post type below. New columns appear immediately after the Title column.', EDMINBOOST_TEXT_DOMAIN ),
+			'column_thumbnail'           => __( 'Shows a 40×40 featured image thumbnail after the Title column. Posts without a featured image leave the cell empty.', EDMINBOOST_TEXT_DOMAIN ),
+			'column_id'                  => __( 'Shows the numeric post ID after the Title column. Useful for shortcodes, support tickets, or database lookups.', EDMINBOOST_TEXT_DOMAIN ),
+			'column_meta_key'            => __( 'Shows the stored value for one post meta key after the Title column. Enter the exact meta key name (for example, _price). Only the first value is shown; serialized or array data may not display cleanly.', EDMINBOOST_TEXT_DOMAIN ),
 			'post_order'                 => __( 'Enables drag-and-drop ordering via an Order column on supported post types.', EDMINBOOST_TEXT_DOMAIN ),
 
 			// Security features.
