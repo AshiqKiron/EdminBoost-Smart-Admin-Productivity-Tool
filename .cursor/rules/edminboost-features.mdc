@@ -88,7 +88,7 @@ Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, S
 | `disable_xmlrpc` | `EDMINBOOST_Disable_Xmlrpc` | `xmlrpc_enabled`, `wp_headers` |
 | `disable_feeds` | `EDMINBOOST_Disable_Feeds` | `do_feed*` actions |
 | `rest_api_hardening` | `EDMINBOOST_Rest_Api_Hardening` | `rest_authentication_errors`, `rest_index` |
-| `login_redirects` | `EDMINBOOST_Login_Redirects` | `login_redirect`, `wp_logout` |
+| `login_redirects` | `EDMINBOOST_Login_Redirects` | `login_redirect`, `wp_logout`; Security UI: master `#edminboost_login_redirects_enabled` + dependent `#edminboost-login-redirects-options` (`.edminboost-dependent-section`; disabled until toggle on — see `initSecurityFeatures` in `admin-assets.mdc`) |
 | `disable_comments` | `EDMINBOOST_Disable_Comments` | `admin_init`, `wp_before_admin_bar_render`, filters on comments |
 
 ### Performance

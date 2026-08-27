@@ -155,33 +155,40 @@ $post_types = get_post_types( array( 'public' => true ), 'objects' );
 	<?php endforeach; ?>
 </fieldset>
 
+<?php
+$login_redirects_enabled = ! empty( $features['login_redirects']['enabled'] );
+$login_redirects_options_class = 'edminboost-dependent-section' . ( $login_redirects_enabled ? '' : ' is-disabled' );
+$login_redirects_options_aria  = $login_redirects_enabled ? 'false' : 'true';
+?>
 <fieldset class="edminboost-fieldset">
 	<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'login_redirects_enabled' ); ?><?php esc_html_e( 'Login redirects', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 	<label class="edminboost-checkbox-row" for="edminboost_login_redirects_enabled">
-		<input type="checkbox" id="edminboost_login_redirects_enabled" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][enabled]" value="1" <?php checked( ! empty( $features['login_redirects']['enabled'] ) ); ?> />
+		<input type="checkbox" id="edminboost_login_redirects_enabled" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][enabled]" value="1" <?php checked( $login_redirects_enabled ); ?> />
 		<?php esc_html_e( 'Enable role-based login and logout redirects.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
-	<p>
-		<label for="edminboost_default_login"><?php EDMINBOOST_Setting_Help::echo_icon( 'default_login_redirect' ); ?><?php esc_html_e( 'Default login redirect URL', EDMINBOOST_TEXT_DOMAIN ); ?>
-			<input type="url" class="regular-text" id="edminboost_default_login" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][default_login]" value="<?php echo esc_attr( $features['login_redirects']['default_login'] ?? '' ); ?>" />
-		</label>
-	</p>
-	<p>
-		<label for="edminboost_default_logout"><?php EDMINBOOST_Setting_Help::echo_icon( 'default_logout_redirect' ); ?><?php esc_html_e( 'Default logout redirect URL', EDMINBOOST_TEXT_DOMAIN ); ?>
-			<input type="url" class="regular-text" id="edminboost_default_logout" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][default_logout]" value="<?php echo esc_attr( $features['login_redirects']['default_logout'] ?? '' ); ?>" />
-		</label>
-	</p>
-	<?php foreach ( $roles as $role_key => $role_label ) : ?>
+	<div id="edminboost-login-redirects-options" class="<?php echo esc_attr( $login_redirects_options_class ); ?>" aria-disabled="<?php echo esc_attr( $login_redirects_options_aria ); ?>">
 		<p>
-			<strong><?php echo esc_html( $role_label ); ?></strong><br />
-			<label><?php EDMINBOOST_Setting_Help::echo_icon( 'role_login_redirect' ); ?><?php esc_html_e( 'Login URL', EDMINBOOST_TEXT_DOMAIN ); ?>
-				<input type="url" class="regular-text" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][login_roles][<?php echo esc_attr( $role_key ); ?>]" value="<?php echo esc_attr( $features['login_redirects']['login_roles'][ $role_key ] ?? '' ); ?>" />
-			</label>
-			<label><?php EDMINBOOST_Setting_Help::echo_icon( 'role_logout_redirect' ); ?><?php esc_html_e( 'Logout URL', EDMINBOOST_TEXT_DOMAIN ); ?>
-				<input type="url" class="regular-text" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][logout_roles][<?php echo esc_attr( $role_key ); ?>]" value="<?php echo esc_attr( $features['login_redirects']['logout_roles'][ $role_key ] ?? '' ); ?>" />
+			<label for="edminboost_default_login"><?php EDMINBOOST_Setting_Help::echo_icon( 'default_login_redirect' ); ?><?php esc_html_e( 'Default login redirect URL', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<input type="url" class="regular-text" id="edminboost_default_login" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][default_login]" value="<?php echo esc_attr( $features['login_redirects']['default_login'] ?? '' ); ?>" />
 			</label>
 		</p>
-	<?php endforeach; ?>
+		<p>
+			<label for="edminboost_default_logout"><?php EDMINBOOST_Setting_Help::echo_icon( 'default_logout_redirect' ); ?><?php esc_html_e( 'Default logout redirect URL', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<input type="url" class="regular-text" id="edminboost_default_logout" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][default_logout]" value="<?php echo esc_attr( $features['login_redirects']['default_logout'] ?? '' ); ?>" />
+			</label>
+		</p>
+		<?php foreach ( $roles as $role_key => $role_label ) : ?>
+			<p>
+				<strong><?php echo esc_html( $role_label ); ?></strong><br />
+				<label><?php EDMINBOOST_Setting_Help::echo_icon( 'role_login_redirect' ); ?><?php esc_html_e( 'Login URL', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<input type="url" class="regular-text" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][login_roles][<?php echo esc_attr( $role_key ); ?>]" value="<?php echo esc_attr( $features['login_redirects']['login_roles'][ $role_key ] ?? '' ); ?>" />
+				</label>
+				<label><?php EDMINBOOST_Setting_Help::echo_icon( 'role_logout_redirect' ); ?><?php esc_html_e( 'Logout URL', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<input type="url" class="regular-text" name="<?php echo esc_attr( $features_key ); ?>[login_redirects][logout_roles][<?php echo esc_attr( $role_key ); ?>]" value="<?php echo esc_attr( $features['login_redirects']['logout_roles'][ $role_key ] ?? '' ); ?>" />
+				</label>
+			</p>
+		<?php endforeach; ?>
+	</div>
 </fieldset>
 <?php endif; ?>
 

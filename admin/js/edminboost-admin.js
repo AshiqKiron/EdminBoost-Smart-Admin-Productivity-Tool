@@ -120,6 +120,7 @@
 		initPresets( root );
 		initSetupWizard( root );
 		initWhiteLabel( root );
+		initSecurityFeatures( root );
 		initCommandCenterForms( root );
 		initSettingsForm( root );
 		initBackupSettings( root );
@@ -1693,6 +1694,49 @@
 		initBehaviorBadgePreview( root );
 		initBehaviorDrawerWidthCustom( root );
 		initBehaviorAnimationSpeed( root );
+	}
+
+	function initSecurityFeatures( root ) {
+		var enabledToggle = root.querySelector( '#edminboost_login_redirects_enabled' );
+		var optionsSection = root.querySelector( '#edminboost-login-redirects-options' );
+
+		if ( ! enabledToggle || ! optionsSection ) {
+			return;
+		}
+
+		function syncLoginRedirectsOptions() {
+			var isEnabled = enabledToggle.checked;
+
+			optionsSection.classList.toggle( 'is-disabled', ! isEnabled );
+			optionsSection.setAttribute( 'aria-disabled', isEnabled ? 'false' : 'true' );
+
+			optionsSection.querySelectorAll( 'input, textarea, select, button, a[href]' ).forEach( function ( control ) {
+				if ( isEnabled ) {
+					if ( Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
+						if ( '' === control.dataset.edminboostDependentTabindex ) {
+							control.removeAttribute( 'tabindex' );
+						} else {
+							control.setAttribute( 'tabindex', control.dataset.edminboostDependentTabindex );
+						}
+
+						delete control.dataset.edminboostDependentTabindex;
+					}
+
+					control.removeAttribute( 'aria-disabled' );
+					return;
+				}
+
+				if ( ! Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
+					control.dataset.edminboostDependentTabindex = control.getAttribute( 'tabindex' ) || '';
+				}
+
+				control.setAttribute( 'tabindex', '-1' );
+				control.setAttribute( 'aria-disabled', 'true' );
+			} );
+		}
+
+		enabledToggle.addEventListener( 'change', syncLoginRedirectsOptions );
+		syncLoginRedirectsOptions();
 	}
 
 	function initWhiteLabel( root ) {

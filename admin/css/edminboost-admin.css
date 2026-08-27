@@ -2179,8 +2179,9 @@ summary .edminboost-setting-info,
 	margin: 8px 0 0;
 }
 
-/* White Label dependent sections */
-.edminboost-cc-section.is-disabled {
+/* Dependent sections (White Label, Security login redirects, etc.) */
+.edminboost-cc-section.is-disabled,
+.edminboost-dependent-section.is-disabled {
 	opacity: 0.55;
 	pointer-events: none;
 	user-select: none;
