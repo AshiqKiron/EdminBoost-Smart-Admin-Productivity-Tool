@@ -12,13 +12,27 @@
 	cursor: pointer;
 }
 
-#wpadminbar .edminboost-cc-bar-item .ab-icon.dashicons {
+#wpadminbar .edminboost-cc-bar-item .edminboost-cc-bar-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	float: none;
 	font-family: dashicons;
 	font-size: 18px;
 	width: 18px;
 	height: 18px;
 	line-height: 1;
 	margin: 0;
+	padding: 0;
+}
+
+#wpadminbar .edminboost-cc-bar-item .edminboost-cc-bar-icon:before {
+	font-family: dashicons;
+	font-size: 18px;
+	width: 18px;
+	height: 18px;
+	line-height: 1;
 }
 
 #wpadminbar .edminboost-cc-bar-item .ab-label {

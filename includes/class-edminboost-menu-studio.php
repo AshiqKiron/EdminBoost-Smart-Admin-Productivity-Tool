@@ -448,15 +448,7 @@ class EDMINBOOST_Menu_Studio {
 	 * @return string
 	 */
 	private static function normalize_icon( $icon ) {
-		$icon = trim( (string) $icon );
-
-		if ( '' === $icon ) {
-			return 'dashicons-admin-links';
-		}
-
-		if ( false === strpos( $icon, 'dashicons-' ) ) {
-			$icon = 'dashicons-' . $icon;
-		}
+		$icon = EDMINBOOST_Command_Center::normalize_dashicon_class( $icon, 'dashicons-admin-links' );
 
 		$allowed = EDMINBOOST_Command_Center::get_dashicon_options();
 

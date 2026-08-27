@@ -87,6 +87,13 @@ class EDMINBOOST_Command_Center {
 	const PAGE_WHITE_LABEL = '-white-label';
 
 	/**
+	 * Billing and plans page slug suffix.
+	 *
+	 * @var string
+	 */
+	const PAGE_BILLING = '-billing';
+
+	/**
 	 * Minimum custom drawer width in pixels.
 	 *
 	 * @var int
@@ -282,15 +289,55 @@ class EDMINBOOST_Command_Center {
 			),
 			array(
 				'slug'  => $base . self::PAGE_APPEARANCE,
-				'label' => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . self::PAGE_MAPPER,
+				'label' => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_MENU_STUDIO,
 				'label' => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
+				'slug'  => $base . self::PAGE_BILLING,
+				'label' => __( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . '-settings',
+				'label' => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+			),
+		);
+	}
+
+	/**
+	 * Command Center tab navigation (includes pages hidden from the sidebar).
+	 *
+	 * @return array[]
+	 */
+	public static function get_nav_items() {
+		$base = EDMINBOOST_Admin::PAGE_SLUG;
+
+		return array(
+			array(
+				'slug'  => $base,
+				'label' => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . self::PAGE_PRESETS,
+				'label' => __( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . self::PAGE_APPEARANCE,
+				'label' => __( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
 				'slug'  => $base . self::PAGE_MAPPER,
 				'label' => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'slug'  => $base . self::PAGE_MENU_STUDIO,
+				'label' => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_PRODUCTIVITY,
@@ -309,6 +356,10 @@ class EDMINBOOST_Command_Center {
 				'label' => __( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
+				'slug'  => $base . self::PAGE_BILLING,
+				'label' => __( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
 				'slug'  => $base . '-settings',
 				'label' => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
 			),
@@ -316,12 +367,70 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
-	 * Navigation items for Command Center pages (legacy helper).
+	 * Available subscription plans for the Billing page.
 	 *
-	 * @return array[]
+	 * @return array<string, array{id: string, name: string, price: int, price_label: string, sites: int, sites_label: string, description: string, features: string[], featured: bool}> Sites is 0 for unlimited.
 	 */
-	public static function get_nav_items() {
-		return self::get_page_links();
+	public static function get_billing_plans() {
+		return array(
+			'free' => array(
+				'id'           => 'free',
+				'name'         => __( 'Free', EDMINBOOST_TEXT_DOMAIN ),
+				'price'        => 0,
+				'price_label'  => __( '$0', EDMINBOOST_TEXT_DOMAIN ),
+				'sites'        => 0,
+				'sites_label'  => __( 'Unlimited sites', EDMINBOOST_TEXT_DOMAIN ),
+				'description'  => __( 'Core Command Center tools on unlimited WordPress sites.', EDMINBOOST_TEXT_DOMAIN ),
+				'features'     => array(
+					__( 'Dashboard setup wizard', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Layout presets and top bar builder', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Visual theme presets', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Productivity, security, and performance tools', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				'featured'     => false,
+			),
+			'pro'  => array(
+				'id'           => 'pro',
+				'name'         => __( 'Pro', EDMINBOOST_TEXT_DOMAIN ),
+				'price'        => 49,
+				'price_label'  => __( '$49', EDMINBOOST_TEXT_DOMAIN ),
+				'sites'        => 1,
+				'sites_label'  => __( '1 site', EDMINBOOST_TEXT_DOMAIN ),
+				'description'  => __( 'Premium admin customization for one production site.', EDMINBOOST_TEXT_DOMAIN ),
+				'features'     => array(
+					__( 'Everything in Free', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Menu Studio sidebar builder', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'White-label branding and login screen', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Priority email support', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				'featured'     => true,
+			),
+			'agency' => array(
+				'id'           => 'agency',
+				'name'         => __( 'Agency', EDMINBOOST_TEXT_DOMAIN ),
+				'price'        => 99,
+				'price_label'  => __( '$99', EDMINBOOST_TEXT_DOMAIN ),
+				'sites'        => 10,
+				'sites_label'  => __( '10 sites', EDMINBOOST_TEXT_DOMAIN ),
+				'description'  => __( 'Deploy EdminBoost across a client portfolio.', EDMINBOOST_TEXT_DOMAIN ),
+				'features'     => array(
+					__( 'Everything in Pro', EDMINBOOST_TEXT_DOMAIN ),
+					__( '10 site license pack', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Agency white-label lock controls', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Settings export and import per site', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				'featured'     => false,
+			),
+		);
+	}
+
+	/**
+	 * Active billing plan for the current site.
+	 *
+	 * @return string Plan ID (`free`, `pro`, or `agency`).
+	 */
+	public static function get_active_billing_plan() {
+		return 'free';
 	}
 
 	/**
@@ -682,7 +791,7 @@ class EDMINBOOST_Command_Center {
 	 * @return array[]
 	 */
 	public static function get_system_presets() {
-		return array(
+		$presets = array(
 			'system_friend' => array(
 				'name'        => __( 'Friend\'s Website', EDMINBOOST_TEXT_DOMAIN ),
 				'description' => __( 'Help a friend publish posts, update pages, and moderate comments — no dev tools.', EDMINBOOST_TEXT_DOMAIN ),
@@ -736,24 +845,26 @@ class EDMINBOOST_Command_Center {
 				'name'        => __( 'Content Editor', EDMINBOOST_TEXT_DOMAIN ),
 				'description' => __( 'Clean top bar focused on content creation and media.', EDMINBOOST_TEXT_DOMAIN ),
 				'system'      => true,
-				'category'    => 'workflow',
+				'category'    => 'scenario',
 				'persona'     => 'client',
 			),
 			'system_ecommerce' => array(
 				'name'        => __( 'Shop Manager', EDMINBOOST_TEXT_DOMAIN ),
 				'description' => __( 'WooCommerce dashboards, orders, and product shortcuts.', EDMINBOOST_TEXT_DOMAIN ),
 				'system'      => true,
-				'category'    => 'workflow',
+				'category'    => 'scenario',
 				'persona'     => 'ecommerce',
 			),
 			'system_developer' => array(
 				'name'        => __( 'Power User', EDMINBOOST_TEXT_DOMAIN ),
 				'description' => __( 'Full admin mapping with slide-out panels for deep screens.', EDMINBOOST_TEXT_DOMAIN ),
 				'system'      => true,
-				'category'    => 'workflow',
+				'category'    => 'scenario',
 				'persona'     => 'developer',
 			),
 		);
+
+		return array_merge( $presets, self::get_role_system_presets() );
 	}
 
 	/**
@@ -762,7 +873,7 @@ class EDMINBOOST_Command_Center {
 	 * @return array<string, array[]>
 	 */
 	public static function get_preset_layout_definitions() {
-		return array(
+		$definitions = array(
 			'system_friend' => array(
 				array(
 					'slug'         => 'index.php',
@@ -1120,6 +1231,8 @@ class EDMINBOOST_Command_Center {
 				),
 			),
 		);
+
+		return array_merge( $definitions, self::get_role_preset_layout_definitions() );
 	}
 
 	/**
@@ -1215,11 +1328,18 @@ class EDMINBOOST_Command_Center {
 			}
 
 			if ( isset( $by_slug[ $slug ] ) ) {
+				$definition_icon = self::normalize_dashicon_class(
+					isset( $definition['icon'] ) ? $definition['icon'] : ''
+				);
+				$raw_discovered  = isset( $by_slug[ $slug ]['icon_raw'] ) ? (string) $by_slug[ $slug ]['icon_raw'] : '';
+				$use_discovered  = self::is_dashicon_menu_source( $raw_discovered );
+				$discovered_icon = self::normalize_dashicon_class( $raw_discovered, '' );
+
 				$resolved[] = array_merge(
 					$definition,
 					array(
 						'label' => $by_slug[ $slug ]['label'],
-						'icon'  => $by_slug[ $slug ]['icon'],
+						'icon'  => $use_discovered ? $discovered_icon : $definition_icon,
 					)
 				);
 				continue;
@@ -1462,18 +1582,21 @@ class EDMINBOOST_Command_Center {
 					$label = $slug;
 				}
 
-				$icon = self::normalize_menu_icon( isset( $menu_item[6] ) ? $menu_item[6] : '' );
+				$icon_raw = isset( $menu_item[6] ) ? (string) $menu_item[6] : '';
+				$icon     = self::normalize_menu_icon( $icon_raw );
 
 				$parents[ $slug ] = array(
-					'label' => $label,
-					'icon'  => $icon,
+					'label'    => $label,
+					'icon'     => $icon,
+					'icon_raw' => $icon_raw,
 				);
 
 				$items[]      = array(
-					'slug'   => $slug,
-					'label'  => $label,
-					'icon'   => $icon,
-					'source' => 'top',
+					'slug'     => $slug,
+					'label'    => $label,
+					'icon'     => $icon,
+					'icon_raw' => $icon_raw,
+					'source'   => 'top',
 				);
 				$seen_slugs[] = $slug;
 			}
@@ -1485,9 +1608,10 @@ class EDMINBOOST_Command_Center {
 					continue;
 				}
 
-				$parent_slug  = (string) $parent_slug;
-				$parent_label = isset( $parents[ $parent_slug ]['label'] ) ? $parents[ $parent_slug ]['label'] : $parent_slug;
-				$parent_icon  = isset( $parents[ $parent_slug ]['icon'] ) ? $parents[ $parent_slug ]['icon'] : 'dashicons-admin-generic';
+				$parent_slug   = (string) $parent_slug;
+				$parent_label  = isset( $parents[ $parent_slug ]['label'] ) ? $parents[ $parent_slug ]['label'] : $parent_slug;
+				$parent_icon   = isset( $parents[ $parent_slug ]['icon'] ) ? $parents[ $parent_slug ]['icon'] : 'dashicons-admin-generic';
+				$parent_raw    = isset( $parents[ $parent_slug ]['icon_raw'] ) ? $parents[ $parent_slug ]['icon_raw'] : '';
 
 				foreach ( $submenu_items as $submenu_item ) {
 					if ( empty( $submenu_item[2] ) ) {
@@ -1509,15 +1633,16 @@ class EDMINBOOST_Command_Center {
 					}
 
 					$items[] = array(
-						'slug'   => $slug,
-						'label'  => sprintf(
+						'slug'     => $slug,
+						'label'    => sprintf(
 							/* translators: 1: parent menu label, 2: submenu label */
 							__( '%1$s → %2$s', EDMINBOOST_TEXT_DOMAIN ),
 							$parent_label,
 							$sub_label
 						),
-						'icon'   => $parent_icon,
-						'source' => 'submenu',
+						'icon'     => $parent_icon,
+						'icon_raw' => $parent_raw,
+						'source'   => 'submenu',
 					);
 
 					$seen_slugs[] = $slug;
@@ -1739,23 +1864,376 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
+	 * Whether a raw admin menu icon value is a dashicon slug/class (not an image URL).
+	 *
+	 * @param string $icon Raw menu icon value.
+	 * @return bool
+	 */
+	private static function is_dashicon_menu_source( $icon ) {
+		$icon = trim( (string) $icon );
+
+		if ( '' === $icon || 'none' === $icon ) {
+			return false;
+		}
+
+		if ( false !== strpos( $icon, '://' ) || 0 === strpos( $icon, 'data:' ) ) {
+			return false;
+		}
+
+		return (bool) preg_match( '/\bdashicons-[a-z0-9-]+\b/', $icon ) || (bool) preg_match( '/^[a-z0-9-]+$/', $icon );
+	}
+
+	/**
+	 * Normalize a dashicon class name.
+	 *
+	 * @param mixed  $icon     Raw icon value.
+	 * @param string $fallback Fallback dashicon class.
+	 * @return string
+	 */
+	public static function normalize_dashicon_class( $icon, $fallback = 'dashicons-admin-generic' ) {
+		if ( empty( $icon ) ) {
+			return $fallback;
+		}
+
+		$icon = trim( (string) $icon );
+
+		if ( 'none' === $icon || false !== strpos( $icon, '://' ) || 0 === strpos( $icon, 'data:' ) ) {
+			return $fallback;
+		}
+
+		if ( preg_match( '/\bdashicons-([a-z0-9-]+)\b/', $icon, $matches ) ) {
+			return 'dashicons-' . $matches[1];
+		}
+
+		$icon = preg_replace( '/\s+/', '', $icon );
+		if ( preg_match( '/^[a-z0-9-]+$/', $icon ) ) {
+			return 'dashicons-' . $icon;
+		}
+
+		return $fallback;
+	}
+
+	/**
 	 * Normalize a WordPress admin menu icon value to a dashicons class.
 	 *
 	 * @param mixed $icon Raw menu icon value.
 	 * @return string
 	 */
 	private static function normalize_menu_icon( $icon ) {
-		if ( empty( $icon ) ) {
-			return 'dashicons-admin-generic';
+		return self::normalize_dashicon_class( $icon );
+	}
+
+	/**
+	 * Editable roles list (same source as wp-admin/user-new.php).
+	 *
+	 * @return array<string, array>
+	 */
+	private static function get_editable_roles_list() {
+		if ( ! function_exists( 'get_editable_roles' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/user.php';
 		}
 
-		$icon = (string) $icon;
-
-		if ( false !== strpos( $icon, 'dashicons-' ) ) {
-			return $icon;
+		if ( ! function_exists( 'get_editable_roles' ) ) {
+			return array();
 		}
 
-		return 'dashicons-' . $icon;
+		return get_editable_roles();
+	}
+
+	/**
+	 * System preset id for a WordPress role key.
+	 *
+	 * @param string $role_key Role slug.
+	 * @return string
+	 */
+	public static function get_role_system_preset_id( $role_key ) {
+		return 'system_role_' . sanitize_key( $role_key );
+	}
+
+	/**
+	 * Built-in layout presets for each editable WordPress role.
+	 *
+	 * @return array<string, array>
+	 */
+	public static function get_role_system_presets() {
+		$presets = array();
+
+		foreach ( self::get_editable_roles_list() as $role_key => $role_details ) {
+			$role_key  = sanitize_key( $role_key );
+			$role_name = isset( $role_details['name'] ) ? $role_details['name'] : $role_key;
+			$label     = translate_user_role( $role_name );
+			$preset_id = self::get_role_system_preset_id( $role_key );
+
+			$presets[ $preset_id ] = array(
+				'name'        => $label,
+				'description' => sprintf(
+					/* translators: %s: WordPress user role name */
+					__( 'Top bar layout tuned for the %s role.', EDMINBOOST_TEXT_DOMAIN ),
+					$label
+				),
+				'system'      => true,
+				'category'    => 'workflow',
+				'role'        => $role_key,
+			);
+		}
+
+		return $presets;
+	}
+
+	/**
+	 * Pick a layout template key for a role.
+	 *
+	 * @param string $role_key    Role slug.
+	 * @param array  $role_details Role data from get_editable_roles().
+	 * @return string
+	 */
+	private static function resolve_role_layout_template_key( $role_key, $role_details ) {
+		$known_roles = array(
+			'administrator' => 'administrator',
+			'editor'        => 'editor',
+			'author'        => 'author',
+			'contributor'   => 'contributor',
+			'subscriber'    => 'subscriber',
+			'shop_manager'  => 'shop_manager',
+			'customer'      => 'customer',
+		);
+
+		if ( isset( $known_roles[ $role_key ] ) ) {
+			return $known_roles[ $role_key ];
+		}
+
+		$caps = isset( $role_details['capabilities'] ) && is_array( $role_details['capabilities'] )
+			? $role_details['capabilities']
+			: array();
+
+		if ( ! empty( $caps['manage_options'] ) ) {
+			return 'administrator';
+		}
+
+		if ( ! empty( $caps['edit_others_posts'] ) ) {
+			return 'editor';
+		}
+
+		if ( ! empty( $caps['upload_files'] ) ) {
+			return 'author';
+		}
+
+		if ( ! empty( $caps['edit_posts'] ) ) {
+			return 'contributor';
+		}
+
+		return 'subscriber';
+	}
+
+	/**
+	 * Top bar layout templates keyed by role workflow.
+	 *
+	 * @return array<string, array[]>
+	 */
+	private static function get_role_layout_templates() {
+		return array(
+			'administrator' => array(
+				array(
+					'slug'         => 'index.php',
+					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-dashboard',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'edit.php',
+					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-post',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'plugins.php',
+					'label'        => __( 'Plugins', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-plugins',
+					'interaction'  => 'drawer',
+					'badge_source' => 'updates',
+				),
+				array(
+					'slug'         => 'themes.php',
+					'label'        => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-appearance',
+					'interaction'  => 'drawer',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'tools.php',
+					'label'        => __( 'Tools', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-tools',
+					'interaction'  => 'drawer',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'options-general.php',
+					'label'        => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-settings',
+					'interaction'  => 'drawer',
+					'badge_source' => '',
+				),
+			),
+			'editor' => array(
+				array(
+					'slug'         => 'index.php',
+					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-dashboard',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'edit.php',
+					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-post',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'upload.php',
+					'label'        => __( 'Media', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-media',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'edit.php?post_type=page',
+					'label'        => __( 'Pages', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-page',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'edit-comments.php',
+					'label'        => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-comments',
+					'interaction'  => 'redirect',
+					'badge_source' => 'comments',
+				),
+			),
+			'author' => array(
+				array(
+					'slug'         => 'index.php',
+					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-dashboard',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'edit.php',
+					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-post',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'upload.php',
+					'label'        => __( 'Media', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-media',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'edit-comments.php',
+					'label'        => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-comments',
+					'interaction'  => 'redirect',
+					'badge_source' => 'comments',
+				),
+			),
+			'contributor' => array(
+				array(
+					'slug'         => 'index.php',
+					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-dashboard',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'edit.php',
+					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-admin-post',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+			),
+			'subscriber' => array(
+				array(
+					'slug'         => 'index.php',
+					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-dashboard',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+			),
+			'shop_manager' => array(
+				array(
+					'slug'         => 'index.php',
+					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-dashboard',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'woocommerce',
+					'label'        => __( 'WooCommerce', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-cart',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'edit.php?post_type=shop_order',
+					'label'        => __( 'Orders', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-list-view',
+					'interaction'  => 'redirect',
+					'badge_source' => 'wc_orders',
+				),
+				array(
+					'slug'         => 'edit.php?post_type=product',
+					'label'        => __( 'Products', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-products',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'wc-admin',
+					'label'        => __( 'Analytics', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-chart-bar',
+					'interaction'  => 'drawer',
+					'badge_source' => '',
+				),
+			),
+			'customer' => array(
+				array(
+					'slug'         => 'index.php',
+					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'icon'         => 'dashicons-dashboard',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+			),
+		);
+	}
+
+	/**
+	 * Layout definitions for per-role system presets.
+	 *
+	 * @return array<string, array[]>
+	 */
+	private static function get_role_preset_layout_definitions() {
+		$definitions = array();
+		$templates   = self::get_role_layout_templates();
+
+		foreach ( self::get_editable_roles_list() as $role_key => $role_details ) {
+			$role_key      = sanitize_key( $role_key );
+			$template_key  = self::resolve_role_layout_template_key( $role_key, $role_details );
+			$template_key  = isset( $templates[ $template_key ] ) ? $template_key : 'subscriber';
+			$definitions[ self::get_role_system_preset_id( $role_key ) ] = $templates[ $template_key ];
+		}
+
+		return $definitions;
 	}
 
 	/**
@@ -1764,11 +2242,19 @@ class EDMINBOOST_Command_Center {
 	 * @return array Associative role key => display name.
 	 */
 	public static function get_assignable_roles() {
-		if ( ! function_exists( 'wp_roles' ) ) {
-			return array();
+		$roles = array();
+
+		foreach ( self::get_editable_roles_list() as $role_key => $role_details ) {
+			$role_key = sanitize_key( $role_key );
+
+			if ( '' === $role_key ) {
+				continue;
+			}
+
+			$roles[ $role_key ] = isset( $role_details['name'] ) ? $role_details['name'] : $role_key;
 		}
 
-		return wp_roles()->get_names();
+		return $roles;
 	}
 
 	/**

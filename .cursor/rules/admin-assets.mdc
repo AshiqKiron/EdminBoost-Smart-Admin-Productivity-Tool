@@ -87,6 +87,7 @@ alwaysApply: false
 - Setup wizard: `.edminboost-setup-wizard`, `.edminboost-setup-stepper` (+ `__item`, `__number`, `__label`), `.edminboost-setup-step`, `.edminboost-setup-wizard__footer`, `.edminboost-setup-review__*`, `.edminboost-preset-picker` (+ `--wizard` / `--full`, compact listbox + embedded top bar preview).
 - Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`.
 - Command Center: `.edminboost-cc-wrap`, `.edminboost-cc-nav`, `.edminboost-cc-hero`, `.edminboost-cc-footer`.
+- Billing: `.edminboost-billing-current`, `.edminboost-billing-plans`, `.edminboost-billing-plan` (+ `__badge`, `__header`, `__price`, `__features`, `__footer`, `__upgrade`; modifiers `.is-featured`, `.is-current`).
 - Mapper: `.edminboost-mapper-layout`, `.edminboost-mapper-search`, `.edminboost-discovered-list`, `.edminboost-discovered-item` (+ `__toggle`, `__checkbox`, `__handle`, `__icon`), `.edminboost-topbar-canvas` (+ `.is-drag-over`), `.edminboost-topbar-item`, `.edminboost-item-drawer`, `.edminboost-topbar-summary`.
 - Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-role-matrix`.
 - Appearance / behavior: `.edminboost-badge-preview`, `.edminboost-drawer-width-custom`, `.edminboost-drawer-width-preview__*` (width slider live preview), `.edminboost-animation-speed-picker` (+ `__toggle`, `__list`, `__option`, `__preview`, `__preview-drawer`; duration via `--edminboost-animation-preview-ms`).
@@ -99,7 +100,7 @@ alwaysApply: false
 ### Live admin bar + drawer (`admin/css/edminboost-command-center-bar.css`)
 
 - Admin bar nodes scoped under `#wpadminbar` — not prefixed with `.edminboost-wrap`.
-- Bar classes: `.edminboost-cc-bar-item`, `.edminboost-cc-bar-drawer-trigger`, `.edminboost-cc-bar-badge`, `.edminboost-cc-bar-badge--dot|pill|accent`.
+- Bar classes: `.edminboost-cc-bar-item`, `.edminboost-cc-bar-icon`, `.edminboost-cc-bar-drawer-trigger`, `.edminboost-cc-bar-badge`, `.edminboost-cc-bar-badge--dot|pill|accent`.
 - Drawer shell (footer markup, not inside `#wpadminbar`): `.edminboost-cc-drawer`, `.edminboost-cc-drawer__panel--compact|standard|fullscreen|custom`, optional `.is-glass`, `.is-open`; `body.edminboost-cc-drawer-active` locks scroll.
 - Enqueued by `EDMINBOOST_Command_Center_Bar::enqueue_assets()` when the bar is active (admin + front end when admin bar shows).
 
@@ -139,6 +140,7 @@ alwaysApply: false
 | `edminboost-mapper-page.php` | Top bar / layout studio |
 | `edminboost-presets-page.php` | Layout presets & role matrix |
 | `edminboost-menu-studio-page.php` | Sidebar menu builder |
+| `edminboost-billing-page.php` | Billing plan cards (Free / Pro / Agency) |
 | `edminboost-theme-settings.php` | Visual theme controls (shared partial) |
 
 Use `fieldset` + `legend` for grouped settings; label every input; `screen-reader-text` for icon-only controls.

@@ -16,24 +16,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 $theme_presets  = EDMINBOOST_Theme::get_presets();
 $color_labels   = EDMINBOOST_Theme::get_color_labels();
 $active_preset  = isset( $theme['preset'] ) ? $theme['preset'] : 'default';
-$preset_colors  = isset( $theme_presets[ $active_preset ]['colors'] ) ? $theme_presets[ $active_preset ]['colors'] : $theme_presets['default']['colors'];
-
-if ( EDMINBOOST_Theme::uses_custom_colors( $theme ) ) {
-	$custom_color_map = array(
-		'accent'  => 'custom_accent',
-		'surface' => 'custom_surface',
-		'text'    => 'custom_text',
-		'topbar'  => 'custom_top',
-		'sidebar' => 'custom_sidebar',
-		'content' => 'custom_content',
-	);
-
-	foreach ( $custom_color_map as $color_key => $theme_color_key ) {
-		if ( ! empty( $theme[ $theme_color_key ] ) ) {
-			$preset_colors[ $color_key ] = $theme[ $theme_color_key ];
-		}
-	}
-}
+$preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
+	$active_preset,
+	isset( $theme['mode'] ) ? $theme['mode'] : 'light',
+	$theme
+);
 ?>
 <div class="edminboost-overview-theme-picker">
 	<select

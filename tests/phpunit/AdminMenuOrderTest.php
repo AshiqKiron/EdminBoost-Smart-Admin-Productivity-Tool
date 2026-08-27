@@ -38,9 +38,10 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 			array(
 				__( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . ')',
 				__( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_PRESETS . ')',
-				__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
-				__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
+				__( 'Theme', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
 				__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MAPPER . ')',
+				__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
+				__( 'Billing', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')',
 				__( 'Settings', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . '-settings)',
 			),
 			$labels

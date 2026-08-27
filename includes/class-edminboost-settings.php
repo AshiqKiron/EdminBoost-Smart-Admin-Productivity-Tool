@@ -319,23 +319,21 @@ class EDMINBOOST_Settings {
 		if ( ! empty( $raw['_apply_preset'] ) && empty( $raw['_setup_wizard_save'] ) ) {
 			$preset_id = sanitize_key( $raw['_apply_preset'] );
 
-			if ( 'custom' !== $preset_id ) {
-				if ( 'default' === $preset_id ) {
-					$preset_id = EDMINBOOST_Command_Center::resolve_effective_preset_id( 'default', $output );
-				}
+			if ( 'default' === $preset_id ) {
+				$preset_id = EDMINBOOST_Command_Center::resolve_effective_preset_id( 'default', $output );
+			}
 
-				$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id, $output );
-				if ( ! empty( $items ) ) {
-					$output['top_bar_items']        = self::sanitize_top_bar_items( $items );
-					$output['default_preset']       = $preset_id;
-					$output['onboarding_completed'] = true;
+			$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id, $output );
+			if ( ! empty( $items ) ) {
+				$output['top_bar_items']        = self::sanitize_top_bar_items( $items );
+				$output['default_preset']       = $preset_id;
+				$output['onboarding_completed'] = true;
 
-					$all_presets = EDMINBOOST_Command_Center::get_all_presets();
-					if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
-						$persona = sanitize_key( $all_presets[ $preset_id ]['persona'] );
-						if ( in_array( $persona, $allowed_personas, true ) ) {
-							$output['persona'] = $persona;
-						}
+				$all_presets = EDMINBOOST_Command_Center::get_all_presets();
+				if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
+					$persona = sanitize_key( $all_presets[ $preset_id ]['persona'] );
+					if ( in_array( $persona, $allowed_personas, true ) ) {
+						$output['persona'] = $persona;
 					}
 				}
 			}
@@ -343,7 +341,7 @@ class EDMINBOOST_Settings {
 
 		if ( isset( $raw['default_preset'] ) ) {
 			$default_preset = sanitize_key( $raw['default_preset'] );
-			if ( ! in_array( $default_preset, array( 'default', 'custom' ), true ) ) {
+			if ( 'default' !== $default_preset ) {
 				$output['default_preset'] = $default_preset;
 			}
 		}
@@ -388,7 +386,9 @@ class EDMINBOOST_Settings {
 		}
 
 		if ( isset( $raw['theme'] ) && is_array( $raw['theme'] ) ) {
-			$output['theme'] = EDMINBOOST_Theme::sanitize( $raw['theme'] );
+			$existing_theme = EDMINBOOST_Theme::get_settings( $current );
+			$merged_theme   = array_merge( $existing_theme, $raw['theme'] );
+			$output['theme'] = EDMINBOOST_Theme::sanitize( $merged_theme );
 		}
 
 		if ( isset( $raw['presets'] ) && is_array( $raw['presets'] ) ) {
@@ -789,6 +789,7 @@ class EDMINBOOST_Settings {
 			$seen_slugs[] = $item_key;
 
 			$icon = isset( $item['icon'] ) ? sanitize_text_field( wp_unslash( $item['icon'] ) ) : 'dashicons-admin-generic';
+			$icon = EDMINBOOST_Command_Center::normalize_dashicon_class( $icon );
 			if ( ! in_array( $icon, $allowed_icons, true ) && 0 !== strpos( $icon, 'dashicons-' ) ) {
 				$icon = 'dashicons-admin-generic';
 			}

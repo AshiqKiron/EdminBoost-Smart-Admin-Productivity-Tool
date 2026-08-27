@@ -118,6 +118,7 @@ array(
 - Settings: `edminboost-settings-page.php` — expects `$cc_settings`, `$current_page`; global kill switch + JSON export/import.
 - Feature pages: `edminboost-{productivity,security,performance}-page.php` — include `edminboost-feature-fields.php` with `$section`.
 - White Label: `edminboost-white-label-page.php` — expects `$cc_settings`, `$current_page`; fields under `white_label`.
+- Billing: `edminboost-billing-page.php` — expects `$cc_settings`, `$current_page`; plans from `EDMINBOOST_Command_Center::get_billing_plans()`.
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
 - Setup wizard partials: `edminboost-setup-wizard.php` (includes `edminboost-preset-picker.php`, `edminboost-theme-settings.php`, `edminboost-topbar-summary.php`, `edminboost-setup-review.php`).
 - Document `@var` annotations at the top of partials.

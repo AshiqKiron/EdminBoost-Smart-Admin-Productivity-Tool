@@ -70,24 +70,11 @@ if ( 0 === $top_bar_count ) {
 }
 
 $layout_preview_items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $layout_preset, $cc_settings );
-$theme_preview_colors = isset( $theme_presets[ $active_preset ]['colors'] ) ? $theme_presets[ $active_preset ]['colors'] : $theme_presets['default']['colors'];
-
-if ( EDMINBOOST_Theme::uses_custom_colors( $theme ) ) {
-	$custom_color_map = array(
-		'accent'  => 'custom_accent',
-		'surface' => 'custom_surface',
-		'text'    => 'custom_text',
-		'topbar'  => 'custom_top',
-		'sidebar' => 'custom_sidebar',
-		'content' => 'custom_content',
-	);
-
-	foreach ( $custom_color_map as $color_key => $theme_color_key ) {
-		if ( ! empty( $theme[ $theme_color_key ] ) ) {
-			$theme_preview_colors[ $color_key ] = $theme[ $theme_color_key ];
-		}
-	}
-}
+$theme_preview_colors = EDMINBOOST_Theme::resolve_preview_colors(
+	$active_preset,
+	isset( $theme['mode'] ) ? $theme['mode'] : 'light',
+	$theme
+);
 
 $theme_key = $option_name . '[command_center][theme]';
 ?>
@@ -108,11 +95,13 @@ $theme_key = $option_name . '[command_center][theme]';
 	<input
 		type="hidden"
 		name="<?php echo esc_attr( $theme_key ); ?>[mode]"
+		id="edminboost_theme_mode"
 		value="<?php echo esc_attr( isset( $theme['mode'] ) ? $theme['mode'] : 'light' ); ?>"
 	/>
 	<input
 		type="hidden"
 		name="<?php echo esc_attr( $theme_key ); ?>[font]"
+		id="edminboost_theme_font"
 		value="<?php echo esc_attr( isset( $theme['font'] ) ? $theme['font'] : 'inherit' ); ?>"
 	/>
 	<?php if ( EDMINBOOST_Theme::uses_custom_colors( $theme ) ) : ?>

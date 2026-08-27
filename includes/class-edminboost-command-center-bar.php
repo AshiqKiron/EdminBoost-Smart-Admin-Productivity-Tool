@@ -788,7 +788,8 @@ class EDMINBOOST_Command_Center_Bar {
 	 * @return string
 	 */
 	private static function build_node_title( $icon, $label, $badge_count, $badge_style ) {
-		$title  = '<span class="ab-icon dashicons ' . esc_attr( $icon ) . '" aria-hidden="true"></span>';
+		$icon   = EDMINBOOST_Command_Center::normalize_dashicon_class( $icon );
+		$title  = '<span class="edminboost-cc-bar-icon dashicons ' . esc_attr( $icon ) . '" aria-hidden="true"></span>';
 		$title .= '<span class="ab-label">' . esc_html( $label ) . '</span>';
 
 		if ( $badge_count > 0 ) {

@@ -53,6 +53,14 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
+* Add a Billing page with Free ($0), Pro ($49 / 1 site), and Agency ($99 / 10 sites) plans in the Command Center and EdminBoost sidebar menu.
+* Fix top bar icons not rendering for plugin menus that use SVG or image sidebar icons.
+* Theme the WordPress admin footer when a visual theme is active so it matches the content background.
+* Dashboard color theme previews now respect the saved light/dark mode instead of always showing the dark palette.
+* Add layout presets for every WordPress role shown on Users → Add New (Administrator, Editor, Author, etc.).
+* Remove the Custom option from the layout preset dropdown; use Top Bar to edit layouts that do not match a preset.
+* Fix Dashboard color theme picker not applying the live admin theme preview when a new preset is selected.
+* Remove Productivity, Security, Performance, and White Label from the EdminBoost admin sidebar menu.
 * Add Productivity, Security, Performance, and White Label Command Center pages.
 * Add post duplicator, hide screen options/help, classic widgets, custom admin columns, and menu duplicator.
 * Add security tools: disable XML-RPC, disable feeds, REST API hardening, login/logout redirects, and disable comments.

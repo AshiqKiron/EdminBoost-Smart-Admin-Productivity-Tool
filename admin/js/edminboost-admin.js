@@ -8,6 +8,46 @@
 	var loadCommandCenterPageRef = null;
 	var syncPresetCatalogFn      = null;
 
+	function resolveThemePreviewMode( mode ) {
+		if ( 'auto' !== mode ) {
+			return 'dark' === mode ? 'dark' : 'light';
+		}
+
+		if ( window.matchMedia && window.matchMedia( '(prefers-color-scheme: dark)' ).matches ) {
+			return 'dark';
+		}
+
+		return 'light';
+	}
+
+	function getThemePreviewColors( themePresets, presetId, mode, customColors ) {
+		if ( 'custom' === presetId && customColors ) {
+			return customColors;
+		}
+
+		var config        = themePresets[ presetId ] || themePresets.default || {};
+		var effectiveMode = resolveThemePreviewMode( mode || 'light' );
+
+		if ( config.colorsByMode && config.colorsByMode[ effectiveMode ] ) {
+			return config.colorsByMode[ effectiveMode ];
+		}
+
+		return config.colors || {};
+	}
+
+	function applyThemePreviewColorVars( target, colors ) {
+		if ( ! target || ! colors ) {
+			return;
+		}
+
+		target.style.setProperty( '--eb-op-accent', colors.accent || '#2271b1' );
+		target.style.setProperty( '--eb-op-surface', colors.surface || '#ffffff' );
+		target.style.setProperty( '--eb-op-text', colors.text || '#1d2327' );
+		target.style.setProperty( '--eb-op-top', colors.topbar || '#1d2327' );
+		target.style.setProperty( '--eb-op-sidebar', colors.sidebar || '#1d2327' );
+		target.style.setProperty( '--eb-op-content', colors.content || '#f0f0f1' );
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		var root = document.querySelector( '.edminboost-wrap' );
 
@@ -1930,25 +1970,30 @@
 			return;
 		}
 
-		var skipLiveThemePreview = !! document.getElementById( 'edminboost-dashboard-overview-form' );
-
 		var themeClasses = [ 'edminboost-theme-active' ];
 
 		Object.keys( themePresets ).forEach( function ( presetId ) {
 			themeClasses.push( 'edminboost-theme--' + presetId );
 		} );
 
-		if ( modeSelect ) {
-			Array.prototype.forEach.call( modeSelect.options, function ( option ) {
-				themeClasses.push( 'edminboost-theme-mode--' + option.value );
+		function addThemeClassOptions( element, prefix, fallbackValues ) {
+			if ( element && element.options && element.options.length ) {
+				Array.prototype.forEach.call( element.options, function ( option ) {
+					themeClasses.push( prefix + option.value );
+				} );
+				return;
+			}
+
+			( fallbackValues || [] ).forEach( function ( value ) {
+				themeClasses.push( prefix + value );
 			} );
 		}
 
-		if ( fontSelect ) {
-			Array.prototype.forEach.call( fontSelect.options, function ( option ) {
-				themeClasses.push( 'edminboost-theme-font--' + option.value );
-			} );
-		}
+		addThemeClassOptions( modeSelect, 'edminboost-theme-mode--', [ 'light', 'dark', 'auto' ] );
+		addThemeClassOptions( fontSelect, 'edminboost-theme-font--', [
+			'inherit', 'system', 'arial', 'verdana', 'tahoma', 'trebuchet', 'lucida',
+			'palatino', 'humanist', 'mono', 'serif', 'rounded'
+		] );
 
 		var colorFields = [
 			{ picker: 'edminboost_custom_accent_picker', text: 'edminboost_custom_accent', varName: '--eb-accent' },
@@ -2016,6 +2061,10 @@
 		function syncPresetPickerSelection() {
 			var preset = getSelectedPreset();
 			var config = themePresets[ preset ] || themePresets.default || {};
+			var mode   = modeSelect ? modeSelect.value : 'light';
+			var colors = isCustomPreset()
+				? getCustomColorValues()
+				: getThemePreviewColors( themePresets, preset, mode );
 
 			if ( presetName ) {
 				presetName.textContent = config.name || preset;
@@ -2029,11 +2078,7 @@
 				customWrap.hidden = ! isCustomPreset();
 			}
 
-			if ( isCustomPreset() ) {
-				renderPresetSwatches( presetSwatches, getCustomColorValues() );
-			} else {
-				renderPresetSwatches( presetSwatches, config.colors || {} );
-			}
+			renderPresetSwatches( presetSwatches, colors );
 
 			if ( presetList ) {
 				presetList.querySelectorAll( '.edminboost-theme-preset-picker__option' ).forEach( function ( option ) {
@@ -2120,19 +2165,16 @@
 			var font   = fontSelect ? fontSelect.value : 'inherit';
 			var body   = document.body;
 
-			if ( ! skipLiveThemePreview ) {
-				themeClasses.forEach( function ( className ) {
-					body.classList.remove( className );
-				} );
+			themeClasses.forEach( function ( className ) {
+				body.classList.remove( className );
+			} );
 
-				body.classList.add( 'edminboost-theme-active' );
-				body.classList.add( 'edminboost-theme--' + preset );
-				body.classList.add( 'edminboost-theme-mode--' + mode );
-				body.classList.add( 'edminboost-theme-font--' + font );
+			body.classList.add( 'edminboost-theme-active' );
+			body.classList.add( 'edminboost-theme--' + preset );
+			body.classList.add( 'edminboost-theme-mode--' + mode );
+			body.classList.add( 'edminboost-theme-font--' + font );
 
-				applyCustomColors( body );
-			}
-
+			applyCustomColors( body );
 			syncPresetPickerSelection();
 		}
 
@@ -2195,21 +2237,16 @@
 			}
 		} );
 
-		if ( modeSelect ) {
+		if ( modeSelect && modeSelect.tagName === 'SELECT' ) {
 			modeSelect.addEventListener( 'change', updateThemePreview );
 		}
 
-		if ( fontSelect ) {
+		if ( fontSelect && fontSelect.tagName === 'SELECT' ) {
 			fontSelect.addEventListener( 'change', updateThemePreview );
 		}
 
 		colorFields.forEach( bindColorField );
-
-		if ( skipLiveThemePreview ) {
-			syncPresetPickerSelection();
-		} else {
-			updateThemePreview();
-		}
+		updateThemePreview();
 	}
 
 	function initCommandCenterForms( root ) {
@@ -2778,7 +2815,7 @@
 				}
 
 				var selected = getSelectedPreset();
-				if ( selected && 'default' !== selected && 'custom' !== selected ) {
+				if ( selected && 'default' !== selected ) {
 					defaultField.value = selected;
 				}
 			} );
@@ -3018,20 +3055,19 @@
 			} );
 		}
 
+		function getDashboardThemeMode() {
+			var modeField = document.getElementById( 'edminboost_theme_mode' );
+			return modeField ? modeField.value : 'light';
+		}
+
 		function updateThemeOverviewPreview( presetId ) {
 			if ( ! themePreview ) {
 				return;
 			}
 
-			var config = themePresets[ presetId ] || themePresets.default || {};
-			var colors = config.colors || {};
+			var colors = getThemePreviewColors( themePresets, presetId, getDashboardThemeMode() );
 
-			themePreview.style.setProperty( '--eb-op-accent', colors.accent || '#2271b1' );
-			themePreview.style.setProperty( '--eb-op-surface', colors.surface || '#ffffff' );
-			themePreview.style.setProperty( '--eb-op-text', colors.text || '#1d2327' );
-			themePreview.style.setProperty( '--eb-op-top', colors.topbar || '#1d2327' );
-			themePreview.style.setProperty( '--eb-op-sidebar', colors.sidebar || '#1d2327' );
-			themePreview.style.setProperty( '--eb-op-content', colors.content || '#f0f0f1' );
+			applyThemePreviewColorVars( themePreview, colors );
 
 			var swatches = themePreview.querySelectorAll( '.edminboost-overview-theme-preview__swatch' );
 			var colorKeys = [ 'accent', 'surface', 'text', 'topbar', 'sidebar', 'content' ];
@@ -3091,10 +3127,6 @@
 
 				var presetId = option.getAttribute( 'data-value' ) || '';
 				if ( ! presetId || ! presetCatalog[ presetId ] ) {
-					return;
-				}
-
-				if ( 'custom' === presetId ) {
 					return;
 				}
 
@@ -3161,6 +3193,11 @@
 				closeTopbarLinksList();
 			}
 		} );
+
+		var themePresetSelect = document.getElementById( 'edminboost_theme_preset' );
+		if ( themePresetSelect ) {
+			updateThemeOverviewPreview( themePresetSelect.value );
+		}
 	}
 
 	function initSetupWizard( root ) {
@@ -3410,7 +3447,7 @@
 		form.addEventListener( 'submit', function () {
 			if ( defaultCheckbox && defaultCheckbox.checked && defaultField ) {
 				var presetId = getSelectedPresetId();
-				if ( presetId && 'default' !== presetId && 'custom' !== presetId ) {
+				if ( presetId && 'default' !== presetId ) {
 					defaultField.value = presetId;
 				}
 			}
@@ -3423,13 +3460,13 @@
 				}
 
 				var presetId = getSelectedPresetId();
-				if ( ! presetId || 'custom' === presetId ) {
+				if ( ! presetId ) {
 					return;
 				}
 
 				preparePresetAction( applyField, presetId );
 
-				if ( defaultCheckbox && defaultCheckbox.checked && defaultField && 'default' !== presetId && 'custom' !== presetId ) {
+				if ( defaultCheckbox && defaultCheckbox.checked && defaultField && 'default' !== presetId ) {
 					defaultField.value = presetId;
 				}
 

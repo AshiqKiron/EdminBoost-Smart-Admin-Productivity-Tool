@@ -58,24 +58,29 @@ readme.txt
 - Plugin-screen assets enqueued via `EDMINBOOST_Admin::is_plugin_screen()`. Visual theme CSS (`edminboost-themes`) loads via `EDMINBOOST_Theme::enqueue_assets()` on all wp-admin when enabled (also as dependency of `edminboost-admin` on plugin screens). CC bar CSS loads when active (`is_active()`) or on Layout Studio (`is_mapper_screen()`). CC bar JS + drawer shell load when `has_drawer_items()` **or** on Layout Studio (mapper drawer preview). Drawer shell also renders on `wp_footer` when the admin bar shows on the front end.
 - Privileged AJAX: `wp_ajax_edminboost_cc_drawer_preview` (Layout Studio drawer preview, `EDMINBOOST_Command_Center_Bar::ajax_drawer_preview()`); `wp_ajax_edminboost_save_settings` (CC + settings AJAX save, `EDMINBOOST_Admin::ajax_save_settings()`); `wp_ajax_edminboost_load_cc_page` (CC tab navigation without full reload, `EDMINBOOST_Admin::ajax_load_cc_page()`); `wp_ajax_edminboost_export_settings` / `wp_ajax_edminboost_import_settings` (Settings JSON backup, `EDMINBOOST_Admin::ajax_export_settings()` / `ajax_import_settings()`).
 - No custom tables, REST endpoints, cron, or blocks — options API only (WPForms badge count uses a guarded read on `wpforms_entries` when WPForms is present).
-- No external requests or telemetry. Badge sources read local WP/WC data only.
+- No external requests or telemetry. Badge sources read local WP/WC data only. Billing page is informational UI only — no checkout or license API calls until explicitly implemented.
 
 ## Admin Pages
 
 Use `EDMINBOOST_Admin::PAGE_SLUG` (equals `EDMINBOOST_PLUGIN_SLUG`) — never hardcode slug strings. Command Center suffixes: `EDMINBOOST_Command_Center::PAGE_*`.
 
-| Page | Slug | Renderer |
-|------|------|----------|
-| Dashboard | `PAGE_SLUG` | `render_admin_page()` |
-| Appearance | `PAGE_SLUG . PAGE_APPEARANCE` | `render_appearance_page()` |
-| Top Bar | `PAGE_SLUG . PAGE_MAPPER` | `render_mapper_page()` |
-| Layout Presets | `PAGE_SLUG . PAGE_PRESETS` | `render_presets_page()` |
-| Menu Studio | `PAGE_SLUG . PAGE_MENU_STUDIO` | `render_menu_studio_page()` |
-| Productivity | `PAGE_SLUG . PAGE_PRODUCTIVITY` | `render_productivity_page()` |
-| Security | `PAGE_SLUG . PAGE_SECURITY` | `render_security_page()` |
-| Performance | `PAGE_SLUG . PAGE_PERFORMANCE` | `render_performance_page()` |
-| White Label | `PAGE_SLUG . PAGE_WHITE_LABEL` | `render_white_label_page()` |
-| Settings | `PAGE_SLUG . '-settings'` | `render_settings_page()` |
+**Sidebar** (`get_page_links()` + `normalize_plugin_submenu()`): Dashboard, Layout Presets, Theme (Appearance slug), Top Bar, Menu Studio, Billing, Settings.
+
+**Tab-only** (registered with `add_submenu_page( null, … )`, reachable via CC sub-nav / `get_nav_items()`): Productivity, Security, Performance, White Label.
+
+| Page | Slug | Renderer | Sidebar |
+|------|------|----------|---------|
+| Dashboard | `PAGE_SLUG` | `render_admin_page()` | yes |
+| Layout Presets | `PAGE_SLUG . PAGE_PRESETS` | `render_presets_page()` | yes |
+| Theme (Appearance) | `PAGE_SLUG . PAGE_APPEARANCE` | `render_appearance_page()` | yes |
+| Top Bar | `PAGE_SLUG . PAGE_MAPPER` | `render_mapper_page()` | yes |
+| Menu Studio | `PAGE_SLUG . PAGE_MENU_STUDIO` | `render_menu_studio_page()` | yes |
+| Billing | `PAGE_SLUG . PAGE_BILLING` | `render_billing_page()` | yes |
+| Productivity | `PAGE_SLUG . PAGE_PRODUCTIVITY` | `render_productivity_page()` | tab-only |
+| Security | `PAGE_SLUG . PAGE_SECURITY` | `render_security_page()` | tab-only |
+| Performance | `PAGE_SLUG . PAGE_PERFORMANCE` | `render_performance_page()` | tab-only |
+| White Label | `PAGE_SLUG . PAGE_WHITE_LABEL` | `render_white_label_page()` | tab-only |
+| Settings | `PAGE_SLUG . '-settings'` | `render_settings_page()` | yes |
 
 Legacy slugs: `-onboarding` redirects to Dashboard; `-behavior` redirects to Appearance (hidden submenu entries, not in sidebar).
 

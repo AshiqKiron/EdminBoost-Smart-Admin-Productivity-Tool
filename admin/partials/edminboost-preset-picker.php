@@ -27,8 +27,6 @@ if ( 'wizard' === $preset_picker_mode ) {
 	} else {
 		$selected_preset = 'system_client';
 	}
-} elseif ( 'overview' === $preset_picker_mode ) {
-	$selected_preset = EDMINBOOST_Command_Center::detect_active_layout_preset( $cc_settings );
 } else {
 	$selected_preset = EDMINBOOST_Command_Center::detect_active_layout_preset( $cc_settings );
 	if ( ! isset( $all_presets[ $selected_preset ] ) ) {

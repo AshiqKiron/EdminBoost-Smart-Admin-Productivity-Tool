@@ -91,6 +91,90 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Dashicon normalization handles class strings, bare slugs, and image URLs.
+	 */
+	public function test_normalize_dashicon_class() {
+		$this->assertSame(
+			'dashicons-admin-post',
+			EDMINBOOST_Command_Center::normalize_dashicon_class( 'dashicons dashicons-admin-post' )
+		);
+		$this->assertSame(
+			'dashicons-admin-post',
+			EDMINBOOST_Command_Center::normalize_dashicon_class( 'admin-post' )
+		);
+		$this->assertSame(
+			'dashicons-admin-generic',
+			EDMINBOOST_Command_Center::normalize_dashicon_class( 'data:image/svg+xml;base64,abc' )
+		);
+		$this->assertSame(
+			'dashicons-admin-generic',
+			EDMINBOOST_Command_Center::normalize_dashicon_class( 'https://example.com/icon.png' )
+		);
+	}
+
+	/**
+	 * Preset resolution keeps definition icons when discovered menus use image URLs.
+	 */
+	public function test_resolve_preset_top_bar_items_keeps_definition_icon_for_image_menu_icons() {
+		global $menu;
+
+		$menu = array(
+			array(
+				'Posts',
+				'edit_posts',
+				'edit.php',
+				'Posts',
+				'menu-top',
+				'menu-posts',
+				'data:image/svg+xml;base64,abc',
+			),
+		);
+
+		$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( 'system_client' );
+
+		foreach ( $items as $item ) {
+			if ( 'edit.php' === $item['slug'] ) {
+				$this->assertSame( 'dashicons-admin-post', $item['icon'] );
+				return;
+			}
+		}
+
+		$this->fail( 'Expected edit.php preset item was not resolved.' );
+	}
+
+	/**
+	 * Assignable roles mirror wp-admin/user-new.php editable roles.
+	 */
+	public function test_get_assignable_roles_matches_editable_roles() {
+		if ( ! function_exists( 'get_editable_roles' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+		}
+
+		$editable = get_editable_roles();
+		$roles    = EDMINBOOST_Command_Center::get_assignable_roles();
+
+		$this->assertSame( array_keys( $editable ), array_keys( $roles ) );
+	}
+
+	/**
+	 * Each editable role has a built-in workflow preset and layout definition.
+	 */
+	public function test_role_system_presets_cover_editable_roles() {
+		$presets     = EDMINBOOST_Command_Center::get_role_system_presets();
+		$definitions = EDMINBOOST_Command_Center::get_preset_layout_definitions();
+		$roles       = EDMINBOOST_Command_Center::get_assignable_roles();
+
+		foreach ( $roles as $role_key => $role_name ) {
+			$preset_id = EDMINBOOST_Command_Center::get_role_system_preset_id( $role_key );
+
+			$this->assertArrayHasKey( $preset_id, $presets );
+			$this->assertSame( 'workflow', $presets[ $preset_id ]['category'] );
+			$this->assertArrayHasKey( $preset_id, $definitions );
+			$this->assertNotEmpty( $definitions[ $preset_id ] );
+		}
+	}
+
+	/**
 	 * Page links follow the canonical EdminBoost submenu order.
 	 */
 	public function test_get_page_links() {
@@ -103,12 +187,57 @@ class CommandCenterTest extends Edminboost_Test_Case {
 				$base,
 				$base . EDMINBOOST_Command_Center::PAGE_PRESETS,
 				$base . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
-				$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
 				$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
+				$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
+				$base . EDMINBOOST_Command_Center::PAGE_BILLING,
 				$base . '-settings',
 			),
 			$slugs
 		);
+	}
+
+	/**
+	 * Tab navigation includes sidebar pages plus tab-only feature pages.
+	 */
+	public function test_get_nav_items() {
+		$items = EDMINBOOST_Command_Center::get_nav_items();
+		$slugs = wp_list_pluck( $items, 'slug' );
+		$base  = EDMINBOOST_Admin::PAGE_SLUG;
+
+		$this->assertSame(
+			array(
+				$base,
+				$base . EDMINBOOST_Command_Center::PAGE_PRESETS,
+				$base . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
+				$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
+				$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
+				$base . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY,
+				$base . EDMINBOOST_Command_Center::PAGE_SECURITY,
+				$base . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
+				$base . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
+				$base . EDMINBOOST_Command_Center::PAGE_BILLING,
+				$base . '-settings',
+			),
+			$slugs
+		);
+	}
+
+	/**
+	 * Billing plans include Free, Pro, and Agency tiers.
+	 */
+	public function test_get_billing_plans() {
+		$plans = EDMINBOOST_Command_Center::get_billing_plans();
+
+		$this->assertArrayHasKey( 'free', $plans );
+		$this->assertArrayHasKey( 'pro', $plans );
+		$this->assertArrayHasKey( 'agency', $plans );
+		$this->assertSame( 0, $plans['free']['price'] );
+		$this->assertSame( 49, $plans['pro']['price'] );
+		$this->assertSame( 99, $plans['agency']['price'] );
+		$this->assertSame( 0, $plans['free']['sites'] );
+		$this->assertSame( 1, $plans['pro']['sites'] );
+		$this->assertSame( 10, $plans['agency']['sites'] );
+		$this->assertSame( 'free', EDMINBOOST_Command_Center::get_active_billing_plan() );
 	}
 
 	/**
@@ -167,9 +296,9 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * Active layout detection returns custom for hand-built layouts.
+	 * Active layout detection falls back to custom for hand-built layouts.
 	 */
-	public function test_detect_active_layout_preset_returns_custom() {
+	public function test_detect_active_layout_preset_falls_back_to_custom() {
 		$this->seed_settings(
 			array(
 				'command_center' => array(
@@ -199,6 +328,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertArrayHasKey( 'default', $presets );
 		$this->assertArrayHasKey( 'custom', $presets );
 		$this->assertTrue( ! empty( $presets['default']['virtual'] ) );
+		$this->assertTrue( ! empty( $presets['custom']['virtual'] ) );
 	}
 
 	/**
@@ -395,5 +525,23 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		);
 
 		$this->assertFalse( $result['command_center']['onboarding_completed'] );
+	}
+
+	/**
+	 * CC tab AJAX renders mark the requested page as the active nav tab.
+	 */
+	public function test_capture_cc_page_html_marks_active_nav_tab() {
+		$admin      = new EDMINBOOST_Admin( new EDMINBOOST_Features() );
+		$reflection = new ReflectionClass( $admin );
+		$method     = $reflection->getMethod( 'capture_cc_page_html' );
+		$method->setAccessible( true );
+
+		$page = EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE;
+		$html = $method->invoke( $admin, $page );
+
+		$this->assertMatchesRegularExpression(
+			'/class="edminboost-cc-nav__link is-active"[^>]*data-edminboost-page="' . preg_quote( $page, '/' ) . '"/',
+			$html
+		);
 	}
 }

@@ -1718,8 +1718,14 @@ body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .u
 /* Admin content area (main wp-admin background beside the sidebar) */
 body.edminboost-theme-active #wpcontent,
 body.edminboost-theme-active #wpbody,
-body.edminboost-theme-active #wpbody-content {
+body.edminboost-theme-active #wpbody-content,
+body.edminboost-theme-active #wpfooter {
 	background-color: var( --eb-content-bg, var( --eb-drawer-panel-bg, #f0f0f1 ) );
+}
+
+body.edminboost-theme-active #wpfooter,
+body.edminboost-theme-active #wpfooter a {
+	color: var( --eb-text-muted, #50575e );
 }
 
 .edminboost-theme-preset-picker {

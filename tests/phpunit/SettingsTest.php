@@ -348,6 +348,45 @@ class SettingsTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Dashboard overview theme saves merge with existing theme settings.
+	 */
+	public function test_sanitize_dashboard_theme_save_preserves_existing_theme_fields() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'theme' => array(
+						'preset'           => 'default',
+						'mode'             => 'dark',
+						'font'             => 'mono',
+						'font_size'        => 18,
+						'admin_favicon_id' => 42,
+					),
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'command_center' => array(
+					'theme' => array(
+						'preset' => 'midnight',
+						'mode'   => 'dark',
+						'font'   => 'mono',
+					),
+				),
+			)
+		);
+
+		$theme = $result['command_center']['theme'];
+
+		$this->assertSame( 'midnight', $theme['preset'] );
+		$this->assertSame( 'dark', $theme['mode'] );
+		$this->assertSame( 'mono', $theme['font'] );
+		$this->assertSame( 18, $theme['font_size'] );
+		$this->assertSame( 42, $theme['admin_favicon_id'] );
+	}
+
+	/**
 	 * Users without capability cannot change settings via sanitize.
 	 */
 	public function test_sanitize_requires_capability() {

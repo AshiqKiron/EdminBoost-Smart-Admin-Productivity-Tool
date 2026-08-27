@@ -1,6 +1,6 @@
 ---
-description: Command Center patterns — dashboard, appearance, top bar, presets, menu studio, theme, feature pages, white label, live admin bar
-globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,dashboard-overview,declutter-settings,feature-fields,home-advanced-look,mapper,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,white-label-page,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
+description: Command Center patterns — dashboard, appearance, top bar, presets, menu studio, theme, feature pages, billing, white label, live admin bar
+globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,billing-page,dashboard-overview,declutter-settings,feature-fields,home-advanced-look,mapper,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,white-label-page,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
 alwaysApply: false
 ---
 
@@ -11,7 +11,9 @@ Shared config UI for top-bar layout, presets/roles, and look settings. Data stor
 ## Class: `EDMINBOOST_Command_Center`
 
 - `get_defaults()` / `get_settings()` — merged CC settings
-- `get_page_links()` / `get_nav_items()` — CC sub-nav links (Dashboard, Layout Presets, Appearance, Menu Studio, Top Bar, Productivity, Security, Performance, White Label, Settings)
+- `get_page_links()` — sidebar submenu order (Dashboard, Layout Presets, Theme, Top Bar, Menu Studio, Billing, Settings)
+- `get_nav_items()` — full CC tab nav (`get_page_links()` pages + tab-only Productivity, Security, Performance, White Label)
+- `get_billing_plans()`, `get_active_billing_plan()` — Billing page plan catalog (UI placeholder; checkout not wired yet)
 - `resolve_top_bar_items_for_user( $cc_settings )` — applies `role_assignments` preset layouts at runtime before `role_visibility` filtering
 - `get_menu_studio_defaults()` — default `menu_studio` shape
 - `is_setup_complete()` — whether top bar is configured
@@ -19,13 +21,14 @@ Shared config UI for top-bar layout, presets/roles, and look settings. Data stor
 - `get_preset_categories()`, `get_virtual_layout_presets()`, `get_picker_presets( $include_virtual )` — preset library grouping + virtual `default` / `custom` entries for pickers
 - `detect_active_layout_preset()`, `resolve_effective_preset_id()`, `top_bar_items_match()` — match saved top bar to picker selection
 - `get_preset_layout_definitions()`, `resolve_preset_top_bar_items()`, `apply_preset()` — layout presets
-- `get_personas()`, `get_system_presets()`, `get_all_presets()` — preset catalog
-- `get_discovered_menu_items()` — scans global `$menu` for Top Bar editor
+- `get_personas()`, `get_system_presets()`, `get_role_system_presets()`, `get_all_presets()` — preset catalog (system presets include per-role `system_role_{role}` entries from `get_editable_roles()`)
+- `get_discovered_menu_items()` — scans global `$menu` for Top Bar editor; each item includes `icon` (normalized dashicon) and `icon_raw` (original menu icon value)
+- `normalize_dashicon_class( $icon, $fallback )` — coerce dashicon slugs/classes; image/SVG/data URLs fall back to generic icon
 - `get_assignable_roles()`, `get_badge_sources()`, `get_dashicon_options()` — UI option lists
 - `get_animation_speed_options()`, `get_animation_duration_ms( $speed = '' )` — drawer transition speeds (`fast` 150ms, `normal` 300ms, `slow` 500ms)
 - Drawer width constants: `DRAWER_CUSTOM_WIDTH_MIN` (400), `DRAWER_CUSTOM_WIDTH_MAX` (800), `DRAWER_CUSTOM_WIDTH_DEFAULT` (600)
 
-Page slug suffixes: `PAGE_ONBOARDING` (`-onboarding`, legacy redirect), `PAGE_MAPPER` (`-mapper`), `PAGE_PRESETS` (`-presets`), `PAGE_BEHAVIOR` (`-behavior`, legacy redirect), `PAGE_APPEARANCE` (`-appearance`), `PAGE_MENU_STUDIO` (`-menu`), `PAGE_PRODUCTIVITY` (`-productivity`), `PAGE_SECURITY` (`-security`), `PAGE_PERFORMANCE` (`-performance`), `PAGE_WHITE_LABEL` (`-white-label`).
+Page slug suffixes: `PAGE_ONBOARDING` (`-onboarding`, legacy redirect), `PAGE_MAPPER` (`-mapper`), `PAGE_PRESETS` (`-presets`), `PAGE_BEHAVIOR` (`-behavior`, legacy redirect), `PAGE_APPEARANCE` (`-appearance`, nav label **Theme**), `PAGE_MENU_STUDIO` (`-menu`), `PAGE_PRODUCTIVITY` (`-productivity`), `PAGE_SECURITY` (`-security`), `PAGE_PERFORMANCE` (`-performance`), `PAGE_WHITE_LABEL` (`-white-label`), `PAGE_BILLING` (`-billing`).
 
 ## Live Admin Bar: `EDMINBOOST_Command_Center_Bar`
 
@@ -42,7 +45,8 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 - `is_active()` — plugin enabled, user logged in, admin bar showing, and `get_items_for_current_user()` non-empty.
 - `has_drawer_items()` — any current-user item with `interaction === drawer`.
 - `get_items_for_current_user()` — filters items by `role_visibility` (hidden slugs per role).
-- Node IDs: `edminboost-cc-{md5(slug + "\0" + anchor)}`; meta class `edminboost-cc-bar-item`; drawer triggers add `edminboost-cc-bar-drawer-trigger` and use `href="#"`.
+- Node IDs: `edminboost-cc-{md5(slug + "\0" + anchor)}`; meta class `edminboost-cc-bar-item`; icon markup uses `.edminboost-cc-bar-icon.dashicons` (not core `.ab-icon`); drawer triggers add `edminboost-cc-bar-drawer-trigger` and use `href="#"`.
+- Preset resolution prefers definition icons over discovered icons when the menu source is an image/SVG URL (`is_dashicon_menu_source()`).
 - Badge markup: `edminboost-cc-bar-badge edminboost-cc-bar-badge--{style}`.
 - URLs: `get_item_url( $slug, $anchor )` — `admin_url( $slug )` + optional `#anchor`; full `http(s)` URLs pass through `esc_url()` with optional fragment.
 
@@ -64,7 +68,8 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 - Security: `render_security_page()` → `admin/partials/edminboost-security-page.php` (`$section = security`)
 - Performance: `render_performance_page()` → `admin/partials/edminboost-performance-page.php` (`$section = performance`)
 - White Label: `render_white_label_page()` → `admin/partials/edminboost-white-label-page.php`
-- Appearance: `render_appearance_page()` → `admin/partials/edminboost-appearance-page.php` (visual theme, panel/badges, admin bar declutter)
+- Billing: `render_billing_page()` → `admin/partials/edminboost-billing-page.php` (plan cards from `get_billing_plans()`; upgrade buttons are placeholders until checkout ships)
+- Appearance (Theme): `render_appearance_page()` → `admin/partials/edminboost-appearance-page.php` (visual theme, panel/badges, admin bar declutter)
 - Top Bar: `render_mapper_page()` → `admin/partials/edminboost-mapper-page.php`
 - Layout Presets: `render_presets_page()` → `admin/partials/edminboost-presets-page.php`
 - Menu Studio: `render_menu_studio_page()` → `admin/partials/edminboost-menu-studio-page.php`
@@ -104,7 +109,7 @@ Allowed values:
 
 | Key | Values |
 |-----|--------|
-| `persona` | `client`, `ecommerce`, `developer` (empty = none) |
+| `persona` | `friend`, `family`, `client_site`, `personal`, `small_business`, `nonprofit`, `agency`, `client`, `ecommerce`, `developer` (empty = none) |
 | `interaction` | `redirect`, `drawer` |
 | `drawer_width` | `compact`, `standard`, `fullscreen`, `custom` |
 | `drawer_width_custom` | integer px, clamped 400–800 (default 600) |
@@ -147,7 +152,8 @@ Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when
 | `edminboost-security-page.php` | Security feature page shell |
 | `edminboost-performance-page.php` | Performance feature page shell |
 | `edminboost-white-label-page.php` | White-label branding, login, plugin row, system status footer |
-| `edminboost-appearance-page.php` | Appearance page shell + form |
+| `edminboost-billing-page.php` | Billing plan cards (Free / Pro / Agency); current plan from `get_active_billing_plan()` |
+| `edminboost-appearance-page.php` | Theme (Appearance) page shell + form |
 | `edminboost-preset-picker.php` | Layout preset dropdown (`$preset_picker_mode`: `wizard`, `full`, or `overview`; grouped by `get_preset_categories()`) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list (`$top_bar_items`, optional `$summary_id`) |
 | `edminboost-mapper-page.php` | Drag-and-drop top bar builder |
@@ -199,7 +205,7 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Config under 
 ## Rules
 
 - Read settings via `EDMINBOOST_Command_Center::get_settings()` — not raw `get_option()`.
-- System presets (`system_client`, `system_ecommerce`, `system_developer`) are read-only; custom presets live in `command_center.presets`.
+- System presets (scenario personas, per-role `system_role_{role}` workflow presets, and legacy `system_client` / `system_ecommerce` / `system_developer`) are read-only; custom presets live in `command_center.presets`.
 - `role_assignments` stores preset IDs per role; `resolve_top_bar_items_for_user()` applies the first matching role's preset layout at runtime.
 - `role_visibility` stores hidden slugs per role (inverted from visible checkboxes in UI).
 - Mapper JS (`initMapper`) syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit — includes `anchor` per item.

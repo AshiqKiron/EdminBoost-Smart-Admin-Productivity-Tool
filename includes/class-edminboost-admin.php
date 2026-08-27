@@ -76,20 +76,11 @@ class EDMINBOOST_Admin {
 
 		add_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
 			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
 			array( $this, 'render_appearance_page' )
-		);
-
-		add_submenu_page(
-			self::PAGE_SLUG,
-			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
-			array( $this, 'render_menu_studio_page' )
 		);
 
 		add_submenu_page(
@@ -103,38 +94,20 @@ class EDMINBOOST_Admin {
 
 		add_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
 			EDMINBOOST_Settings::CAPABILITY,
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY,
-			array( $this, 'render_productivity_page' )
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
+			array( $this, 'render_menu_studio_page' )
 		);
 
 		add_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
 			EDMINBOOST_Settings::CAPABILITY,
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY,
-			array( $this, 'render_security_page' )
-		);
-
-		add_submenu_page(
-			self::PAGE_SLUG,
-			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
-			array( $this, 'render_performance_page' )
-		);
-
-		add_submenu_page(
-			self::PAGE_SLUG,
-			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
-			EDMINBOOST_Settings::CAPABILITY,
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
-			array( $this, 'render_white_label_page' )
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING,
+			array( $this, 'render_billing_page' )
 		);
 
 		add_submenu_page(
@@ -144,6 +117,43 @@ class EDMINBOOST_Admin {
 			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . '-settings',
 			array( $this, 'render_settings_page' )
+		);
+
+		// Tab-only pages — registered but not shown in the sidebar.
+		add_submenu_page(
+			null,
+			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY,
+			array( $this, 'render_productivity_page' )
+		);
+
+		add_submenu_page(
+			null,
+			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY,
+			array( $this, 'render_security_page' )
+		);
+
+		add_submenu_page(
+			null,
+			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
+			array( $this, 'render_performance_page' )
+		);
+
+		add_submenu_page(
+			null,
+			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
+			EDMINBOOST_Settings::CAPABILITY,
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
+			array( $this, 'render_white_label_page' )
 		);
 
 		// Legacy slugs — redirect to Dashboard (not shown in sidebar).
@@ -158,8 +168,8 @@ class EDMINBOOST_Admin {
 
 		add_submenu_page(
 			null,
-			__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
 			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BEHAVIOR,
 			array( $this, 'render_behavior_page' )
@@ -386,6 +396,15 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
+	 * Render the Billing page.
+	 *
+	 * @return void
+	 */
+	public function render_billing_page() {
+		$this->render_command_center_page( 'admin/partials/edminboost-billing-page.php' );
+	}
+
+	/**
 	 * Render a Command Center partial.
 	 *
 	 * @param string $partial Relative path under the plugin directory.
@@ -397,9 +416,30 @@ class EDMINBOOST_Admin {
 		}
 
 		$cc_settings  = EDMINBOOST_Command_Center::get_settings();
-		$current_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$current_page = $this->get_current_cc_page_slug();
 
 		include EDMINBOOST_PLUGIN_DIR . $partial;
+	}
+
+	/**
+	 * Resolve the active Command Center admin page slug for nav highlighting.
+	 *
+	 * Uses the global $plugin_page set by wp-admin (or primed during CC tab AJAX).
+	 *
+	 * @return string
+	 */
+	private function get_current_cc_page_slug() {
+		global $plugin_page;
+
+		if ( ! empty( $plugin_page ) ) {
+			return sanitize_key( $plugin_page );
+		}
+
+		if ( isset( $_GET['page'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			return sanitize_key( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		}
+
+		return '';
 	}
 
 	/**
@@ -761,6 +801,9 @@ class EDMINBOOST_Admin {
 			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL:
 				$this->render_white_label_page();
 				break;
+			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING:
+				$this->render_billing_page();
+				break;
 			case self::PAGE_SLUG . '-settings':
 				$this->render_settings_page();
 				break;
@@ -794,7 +837,7 @@ class EDMINBOOST_Admin {
 	private function get_cc_page_title( $page ) {
 		$titles = array(
 			self::PAGE_SLUG                                              => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE => __( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER     => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS    => __( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
@@ -802,6 +845,7 @@ class EDMINBOOST_Admin {
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE  => __( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL  => __( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING      => __( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . '-settings'                                => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
 		);
 

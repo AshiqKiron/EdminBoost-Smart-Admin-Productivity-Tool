@@ -375,13 +375,218 @@ class EDMINBOOST_Theme {
 
 		foreach ( self::get_presets() as $preset_id => $preset ) {
 			$presets[ $preset_id ] = array(
-				'name'        => $preset['name'],
-				'description' => $preset['description'],
-				'colors'      => $preset['colors'],
+				'name'         => $preset['name'],
+				'description'  => $preset['description'],
+				'colors'       => $preset['colors'],
+				'colorsByMode' => array(
+					'light' => self::resolve_preview_colors( $preset_id, 'light' ),
+					'dark'  => self::resolve_preview_colors( $preset_id, 'dark' ),
+				),
 			);
 		}
 
 		return $presets;
+	}
+
+	/**
+	 * Resolve preview swatch colors for a preset and color mode.
+	 *
+	 * @param string     $preset_id Preset key.
+	 * @param string     $mode      light, dark, or auto.
+	 * @param array|null $theme     Optional merged theme settings for custom colors.
+	 * @return array{accent:string,surface:string,text:string,topbar:string,sidebar:string,content:string}
+	 */
+	public static function resolve_preview_colors( $preset_id, $mode = 'light', $theme = null ) {
+		$defaults = array(
+			'accent'  => '#2271b1',
+			'surface' => '#ffffff',
+			'text'    => '#1d2327',
+			'topbar'  => '#1d2327',
+			'sidebar' => '#1d2327',
+			'content' => '#f0f0f1',
+		);
+
+		if ( null === $theme ) {
+			$theme = self::get_settings();
+		} else {
+			$theme = wp_parse_args( $theme, self::get_defaults() );
+		}
+
+		if ( self::uses_custom_colors( $theme ) ) {
+			$presets = self::get_presets();
+			$colors  = isset( $presets['custom']['colors'] ) && is_array( $presets['custom']['colors'] )
+				? $presets['custom']['colors']
+				: array();
+
+			$custom_map = array(
+				'accent'  => 'custom_accent',
+				'surface' => 'custom_surface',
+				'text'    => 'custom_text',
+				'topbar'  => 'custom_top',
+				'sidebar' => 'custom_sidebar',
+				'content' => 'custom_content',
+			);
+
+			foreach ( $custom_map as $color_key => $theme_key ) {
+				if ( ! empty( $theme[ $theme_key ] ) ) {
+					$colors[ $color_key ] = self::sanitize_hex_color( $theme[ $theme_key ] );
+				}
+			}
+
+			return wp_parse_args( array_filter( $colors ), $defaults );
+		}
+
+		$preset_id = sanitize_key( $preset_id );
+		$mode      = sanitize_key( $mode );
+		$presets   = self::get_presets();
+
+		if ( ! isset( $presets[ $preset_id ] ) ) {
+			$preset_id = 'default';
+		}
+
+		if ( 'auto' === $mode ) {
+			$auto_tokens = self::get_css_tokens( $preset_id, 'auto' );
+			if ( ! empty( $auto_tokens ) ) {
+				return wp_parse_args( self::tokens_to_preview_colors( $auto_tokens ), $defaults );
+			}
+		} elseif ( in_array( $mode, array( 'light', 'dark' ), true ) ) {
+			$mode_tokens = self::get_css_tokens( $preset_id, $mode );
+			if ( ! empty( $mode_tokens ) ) {
+				return wp_parse_args( self::tokens_to_preview_colors( $mode_tokens ), $defaults );
+			}
+		}
+
+		$canonical = isset( $presets[ $preset_id ]['colors'] ) && is_array( $presets[ $preset_id ]['colors'] )
+			? $presets[ $preset_id ]['colors']
+			: $presets['default']['colors'];
+
+		return wp_parse_args( $canonical, $defaults );
+	}
+
+	/**
+	 * Map parsed CSS custom properties to preview color tokens.
+	 *
+	 * @param array<string, string> $tokens Parsed --eb-* properties.
+	 * @return array{accent:string,surface:string,text:string,topbar:string,sidebar:string,content:string}
+	 */
+	private static function tokens_to_preview_colors( array $tokens ) {
+		$topbar = self::resolve_token_value( $tokens, '--eb-top-bar-bg', '--eb-drawer-header-bg', '#1d2327' );
+		$sidebar = self::resolve_token_value( $tokens, '--eb-sidebar-bg', '--eb-drawer-header-bg', $topbar );
+		$content = self::resolve_token_value( $tokens, '--eb-content-bg', '--eb-drawer-panel-bg', '#f0f0f1' );
+
+		return array(
+			'accent'  => self::resolve_token_value( $tokens, '--eb-accent', '', '#2271b1' ),
+			'surface' => self::resolve_token_value( $tokens, '--eb-surface', '', '#ffffff' ),
+			'text'    => self::resolve_token_value( $tokens, '--eb-text', '', '#1d2327' ),
+			'topbar'  => $topbar,
+			'sidebar' => $sidebar,
+			'content' => $content,
+		);
+	}
+
+	/**
+	 * Resolve a CSS token, following one var() fallback when needed.
+	 *
+	 * @param array<string, string> $tokens   Token map.
+	 * @param string                $primary  Primary token name.
+	 * @param string                $fallback Fallback token name.
+	 * @param string                $default  Default hex when unresolved.
+	 * @return string
+	 */
+	private static function resolve_token_value( array $tokens, $primary, $fallback = '', $default = '' ) {
+		$value = isset( $tokens[ $primary ] ) ? trim( $tokens[ $primary ] ) : '';
+
+		if ( '' !== $value && 0 !== strpos( $value, 'var(' ) ) {
+			return $value;
+		}
+
+		if ( $fallback && isset( $tokens[ $fallback ] ) ) {
+			$fallback_value = trim( $tokens[ $fallback ] );
+			if ( '' !== $fallback_value && 0 !== strpos( $fallback_value, 'var(' ) ) {
+				return $fallback_value;
+			}
+		}
+
+		return $default;
+	}
+
+	/**
+	 * Get CSS custom properties for a preset and mode from edminboost-themes.css.
+	 *
+	 * @param string $preset_id Preset key.
+	 * @param string $mode      light, dark, or auto.
+	 * @return array<string, string>
+	 */
+	private static function get_css_tokens( $preset_id, $mode ) {
+		$map = self::get_css_token_map();
+
+		return isset( $map[ $preset_id ][ $mode ] ) ? $map[ $preset_id ][ $mode ] : array();
+	}
+
+	/**
+	 * Parse preset/mode CSS custom properties from the theme stylesheet.
+	 *
+	 * @return array<string, array<string, array<string, string>>>
+	 */
+	private static function get_css_token_map() {
+		static $map = null;
+
+		if ( null !== $map ) {
+			return $map;
+		}
+
+		$map  = array();
+		$file = EDMINBOOST_PLUGIN_DIR . 'admin/css/edminboost-themes.css';
+
+		if ( ! is_readable( $file ) ) {
+			return $map;
+		}
+
+		$css = file_get_contents( $file );
+
+		if ( ! is_string( $css ) || '' === $css ) {
+			return $map;
+		}
+
+		if ( ! preg_match_all( '/((?:body\.edminboost-theme--[^{]+)+)\{([^}]*)\}/s', $css, $matches, PREG_SET_ORDER ) ) {
+			return $map;
+		}
+
+		foreach ( $matches as $match ) {
+			$selectors = $match[1];
+			$body      = $match[2];
+
+			if ( false === strpos( $selectors, 'edminboost-theme-mode--' ) ) {
+				continue;
+			}
+
+			$props = array();
+
+			if ( preg_match_all( '/(--eb-[a-z0-9-]+)\s*:\s*([^;]+);/', $body, $prop_matches, PREG_SET_ORDER ) ) {
+				foreach ( $prop_matches as $prop_match ) {
+					$props[ $prop_match[1] ] = trim( $prop_match[2] );
+				}
+			}
+
+			if ( empty( $props ) ) {
+				continue;
+			}
+
+			if ( ! preg_match_all(
+				'/edminboost-theme--([a-z0-9-]+)\.edminboost-theme-mode--(light|dark|auto)/',
+				$selectors,
+				$selector_matches,
+				PREG_SET_ORDER
+			) ) {
+				continue;
+			}
+
+			foreach ( $selector_matches as $selector_match ) {
+				$map[ $selector_match[1] ][ $selector_match[2] ] = $props;
+			}
+		}
+
+		return $map;
 	}
 
 	/**

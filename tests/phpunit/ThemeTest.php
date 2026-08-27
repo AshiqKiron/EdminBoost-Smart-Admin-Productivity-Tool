@@ -103,6 +103,31 @@ class ThemeTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Preview colors follow the active light/dark mode for each preset.
+	 */
+	public function test_resolve_preview_colors_tron_modes() {
+		$light = EDMINBOOST_Theme::resolve_preview_colors( 'tron', 'light' );
+		$dark  = EDMINBOOST_Theme::resolve_preview_colors( 'tron', 'dark' );
+
+		$this->assertSame( '#d0f0ff', $light['content'] );
+		$this->assertSame( '#0099cc', $light['accent'] );
+		$this->assertSame( '#0a0a12', $dark['content'] );
+		$this->assertSame( '#00d4ff', $dark['accent'] );
+	}
+
+	/**
+	 * JS preset catalog includes mode-specific preview colors.
+	 */
+	public function test_get_presets_for_js_includes_colors_by_mode() {
+		$presets = EDMINBOOST_Theme::get_presets_for_js();
+
+		$this->assertArrayHasKey( 'colorsByMode', $presets['tron'] );
+		$this->assertArrayHasKey( 'light', $presets['tron']['colorsByMode'] );
+		$this->assertArrayHasKey( 'dark', $presets['tron']['colorsByMode'] );
+		$this->assertSame( '#d0f0ff', $presets['tron']['colorsByMode']['light']['content'] );
+	}
+
+	/**
 	 * Body classes reflect stored theme.
 	 */
 	public function test_get_body_classes() {
