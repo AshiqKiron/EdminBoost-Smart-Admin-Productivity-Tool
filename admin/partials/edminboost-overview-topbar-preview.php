@@ -8,6 +8,7 @@
  * @var string $preview_id          Root element id.
  * @var string $preview_aria_label  Accessible label for the preview region.
  * @var bool   $show_interaction    Whether to mark drawer vs direct links.
+ * @var bool   $compact_preview     Optional icon-only compact strip (default: labels shown).
  * @var int    $preview_limit       Maximum number of items to show.
  */
 
@@ -19,7 +20,8 @@ $preview_items      = isset( $preview_items ) && is_array( $preview_items ) ? $p
 $preview_id         = isset( $preview_id ) ? $preview_id : 'edminboost-overview-topbar-preview';
 $preview_aria_label = isset( $preview_aria_label ) ? $preview_aria_label : __( 'Top bar preview', EDMINBOOST_TEXT_DOMAIN );
 $show_interaction   = ! empty( $show_interaction );
-$preview_limit      = isset( $preview_limit ) ? max( 1, (int) $preview_limit ) : 6;
+$compact_preview    = ! empty( $compact_preview );
+$preview_limit      = isset( $preview_limit ) ? max( 1, (int) $preview_limit ) : ( $compact_preview ? 10 : 6 );
 $visible_items      = array();
 $overflow_count     = 0;
 
@@ -38,9 +40,9 @@ foreach ( $preview_items as $preview_item ) {
 }
 ?>
 <div
-	class="edminboost-overview-card__preview edminboost-overview-topbar-preview<?php echo empty( $visible_items ) ? ' edminboost-overview-topbar-preview--empty' : ''; ?>"
+	class="edminboost-overview-card__preview edminboost-overview-topbar-preview<?php echo $compact_preview ? ' edminboost-overview-topbar-preview--compact' : ''; ?><?php echo empty( $visible_items ) ? ' edminboost-overview-topbar-preview--empty' : ''; ?>"
 	id="<?php echo esc_attr( $preview_id ); ?>"
-	role="img"
+	role="group"
 	aria-label="<?php echo esc_attr( $preview_aria_label ); ?>"
 >
 	<?php if ( empty( $visible_items ) ) : ?>
@@ -48,9 +50,9 @@ foreach ( $preview_items as $preview_item ) {
 			<?php esc_html_e( 'No links in this preview yet.', EDMINBOOST_TEXT_DOMAIN ); ?>
 		</p>
 	<?php else : ?>
-		<div class="edminboost-overview-topbar-preview__canvas" aria-hidden="true">
-			<span class="edminboost-overview-topbar-preview__brand">
-				<span class="dashicons dashicons-wordpress"></span>
+		<div class="edminboost-overview-topbar-preview__canvas">
+			<span class="edminboost-overview-topbar-preview__tip edminboost-overview-topbar-preview__brand" title="<?php esc_attr_e( 'WordPress', EDMINBOOST_TEXT_DOMAIN ); ?>">
+				<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>
 			</span>
 			<ul class="edminboost-overview-topbar-preview__items">
 				<?php foreach ( $visible_items as $preview_item ) : ?>
@@ -61,7 +63,9 @@ foreach ( $preview_items as $preview_item ) {
 					$is_drawer        = ( 'drawer' === $item_interaction );
 					?>
 					<li class="edminboost-overview-topbar-preview__item<?php echo $is_drawer ? ' is-drawer' : ' is-direct'; ?>">
-						<span class="dashicons <?php echo esc_attr( $item_icon ); ?>" aria-hidden="true"></span>
+						<span class="edminboost-overview-topbar-preview__tip" title="<?php echo esc_attr( $item_label ); ?>">
+							<span class="dashicons <?php echo esc_attr( $item_icon ); ?>" aria-hidden="true"></span>
+						</span>
 						<span class="edminboost-overview-topbar-preview__label"><?php echo esc_html( $item_label ); ?></span>
 						<?php if ( $show_interaction && $is_drawer ) : ?>
 							<span class="edminboost-overview-topbar-preview__badge" aria-hidden="true">
@@ -72,7 +76,16 @@ foreach ( $preview_items as $preview_item ) {
 				<?php endforeach; ?>
 			</ul>
 			<?php if ( $overflow_count > 0 ) : ?>
-				<span class="edminboost-overview-topbar-preview__more">
+				<span
+					class="edminboost-overview-topbar-preview__more"
+					title="<?php echo esc_attr(
+						sprintf(
+							/* translators: %d: number of additional top bar links not shown in the preview */
+							_n( '%d more link', '%d more links', $overflow_count, EDMINBOOST_TEXT_DOMAIN ),
+							(int) $overflow_count
+						)
+					); ?>"
+				>
 					<?php
 					printf(
 						/* translators: %d: number of additional top bar links not shown in the preview */
@@ -82,8 +95,8 @@ foreach ( $preview_items as $preview_item ) {
 					?>
 				</span>
 			<?php endif; ?>
-			<span class="edminboost-overview-topbar-preview__profile">
-				<span class="dashicons dashicons-admin-users"></span>
+			<span class="edminboost-overview-topbar-preview__tip edminboost-overview-topbar-preview__profile" title="<?php esc_attr_e( 'My account', EDMINBOOST_TEXT_DOMAIN ); ?>">
+				<span class="dashicons dashicons-admin-users" aria-hidden="true"></span>
 			</span>
 		</div>
 	<?php endif; ?>

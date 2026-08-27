@@ -48,6 +48,31 @@
 		target.style.setProperty( '--eb-op-content', colors.content || '#f0f0f1' );
 	}
 
+	function getOverviewPreviewStrings() {
+		var strings = edminboostData.strings || {};
+
+		return {
+			wordpressLogo: strings.previewWordPressLogo || 'WordPress',
+			profile: strings.previewProfile || 'My account',
+		};
+	}
+
+	function createTopBarPreviewTip( title, iconClass ) {
+		var tip = document.createElement( 'span' );
+		tip.className = 'edminboost-overview-topbar-preview__tip';
+
+		if ( title ) {
+			tip.setAttribute( 'title', title );
+		}
+
+		var icon = document.createElement( 'span' );
+		icon.className = 'dashicons ' + ( iconClass || 'dashicons-admin-generic' );
+		icon.setAttribute( 'aria-hidden', 'true' );
+		tip.appendChild( icon );
+
+		return tip;
+	}
+
 	document.addEventListener( 'DOMContentLoaded', function () {
 		var root = document.querySelector( '.edminboost-wrap' );
 
@@ -1965,6 +1990,7 @@
 		var customWrap     = document.getElementById( 'edminboost-theme-custom-colors' );
 		var themePresets   = edminboostData.themePresets || {};
 		var colorKeys      = [ 'accent', 'surface', 'text', 'topbar', 'sidebar', 'content' ];
+		var skipLiveThemePreview = document.getElementById( 'edminboost-dashboard-overview-form' );
 
 		if ( ! presetSelect || ! presetPicker ) {
 			return;
@@ -2082,7 +2108,17 @@
 
 			if ( presetList ) {
 				presetList.querySelectorAll( '.edminboost-theme-preset-picker__option' ).forEach( function ( option ) {
-					var isSelected = option.getAttribute( 'data-value' ) === preset;
+					var optionPreset = option.getAttribute( 'data-value' ) || '';
+					var optionSwatches = option.querySelector( '.edminboost-theme-preset-picker__swatches' );
+
+					if ( optionSwatches && optionPreset ) {
+						var optionColors = 'custom' === optionPreset && isCustomPreset()
+							? getCustomColorValues()
+							: getThemePreviewColors( themePresets, optionPreset, mode );
+						renderPresetSwatches( optionSwatches, optionColors );
+					}
+
+					var isSelected = optionPreset === preset;
 					option.classList.toggle( 'is-selected', isSelected );
 					option.setAttribute( 'aria-selected', isSelected ? 'true' : 'false' );
 				} );
@@ -2160,6 +2196,11 @@
 		}
 
 		function updateThemePreview() {
+			if ( skipLiveThemePreview ) {
+				syncPresetPickerSelection();
+				return;
+			}
+
 			var preset = getSelectedPreset();
 			var mode   = modeSelect ? modeSelect.value : 'light';
 			var font   = fontSelect ? fontSelect.value : 'inherit';
@@ -2300,7 +2341,7 @@
 
 	function saveSettingsForm( form, options ) {
 		options = options || {};
-		var submitBtn  = form.querySelector( '[type="submit"]' );
+		var submitBtn  = options.submitBtn || form.querySelector( '[type="submit"]' );
 		var saveConfig = edminboostData.settingsSave;
 
 		if ( typeof form.edminboostSyncHiddenInputs === 'function' ) {
@@ -2400,9 +2441,10 @@
 		var presetDesc     = document.getElementById( 'edminboost-layout-preset-desc' );
 		var defaultField   = document.getElementById( 'edminboost_layout_default_preset' );
 		var defaultCheckbox = document.getElementById( 'edminboost_layout_preset_default_checkbox' );
-		var duplicateBtn   = document.getElementById( 'edminboost-preset-duplicate-btn' );
-		var previewRoot    = root.querySelector( '.edminboost-preset-picker .edminboost-overview-topbar-preview' )
-			|| document.getElementById( 'edminboost-overview-layout-preview' );
+		var previewRoot    = root.querySelector( '.edminboost-preset-picker .edminboost-overview-topbar-preview' );
+		var sidebarPreviewRoot = root.querySelector( '.edminboost-preset-picker .edminboost-overview-sidebar-preview' )
+			|| root.querySelector( '.edminboost-layout-preset-previews .edminboost-overview-sidebar-preview' )
+			|| document.getElementById( 'edminboost-overview-layout-sidebar-preview' );
 		var presetCatalog  = edminboostData.presets || {};
 		var badgeBuiltIn   = edminboostData.strings.presetBadgeBuiltIn || 'Built-in';
 		var badgeSaved     = edminboostData.strings.presetBadgeSaved || 'Saved';
@@ -2451,14 +2493,79 @@
 			}
 		}
 
+		function renderSidebarPreviewNode( previewRoot, items, limit ) {
+			if ( ! previewRoot ) {
+				return;
+			}
+
+			limit    = limit || 8;
+			var visible  = [];
+			var overflow = 0;
+
+			( items || [] ).forEach( function ( item ) {
+				if ( ! item || ! item.slug ) {
+					return;
+				}
+
+				if ( visible.length >= limit ) {
+					overflow += 1;
+					return;
+				}
+
+				visible.push( item );
+			} );
+
+			previewRoot.classList.toggle( 'edminboost-overview-sidebar-preview--empty', ! visible.length );
+
+			if ( ! visible.length ) {
+				previewRoot.innerHTML = '<p class="edminboost-overview-sidebar-preview__empty">' +
+					( edminboostData.strings.emptySidebarPreview || 'No sidebar items in this preview yet.' ) +
+					'</p>';
+				return;
+			}
+
+			var list = document.createElement( 'ul' );
+			list.className = 'edminboost-overview-sidebar-preview__list';
+			list.setAttribute( 'aria-hidden', 'true' );
+
+			visible.forEach( function ( item ) {
+				var li = document.createElement( 'li' );
+				li.className = 'edminboost-overview-sidebar-preview__item';
+
+				var icon = document.createElement( 'span' );
+				icon.className = 'dashicons ' + ( item.icon || 'dashicons-admin-generic' );
+				icon.setAttribute( 'aria-hidden', 'true' );
+				icon.title = item.label || item.slug || '';
+
+				var label = document.createElement( 'span' );
+				label.className = 'edminboost-overview-sidebar-preview__label';
+				label.textContent = item.label || item.slug || '';
+
+				li.appendChild( icon );
+				li.appendChild( label );
+				list.appendChild( li );
+			} );
+
+			if ( overflow > 0 ) {
+				var more = document.createElement( 'li' );
+				more.className = 'edminboost-overview-sidebar-preview__more';
+				more.textContent = '+' + overflow + ' more';
+				list.appendChild( more );
+			}
+
+			previewRoot.innerHTML = '';
+			previewRoot.appendChild( list );
+		}
+
 		function renderTopBarPreview( presetId ) {
 			if ( ! previewRoot ) {
 				return;
 			}
 
+			var isCompact = previewRoot.classList.contains( 'edminboost-overview-topbar-preview--compact' );
 			var preset = presetCatalog[ presetId ] || {};
 			var items  = preset.top_bar_items || [];
-			var limit  = 6;
+			var limit  = isCompact ? 10 : 6;
 			var visible = [];
 			var overflow = 0;
 
@@ -2475,6 +2582,7 @@
 				visible.push( item );
 			} );
 
+			previewRoot.classList.toggle( 'edminboost-overview-topbar-preview--compact', isCompact );
 			previewRoot.classList.toggle( 'edminboost-overview-topbar-preview--empty', ! visible.length );
 
 			if ( ! visible.length ) {
@@ -2486,11 +2594,11 @@
 
 			var canvas = document.createElement( 'div' );
 			canvas.className = 'edminboost-overview-topbar-preview__canvas';
-			canvas.setAttribute( 'aria-hidden', 'true' );
 
-			var brand = document.createElement( 'span' );
-			brand.className = 'edminboost-overview-topbar-preview__brand';
-			brand.innerHTML = '<span class="dashicons dashicons-wordpress"></span>';
+			var previewStrings = getOverviewPreviewStrings();
+
+			var brand = createTopBarPreviewTip( previewStrings.wordpressLogo, 'dashicons-wordpress' );
+			brand.classList.add( 'edminboost-overview-topbar-preview__brand' );
 			canvas.appendChild( brand );
 
 			var list = document.createElement( 'ul' );
@@ -2499,18 +2607,16 @@
 			visible.forEach( function ( item ) {
 				var li = document.createElement( 'li' );
 				var interaction = item.interaction || 'redirect';
+				var itemLabel = item.label || item.slug || '';
 				li.className = 'edminboost-overview-topbar-preview__item ' +
 					( interaction === 'drawer' ? 'is-drawer' : 'is-direct' );
 
-				var icon = document.createElement( 'span' );
-				icon.className = 'dashicons ' + ( item.icon || 'dashicons-admin-generic' );
-				icon.setAttribute( 'aria-hidden', 'true' );
+				li.appendChild( createTopBarPreviewTip( itemLabel, item.icon || 'dashicons-admin-generic' ) );
 
 				var label = document.createElement( 'span' );
 				label.className = 'edminboost-overview-topbar-preview__label';
-				label.textContent = item.label || item.slug || '';
+				label.textContent = itemLabel;
 
-				li.appendChild( icon );
 				li.appendChild( label );
 				list.appendChild( li );
 			} );
@@ -2521,16 +2627,25 @@
 				var more = document.createElement( 'span' );
 				more.className = 'edminboost-overview-topbar-preview__more';
 				more.textContent = '+' + overflow;
+				more.title = overflow === 1 ? '1 more link' : overflow + ' more links';
 				canvas.appendChild( more );
 			}
 
-			var profile = document.createElement( 'span' );
-			profile.className = 'edminboost-overview-topbar-preview__profile';
-			profile.innerHTML = '<span class="dashicons dashicons-admin-users"></span>';
+			var profile = createTopBarPreviewTip( previewStrings.profile, 'dashicons-admin-users' );
+			profile.classList.add( 'edminboost-overview-topbar-preview__profile' );
 			canvas.appendChild( profile );
 
 			previewRoot.innerHTML = '';
 			previewRoot.appendChild( canvas );
+		}
+
+		function renderSidebarPreview( presetId ) {
+			if ( ! sidebarPreviewRoot ) {
+				return;
+			}
+
+			var preset = presetCatalog[ presetId ] || {};
+			renderSidebarPreviewNode( sidebarPreviewRoot, preset.sidebar_items || [], 5 );
 		}
 
 		function syncDefaultCheckbox() {
@@ -2564,10 +2679,6 @@
 				presetDesc.textContent = config.description || '';
 			}
 
-			if ( duplicateBtn ) {
-				duplicateBtn.disabled = system || virtual;
-			}
-
 			if ( presetList ) {
 				presetList.querySelectorAll( '.edminboost-layout-preset-picker__option' ).forEach( function ( option ) {
 					var isSelected = option.getAttribute( 'data-value' ) === preset;
@@ -2577,6 +2688,7 @@
 			}
 
 			renderTopBarPreview( preset );
+			renderSidebarPreview( preset );
 			syncDefaultCheckbox();
 		}
 
@@ -2838,7 +2950,7 @@
 		var topbarToggle       = document.getElementById( 'edminboost_overview_topbar_links_toggle' );
 		var topbarList         = document.getElementById( 'edminboost-overview-topbar-links-list' );
 		var topbarLinksPicker  = document.getElementById( 'edminboost-overview-topbar-links-picker' );
-		var layoutPreview      = document.getElementById( 'edminboost-overview-layout-preview' );
+		var layoutSidebarPreview = document.getElementById( 'edminboost-overview-layout-sidebar-preview' );
 		var themePreview       = document.getElementById( 'edminboost-overview-theme-preview' );
 		var topbarPreview      = document.getElementById( 'edminboost-overview-topbar-preview' );
 		var topbarDesc         = document.getElementById( 'edminboost-overview-topbar-desc' );
@@ -2878,12 +2990,12 @@
 			}
 		}
 
-		function renderTopBarPreviewNode( previewRoot, items ) {
+		function renderSidebarPreviewNode( previewRoot, items, limit ) {
 			if ( ! previewRoot ) {
 				return;
 			}
 
-			var limit    = 6;
+			limit    = limit || 8;
 			var visible  = [];
 			var overflow = 0;
 
@@ -2900,6 +3012,73 @@
 				visible.push( item );
 			} );
 
+			previewRoot.classList.toggle( 'edminboost-overview-sidebar-preview--empty', ! visible.length );
+
+			if ( ! visible.length ) {
+				previewRoot.innerHTML = '<p class="edminboost-overview-sidebar-preview__empty">' +
+					( strings.emptySidebarPreview || 'No sidebar items in this preview yet.' ) +
+					'</p>';
+				return;
+			}
+
+			var list = document.createElement( 'ul' );
+			list.className = 'edminboost-overview-sidebar-preview__list';
+			list.setAttribute( 'aria-hidden', 'true' );
+
+			visible.forEach( function ( item ) {
+				var li = document.createElement( 'li' );
+				li.className = 'edminboost-overview-sidebar-preview__item';
+
+				var icon = document.createElement( 'span' );
+				icon.className = 'dashicons ' + ( item.icon || 'dashicons-admin-generic' );
+				icon.setAttribute( 'aria-hidden', 'true' );
+				icon.title = item.label || item.slug || '';
+
+				var label = document.createElement( 'span' );
+				label.className = 'edminboost-overview-sidebar-preview__label';
+				label.textContent = item.label || item.slug || '';
+
+				li.appendChild( icon );
+				li.appendChild( label );
+				list.appendChild( li );
+			} );
+
+			if ( overflow > 0 ) {
+				var more = document.createElement( 'li' );
+				more.className = 'edminboost-overview-sidebar-preview__more';
+				more.textContent = '+' + overflow + ' more';
+				list.appendChild( more );
+			}
+
+			previewRoot.innerHTML = '';
+			previewRoot.appendChild( list );
+		}
+
+		function renderTopBarPreviewNode( previewRoot, items, options ) {
+			if ( ! previewRoot ) {
+				return;
+			}
+
+			options  = options || {};
+			var isCompact = !! options.compact;
+			var limit    = options.limit || ( isCompact ? 10 : 6 );
+			var visible  = [];
+			var overflow = 0;
+
+			( items || [] ).forEach( function ( item ) {
+				if ( ! item || ! item.slug ) {
+					return;
+				}
+
+				if ( visible.length >= limit ) {
+					overflow += 1;
+					return;
+				}
+
+				visible.push( item );
+			} );
+
+			previewRoot.classList.toggle( 'edminboost-overview-topbar-preview--compact', isCompact );
 			previewRoot.classList.toggle( 'edminboost-overview-topbar-preview--empty', ! visible.length );
 
 			if ( ! visible.length ) {
@@ -2911,11 +3090,11 @@
 
 			var canvas = document.createElement( 'div' );
 			canvas.className = 'edminboost-overview-topbar-preview__canvas';
-			canvas.setAttribute( 'aria-hidden', 'true' );
 
-			var brand = document.createElement( 'span' );
-			brand.className = 'edminboost-overview-topbar-preview__brand';
-			brand.innerHTML = '<span class="dashicons dashicons-wordpress"></span>';
+			var previewStrings = getOverviewPreviewStrings();
+
+			var brand = createTopBarPreviewTip( previewStrings.wordpressLogo, 'dashicons-wordpress' );
+			brand.classList.add( 'edminboost-overview-topbar-preview__brand' );
 			canvas.appendChild( brand );
 
 			var list = document.createElement( 'ul' );
@@ -2924,18 +3103,16 @@
 			visible.forEach( function ( item ) {
 				var li = document.createElement( 'li' );
 				var interaction = item.interaction || 'redirect';
+				var itemLabel = item.label || item.slug || '';
 				li.className = 'edminboost-overview-topbar-preview__item ' +
 					( interaction === 'drawer' ? 'is-drawer' : 'is-direct' );
 
-				var icon = document.createElement( 'span' );
-				icon.className = 'dashicons ' + ( item.icon || 'dashicons-admin-generic' );
-				icon.setAttribute( 'aria-hidden', 'true' );
+				li.appendChild( createTopBarPreviewTip( itemLabel, item.icon || 'dashicons-admin-generic' ) );
 
 				var label = document.createElement( 'span' );
 				label.className = 'edminboost-overview-topbar-preview__label';
-				label.textContent = item.label || item.slug || '';
+				label.textContent = itemLabel;
 
-				li.appendChild( icon );
 				li.appendChild( label );
 				list.appendChild( li );
 			} );
@@ -2946,12 +3123,12 @@
 				var more = document.createElement( 'span' );
 				more.className = 'edminboost-overview-topbar-preview__more';
 				more.textContent = '+' + overflow;
+				more.title = overflow === 1 ? '1 more link' : overflow + ' more links';
 				canvas.appendChild( more );
 			}
 
-			var profile = document.createElement( 'span' );
-			profile.className = 'edminboost-overview-topbar-preview__profile';
-			profile.innerHTML = '<span class="dashicons dashicons-admin-users"></span>';
+			var profile = createTopBarPreviewTip( previewStrings.profile, 'dashicons-admin-users' );
+			profile.classList.add( 'edminboost-overview-topbar-preview__profile' );
 			canvas.appendChild( profile );
 
 			previewRoot.innerHTML = '';
@@ -3080,9 +3257,16 @@
 			} );
 		}
 
+		function syncLayoutOverview( preset ) {
+			var items        = preset.top_bar_items || [];
+			var sidebarItems = preset.sidebar_items || [];
+
+			renderSidebarPreviewNode( layoutSidebarPreview, sidebarItems, 5 );
+			syncTopBarOverview( items );
+		}
+
 		function syncTopBarOverview( items ) {
-			renderTopBarPreviewNode( topbarPreview, items );
-			renderTopBarPreviewNode( layoutPreview, items );
+			renderTopBarPreviewNode( topbarPreview, items, { compact: true } );
 
 			if ( topbarDesc ) {
 				topbarDesc.textContent = buildTopBarDescription( items );
@@ -3138,9 +3322,7 @@
 					saveDashboardOverview( {
 						message: strings.presetApplied || 'Preset applied.',
 						onSuccess: function () {
-							var preset = presetCatalog[ presetId ] || {};
-							var items  = preset.top_bar_items || [];
-							syncTopBarOverview( items );
+							window.location.reload();
 						}
 					} );
 				}, 0 );
@@ -3295,9 +3477,13 @@
 			var itemCount  = ( presetCatalog[ layoutId ] && presetCatalog[ layoutId ].top_bar_items )
 				? presetCatalog[ layoutId ].top_bar_items.length
 				: 0;
+			var sidebarCount = ( presetCatalog[ layoutId ] && presetCatalog[ layoutId ].sidebar_items )
+				? presetCatalog[ layoutId ].sidebar_items.length
+				: 0;
 
 			var layoutReview = document.getElementById( 'edminboost-review-layout' );
 			var themeReview  = document.getElementById( 'edminboost-review-theme' );
+			var sidebarReview = document.getElementById( 'edminboost-review-sidebar' );
 			var topbarReview = document.getElementById( 'edminboost-review-topbar' );
 
 			if ( layoutReview ) {
@@ -3305,6 +3491,11 @@
 			}
 			if ( themeReview ) {
 				themeReview.textContent = themeName;
+			}
+			if ( sidebarReview ) {
+				sidebarReview.textContent = sidebarCount
+					? String( sidebarCount ) + ( sidebarCount === 1 ? ' item' : ' items' )
+					: '—';
 			}
 			if ( topbarReview ) {
 				topbarReview.textContent = itemCount
@@ -3405,11 +3596,14 @@
 	function initPresets( root ) {
 		var form            = document.getElementById( 'edminboost-presets-form' );
 		var applyField      = document.getElementById( 'edminboost_apply_preset' );
-		var duplicateField  = document.getElementById( 'edminboost_duplicate_preset' );
 		var saveNameField   = document.getElementById( 'edminboost_save_custom_preset_name' );
 		var savePresetBtn   = document.getElementById( 'edminboost-save-preset-btn' );
+		var savePresetRoot  = document.getElementById( 'edminboost-save-preset' );
+		var savePresetForm  = document.getElementById( 'edminboost-save-preset-form' );
+		var savePresetInput = document.getElementById( 'edminboost_save_preset_name_input' );
+		var savePresetConfirmBtn = document.getElementById( 'edminboost-save-preset-confirm-btn' );
+		var savePresetCancelBtn  = document.getElementById( 'edminboost-save-preset-cancel-btn' );
 		var applyBtn        = document.getElementById( 'edminboost-preset-apply-btn' );
-		var duplicateBtn    = document.getElementById( 'edminboost-preset-duplicate-btn' );
 		var exportBtn       = document.getElementById( 'edminboost-preset-export-btn' );
 		var layoutSelect    = document.getElementById( 'edminboost_layout_preset' );
 		var defaultField    = document.getElementById( 'edminboost_layout_default_preset' );
@@ -3427,9 +3621,6 @@
 		function clearActionFields() {
 			if ( applyField ) {
 				applyField.value = '';
-			}
-			if ( duplicateField ) {
-				duplicateField.value = '';
 			}
 			if ( saveNameField ) {
 				saveNameField.value = '';
@@ -3471,48 +3662,87 @@
 				}
 
 				saveSettingsForm( form, {
-					onSuccess: clearActionFields
+					onSuccess: function () {
+						clearActionFields();
+						window.location.reload();
+					}
 				} );
 			} );
 		}
 
-		if ( duplicateBtn ) {
-			duplicateBtn.addEventListener( 'click', function () {
-				if ( ! duplicateField || duplicateBtn.disabled ) {
-					return;
-				}
+		function openSavePresetForm() {
+			if ( ! savePresetRoot || ! savePresetForm ) {
+				return;
+			}
 
-				var presetId = getSelectedPresetId();
-				if ( ! presetId ) {
-					return;
-				}
+			savePresetRoot.classList.add( 'is-editing' );
 
-				preparePresetAction( duplicateField, presetId );
-				saveSettingsForm( form, {
-					onSuccess: clearActionFields
-				} );
+			if ( savePresetInput ) {
+				savePresetInput.value = '';
+				savePresetInput.focus();
+			}
+		}
+
+		function closeSavePresetForm() {
+			if ( ! savePresetRoot ) {
+				return;
+			}
+
+			savePresetRoot.classList.remove( 'is-editing' );
+
+			if ( savePresetInput ) {
+				savePresetInput.value = '';
+			}
+		}
+
+		function submitSavePreset() {
+			if ( ! form || ! saveNameField || ! savePresetInput ) {
+				return;
+			}
+
+			var name = savePresetInput.value.trim();
+			if ( ! name ) {
+				showFormNotice(
+					form,
+					'error',
+					edminboostData.strings.presetNameRequired || 'Enter a name for your preset.'
+				);
+				savePresetInput.focus();
+				return;
+			}
+
+			preparePresetAction( saveNameField, name );
+			saveSettingsForm( form, {
+				submitBtn: savePresetConfirmBtn,
+				message: edminboostData.strings.presetSaved || 'Preset saved.',
+				onSuccess: function () {
+					clearActionFields();
+					closeSavePresetForm();
+				}
 			} );
 		}
 
 		if ( savePresetBtn ) {
-			savePresetBtn.addEventListener( 'click', function () {
-				if ( ! form || ! saveNameField ) {
-					return;
+			savePresetBtn.addEventListener( 'click', openSavePresetForm );
+		}
+
+		if ( savePresetCancelBtn ) {
+			savePresetCancelBtn.addEventListener( 'click', closeSavePresetForm );
+		}
+
+		if ( savePresetConfirmBtn ) {
+			savePresetConfirmBtn.addEventListener( 'click', submitSavePreset );
+		}
+
+		if ( savePresetInput ) {
+			savePresetInput.addEventListener( 'keydown', function ( event ) {
+				if ( event.key === 'Enter' ) {
+					event.preventDefault();
+					submitSavePreset();
+				} else if ( event.key === 'Escape' ) {
+					event.preventDefault();
+					closeSavePresetForm();
 				}
-
-				var name = window.prompt(
-					edminboostData.strings.presetNameRequired || 'Enter a name for your preset.',
-					''
-				);
-
-				if ( ! name || ! name.trim() ) {
-					return;
-				}
-
-				preparePresetAction( saveNameField, name.trim() );
-				saveSettingsForm( form, {
-					onSuccess: clearActionFields
-				} );
 			} );
 		}
 
@@ -3525,6 +3755,8 @@
 					name: preset.name || presetId,
 					description: preset.description || '',
 					top_bar_items: preset.top_bar_items || [],
+					menu_studio: preset.menu_studio || {},
+					sidebar_items: preset.sidebar_items || [],
 					exported: new Date().toISOString(),
 					source: 'EdminBoost'
 				};
@@ -3537,6 +3769,129 @@
 				URL.revokeObjectURL( url );
 			} );
 		}
+
+		initRoleMatrix( form, presetCatalog );
+	}
+
+	/**
+	 * Sync role visibility checkboxes with assigned layout presets.
+	 *
+	 * @param {HTMLFormElement} form Presets page form.
+	 * @param {Object} presetCatalog Resolved preset layouts from edminboostData.presets.
+	 */
+		function initRoleMatrix( form, presetCatalog ) {
+		var matrix = form.querySelector( '.edminboost-role-matrix' );
+
+		if ( ! matrix ) {
+			return;
+		}
+
+		var roleMatrixData     = edminboostData.roleMatrix || {};
+		var protectedSlugs     = roleMatrixData.protectedSlugs || [];
+		var protectedByRole    = roleMatrixData.protectedSlugsByRole || {};
+		var accessibleByRole   = roleMatrixData.accessibleSlugsByRole || {};
+
+		function extractSlugs( items ) {
+			var slugs = [];
+
+			( items || [] ).forEach( function ( item ) {
+				if ( item && item.slug ) {
+					slugs.push( item.slug );
+				}
+			} );
+
+			return slugs;
+		}
+
+		function getRoleKey( row ) {
+			return row ? ( row.getAttribute( 'data-edminboost-role' ) || '' ) : '';
+		}
+
+		function getAccessibleSlugs( roleKey ) {
+			return accessibleByRole[ roleKey ] || [];
+		}
+
+		function isProtectedSlug( slug, roleKey ) {
+			var list = protectedByRole[ roleKey ] || protectedSlugs;
+
+			return list.indexOf( slug ) !== -1;
+		}
+
+		function getRoleLayoutSlugs( presetId, roleKey ) {
+			var preset;
+			var slugs;
+			var accessible = getAccessibleSlugs( roleKey );
+
+			if ( ! presetId ) {
+				preset = presetCatalog.custom || {};
+			} else {
+				preset = presetCatalog[ presetId ] || {};
+			}
+
+			if ( preset.visible_top_level_menu_slugs && preset.visible_top_level_menu_slugs.length ) {
+				slugs = preset.visible_top_level_menu_slugs.slice();
+			} else if ( preset.visible_menu_slugs && preset.visible_menu_slugs.length ) {
+				slugs = preset.visible_menu_slugs.slice();
+			} else {
+				slugs = extractSlugs( preset.top_bar_items );
+			}
+
+			if ( ! accessible.length ) {
+				return slugs;
+			}
+
+			return slugs.filter( function ( slug ) {
+				return accessible.indexOf( slug ) !== -1;
+			} );
+		}
+
+		function syncRoleRowVisibility( selectEl, resetVisibility ) {
+			var row = selectEl.closest( '.edminboost-role-matrix__row' );
+
+			if ( ! row ) {
+				return;
+			}
+
+			var roleKey     = getRoleKey( row );
+			var presetId    = selectEl.value;
+			var layoutSlugs = getRoleLayoutSlugs( presetId, roleKey );
+			var hasPreset   = presetId !== '';
+
+			row.querySelectorAll( '.edminboost-role-matrix__check input[type="checkbox"]:not(:disabled)' ).forEach( function ( input ) {
+				var slug          = input.value;
+				var inLayout      = layoutSlugs.indexOf( slug ) !== -1;
+				var cell          = input.closest( '.edminboost-role-matrix__check' );
+				var protectedSlug = isProtectedSlug( slug, roleKey );
+
+				if ( protectedSlug ) {
+					input.checked = true;
+					if ( cell ) {
+						cell.classList.remove( 'is-not-in-layout' );
+					}
+					return;
+				}
+
+				var unavailable = hasPreset && ! inLayout;
+
+				if ( cell ) {
+					cell.classList.toggle( 'is-not-in-layout', unavailable );
+				}
+
+				if ( resetVisibility ) {
+					input.checked = ! unavailable;
+				} else if ( unavailable ) {
+					input.checked = false;
+				}
+			} );
+		}
+
+		matrix.querySelectorAll( '.edminboost-role-preset-select' ).forEach( function ( selectEl ) {
+			syncRoleRowVisibility( selectEl, false );
+
+			selectEl.addEventListener( 'change', function () {
+				syncRoleRowVisibility( selectEl, true );
+			} );
+		} );
 	}
 
 	function initBackupSettings( root ) {

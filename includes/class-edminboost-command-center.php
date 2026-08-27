@@ -17,6 +17,25 @@ if ( ! defined( 'ABSPATH' ) ) {
 class EDMINBOOST_Command_Center {
 
 	/**
+	 * Snapshot of the admin menu captured before Menu Studio filters it.
+	 *
+	 * @var array|null
+	 */
+	private static $discovery_snapshot = null;
+
+	/**
+	 * Reset cached menu discovery data.
+	 *
+	 * Used by the test suite when admin menu globals are manipulated between tests.
+	 *
+	 * @return void
+	 */
+	public static function reset_static_caches() {
+		self::$discovery_snapshot  = null;
+		self::$menu_capability_map = null;
+	}
+
+	/**
 	 * Onboarding wizard page slug suffix.
 	 *
 	 * @var string
@@ -285,7 +304,7 @@ class EDMINBOOST_Command_Center {
 			),
 			array(
 				'slug'  => $base . self::PAGE_PRESETS,
-				'label' => __( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_APPEARANCE,
@@ -325,7 +344,7 @@ class EDMINBOOST_Command_Center {
 			),
 			array(
 				'slug'  => $base . self::PAGE_PRESETS,
-				'label' => __( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_APPEARANCE,
@@ -383,8 +402,9 @@ class EDMINBOOST_Command_Center {
 				'description'  => __( 'Core Command Center tools on unlimited WordPress sites.', EDMINBOOST_TEXT_DOMAIN ),
 				'features'     => array(
 					__( 'Dashboard setup wizard', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Layout presets and top bar builder', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Visual theme presets', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Top bar builder', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Default and by-role layout presets', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Default, Midnight, Terminal, and Custom theme presets', EDMINBOOST_TEXT_DOMAIN ),
 					__( 'Productivity, security, and performance tools', EDMINBOOST_TEXT_DOMAIN ),
 				),
 				'featured'     => false,
@@ -399,6 +419,8 @@ class EDMINBOOST_Command_Center {
 				'description'  => __( 'Premium admin customization for one production site.', EDMINBOOST_TEXT_DOMAIN ),
 				'features'     => array(
 					__( 'Everything in Free', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'By use case layout presets and saved layouts', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Full visual theme library (20+ skins)', EDMINBOOST_TEXT_DOMAIN ),
 					__( 'Menu Studio sidebar builder', EDMINBOOST_TEXT_DOMAIN ),
 					__( 'White-label branding and login screen', EDMINBOOST_TEXT_DOMAIN ),
 					__( 'Priority email support', EDMINBOOST_TEXT_DOMAIN ),
@@ -652,7 +674,7 @@ class EDMINBOOST_Command_Center {
 			),
 			'custom'  => array(
 				'name'        => __( 'Custom', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Top bar links you configured in the Top Bar editor.', EDMINBOOST_TEXT_DOMAIN ),
+				'description' => __( 'Fine-tune the top bar and sidebar in Top Bar and Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
 				'virtual'     => true,
 				'category'    => 'source',
 			),
@@ -766,23 +788,84 @@ class EDMINBOOST_Command_Center {
 			return 'default';
 		}
 
+		$current_menu = isset( $cc_settings['menu_studio'] ) && is_array( $cc_settings['menu_studio'] )
+			? $cc_settings['menu_studio']
+			: self::get_menu_studio_defaults();
+
 		$default_preset = self::resolve_effective_preset_id( 'default', $cc_settings );
 		$default_items  = self::resolve_preset_top_bar_items( $default_preset, $cc_settings );
+		$default_menu   = self::resolve_preset_menu_studio( $default_preset, $cc_settings );
 
-		if ( self::top_bar_items_match( $current, $default_items ) ) {
+		if (
+			self::top_bar_items_match( $current, $default_items )
+			&& self::menu_studio_settings_match( $current_menu, $default_menu )
+		) {
 			return 'default';
 		}
 
 		foreach ( self::get_all_presets() as $preset_id => $preset ) {
 			unset( $preset );
 			$items = self::resolve_preset_top_bar_items( $preset_id, $cc_settings );
+			$menu  = self::resolve_preset_menu_studio( $preset_id, $cc_settings );
 
-			if ( self::top_bar_items_match( $current, $items ) ) {
+			if (
+				self::top_bar_items_match( $current, $items )
+				&& self::menu_studio_settings_match( $current_menu, $menu )
+			) {
 				return $preset_id;
 			}
 		}
 
 		return 'custom';
+	}
+
+	/**
+	 * Whether two Menu Studio configuration snapshots are equivalent for preset matching.
+	 *
+	 * @param array $left  First menu_studio settings.
+	 * @param array $right Second menu_studio settings.
+	 * @return bool
+	 */
+	public static function menu_studio_settings_match( $left, $right ) {
+		$left_enabled  = ! empty( $left['enabled'] );
+		$right_enabled = ! empty( $right['enabled'] );
+
+		if ( $left_enabled !== $right_enabled ) {
+			return false;
+		}
+
+		if ( ! $left_enabled ) {
+			return true;
+		}
+
+		$left_order   = isset( $left['order'] ) && is_array( $left['order'] ) ? $left['order'] : array();
+		$right_order  = isset( $right['order'] ) && is_array( $right['order'] ) ? $right['order'] : array();
+		$left_hidden  = isset( $left['hidden_items'] ) && is_array( $left['hidden_items'] ) ? $left['hidden_items'] : array();
+		$right_hidden = isset( $right['hidden_items'] ) && is_array( $right['hidden_items'] ) ? $right['hidden_items'] : array();
+		$left_sub     = isset( $left['submenu_order'] ) && is_array( $left['submenu_order'] ) ? $left['submenu_order'] : array();
+		$right_sub    = isset( $right['submenu_order'] ) && is_array( $right['submenu_order'] ) ? $right['submenu_order'] : array();
+		$left_custom  = isset( $left['custom_items'] ) && is_array( $left['custom_items'] ) ? $left['custom_items'] : array();
+		$right_custom = isset( $right['custom_items'] ) && is_array( $right['custom_items'] ) ? $right['custom_items'] : array();
+
+		$left_custom_ids  = array();
+		$right_custom_ids = array();
+
+		foreach ( $left_custom as $item ) {
+			if ( ! empty( $item['id'] ) ) {
+				$left_custom_ids[] = sanitize_key( $item['id'] );
+			}
+		}
+
+		foreach ( $right_custom as $item ) {
+			if ( ! empty( $item['id'] ) ) {
+				$right_custom_ids[] = sanitize_key( $item['id'] );
+			}
+		}
+
+		return $left_order === $right_order
+			&& $left_hidden === $right_hidden
+			&& $left_sub === $right_sub
+			&& $left_custom_ids === $right_custom_ids;
 	}
 
 	/**
@@ -1274,6 +1357,519 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
+	 * Resolve Menu Studio settings for the current user, honoring role preset assignments.
+	 *
+	 * @param array|null $cc_settings Optional CC settings.
+	 * @return array
+	 */
+	public static function resolve_menu_studio_for_user( $cc_settings = null ) {
+		if ( null === $cc_settings ) {
+			$cc_settings = self::get_settings();
+		}
+
+		$defaults    = self::get_menu_studio_defaults();
+		$menu_studio = isset( $cc_settings['menu_studio'] ) && is_array( $cc_settings['menu_studio'] )
+			? wp_parse_args( $cc_settings['menu_studio'], $defaults )
+			: $defaults;
+
+		$user = wp_get_current_user();
+		if ( empty( $user->roles ) ) {
+			return $menu_studio;
+		}
+
+		$assignments = isset( $cc_settings['role_assignments'] ) && is_array( $cc_settings['role_assignments'] )
+			? $cc_settings['role_assignments']
+			: array();
+
+		foreach ( $user->roles as $role ) {
+			if ( empty( $assignments[ $role ] ) ) {
+				continue;
+			}
+
+			$menu_studio = self::resolve_preset_menu_studio( $assignments[ $role ], $cc_settings );
+			break;
+		}
+
+		return self::apply_role_visibility_to_menu_studio( $menu_studio, $user->roles, $cc_settings );
+	}
+
+	/**
+	 * Cached map of admin menu slug => required capability.
+	 *
+	 * @var array<string, string>|null
+	 */
+	private static $menu_capability_map = null;
+
+	/**
+	 * Build a map of admin menu slugs to their required capabilities.
+	 *
+	 * @return array<string, string>
+	 */
+	public static function get_menu_capability_map() {
+		if ( null !== self::$menu_capability_map && ! empty( self::$menu_capability_map ) ) {
+			return self::$menu_capability_map;
+		}
+
+		$globals = self::get_discovery_menu_globals();
+		$menu    = $globals['menu'];
+		$submenu = $globals['submenu'];
+
+		$map = array();
+
+		if ( is_array( $menu ) ) {
+			foreach ( $menu as $menu_item ) {
+				if ( empty( $menu_item[2] ) ) {
+					continue;
+				}
+
+				$slug = (string) $menu_item[2];
+				if ( self::is_ignorable_menu_slug( $slug ) ) {
+					continue;
+				}
+
+				$map[ $slug ] = isset( $menu_item[1] ) ? (string) $menu_item[1] : '';
+			}
+		}
+
+		if ( is_array( $submenu ) ) {
+			foreach ( $submenu as $parent_slug => $submenu_items ) {
+				if ( ! is_array( $submenu_items ) ) {
+					continue;
+				}
+
+				foreach ( $submenu_items as $submenu_item ) {
+					if ( empty( $submenu_item[2] ) ) {
+						continue;
+					}
+
+					$slug = (string) $submenu_item[2];
+					if ( self::is_ignorable_menu_slug( $slug ) ) {
+						continue;
+					}
+
+					$map[ $slug ] = isset( $submenu_item[1] ) ? (string) $submenu_item[1] : '';
+				}
+			}
+		}
+
+		if ( empty( $map ) ) {
+			self::$menu_capability_map = null;
+
+			return $map;
+		}
+
+		self::$menu_capability_map = $map;
+
+		return self::$menu_capability_map;
+	}
+
+	/**
+	 * Required capability for an admin menu slug.
+	 *
+	 * @param string $slug Menu slug or admin URL.
+	 * @return string Empty when unknown (custom links).
+	 */
+	public static function get_menu_slug_capability( $slug ) {
+		$slug = self::normalize_admin_menu_slug( $slug );
+		if ( '' === $slug ) {
+			return '';
+		}
+
+		$map = self::get_menu_capability_map();
+
+		if ( isset( $map[ $slug ] ) ) {
+			return $map[ $slug ];
+		}
+
+		$top_slug = self::resolve_top_level_menu_slug( $slug );
+		if ( '' !== $top_slug && isset( $map[ $top_slug ] ) ) {
+			return $map[ $top_slug ];
+		}
+
+		return '';
+	}
+
+	/**
+	 * Normalize a menu slug or admin URL to a relative wp-admin path.
+	 *
+	 * @param string $slug Menu slug or admin URL.
+	 * @return string
+	 */
+	public static function normalize_admin_menu_slug( $slug ) {
+		return EDMINBOOST_Command_Center_Bar::normalize_item_slug( $slug );
+	}
+
+	/**
+	 * Whether a WordPress role can access an admin menu slug.
+	 *
+	 * @param string $role_key Role slug.
+	 * @param string $slug     Menu slug or admin URL.
+	 * @return bool
+	 */
+	public static function role_can_access_menu_slug( $role_key, $slug ) {
+		$role_key = sanitize_key( $role_key );
+		if ( '' === $role_key ) {
+			return false;
+		}
+
+		$capability = self::get_menu_slug_capability( $slug );
+		if ( '' === $capability ) {
+			return true;
+		}
+
+		return self::role_has_capability( $role_key, $capability );
+	}
+
+	/**
+	 * Whether any of the user's roles can access an admin menu slug.
+	 *
+	 * @param string   $slug       Menu slug or admin URL.
+	 * @param string[] $user_roles Role slugs.
+	 * @return bool
+	 */
+	public static function user_roles_can_access_menu_slug( $slug, $user_roles ) {
+		if ( empty( $user_roles ) || ! is_array( $user_roles ) ) {
+			return false;
+		}
+
+		foreach ( $user_roles as $role ) {
+			if ( self::role_can_access_menu_slug( $role, $slug ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Whether a role has a capability (runs through WordPress meta-cap mapping).
+	 *
+	 * @param string $role_key   Role slug.
+	 * @param string $capability Capability to check.
+	 * @return bool
+	 */
+	public static function role_has_capability( $role_key, $capability ) {
+		$role_key   = sanitize_key( $role_key );
+		$capability = (string) $capability;
+
+		if ( '' === $role_key || '' === $capability ) {
+			return false;
+		}
+
+		$role = get_role( $role_key );
+		if ( ! $role ) {
+			return false;
+		}
+
+		return $role->has_cap( $capability );
+	}
+
+	/**
+	 * Protected sidebar slugs that a role is allowed to access.
+	 *
+	 * @param string $role_key Role slug.
+	 * @return string[]
+	 */
+	public static function get_protected_slugs_for_role( $role_key ) {
+		$protected = array();
+
+		foreach ( EDMINBOOST_Menu_Studio::get_protected_slugs() as $slug ) {
+			if ( self::role_can_access_menu_slug( $role_key, $slug ) ) {
+				$protected[] = $slug;
+			}
+		}
+
+		return $protected;
+	}
+
+	/**
+	 * Accessible top-level menu slugs keyed by assignable role.
+	 *
+	 * @return array<string, string[]>
+	 */
+	public static function get_role_accessible_menu_slugs() {
+		$accessible = array();
+
+		foreach ( self::get_assignable_roles() as $role_key => $role_name ) {
+			unset( $role_name );
+			$accessible[ $role_key ] = wp_list_pluck( self::get_role_matrix_menu_items( $role_key ), 'slug' );
+		}
+
+		return $accessible;
+	}
+
+	/**
+	 * Protected sidebar slugs keyed by assignable role.
+	 *
+	 * @return array<string, string[]>
+	 */
+	public static function get_protected_slugs_by_role() {
+		$protected = array();
+
+		foreach ( self::get_assignable_roles() as $role_key => $role_name ) {
+			unset( $role_name );
+			$protected[ $role_key ] = self::get_protected_slugs_for_role( $role_key );
+		}
+
+		return $protected;
+	}
+
+	/**
+	 * Remove top bar items the current user cannot access.
+	 *
+	 * @param array[] $items Top bar item definitions.
+	 * @return array[]
+	 */
+	public static function filter_top_bar_items_for_user_capabilities( $items ) {
+		if ( empty( $items ) || ! is_array( $items ) ) {
+			return array();
+		}
+
+		$user = wp_get_current_user();
+		if ( empty( $user->roles ) ) {
+			return $items;
+		}
+
+		$filtered = array();
+
+		foreach ( $items as $item ) {
+			$slug = isset( $item['slug'] ) ? (string) $item['slug'] : '';
+			if ( '' === $slug ) {
+				continue;
+			}
+
+			if ( self::user_roles_can_access_menu_slug( $slug, $user->roles ) ) {
+				$filtered[] = $item;
+			}
+		}
+
+		return $filtered;
+	}
+
+	/**
+	 * Top-level admin menu items shown in the role visibility matrix.
+	 *
+	 * @param string $role_key Optional role slug; when set, only items that role can access are returned.
+	 * @return array[]
+	 */
+	public static function get_role_matrix_menu_items( $role_key = '' ) {
+		$items = array();
+
+		foreach ( self::get_discovered_menu_tree() as $item ) {
+			if ( empty( $item['slug'] ) ) {
+				continue;
+			}
+
+			$slug = (string) $item['slug'];
+			if ( '' !== $role_key && ! self::role_can_access_menu_slug( $role_key, $slug ) ) {
+				continue;
+			}
+
+			$items[] = array(
+				'slug'     => $slug,
+				'label'    => isset( $item['label'] ) ? (string) $item['label'] : $slug,
+				'icon'     => isset( $item['icon'] ) ? (string) $item['icon'] : 'dashicons-admin-generic',
+				'icon_raw' => '',
+				'source'   => 'top',
+			);
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Whether a menu slug is visible for at least one of the user's roles.
+	 *
+	 * @param string   $slug            Menu slug.
+	 * @param string[] $user_roles      Role slugs.
+	 * @param array    $role_visibility Hidden slugs keyed by role.
+	 * @return bool
+	 */
+	public static function is_item_visible_for_user_roles( $slug, $user_roles, $role_visibility ) {
+		foreach ( $user_roles as $role ) {
+			$hidden_for_role = isset( $role_visibility[ $role ] ) && is_array( $role_visibility[ $role ] )
+				? $role_visibility[ $role ]
+				: array();
+
+			if ( ! in_array( $slug, $hidden_for_role, true ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * Visible menu slugs for a Menu Studio configuration.
+	 *
+	 * @param array $menu_studio Menu Studio settings.
+	 * @return string[]
+	 */
+	public static function get_visible_menu_slugs_for_menu_studio( $menu_studio ) {
+		$defaults    = self::get_menu_studio_defaults();
+		$menu_studio = wp_parse_args( $menu_studio, $defaults );
+		$visible     = array();
+
+		if ( empty( $menu_studio['enabled'] ) ) {
+			foreach ( self::get_discovered_menu_items() as $item ) {
+				if ( ! empty( $item['slug'] ) ) {
+					$visible[] = (string) $item['slug'];
+				}
+			}
+
+			return $visible;
+		}
+
+		$order  = isset( $menu_studio['order'] ) && is_array( $menu_studio['order'] )
+			? $menu_studio['order']
+			: array();
+		$hidden = isset( $menu_studio['hidden_items'] ) && is_array( $menu_studio['hidden_items'] )
+			? $menu_studio['hidden_items']
+			: array();
+
+		foreach ( self::get_discovered_menu_tree() as $item ) {
+			if ( empty( $item['slug'] ) ) {
+				continue;
+			}
+
+			$top_slug = (string) $item['slug'];
+			if ( ! in_array( $top_slug, $order, true ) || in_array( $top_slug, $hidden, true ) ) {
+				continue;
+			}
+
+			$visible[] = $top_slug;
+
+			if ( empty( $item['children'] ) || ! is_array( $item['children'] ) ) {
+				continue;
+			}
+
+			foreach ( $item['children'] as $child ) {
+				if ( ! empty( $child['slug'] ) ) {
+					$visible[] = (string) $child['slug'];
+				}
+			}
+		}
+
+		return array_values( array_unique( $visible ) );
+	}
+
+	/**
+	 * Visible menu slugs for a layout preset.
+	 *
+	 * @param string     $preset_id   Preset identifier.
+	 * @param array|null $cc_settings Optional Command Center settings.
+	 * @return string[]
+	 */
+	public static function get_preset_visible_menu_slugs( $preset_id, $cc_settings = null ) {
+		$menu_studio = self::resolve_preset_menu_studio( $preset_id, $cc_settings );
+
+		return self::get_visible_menu_slugs_for_menu_studio( $menu_studio );
+	}
+
+	/**
+	 * Visible top-level menu slugs for a layout preset (role matrix).
+	 *
+	 * @param string     $preset_id   Preset identifier.
+	 * @param array|null $cc_settings Optional Command Center settings.
+	 * @return string[]
+	 */
+	public static function get_preset_visible_top_level_menu_slugs( $preset_id, $cc_settings = null ) {
+		$matrix_slugs = wp_list_pluck( self::get_role_matrix_menu_items(), 'slug' );
+		$top_level    = array();
+
+		foreach ( self::get_preset_visible_menu_slugs( $preset_id, $cc_settings ) as $slug ) {
+			$parent = self::resolve_top_level_menu_slug( $slug );
+			if ( '' !== $parent && in_array( $parent, $matrix_slugs, true ) ) {
+				$top_level[] = $parent;
+			}
+		}
+
+		foreach ( self::resolve_preset_top_bar_items( $preset_id, $cc_settings ) as $item ) {
+			if ( empty( $item['slug'] ) ) {
+				continue;
+			}
+
+			$parent = self::resolve_top_level_menu_slug( (string) $item['slug'] );
+			if ( '' !== $parent && in_array( $parent, $matrix_slugs, true ) ) {
+				$top_level[] = $parent;
+			}
+		}
+
+		return array_values( array_unique( $top_level ) );
+	}
+
+	/**
+	 * Apply per-role visibility overrides to Menu Studio settings.
+	 *
+	 * @param array    $menu_studio     Base Menu Studio settings.
+	 * @param string[] $user_roles      Current user roles.
+	 * @param array    $cc_settings     Command Center settings.
+	 * @return array
+	 */
+	public static function apply_role_visibility_to_menu_studio( $menu_studio, $user_roles, $cc_settings ) {
+		$role_visibility = isset( $cc_settings['role_visibility'] ) && is_array( $cc_settings['role_visibility'] )
+			? $cc_settings['role_visibility']
+			: array();
+
+		if ( empty( $role_visibility ) || empty( $user_roles ) ) {
+			return $menu_studio;
+		}
+
+		$defaults    = self::get_menu_studio_defaults();
+		$menu_studio = wp_parse_args( $menu_studio, $defaults );
+
+		if ( empty( $menu_studio['enabled'] ) ) {
+			$menu_studio['enabled'] = true;
+		}
+
+		if ( empty( $menu_studio['order'] ) ) {
+			foreach ( self::get_discovered_menu_tree() as $item ) {
+				if ( ! empty( $item['slug'] ) ) {
+					$menu_studio['order'][] = (string) $item['slug'];
+				}
+			}
+		}
+
+		$hidden = isset( $menu_studio['hidden_items'] ) && is_array( $menu_studio['hidden_items'] )
+			? $menu_studio['hidden_items']
+			: array();
+		$order  = isset( $menu_studio['order'] ) && is_array( $menu_studio['order'] )
+			? $menu_studio['order']
+			: array();
+
+		foreach ( self::get_role_matrix_menu_items() as $item ) {
+			if ( empty( $item['slug'] ) ) {
+				continue;
+			}
+
+			$slug     = (string) $item['slug'];
+			$top_slug = self::resolve_top_level_menu_slug( $slug );
+			if ( '' === $top_slug ) {
+				continue;
+			}
+
+			if ( self::is_item_visible_for_user_roles( $slug, $user_roles, $role_visibility ) ) {
+				continue;
+			}
+
+			if ( in_array( $top_slug, EDMINBOOST_Menu_Studio::get_protected_slugs(), true ) ) {
+				continue;
+			}
+
+			if ( ! in_array( $top_slug, $hidden, true ) ) {
+				$hidden[] = $top_slug;
+			}
+
+			$order = array_values( array_diff( $order, array( $top_slug ) ) );
+		}
+
+		$menu_studio['hidden_items'] = $hidden;
+		$menu_studio['order']        = $order;
+
+		return $menu_studio;
+	}
+
+	/**
 	 * Resolve preset top bar items against the current admin menu.
 	 *
 	 * @param string $preset_id Preset identifier.
@@ -1355,6 +1951,329 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
+	 * Preferred sidebar menu slugs per layout preset.
+	 *
+	 * @return array<string, string[]>
+	 */
+	public static function get_preset_menu_studio_definitions() {
+		$definitions = array(
+			'system_friend' => array(
+				'index.php',
+				'edit.php',
+				'edit.php?post_type=page',
+				'upload.php',
+				'edit-comments.php',
+			),
+			'system_family' => array(
+				'index.php',
+				'edit.php?post_type=page',
+				'upload.php',
+			),
+			'system_client_site' => array(
+				'index.php',
+				'edit.php',
+				'edit.php?post_type=page',
+				'upload.php',
+				'themes.php',
+			),
+			'system_personal' => array(
+				'index.php',
+				'edit.php',
+				'upload.php',
+				'edit-comments.php',
+			),
+			'system_small_business' => array(
+				'index.php',
+				'edit.php?post_type=page',
+				'edit-comments.php',
+				'woocommerce',
+			),
+			'system_nonprofit' => array(
+				'index.php',
+				'edit.php',
+				'edit.php?post_type=page',
+				'edit-comments.php',
+			),
+			'system_agency' => array(
+				'index.php',
+				'plugins.php',
+				'themes.php',
+				'users.php',
+				'tools.php',
+				'options-general.php',
+			),
+			'system_client' => array(
+				'index.php',
+				'edit.php',
+				'upload.php',
+				'edit.php?post_type=page',
+				'edit-comments.php',
+			),
+			'system_ecommerce' => array(
+				'index.php',
+				'woocommerce',
+			),
+			'system_developer' => array(
+				'index.php',
+				'edit.php',
+				'upload.php',
+				'edit.php?post_type=page',
+				'edit-comments.php',
+				'plugins.php',
+				'themes.php',
+				'tools.php',
+				'options-general.php',
+			),
+		);
+
+		return array_merge( $definitions, self::get_role_preset_menu_studio_definitions() );
+	}
+
+	/**
+	 * Sidebar menu definitions for per-role system presets.
+	 *
+	 * @return array<string, string[]>
+	 */
+	private static function get_role_preset_menu_studio_definitions() {
+		$definitions = array();
+		$templates   = self::get_role_layout_templates();
+
+		foreach ( self::get_editable_roles_list() as $role_key => $role_details ) {
+			$role_key     = sanitize_key( $role_key );
+			$template_key = self::resolve_role_layout_template_key( $role_key, $role_details );
+			$template_key = isset( $templates[ $template_key ] ) ? $template_key : 'subscriber';
+			$slugs        = array();
+
+			foreach ( $templates[ $template_key ] as $item ) {
+				if ( empty( $item['slug'] ) ) {
+					continue;
+				}
+
+				$slug = (string) $item['slug'];
+				if ( self::role_can_access_menu_slug( $role_key, $slug ) ) {
+					$slugs[] = $slug;
+				}
+			}
+
+			$definitions[ self::get_role_system_preset_id( $role_key ) ] = $slugs;
+		}
+
+		return $definitions;
+	}
+
+	/**
+	 * Resolve Menu Studio settings for a layout preset.
+	 *
+	 * @param string     $preset_id   Preset identifier.
+	 * @param array|null $cc_settings Optional Command Center settings.
+	 * @return array
+	 */
+	public static function resolve_preset_menu_studio( $preset_id, $cc_settings = null ) {
+		$preset_id = sanitize_key( $preset_id );
+		$defaults  = self::get_menu_studio_defaults();
+
+		if ( null === $cc_settings ) {
+			$cc_settings = self::get_settings();
+		}
+
+		$current_menu = isset( $cc_settings['menu_studio'] ) && is_array( $cc_settings['menu_studio'] )
+			? wp_parse_args( $cc_settings['menu_studio'], $defaults )
+			: $defaults;
+
+		if ( 'custom' === $preset_id ) {
+			return $current_menu;
+		}
+
+		if ( 'default' === $preset_id ) {
+			$preset_id = self::resolve_effective_preset_id( 'default', $cc_settings );
+		}
+
+		$all_presets = self::get_all_presets();
+
+		if ( isset( $all_presets[ $preset_id ]['menu_studio'] ) && is_array( $all_presets[ $preset_id ]['menu_studio'] ) ) {
+			return wp_parse_args( $all_presets[ $preset_id ]['menu_studio'], $defaults );
+		}
+
+		$definitions = self::get_preset_menu_studio_definitions();
+		$visible     = array();
+
+		if ( isset( $definitions[ $preset_id ] ) ) {
+			$visible = $definitions[ $preset_id ];
+		} else {
+			foreach ( self::resolve_preset_top_bar_items( $preset_id, $cc_settings ) as $item ) {
+				if ( ! empty( $item['slug'] ) ) {
+					$visible[] = (string) $item['slug'];
+				}
+			}
+		}
+
+		if ( empty( $visible ) ) {
+			return $current_menu;
+		}
+
+		return self::build_menu_studio_from_visible_order( $visible, $current_menu );
+	}
+
+	/**
+	 * Ordered sidebar preview items for a layout preset.
+	 *
+	 * @param string     $preset_id   Preset identifier.
+	 * @param array|null $cc_settings Optional Command Center settings.
+	 * @return array[]
+	 */
+	public static function resolve_preset_sidebar_preview_items( $preset_id, $cc_settings = null ) {
+		$menu_studio = self::resolve_preset_menu_studio( $preset_id, $cc_settings );
+
+		if ( empty( $menu_studio['enabled'] ) ) {
+			$items = array();
+			$limit = 8;
+
+			foreach ( self::get_discovered_menu_tree() as $item ) {
+				if ( count( $items ) >= $limit ) {
+					break;
+				}
+
+				$items[] = array(
+					'slug'  => $item['slug'],
+					'label' => $item['label'],
+					'icon'  => $item['icon'],
+				);
+			}
+
+			return $items;
+		}
+
+		$ordered = self::resolve_menu_studio_order( $menu_studio );
+		$items   = array();
+
+		foreach ( $ordered as $item ) {
+			$items[] = array(
+				'slug'  => $item['slug'],
+				'label' => $item['label'],
+				'icon'  => isset( $item['icon'] ) ? $item['icon'] : 'dashicons-admin-generic',
+			);
+		}
+
+		return $items;
+	}
+
+	/**
+	 * Build Menu Studio settings that show an ordered subset of sidebar menus.
+	 *
+	 * @param string[] $visible_slugs Slugs to show (top-level or submenu).
+	 * @param array    $base          Existing menu_studio settings to preserve styling fields from.
+	 * @return array
+	 */
+	private static function build_menu_studio_from_visible_order( $visible_slugs, $base = array() ) {
+		$defaults  = self::get_menu_studio_defaults();
+		$merged    = wp_parse_args( $base, $defaults );
+		$tree      = self::get_discovered_menu_tree();
+		$protected = EDMINBOOST_Menu_Studio::get_protected_slugs();
+		$top_slugs = array();
+
+		foreach ( $tree as $item ) {
+			if ( ! empty( $item['slug'] ) ) {
+				$top_slugs[] = (string) $item['slug'];
+			}
+		}
+
+		$resolved_visible = array();
+
+		foreach ( $visible_slugs as $slug ) {
+			$slug = (string) $slug;
+			if ( '' === $slug ) {
+				continue;
+			}
+
+			$top_slug = self::resolve_top_level_menu_slug( $slug, $tree );
+			if ( '' === $top_slug || in_array( $top_slug, $resolved_visible, true ) ) {
+				continue;
+			}
+
+			$resolved_visible[] = $top_slug;
+		}
+
+		foreach ( $protected as $slug ) {
+			if ( ! in_array( $slug, $resolved_visible, true ) && in_array( $slug, $top_slugs, true ) ) {
+				$resolved_visible[] = $slug;
+			}
+		}
+
+		$hidden = array();
+
+		foreach ( $top_slugs as $slug ) {
+			if ( in_array( $slug, $protected, true ) ) {
+				continue;
+			}
+
+			if ( ! in_array( $slug, $resolved_visible, true ) ) {
+				$hidden[] = $slug;
+			}
+		}
+
+		$merged['enabled']        = true;
+		$merged['order']          = $resolved_visible;
+		$merged['hidden_items']   = $hidden;
+		$merged['submenu_order']  = array();
+		$merged['custom_items']   = array();
+
+		return $merged;
+	}
+
+	/**
+	 * Map a menu slug to its top-level parent in the discovered tree.
+	 *
+	 * @param string $slug Menu slug.
+	 * @param array  $tree Optional discovered menu tree.
+	 * @return string
+	 */
+	private static function resolve_top_level_menu_slug( $slug, $tree = null ) {
+		$slug = (string) $slug;
+
+		if ( '' === $slug ) {
+			return '';
+		}
+
+		if ( null === $tree ) {
+			$tree = self::get_discovered_menu_tree();
+		}
+
+		foreach ( $tree as $item ) {
+			if ( empty( $item['slug'] ) ) {
+				continue;
+			}
+
+			if ( $item['slug'] === $slug ) {
+				return (string) $item['slug'];
+			}
+
+			if ( ! empty( $item['children'] ) && is_array( $item['children'] ) ) {
+				foreach ( $item['children'] as $child ) {
+					if ( isset( $child['slug'] ) && $child['slug'] === $slug ) {
+						return (string) $item['slug'];
+					}
+				}
+			}
+		}
+
+		$parent_map = array(
+			'edit.php?post_type=shop_order' => 'woocommerce',
+			'edit.php?post_type=product'   => 'woocommerce',
+			'wc-admin'                     => 'woocommerce',
+		);
+
+		if ( isset( $parent_map[ $slug ] ) ) {
+			return $parent_map[ $slug ];
+		}
+
+		if ( self::is_core_admin_slug( $slug ) ) {
+			return $slug;
+		}
+
+		return '';
+	}
+
+	/**
 	 * Whether a slug is a common WordPress admin screen.
 	 *
 	 * @param string $slug Menu slug.
@@ -1415,9 +2334,10 @@ class EDMINBOOST_Command_Center {
 			? $settings['command_center']
 			: self::get_defaults();
 
-		$cc['top_bar_items']   = $items;
-		$cc['default_preset']  = $preset_id;
-		$cc['onboarding_completed'] = $mark_setup_complete;
+		$cc['top_bar_items']          = $items;
+		$cc['default_preset']         = $preset_id;
+		$cc['onboarding_completed']   = $mark_setup_complete;
+		$cc['menu_studio']            = self::resolve_preset_menu_studio( $preset_id, $cc );
 
 		if ( ! empty( $all[ $preset_id ]['persona'] ) ) {
 			$cc['persona'] = sanitize_key( $all[ $preset_id ]['persona'] );
@@ -1502,6 +2422,156 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
+	 * Register WordPress hooks for Command Center helpers.
+	 *
+	 * @return void
+	 */
+	public static function register_hooks() {
+		add_action( 'admin_menu', array( __CLASS__, 'cache_admin_menu_snapshot' ), 900 );
+	}
+
+	/**
+	 * Capture the full admin menu before Menu Studio hides or reorders items.
+	 *
+	 * @return void
+	 */
+	public static function cache_admin_menu_snapshot() {
+		if ( null !== self::$discovery_snapshot ) {
+			return;
+		}
+
+		global $menu, $submenu;
+
+		if ( ! is_array( $menu ) || empty( $menu ) ) {
+			return;
+		}
+
+		$menu_copy    = array_values( $menu );
+		$submenu_copy = is_array( $submenu ) ? $submenu : array();
+
+		self::$discovery_snapshot = array(
+			'menu'    => $menu_copy,
+			'submenu' => $submenu_copy,
+			'tree'    => self::build_discovered_menu_tree_from_globals( $menu_copy, $submenu_copy ),
+		);
+	}
+
+	/**
+	 * Ensure a discovery snapshot exists (AJAX tab loads skip admin_menu by default).
+	 *
+	 * @return void
+	 */
+	public static function ensure_discovery_menu_snapshot() {
+		if ( null !== self::$discovery_snapshot ) {
+			return;
+		}
+
+		if ( ! did_action( 'admin_menu' ) ) {
+		 do_action( 'admin_menu' );
+		}
+
+		self::cache_admin_menu_snapshot();
+
+		if ( null !== self::$discovery_snapshot ) {
+			return;
+		}
+
+		self::ensure_admin_menu_globals();
+		self::cache_admin_menu_snapshot();
+	}
+
+	/**
+	 * Menu globals used for discovery UIs (full sidebar before Menu Studio filters).
+	 *
+	 * @return array{menu: array, submenu: array}
+	 */
+	private static function get_discovery_menu_globals() {
+		self::ensure_discovery_menu_snapshot();
+
+		if ( null !== self::$discovery_snapshot ) {
+			return array(
+				'menu'    => self::$discovery_snapshot['menu'],
+				'submenu' => self::$discovery_snapshot['submenu'],
+			);
+		}
+
+		self::ensure_admin_menu_globals();
+
+		global $menu, $submenu;
+
+		return array(
+			'menu'    => is_array( $menu ) ? $menu : array(),
+			'submenu' => is_array( $submenu ) ? $submenu : array(),
+		);
+	}
+
+	/**
+	 * Build a discovered menu tree from raw admin menu globals.
+	 *
+	 * @param array $menu    Global admin menu.
+	 * @param array $submenu Global admin submenu.
+	 * @return array[]
+	 */
+	private static function build_discovered_menu_tree_from_globals( $menu, $submenu ) {
+		$tree = array();
+
+		if ( ! is_array( $menu ) ) {
+			return $tree;
+		}
+
+		foreach ( $menu as $menu_item ) {
+			if ( empty( $menu_item[2] ) ) {
+				continue;
+			}
+
+			$slug = (string) $menu_item[2];
+			if ( self::is_ignorable_menu_slug( $slug ) ) {
+				continue;
+			}
+
+			$label = wp_strip_all_tags( (string) $menu_item[0] );
+			if ( '' === $label ) {
+				$label = $slug;
+			}
+
+			$icon     = self::normalize_menu_icon( isset( $menu_item[6] ) ? $menu_item[6] : '' );
+			$children = array();
+
+			if ( is_array( $submenu ) && isset( $submenu[ $slug ] ) && is_array( $submenu[ $slug ] ) ) {
+				foreach ( $submenu[ $slug ] as $submenu_item ) {
+					if ( empty( $submenu_item[2] ) ) {
+						continue;
+					}
+
+					$child_slug = (string) $submenu_item[2];
+					if ( self::is_ignorable_menu_slug( $child_slug ) || $child_slug === $slug ) {
+						continue;
+					}
+
+					$child_label = wp_strip_all_tags( (string) $submenu_item[0] );
+					if ( '' === $child_label ) {
+						$child_label = $child_slug;
+					}
+
+					$children[] = array(
+						'slug'  => $child_slug,
+						'label' => $child_label,
+					);
+				}
+			}
+
+			$tree[] = array(
+				'slug'     => $slug,
+				'label'    => $label,
+				'icon'     => $icon,
+				'children' => $children,
+			);
+		}
+
+		return $tree;
+	}
+
+	/**
 	 * Ensure global admin menu arrays are populated for discovery.
 	 *
 	 * Command Center tab AJAX loads run through admin-ajax.php without wp-admin/menu.php,
@@ -1512,7 +2582,7 @@ class EDMINBOOST_Command_Center {
 	private static function ensure_admin_menu_globals() {
 		global $menu, $pagenow, $_wp_submenu_nopriv, $_wp_menu_nopriv;
 
-		if ( is_array( $menu ) && ! empty( $menu ) ) {
+		if ( is_array( $menu ) && ! empty( $menu ) && self::admin_menu_has_dashboard( $menu ) ) {
 			return;
 		}
 
@@ -1551,6 +2621,26 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
+	 * Whether the global admin menu includes the Dashboard entry.
+	 *
+	 * @param array $menu Global admin menu array.
+	 * @return bool
+	 */
+	private static function admin_menu_has_dashboard( $menu ) {
+		if ( ! is_array( $menu ) ) {
+			return false;
+		}
+
+		foreach ( $menu as $menu_item ) {
+			if ( isset( $menu_item[2] ) && 'index.php' === (string) $menu_item[2] ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Discover installed admin menu items for the layout studio.
 	 *
 	 * Includes top-level sidebar entries and submenu pages (e.g. taxonomy screens).
@@ -1558,9 +2648,9 @@ class EDMINBOOST_Command_Center {
 	 * @return array[] Each item: slug, label, icon, source (top|submenu).
 	 */
 	public static function get_discovered_menu_items() {
-		self::ensure_admin_menu_globals();
-
-		global $menu, $submenu;
+		$globals  = self::get_discovery_menu_globals();
+		$menu     = $globals['menu'];
+		$submenu  = $globals['submenu'];
 
 		$items      = array();
 		$seen_slugs = array();
@@ -1666,66 +2756,15 @@ class EDMINBOOST_Command_Center {
 	 * @return array[] Each item: slug, label, icon, children[].
 	 */
 	public static function get_discovered_menu_tree() {
-		self::ensure_admin_menu_globals();
+		self::ensure_discovery_menu_snapshot();
 
-		global $menu, $submenu;
-
-		$tree = array();
-
-		if ( ! is_array( $menu ) ) {
-			return $tree;
+		if ( null !== self::$discovery_snapshot && ! empty( self::$discovery_snapshot['tree'] ) ) {
+			return self::$discovery_snapshot['tree'];
 		}
 
-		foreach ( $menu as $menu_item ) {
-			if ( empty( $menu_item[2] ) ) {
-				continue;
-			}
+		$globals = self::get_discovery_menu_globals();
 
-			$slug = (string) $menu_item[2];
-			if ( self::is_ignorable_menu_slug( $slug ) ) {
-				continue;
-			}
-
-			$label = wp_strip_all_tags( (string) $menu_item[0] );
-			if ( '' === $label ) {
-				$label = $slug;
-			}
-
-			$icon     = self::normalize_menu_icon( isset( $menu_item[6] ) ? $menu_item[6] : '' );
-			$children = array();
-
-			if ( is_array( $submenu ) && isset( $submenu[ $slug ] ) && is_array( $submenu[ $slug ] ) ) {
-				foreach ( $submenu[ $slug ] as $submenu_item ) {
-					if ( empty( $submenu_item[2] ) ) {
-						continue;
-					}
-
-					$child_slug = (string) $submenu_item[2];
-					if ( self::is_ignorable_menu_slug( $child_slug ) || $child_slug === $slug ) {
-						continue;
-					}
-
-					$child_label = wp_strip_all_tags( (string) $submenu_item[0] );
-					if ( '' === $child_label ) {
-						$child_label = $child_slug;
-					}
-
-					$children[] = array(
-						'slug'  => $child_slug,
-						'label' => $child_label,
-					);
-				}
-			}
-
-			$tree[] = array(
-				'slug'     => $slug,
-				'label'    => $label,
-				'icon'     => $icon,
-				'children' => $children,
-			);
-		}
-
-		return $tree;
+		return self::build_discovered_menu_tree_from_globals( $globals['menu'], $globals['submenu'] );
 	}
 
 	/**

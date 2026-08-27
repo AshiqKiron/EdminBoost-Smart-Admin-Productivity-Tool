@@ -97,6 +97,7 @@ class EDMINBOOST_Plugin {
 		add_filter( 'plugin_action_links_' . EDMINBOOST_PLUGIN_BASENAME, array( $this->admin, 'add_settings_link' ) );
 		add_action( 'init', array( $this->features, 'register_hooks' ) );
 		EDMINBOOST_Command_Center_Bar::register_hooks();
+		EDMINBOOST_Command_Center::register_hooks();
 		EDMINBOOST_Menu_Studio::register_hooks();
 		EDMINBOOST_Theme::register_hooks();
 		EDMINBOOST_White_Label::register_hooks();

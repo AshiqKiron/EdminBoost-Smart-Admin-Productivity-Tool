@@ -1716,6 +1716,7 @@ body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .u
 }
 
 /* Admin content area (main wp-admin background beside the sidebar) */
+body.edminboost-theme-active #wpwrap,
 body.edminboost-theme-active #wpcontent,
 body.edminboost-theme-active #wpbody,
 body.edminboost-theme-active #wpbody-content,

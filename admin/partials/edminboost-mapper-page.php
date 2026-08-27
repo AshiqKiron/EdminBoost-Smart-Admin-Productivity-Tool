@@ -43,11 +43,12 @@ foreach ( $top_bar_items as $item ) {
 
 		<div class="edminboost-mapper-layout">
 			<aside class="edminboost-card edminboost-mapper-panel" aria-labelledby="edminboost-discovered-heading">
-				<h2 id="edminboost-discovered-heading"><?php esc_html_e( 'Discovered Admin Pages', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+				<h2 id="edminboost-discovered-heading"><?php esc_html_e( 'Discovered Admin Pages', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'discovered_pages' ); ?></h2>
 				<p class="description"><?php esc_html_e( 'Auto-scanned from your sidebar menus, including submenu pages.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 
-				<label class="screen-reader-text" for="edminboost-plugin-search">
+				<label for="edminboost-plugin-search">
 					<?php esc_html_e( 'Filter plugins', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php EDMINBOOST_Setting_Help::echo_icon( 'mapper_search' ); ?>
 				</label>
 				<input
 					type="search"
@@ -98,12 +99,12 @@ foreach ( $top_bar_items as $item ) {
 				</ul>
 
 				<details class="edminboost-custom-link" id="edminboost-custom-link">
-					<summary class="edminboost-custom-link__heading"><?php esc_html_e( 'Custom admin link', EDMINBOOST_TEXT_DOMAIN ); ?></summary>
+					<summary class="edminboost-custom-link__heading"><?php esc_html_e( 'Custom admin link', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_path' ); ?></summary>
 					<div class="edminboost-custom-link__body">
 						<p class="description"><?php esc_html_e( 'Add any admin page path that does not appear in the list above.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 
 						<p>
-							<label for="edminboost-custom-link-path"><?php esc_html_e( 'Admin path', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<label for="edminboost-custom-link-path"><?php esc_html_e( 'Admin path', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_path' ); ?></label>
 							<input
 								type="text"
 								id="edminboost-custom-link-path"
@@ -114,7 +115,7 @@ foreach ( $top_bar_items as $item ) {
 						</p>
 
 						<p>
-							<label for="edminboost-custom-link-label"><?php esc_html_e( 'Label', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<label for="edminboost-custom-link-label"><?php esc_html_e( 'Label', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_label' ); ?></label>
 							<input
 								type="text"
 								id="edminboost-custom-link-label"
@@ -125,7 +126,7 @@ foreach ( $top_bar_items as $item ) {
 						</p>
 
 						<p>
-							<label for="edminboost-custom-link-anchor"><?php esc_html_e( 'Anchor (optional)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<label for="edminboost-custom-link-anchor"><?php esc_html_e( 'Anchor (optional)', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_anchor' ); ?></label>
 							<input
 								type="text"
 								id="edminboost-custom-link-anchor"
@@ -149,7 +150,7 @@ foreach ( $top_bar_items as $item ) {
 
 			<div class="edminboost-mapper-main">
 				<section class="edminboost-card edminboost-mapper-panel" aria-labelledby="edminboost-canvas-heading">
-					<h2 id="edminboost-canvas-heading"><?php esc_html_e( 'Top Bar Live Canvas', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+					<h2 id="edminboost-canvas-heading"><?php esc_html_e( 'Top Bar Live Canvas', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'topbar_canvas' ); ?></h2>
 					<p class="description"><?php esc_html_e( 'Drag items to reorder. Click an icon to configure it.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 
 					<div class="edminboost-topbar-canvas" id="edminboost-topbar-canvas" role="list" aria-label="<?php esc_attr_e( 'Top bar preview', EDMINBOOST_TEXT_DOMAIN ); ?>">
@@ -212,7 +213,7 @@ foreach ( $top_bar_items as $item ) {
 					<p class="description" id="edminboost-drawer-subtitle"></p>
 
 					<fieldset class="edminboost-fieldset">
-						<legend><?php esc_html_e( 'Icon', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+						<legend><?php esc_html_e( 'Icon', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'item_icon' ); ?></legend>
 						<div class="edminboost-icon-picker" id="edminboost-icon-picker" role="listbox" aria-label="<?php esc_attr_e( 'Choose dashicon', EDMINBOOST_TEXT_DOMAIN ); ?>">
 							<?php foreach ( $dashicon_options as $dashicon ) : ?>
 								<button
@@ -229,18 +230,18 @@ foreach ( $top_bar_items as $item ) {
 					</fieldset>
 
 					<p>
-						<label for="edminboost-item-label"><?php esc_html_e( 'Label override', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+						<label for="edminboost-item-label"><?php esc_html_e( 'Label override', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'item_label' ); ?></label>
 						<input type="text" id="edminboost-item-label" class="regular-text" />
 					</p>
 
 					<p>
-						<label for="edminboost-item-anchor"><?php esc_html_e( 'Anchor (optional)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+						<label for="edminboost-item-anchor"><?php esc_html_e( 'Anchor (optional)', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'item_anchor' ); ?></label>
 						<input type="text" id="edminboost-item-anchor" class="regular-text code" placeholder="<?php echo esc_attr( 'woocommerce_permalink_structure' ); ?>" />
 						<span class="description"><?php esc_html_e( 'Scroll to a section on the page when the link is opened.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 					</p>
 
 					<fieldset class="edminboost-fieldset">
-						<legend><?php esc_html_e( 'Interaction', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+						<legend><?php esc_html_e( 'Interaction', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'item_interaction' ); ?></legend>
 						<label class="edminboost-checkbox-row">
 							<input type="radio" name="edminboost_item_interaction" value="redirect" checked />
 							<?php esc_html_e( 'Direct redirect', EDMINBOOST_TEXT_DOMAIN ); ?>
@@ -258,7 +259,7 @@ foreach ( $top_bar_items as $item ) {
 					</p>
 
 					<p>
-						<label for="edminboost-item-badge"><?php esc_html_e( 'Live badge binding', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+						<label for="edminboost-item-badge"><?php esc_html_e( 'Live badge binding', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'item_badge_source' ); ?></label>
 						<select id="edminboost-item-badge" class="regular-text">
 							<?php foreach ( $badge_sources as $source_key => $source_label ) : ?>
 								<option value="<?php echo esc_attr( $source_key ); ?>">

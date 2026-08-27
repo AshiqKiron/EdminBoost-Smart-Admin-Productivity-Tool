@@ -412,7 +412,11 @@ class EDMINBOOST_Theme {
 			$theme = wp_parse_args( $theme, self::get_defaults() );
 		}
 
-		if ( self::uses_custom_colors( $theme ) ) {
+		$preset_id = sanitize_key( $preset_id );
+		$resolve_custom_palette = 'custom' === $preset_id
+			|| ( ! empty( $theme['use_custom_colors'] ) && sanitize_key( $theme['preset'] ) === $preset_id );
+
+		if ( $resolve_custom_palette ) {
 			$presets = self::get_presets();
 			$colors  = isset( $presets['custom']['colors'] ) && is_array( $presets['custom']['colors'] )
 				? $presets['custom']['colors']
@@ -436,8 +440,7 @@ class EDMINBOOST_Theme {
 			return wp_parse_args( array_filter( $colors ), $defaults );
 		}
 
-		$preset_id = sanitize_key( $preset_id );
-		$mode      = sanitize_key( $mode );
+		$mode = sanitize_key( $mode );
 		$presets   = self::get_presets();
 
 		if ( ! isset( $presets[ $preset_id ] ) ) {
@@ -926,7 +929,7 @@ class EDMINBOOST_Theme {
 		}
 
 		if ( ! empty( $theme['admin_bg_color'] ) ) {
-			$rules[] = 'body.edminboost-theme-active{background-color:' . $theme['admin_bg_color'] . ';}';
+			$rules[] = 'body.edminboost-theme-active,body.edminboost-theme-active #wpwrap{background-color:' . $theme['admin_bg_color'] . ';}';
 		}
 
 		if ( ! empty( $theme['admin_bg_image_id'] ) ) {

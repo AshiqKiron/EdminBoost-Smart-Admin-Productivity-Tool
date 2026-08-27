@@ -128,6 +128,27 @@ class ThemeTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Other presets keep their palette when custom is the active saved theme.
+	 */
+	public function test_resolve_preview_colors_ignores_active_custom_for_other_presets() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'theme' => array(
+						'preset'        => 'custom',
+						'custom_accent' => '#123456',
+					),
+				),
+			)
+		);
+
+		$tron_dark = EDMINBOOST_Theme::resolve_preview_colors( 'tron', 'dark' );
+
+		$this->assertSame( '#00d4ff', $tron_dark['accent'] );
+		$this->assertSame( '#0a0a12', $tron_dark['content'] );
+	}
+
+	/**
 	 * Body classes reflect stored theme.
 	 */
 	public function test_get_body_classes() {

@@ -23,7 +23,7 @@ $active_label = $animation_speeds[ $active_speed ]['label'];
 $active_ms    = $animation_speeds[ $active_speed ]['ms'];
 ?>
 <fieldset class="edminboost-fieldset">
-	<legend for="edminboost_animation_speed"><?php esc_html_e( 'Animation speed', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+	<legend for="edminboost_animation_speed"><?php esc_html_e( 'Animation speed', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'animation_speed' ); ?></legend>
 	<select
 		name="<?php echo esc_attr( $cc_key ); ?>[animation_speed]"
 		id="edminboost_animation_speed"

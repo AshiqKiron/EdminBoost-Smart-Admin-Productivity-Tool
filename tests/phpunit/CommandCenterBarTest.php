@@ -123,6 +123,46 @@ class CommandCenterBarTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Role visibility can expose items beyond default capability restrictions when checked.
+	 */
+	public function test_get_items_for_current_user_respects_saved_role_visibility_override() {
+		$subscriber_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'top_bar_items' => array(
+						array(
+							'slug'         => 'index.php',
+							'label'        => 'Dashboard',
+							'icon'         => 'dashicons-dashboard',
+							'interaction'  => 'redirect',
+							'badge_source' => '',
+						),
+						array(
+							'slug'         => 'plugins.php',
+							'label'        => 'Plugins',
+							'icon'         => 'dashicons-admin-plugins',
+							'interaction'  => 'redirect',
+							'badge_source' => '',
+						),
+					),
+					'role_visibility' => array(
+						'subscriber' => array(),
+					),
+				),
+			)
+		);
+
+		$items = EDMINBOOST_Command_Center_Bar::get_items_for_current_user();
+		$slugs = wp_list_pluck( $items, 'slug' );
+
+		$this->assertContains( 'index.php', $slugs );
+		$this->assertContains( 'plugins.php', $slugs );
+	}
+
+	/**
 	 * has_drawer_items detects drawer interaction.
 	 */
 	public function test_has_drawer_items() {

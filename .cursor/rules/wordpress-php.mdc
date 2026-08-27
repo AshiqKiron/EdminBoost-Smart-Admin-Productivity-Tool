@@ -51,6 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Menu Studio: `EDMINBOOST_Menu_Studio::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - Visual theme: `EDMINBOOST_Theme::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - White label: `EDMINBOOST_White_Label::register_hooks()` in `EDMINBOOST_Plugin::run()`.
+- Setting help: `EDMINBOOST_Setting_Help` — static helpers only; required in bootstrap; no hooks.
 - Admin submenu order: `EDMINBOOST_Admin::normalize_plugin_submenu()` on `admin_menu` priority 999 in `EDMINBOOST_Plugin::run()`.
 - New productivity modules: extend `EDMINBOOST_Feature_Base`, register in `EDMINBOOST_Features`; defaults/enable/sanitize via `EDMINBOOST_Feature_Settings` (see `edminboost-features.mdc`).
 - Settings: `EDMINBOOST_Settings::get()`, `::is_enabled()`, `::is_feature_enabled()`, `::get_feature_settings()`; feature shape helpers in `EDMINBOOST_Feature_Settings`.
@@ -121,6 +122,8 @@ array(
 - Billing: `edminboost-billing-page.php` — expects `$cc_settings`, `$current_page`; plans from `EDMINBOOST_Command_Center::get_billing_plans()`.
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
 - Setup wizard partials: `edminboost-setup-wizard.php` (includes `edminboost-preset-picker.php`, `edminboost-theme-settings.php`, `edminboost-topbar-summary.php`, `edminboost-setup-review.php`).
+- Dashboard overview previews: `edminboost-overview-sidebar-preview.php` (`$sidebar_items`, `$preview_id`, `$preview_limit`).
+- Setting help: call `EDMINBOOST_Setting_Help::echo_icon( $key )` beside labels on non-Dashboard CC/feature pages.
 - Document `@var` annotations at the top of partials.
 
 ## Docblocks

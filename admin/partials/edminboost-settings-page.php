@@ -33,6 +33,7 @@ $settings    = EDMINBOOST_Settings::get();
 			<label class="edminboost-checkbox-row" for="edminboost_enabled">
 				<input type="checkbox" id="edminboost_enabled" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" <?php checked( ! empty( $settings['enabled'] ) ); ?> />
 				<?php esc_html_e( 'Enable EdminBoost features and Command Center.', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php EDMINBOOST_Setting_Help::echo_icon( 'enabled' ); ?>
 			</label>
 		</section>
 
@@ -46,9 +47,10 @@ $settings    = EDMINBOOST_Settings::get();
 			<button type="button" class="button" id="edminboost-export-settings" data-nonce="<?php echo esc_attr( wp_create_nonce( 'edminboost_export_settings' ) ); ?>">
 				<?php esc_html_e( 'Export settings', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</button>
+			<?php EDMINBOOST_Setting_Help::echo_icon( 'export_settings' ); ?>
 		</p>
 		<p>
-			<label for="edminboost-import-json"><?php esc_html_e( 'Import JSON', EDMINBOOST_TEXT_DOMAIN ); ?></label><br />
+			<label for="edminboost-import-json"><?php esc_html_e( 'Import JSON', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'import_settings' ); ?></label><br />
 			<textarea id="edminboost-import-json" class="large-text code" rows="8" placeholder="<?php esc_attr_e( 'Paste exported JSON here…', EDMINBOOST_TEXT_DOMAIN ); ?>"></textarea>
 		</p>
 		<p>

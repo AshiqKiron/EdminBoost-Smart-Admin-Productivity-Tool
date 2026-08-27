@@ -67,8 +67,8 @@ class EDMINBOOST_Admin {
 
 		add_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
 			EDMINBOOST_Settings::CAPABILITY,
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS,
 			array( $this, 'render_presets_page' )
@@ -557,10 +557,18 @@ class EDMINBOOST_Admin {
 				'presetBadgeSaved'          => __( 'Saved', EDMINBOOST_TEXT_DOMAIN ),
 				'presetBadgeVirtual'        => __( 'Layout', EDMINBOOST_TEXT_DOMAIN ),
 				'emptyLayoutPreview'        => __( 'No links in this preview yet.', EDMINBOOST_TEXT_DOMAIN ),
+				'emptySidebarPreview'       => __( 'No sidebar items in this preview yet.', EDMINBOOST_TEXT_DOMAIN ),
+				'previewWordPressLogo'      => __( 'WordPress', EDMINBOOST_TEXT_DOMAIN ),
+				'previewProfile'            => __( 'My account', EDMINBOOST_TEXT_DOMAIN ),
 				'pageLoading'               => __( 'Loading…', EDMINBOOST_TEXT_DOMAIN ),
 				'pageLoadFailed'            => __( 'Could not load that page. Please try again.', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			'presets'          => self::get_presets_for_js(),
+			'roleMatrix'       => array(
+				'protectedSlugs'        => EDMINBOOST_Menu_Studio::get_protected_slugs(),
+				'protectedSlugsByRole'  => EDMINBOOST_Command_Center::get_protected_slugs_by_role(),
+				'accessibleSlugsByRole' => EDMINBOOST_Command_Center::get_role_accessible_menu_slugs(),
+			),
 			'presetCategories' => EDMINBOOST_Command_Center::get_preset_categories(),
 			'themePresets' => EDMINBOOST_Theme::get_presets_for_js(),
 			'themeColorLabels' => EDMINBOOST_Theme::get_color_labels(),
@@ -597,16 +605,20 @@ class EDMINBOOST_Admin {
 
 		foreach ( EDMINBOOST_Command_Center::get_picker_presets( true ) as $preset_id => $preset ) {
 			$presets[ $preset_id ] = array(
-				'name'          => isset( $preset['name'] ) ? $preset['name'] : $preset_id,
-				'description'   => isset( $preset['description'] ) ? $preset['description'] : '',
-				'system'        => ! empty( $preset['system'] ),
-				'virtual'       => ! empty( $preset['virtual'] ),
-				'category'      => ! empty( $preset['virtual'] )
+				'name'           => isset( $preset['name'] ) ? $preset['name'] : $preset_id,
+				'description'    => isset( $preset['description'] ) ? $preset['description'] : '',
+				'system'         => ! empty( $preset['system'] ),
+				'virtual'        => ! empty( $preset['virtual'] ),
+				'category'       => ! empty( $preset['virtual'] )
 					? 'source'
 					: ( ! empty( $preset['system'] )
 						? ( isset( $preset['category'] ) ? $preset['category'] : 'workflow' )
 						: 'saved' ),
-				'top_bar_items' => EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id ),
+				'top_bar_items'      => EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id ),
+				'sidebar_items'      => EDMINBOOST_Command_Center::resolve_preset_sidebar_preview_items( $preset_id ),
+				'menu_studio'        => EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id ),
+				'visible_menu_slugs' => EDMINBOOST_Command_Center::get_preset_visible_menu_slugs( $preset_id ),
+				'visible_top_level_menu_slugs' => EDMINBOOST_Command_Center::get_preset_visible_top_level_menu_slugs( $preset_id ),
 			);
 		}
 
@@ -826,6 +838,8 @@ class EDMINBOOST_Admin {
 
 		$plugin_page = $page;
 		$title       = $this->get_cc_page_title( $page );
+
+		EDMINBOOST_Command_Center::ensure_discovery_menu_snapshot();
 	}
 
 	/**
@@ -839,7 +853,7 @@ class EDMINBOOST_Admin {
 			self::PAGE_SLUG                                              => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE => __( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER     => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS    => __( 'Layout Presets', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS    => __( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY => __( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', EDMINBOOST_TEXT_DOMAIN ),

@@ -53,9 +53,13 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
+* Filter Layout Presets role visibility defaults by each user role's WordPress capabilities; restricted items start unchecked but can be enabled manually.
+* Redesign the Layouts page “Who sees what” section: roles on the left, top-level menu checkboxes on the right in a scrollable matrix with labeled column headers.
+* Role visibility matrix now lists every top-level sidebar menu item, even when Menu Studio hides items from the live admin sidebar.
+* Role visibility checkboxes stay enabled when an item is outside the assigned preset; they start unchecked instead of being disabled.
 * Add a Billing page with Free ($0), Pro ($49 / 1 site), and Agency ($99 / 10 sites) plans in the Command Center and EdminBoost sidebar menu.
 * Fix top bar icons not rendering for plugin menus that use SVG or image sidebar icons.
-* Theme the WordPress admin footer when a visual theme is active so it matches the content background.
+* Theme the WordPress admin footer and wrap when a visual theme is active so no grey gap appears above the system status line.
 * Dashboard color theme previews now respect the saved light/dark mode instead of always showing the dark palette.
 * Add layout presets for every WordPress role shown on Users → Add New (Administrator, Editor, Author, etc.).
 * Remove the Custom option from the layout preset dropdown; use Top Bar to edit layouts that do not match a preset.
@@ -67,6 +71,7 @@ Yes. When uninstalled, all plugin options are removed from the database.
 * Add performance tools: emoji scope toggle, remove asset versions, front-end Dashicons removal, Heartbeat control, and disable embeds.
 * Add manual post ordering via list table Order column.
 * Apply layout preset role assignments at runtime for the top bar.
+* Layout presets now configure both the top bar and left sidebar menu; use Top Bar and Menu Studio for custom granular control.
 * Consolidate admin bar cleanup toggles into Appearance (including New content and Customize).
 * Extend visual theme with admin favicon, background, font size, post status colors, and schedule tokens.
 * Extend Menu Studio with width, typography, padding tokens, and icon/text display modes.

@@ -305,6 +305,10 @@ class EDMINBOOST_Settings {
 			if ( ! empty( $items ) ) {
 				$output['top_bar_items']  = self::sanitize_top_bar_items( $items );
 				$output['default_preset'] = $preset_id;
+				$output['menu_studio']    = self::sanitize_menu_studio(
+					EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id, $output ),
+					isset( $output['menu_studio'] ) && is_array( $output['menu_studio'] ) ? $output['menu_studio'] : null
+				);
 
 				$all_presets = EDMINBOOST_Command_Center::get_all_presets();
 				if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
@@ -328,6 +332,10 @@ class EDMINBOOST_Settings {
 				$output['top_bar_items']        = self::sanitize_top_bar_items( $items );
 				$output['default_preset']       = $preset_id;
 				$output['onboarding_completed'] = true;
+				$output['menu_studio']          = self::sanitize_menu_studio(
+					EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id, $output ),
+					isset( $output['menu_studio'] ) && is_array( $output['menu_studio'] ) ? $output['menu_studio'] : null
+				);
 
 				$all_presets = EDMINBOOST_Command_Center::get_all_presets();
 				if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
@@ -377,7 +385,7 @@ class EDMINBOOST_Settings {
 		if ( isset( $raw['role_visibility'] ) && is_array( $raw['role_visibility'] ) ) {
 			$output['role_visibility'] = self::sanitize_role_visibility(
 				$raw['role_visibility'],
-				$output['top_bar_items']
+				EDMINBOOST_Command_Center::get_role_matrix_menu_items()
 			);
 		}
 
@@ -399,7 +407,7 @@ class EDMINBOOST_Settings {
 			$output['presets'] = self::sanitize_custom_presets(
 				array_merge(
 					isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array(),
-					self::build_custom_preset_from_request( $raw['_save_custom_preset'], $output['top_bar_items'] )
+					self::build_custom_preset_from_request( $raw['_save_custom_preset'], $output['top_bar_items'], $output )
 				)
 			);
 		}
@@ -638,9 +646,10 @@ class EDMINBOOST_Settings {
 	 *
 	 * @param array $raw           Raw save payload.
 	 * @param array $top_bar_items Current top bar items.
+	 * @param array $cc_output     Current sanitized command_center output.
 	 * @return array
 	 */
-	private static function build_custom_preset_from_request( $raw, $top_bar_items ) {
+	private static function build_custom_preset_from_request( $raw, $top_bar_items, $cc_output = array() ) {
 		$name = isset( $raw['name'] ) ? sanitize_text_field( wp_unslash( $raw['name'] ) ) : '';
 
 		if ( '' === $name || empty( $top_bar_items ) ) {
@@ -648,6 +657,9 @@ class EDMINBOOST_Settings {
 		}
 
 		$id = 'custom_' . wp_generate_password( 8, false, false );
+		$menu_studio = isset( $cc_output['menu_studio'] ) && is_array( $cc_output['menu_studio'] )
+			? $cc_output['menu_studio']
+			: EDMINBOOST_Command_Center::get_menu_studio_defaults();
 
 		return array(
 			$id => array(
@@ -655,6 +667,7 @@ class EDMINBOOST_Settings {
 				'description'   => isset( $raw['description'] ) ? sanitize_text_field( wp_unslash( $raw['description'] ) ) : '',
 				'system'        => false,
 				'top_bar_items' => $top_bar_items,
+				'menu_studio'   => self::sanitize_menu_studio( $menu_studio ),
 			),
 		);
 	}
@@ -677,6 +690,9 @@ class EDMINBOOST_Settings {
 		$source = $all[ $source_id ];
 		$id     = 'custom_' . wp_generate_password( 8, false, false );
 		$name   = isset( $source['name'] ) ? $source['name'] : $source_id;
+		$menu_studio = isset( $source['menu_studio'] ) && is_array( $source['menu_studio'] )
+			? $source['menu_studio']
+			: EDMINBOOST_Command_Center::resolve_preset_menu_studio( $source_id, $output );
 
 		return array(
 			$id => array(
@@ -690,6 +706,7 @@ class EDMINBOOST_Settings {
 				'top_bar_items' => isset( $source['top_bar_items'] ) && is_array( $source['top_bar_items'] )
 					? $source['top_bar_items']
 					: ( isset( $output['top_bar_items'] ) ? $output['top_bar_items'] : array() ),
+				'menu_studio'   => self::sanitize_menu_studio( $menu_studio ),
 			),
 		);
 	}
@@ -732,6 +749,10 @@ class EDMINBOOST_Settings {
 				'system'        => false,
 				'top_bar_items' => $items,
 			);
+
+			if ( isset( $preset['menu_studio'] ) && is_array( $preset['menu_studio'] ) ) {
+				$sanitized[ $preset_id ]['menu_studio'] = self::sanitize_menu_studio( $preset['menu_studio'] );
+			}
 		}
 
 		return $sanitized;
@@ -821,16 +842,11 @@ class EDMINBOOST_Settings {
 	 * Sanitize per-role icon visibility (stores hidden slugs).
 	 *
 	 * @param array $raw_visibility Submitted visible slugs per role.
-	 * @param array $top_bar_items  Current top bar items.
+	 * @param array $matrix_items Role matrix menu items.
 	 * @return array
 	 */
-	private static function sanitize_role_visibility( $raw_visibility, $top_bar_items ) {
-		$all_slugs = array();
-		foreach ( $top_bar_items as $item ) {
-			if ( ! empty( $item['slug'] ) ) {
-				$all_slugs[] = $item['slug'];
-			}
-		}
+	private static function sanitize_role_visibility( $raw_visibility, $matrix_items ) {
+		unset( $matrix_items );
 
 		$hidden_by_role = array();
 
@@ -841,6 +857,15 @@ class EDMINBOOST_Settings {
 				continue;
 			}
 
+			$role_matrix = EDMINBOOST_Command_Center::get_role_matrix_menu_items();
+			$all_slugs   = array();
+
+			foreach ( $role_matrix as $item ) {
+				if ( ! empty( $item['slug'] ) ) {
+					$all_slugs[] = $item['slug'];
+				}
+			}
+
 			$visible = array();
 			foreach ( $visible_slugs as $slug ) {
 				$slug = sanitize_text_field( wp_unslash( $slug ) );
@@ -849,7 +874,12 @@ class EDMINBOOST_Settings {
 				}
 			}
 
-			$hidden_by_role[ $role_key ] = array_values( array_diff( $all_slugs, $visible ) );
+			$hidden = array_values( array_diff( $all_slugs, $visible ) );
+			$hidden = array_values(
+				array_diff( $hidden, EDMINBOOST_Command_Center::get_protected_slugs_for_role( $role_key ) )
+			);
+
+			$hidden_by_role[ $role_key ] = $hidden;
 		}
 
 		return $hidden_by_role;

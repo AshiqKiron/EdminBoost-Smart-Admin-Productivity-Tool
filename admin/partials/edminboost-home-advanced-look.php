@@ -26,7 +26,7 @@ $drawer_width_custom = max(
 			<h2 id="edminboost-drawer-settings-heading"><?php esc_html_e( 'Slide-out panel', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 
 			<fieldset class="edminboost-fieldset">
-				<legend><?php esc_html_e( 'Panel width', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php esc_html_e( 'Panel width', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'drawer_width' ); ?></legend>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[drawer_width]" value="compact" <?php checked( $behavior['drawer_width'], 'compact' ); ?> />
 					<?php esc_html_e( 'Compact (400px)', EDMINBOOST_TEXT_DOMAIN ); ?>
@@ -50,6 +50,7 @@ $drawer_width_custom = max(
 				>
 					<label for="edminboost_drawer_width_custom">
 						<?php esc_html_e( 'Custom width', EDMINBOOST_TEXT_DOMAIN ); ?>
+						<?php EDMINBOOST_Setting_Help::echo_icon( 'drawer_width_custom' ); ?>
 						<span class="edminboost-drawer-width-custom__value" id="edminboost_drawer_width_custom_value">
 							<?php echo esc_html( (string) $drawer_width_custom ); ?>px
 						</span>
@@ -104,10 +105,11 @@ $drawer_width_custom = max(
 					<?php checked( ! empty( $behavior['glassmorphism'] ) ); ?>
 				/>
 				<?php esc_html_e( 'Enable backdrop blur', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php EDMINBOOST_Setting_Help::echo_icon( 'glassmorphism' ); ?>
 			</label>
 
 			<p>
-				<label for="edminboost_autosave_interval"><?php esc_html_e( 'Auto-save interval for panel forms (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+				<label for="edminboost_autosave_interval"><?php esc_html_e( 'Auto-save interval for panel forms (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'autosave_interval' ); ?></label>
 				<input
 					type="number"
 					class="small-text"
@@ -125,7 +127,7 @@ $drawer_width_custom = max(
 			<h2 id="edminboost-badge-settings-heading"><?php esc_html_e( 'Notification badges', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 
 			<p>
-				<label for="edminboost_badge_refresh"><?php esc_html_e( 'Refresh rate (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+				<label for="edminboost_badge_refresh"><?php esc_html_e( 'Refresh rate (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'badge_refresh_rate' ); ?></label>
 				<input
 					type="number"
 					class="small-text"
@@ -139,7 +141,7 @@ $drawer_width_custom = max(
 			</p>
 
 			<fieldset class="edminboost-fieldset">
-				<legend><?php esc_html_e( 'Badge style', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php esc_html_e( 'Badge style', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'badge_style' ); ?></legend>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[badge_style]" value="dot" <?php checked( $behavior['badge_style'], 'dot' ); ?> />
 					<?php esc_html_e( 'Dot', EDMINBOOST_TEXT_DOMAIN ); ?>

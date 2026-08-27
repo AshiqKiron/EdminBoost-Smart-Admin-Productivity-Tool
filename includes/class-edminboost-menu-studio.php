@@ -63,13 +63,9 @@ class EDMINBOOST_Menu_Studio {
 	 */
 	public static function get_settings() {
 		$cc_settings = EDMINBOOST_Command_Center::get_settings();
-
-		if ( ! isset( $cc_settings['menu_studio'] ) || ! is_array( $cc_settings['menu_studio'] ) ) {
-			return EDMINBOOST_Command_Center::get_menu_studio_defaults();
-		}
-
-		$defaults = EDMINBOOST_Command_Center::get_menu_studio_defaults();
-		$merged   = wp_parse_args( $cc_settings['menu_studio'], $defaults );
+		$merged      = EDMINBOOST_Command_Center::resolve_menu_studio_for_user( $cc_settings );
+		$defaults    = EDMINBOOST_Command_Center::get_menu_studio_defaults();
+		$merged      = wp_parse_args( $merged, $defaults );
 
 		if ( isset( $merged['colors'] ) && is_array( $merged['colors'] ) ) {
 			$merged['colors'] = wp_parse_args( $merged['colors'], $defaults['colors'] );

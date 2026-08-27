@@ -20,6 +20,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<dd id="edminboost-review-theme">—</dd>
 		</div>
 		<div class="edminboost-setup-review__row">
+			<dt><?php esc_html_e( 'Sidebar menu', EDMINBOOST_TEXT_DOMAIN ); ?></dt>
+			<dd id="edminboost-review-sidebar">—</dd>
+		</div>
+		<div class="edminboost-setup-review__row">
 			<dt><?php esc_html_e( 'Top bar links', EDMINBOOST_TEXT_DOMAIN ); ?></dt>
 			<dd id="edminboost-review-topbar">—</dd>
 		</div>

@@ -44,6 +44,7 @@ require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-menu-studio.php'
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-white-label.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-features.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-admin.php';
+require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-setting-help.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-plugin.php';
 
 register_activation_hook( __FILE__, array( 'EDMINBOOST_Activator', 'activate' ) );

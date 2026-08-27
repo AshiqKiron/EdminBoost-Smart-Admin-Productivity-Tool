@@ -16,9 +16,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 $theme_presets  = EDMINBOOST_Theme::get_presets();
 $color_labels   = EDMINBOOST_Theme::get_color_labels();
 $active_preset  = isset( $theme['preset'] ) ? $theme['preset'] : 'default';
+$theme_mode     = isset( $theme['mode'] ) ? $theme['mode'] : 'light';
 $preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
 	$active_preset,
-	isset( $theme['mode'] ) ? $theme['mode'] : 'light',
+	$theme_mode,
 	$theme
 );
 ?>
@@ -75,7 +76,11 @@ $preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
 		>
 			<?php foreach ( $theme_presets as $preset_id => $preset ) : ?>
 				<?php
-				$option_colors = isset( $preset['colors'] ) ? $preset['colors'] : array();
+				$option_colors = EDMINBOOST_Theme::resolve_preview_colors(
+					$preset_id,
+					$theme_mode,
+					'custom' === $preset_id ? $theme : null
+				);
 				$is_selected   = ( $active_preset === $preset_id );
 				?>
 				<li

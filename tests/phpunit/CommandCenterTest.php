@@ -353,6 +353,49 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertNotEmpty( $settings['command_center']['top_bar_items'] );
 		$this->assertTrue( $settings['command_center']['onboarding_completed'] );
 		$this->assertSame( 'system_client', $settings['command_center']['default_preset'] );
+		$this->assertTrue( $settings['command_center']['menu_studio']['enabled'] );
+		$this->assertNotEmpty( $settings['command_center']['menu_studio']['order'] );
+	}
+
+	/**
+	 * resolve_preset_menu_studio enables Menu Studio for system presets.
+	 */
+	public function test_resolve_preset_menu_studio_for_system_client() {
+		$menu_studio = EDMINBOOST_Command_Center::resolve_preset_menu_studio( 'system_client' );
+
+		$this->assertTrue( $menu_studio['enabled'] );
+		$this->assertContains( 'index.php', $menu_studio['order'] );
+		$this->assertContains( 'edit.php', $menu_studio['order'] );
+		$this->assertNotContains( 'themes.php', $menu_studio['order'] );
+	}
+
+	/**
+	 * resolve_preset_sidebar_preview_items returns labeled sidebar rows.
+	 */
+	public function test_resolve_preset_sidebar_preview_items() {
+		$items = EDMINBOOST_Command_Center::resolve_preset_sidebar_preview_items( 'system_client' );
+
+		$this->assertNotEmpty( $items );
+		$this->assertArrayHasKey( 'slug', $items[0] );
+		$this->assertArrayHasKey( 'label', $items[0] );
+		$this->assertArrayHasKey( 'icon', $items[0] );
+	}
+
+	/**
+	 * Applying preset via sanitizer writes menu studio settings.
+	 */
+	public function test_sanitize_apply_preset_sets_menu_studio() {
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'_apply_preset' => 'system_client',
+				),
+			)
+		);
+
+		$this->assertTrue( $result['command_center']['menu_studio']['enabled'] );
+		$this->assertNotEmpty( $result['command_center']['menu_studio']['order'] );
 	}
 
 	/**
@@ -457,6 +500,29 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Role preset assignments resolve Menu Studio sidebar settings per user.
+	 */
+	public function test_resolve_menu_studio_for_user_role_assignment() {
+		$cc_settings = array(
+			'default_preset'   => 'system_client',
+			'top_bar_items'    => array(),
+			'menu_studio'      => EDMINBOOST_Command_Center::get_menu_studio_defaults(),
+			'role_assignments' => array(
+				'editor' => 'system_agency',
+			),
+		);
+
+		$editor = new WP_User( $this->factory->user->create( array( 'role' => 'editor' ) ) );
+		wp_set_current_user( $editor->ID );
+
+		$menu = EDMINBOOST_Command_Center::resolve_menu_studio_for_user( $cc_settings );
+
+		$this->assertTrue( $menu['enabled'] );
+		$this->assertContains( 'themes.php', $menu['order'] );
+		$this->assertContains( 'plugins.php', $menu['order'] );
+	}
+
+	/**
 	 * Applying preset via sanitizer writes top bar items.
 	 */
 	public function test_sanitize_apply_preset() {
@@ -472,6 +538,8 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertNotEmpty( $result['command_center']['top_bar_items'] );
 		$this->assertTrue( $result['command_center']['onboarding_completed'] );
 		$this->assertSame( 'system_client', $result['command_center']['default_preset'] );
+		$this->assertTrue( $result['command_center']['menu_studio']['enabled'] );
+		$this->assertNotEmpty( $result['command_center']['menu_studio']['order'] );
 	}
 
 	/**
@@ -503,6 +571,11 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		if ( function_exists( '_add_themes_utility_last' ) ) {
 			$this->markTestSkipped( 'Admin menu bootstrap already loaded in this PHP process.' );
 		}
+
+		EDMINBOOST_Command_Center::reset_static_caches();
+
+		global $menu;
+		$menu = null;
 
 		$items = EDMINBOOST_Command_Center::get_discovered_menu_items();
 
@@ -543,5 +616,69 @@ class CommandCenterTest extends Edminboost_Test_Case {
 			'/class="edminboost-cc-nav__link is-active"[^>]*data-edminboost-page="' . preg_quote( $page, '/' ) . '"/',
 			$html
 		);
+	}
+
+	/**
+	 * Role matrix excludes menu slugs a role cannot access.
+	 */
+	public function test_get_role_matrix_menu_items_respects_role_capabilities() {
+		if ( ! did_action( 'admin_menu' ) ) {
+			do_action( 'admin_menu' );
+		}
+
+		$admin_items = wp_list_pluck( EDMINBOOST_Command_Center::get_role_matrix_menu_items(), 'slug' );
+		$sub_items   = wp_list_pluck( EDMINBOOST_Command_Center::get_role_matrix_menu_items( 'subscriber' ), 'slug' );
+
+		$this->assertNotEmpty( $admin_items );
+		$this->assertContains( 'index.php', $sub_items );
+		$this->assertNotContains( 'plugins.php', $sub_items );
+		$this->assertLessThan( count( $admin_items ), count( $sub_items ) );
+	}
+
+	/**
+	 * Protected slugs are role-aware.
+	 */
+	public function test_get_protected_slugs_for_role() {
+		$admin_protected = EDMINBOOST_Command_Center::get_protected_slugs_for_role( 'administrator' );
+		$sub_protected   = EDMINBOOST_Command_Center::get_protected_slugs_for_role( 'subscriber' );
+
+		$this->assertContains( EDMINBOOST_Admin::PAGE_SLUG, $admin_protected );
+		$this->assertNotContains( EDMINBOOST_Admin::PAGE_SLUG, $sub_protected );
+	}
+
+	/**
+	 * Top bar items are filtered by the current user's capabilities.
+	 */
+	public function test_filter_top_bar_items_for_user_capabilities() {
+		if ( ! did_action( 'admin_menu' ) ) {
+			do_action( 'admin_menu' );
+		}
+
+		$subscriber_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
+		wp_set_current_user( $subscriber_id );
+
+		$items = EDMINBOOST_Command_Center::filter_top_bar_items_for_user_capabilities(
+			array(
+				array(
+					'slug'         => 'index.php',
+					'label'        => 'Dashboard',
+					'icon'         => 'dashicons-dashboard',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+				array(
+					'slug'         => 'plugins.php',
+					'label'        => 'Plugins',
+					'icon'         => 'dashicons-admin-plugins',
+					'interaction'  => 'redirect',
+					'badge_source' => '',
+				),
+			)
+		);
+
+		$slugs = wp_list_pluck( $items, 'slug' );
+
+		$this->assertContains( 'index.php', $slugs );
+		$this->assertNotContains( 'plugins.php', $slugs );
 	}
 }

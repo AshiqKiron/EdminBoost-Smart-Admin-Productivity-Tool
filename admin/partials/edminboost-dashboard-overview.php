@@ -10,7 +10,7 @@
  * @var string $theme_key      Form field prefix for theme.
  * @var string $appearance_url Appearance settings URL.
  * @var string $mapper_url     Top Bar editor URL.
- * @var string $presets_url    Layout Presets URL.
+ * @var string $presets_url    Layouts URL.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
@@ -69,7 +69,7 @@ if ( 0 === $top_bar_count ) {
 	}
 }
 
-$layout_preview_items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $layout_preset, $cc_settings );
+$layout_sidebar_items   = EDMINBOOST_Command_Center::resolve_preset_sidebar_preview_items( $layout_preset, $cc_settings );
 $theme_preview_colors = EDMINBOOST_Theme::resolve_preview_colors(
 	$active_preset,
 	isset( $theme['mode'] ) ? $theme['mode'] : 'light',
@@ -121,17 +121,19 @@ $theme_key = $option_name . '[command_center][theme]';
 				$preset_picker_mode = 'overview';
 				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-preset-picker.php';
 				?>
-				<?php
-				$preview_items      = $layout_preview_items;
-				$preview_id         = 'edminboost-overview-layout-preview';
-				$preview_aria_label = sprintf(
-					/* translators: %s: layout preset name */
-					__( 'Top bar preview for the %s layout preset', EDMINBOOST_TEXT_DOMAIN ),
-					$layout_name
-				);
-				$show_interaction   = false;
-				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
-				?>
+				<div class="edminboost-layout-preset-previews">
+					<?php
+					$sidebar_items      = $layout_sidebar_items;
+					$preview_limit      = 5;
+					$preview_id         = 'edminboost-overview-layout-sidebar-preview';
+					$preview_aria_label = sprintf(
+						/* translators: %s: layout preset name */
+						__( 'Sidebar menu preview for the %s layout preset', EDMINBOOST_TEXT_DOMAIN ),
+						$layout_name
+					);
+					include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-sidebar-preview.php';
+					?>
+				</div>
 				<a class="button button-secondary" href="<?php echo esc_url( $presets_url ); ?>">
 					<?php esc_html_e( 'Manage layout presets', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</a>
@@ -157,6 +159,7 @@ $theme_key = $option_name . '[command_center][theme]';
 				$preview_id         = 'edminboost-overview-topbar-preview';
 				$preview_aria_label = __( 'Preview of your configured top bar links', EDMINBOOST_TEXT_DOMAIN );
 				$show_interaction   = true;
+				$compact_preview    = true;
 				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
 				?>
 				<a class="button button-secondary" href="<?php echo esc_url( $mapper_url ); ?>">

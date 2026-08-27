@@ -24,6 +24,7 @@ includes/
   class-edminboost-features.php               # feature registry
   class-edminboost-feature-settings.php       # feature defaults, sanitize, enable checks
   class-edminboost-white-label.php            # agency branding + login customization
+  class-edminboost-setting-help.php           # setting field info tooltips (non-Dashboard pages)
   class-edminboost-{activator,deactivator,i18n}.php
   features/
     class-edminboost-feature-base.php
@@ -48,7 +49,9 @@ readme.txt
 - Settings: `edminboost_settings` via `EDMINBOOST_Settings` (group `edminboost_settings_group`). Global kill switch: `enabled`.
 - Command Center config lives under `settings['command_center']`; helpers in `EDMINBOOST_Command_Center`.
 - Live admin bar: `EDMINBOOST_Command_Center_Bar` (not a feature module) — registered in `EDMINBOOST_Plugin::run()`, renders saved `top_bar_items` on `#wpadminbar` and applies behavior declutter toggles.
-- Menu Studio: `EDMINBOOST_Menu_Studio` — sidebar reorder/hide/custom links + optional menu colors; config under `command_center.menu_studio`.
+- Menu Studio: `EDMINBOOST_Menu_Studio` — sidebar reorder/hide/custom links + optional menu colors; config under `command_center.menu_studio`; runtime config resolved via `EDMINBOOST_Command_Center::resolve_menu_studio_for_user()` (role preset assignments + `role_visibility` filtering).
+- Layout presets configure both the top bar (`top_bar_items`) and sidebar (`menu_studio`); `apply_preset()` writes both. Use Top Bar and Menu Studio for granular overrides.
+- Setting help: `EDMINBOOST_Setting_Help` — accessible info-icon tooltips on CC/feature pages (hidden on Dashboard); registry keyed by setting ID; call `echo_icon( $key )` beside labels.
 - Visual theme: `EDMINBOOST_Theme` — CSS-token presets (20+ skins + Custom, light/dark/auto mode, scheduled dark mode, system fonts, font size, admin favicon/background, post status colors, five color tokens); config under `command_center.theme`; loads on all wp-admin when enabled, plus live CC bar and drawer on the front end.
 - White label: `EDMINBOOST_White_Label` — plugin row/menu branding, login screen, admin favicon, system status footer; config under `white_label`; registered in `EDMINBOOST_Plugin::run()`.
 - Feature settings: `EDMINBOOST_Feature_Settings` — centralized `features` defaults, `normalize()`, `is_enabled()`, and `sanitize()`; legacy `admin_bar` / `admin_menu` keys are stripped on read.

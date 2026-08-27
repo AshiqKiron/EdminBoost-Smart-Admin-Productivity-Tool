@@ -5,11 +5,16 @@
 
 body.edminboost-plugin-screen #wpfooter {
 	position: relative;
-	margin-top: 12px;
+	margin-top: 0;
+	padding-top: 12px;
 }
 
 body.edminboost-plugin-screen #wpbody-content {
-	padding-bottom: 48px;
+	padding-bottom: 12px;
+}
+
+body.edminboost-plugin-screen #wpbody {
+	padding-bottom: 0;
 }
 
 body.edminboost-plugin-screen #wpwrap {
@@ -104,8 +109,92 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 }
 
 .edminboost-fieldset legend {
+	display: inline-flex;
+	align-items: center;
+	flex-wrap: wrap;
+	gap: 4px;
 	font-weight: 600;
 	margin-bottom: 8px;
+}
+
+.edminboost-setting-info {
+	position: relative;
+	display: inline-flex;
+	vertical-align: middle;
+	margin-left: 2px;
+}
+
+.edminboost-setting-info__trigger {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: 0;
+	border-radius: 50%;
+	background: transparent;
+	color: #646970;
+	cursor: help;
+	line-height: 1;
+}
+
+.edminboost-setting-info__trigger:hover,
+.edminboost-setting-info__trigger:focus-visible {
+	color: #2271b1;
+	outline: 2px solid transparent;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+
+.edminboost-setting-info__trigger .dashicons {
+	font-size: 16px;
+	width: 16px;
+	height: 16px;
+}
+
+.edminboost-setting-info__tooltip {
+	position: absolute;
+	bottom: calc(100% + 8px);
+	left: 50%;
+	z-index: 100;
+	width: max-content;
+	max-width: min(280px, 70vw);
+	padding: 8px 12px;
+	background: #1d2327;
+	color: #fff;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1.45;
+	text-align: left;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateX(-50%);
+	transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.edminboost-setting-info__tooltip::after {
+	content: "";
+	position: absolute;
+	top: 100%;
+	left: 50%;
+	margin-left: -5px;
+	border: 5px solid transparent;
+	border-top-color: #1d2327;
+}
+
+.edminboost-setting-info__trigger:hover + .edminboost-setting-info__tooltip,
+.edminboost-setting-info__trigger:focus-visible + .edminboost-setting-info__tooltip {
+	opacity: 1;
+	visibility: visible;
+}
+
+.edminboost-checkbox-row .edminboost-setting-info,
+label .edminboost-setting-info,
+h2 .edminboost-setting-info {
+	margin-left: 4px;
 }
 
 .edminboost-checkbox-row {
@@ -205,6 +294,30 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	font-size: 15px;
 	color: #50575e;
 	margin: 8px 0 0;
+}
+
+.edminboost-save-preset__form {
+	display: none;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 8px;
+}
+
+.edminboost-save-preset.is-editing .edminboost-save-preset__trigger {
+	display: none;
+}
+
+.edminboost-save-preset.is-editing .edminboost-save-preset__form {
+	display: flex;
+}
+
+.edminboost-save-preset__label {
+	font-weight: 600;
+	margin: 0;
+}
+
+.edminboost-save-preset__input {
+	min-width: 220px;
 }
 
 .edminboost-cc-section {
@@ -557,6 +670,13 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	margin-top: 16px;
 }
 
+.edminboost-preset-picker--wizard,
+.edminboost-preset-picker--full {
+	display: flex;
+	flex-direction: column;
+	gap: 20px;
+}
+
 .edminboost-preset-picker--wizard .edminboost-layout-preset-fieldset,
 .edminboost-preset-picker--full .edminboost-layout-preset-fieldset {
 	margin: 0;
@@ -714,7 +834,98 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 }
 
 .edminboost-preset-picker .edminboost-overview-topbar-preview {
+	margin-top: 0;
+}
+
+.edminboost-layout-preset-previews {
+	display: grid;
+	grid-template-columns: minmax( 0, 120px ) minmax( 0, 1fr );
+	gap: 10px;
+	margin: 16px 0;
+	align-items: start;
+}
+
+.edminboost-preset-picker--full .edminboost-layout-preset-previews,
+.edminboost-preset-picker--wizard .edminboost-layout-preset-previews {
+	margin: 0;
+}
+
+.edminboost-layout-preset-previews .edminboost-overview-card__preview {
+	margin-bottom: 0;
+}
+
+.edminboost-layout-preset-previews .edminboost-overview-sidebar-preview {
+	max-height: 168px;
+	overflow: hidden;
+}
+
+.edminboost-overview-card--layout .edminboost-layout-preset-previews {
+	grid-template-columns: minmax( 0, 120px );
+}
+
+.edminboost-overview-card--layout > .button {
 	margin-top: 16px;
+}
+
+.edminboost-overview-sidebar-preview {
+	border: 1px solid #1d2327;
+	border-radius: 8px;
+	background: #1d2327;
+	padding: 8px 6px;
+}
+
+.edminboost-overview-sidebar-preview__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.edminboost-overview-sidebar-preview__item {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	padding: 5px 6px;
+	border-radius: 4px;
+	color: #f0f0f1;
+	font-size: 11px;
+	line-height: 1.3;
+}
+
+.edminboost-overview-sidebar-preview__item .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+	color: #c3c4c7;
+	cursor: help;
+}
+
+.edminboost-overview-sidebar-preview__label {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.edminboost-overview-sidebar-preview__more {
+	padding: 4px 6px;
+	font-size: 10px;
+	color: #a7aaad;
+}
+
+.edminboost-overview-sidebar-preview--empty {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	min-height: 72px;
+	background: #f6f7f7;
+	border-color: #dcdcde;
+}
+
+.edminboost-overview-sidebar-preview__empty {
+	margin: 0;
+	padding: 8px;
+	font-size: 12px;
+	color: #646970;
+	text-align: center;
 }
 
 .edminboost-layout-preset-actions {
@@ -722,7 +933,7 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	flex-wrap: wrap;
 	gap: 8px;
 	align-items: center;
-	margin-top: 16px;
+	margin: 0;
 }
 
 .edminboost-topbar-summary__list {
@@ -1014,6 +1225,43 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	height: 22px;
 }
 
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__canvas {
+	min-height: 36px;
+	padding: 6px 8px;
+	gap: 4px;
+}
+
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__brand .dashicons,
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__profile .dashicons {
+	font-size: 14px;
+	width: 14px;
+	height: 14px;
+}
+
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__items {
+	gap: 2px;
+}
+
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__item {
+	padding: 3px 4px;
+	gap: 0;
+}
+
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__item .dashicons {
+	font-size: 12px;
+	width: 12px;
+	height: 12px;
+}
+
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__label {
+	display: none;
+}
+
+.edminboost-overview-topbar-preview--compact .edminboost-overview-topbar-preview__more {
+	padding: 2px 4px;
+	font-size: 10px;
+}
+
 .edminboost-overview-topbar-preview__canvas {
 	display: flex;
 	align-items: center;
@@ -1022,7 +1270,46 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	background: #1d2327;
 	border-radius: 4px;
 	min-height: 42px;
-	overflow: hidden;
+	overflow: visible;
+}
+
+.edminboost-overview-topbar-preview__tip {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	cursor: help;
+}
+
+.edminboost-overview-topbar-preview__tip::after {
+	content: attr(title);
+	position: absolute;
+	bottom: calc(100% + 6px);
+	left: 50%;
+	z-index: 20;
+	width: max-content;
+	max-width: min(220px, 70vw);
+	padding: 4px 8px;
+	background: #1d2327;
+	color: #fff;
+	font-size: 11px;
+	font-weight: 400;
+	line-height: 1.35;
+	text-align: center;
+	border-radius: 4px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+	pointer-events: none;
+	opacity: 0;
+	visibility: hidden;
+	transform: translateX(-50%);
+	transition: opacity 0.15s ease, visibility 0.15s ease;
+}
+
+.edminboost-overview-topbar-preview__tip:hover::after,
+.edminboost-overview-topbar-preview__tip:focus-visible::after {
+	opacity: 1;
+	visibility: visible;
 }
 
 .edminboost-overview-topbar-preview__brand,
@@ -1097,6 +1384,7 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	font-size: 11px;
 	font-weight: 600;
 	line-height: 1.4;
+	cursor: help;
 }
 
 .edminboost-overview-topbar-preview--empty {
@@ -1517,49 +1805,152 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 	margin-bottom: 0;
 }
 
-/* Role matrix */
+/* Role visibility matrix */
 .edminboost-role-matrix-wrap {
 	overflow-x: auto;
-	margin-top: 12px;
+	margin-top: 16px;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	background: #fff;
 }
 
 .edminboost-role-matrix {
 	width: 100%;
+	margin: 0;
+	border: 0;
+	border-collapse: separate;
+	border-spacing: 0;
 }
 
 .edminboost-role-matrix th,
 .edminboost-role-matrix td {
 	vertical-align: middle;
+	padding: 12px 14px;
+	border-bottom: 1px solid #f0f0f1;
 }
 
-.edminboost-role-matrix__icon-col,
+.edminboost-role-matrix thead th {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	background: #f9f9f9;
+	font-size: 12px;
+	font-weight: 600;
+	text-align: left;
+}
+
+.edminboost-role-matrix tbody tr:last-child th,
+.edminboost-role-matrix tbody tr:last-child td {
+	border-bottom: 0;
+}
+
+.edminboost-role-matrix__role-col {
+	position: sticky;
+	left: 0;
+	z-index: 3;
+	min-width: 140px;
+	background: #fff;
+	box-shadow: 1px 0 0 #f0f0f1;
+}
+
+.edminboost-role-matrix thead .edminboost-role-matrix__role-col {
+	z-index: 4;
+	background: #f9f9f9;
+}
+
+.edminboost-role-matrix__preset-col {
+	position: sticky;
+	left: 140px;
+	z-index: 3;
+	min-width: 200px;
+	background: #fff;
+	box-shadow: 1px 0 0 #f0f0f1;
+}
+
+.edminboost-role-matrix thead .edminboost-role-matrix__preset-col {
+	z-index: 4;
+	background: #f9f9f9;
+}
+
+.edminboost-role-matrix__preset-col select {
+	width: 100%;
+	min-width: 180px;
+	max-width: 220px;
+}
+
+.edminboost-role-matrix__menu-col {
+	min-width: 88px;
+	max-width: 110px;
+	padding: 10px 8px;
+	text-align: center;
+	vertical-align: bottom;
+}
+
+.edminboost-role-matrix__menu-heading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
+	gap: 6px;
+	min-height: 56px;
+}
+
+.edminboost-role-matrix__menu-heading .dashicons {
+	width: 18px;
+	height: 18px;
+	font-size: 18px;
+	line-height: 1;
+	color: #50575e;
+}
+
+.edminboost-role-matrix__menu-label {
+	display: block;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.25;
+	color: #50575e;
+	word-break: break-word;
+}
+
 .edminboost-role-matrix__check {
-	box-sizing: border-box;
-	width: 3rem;
-	min-width: 3rem;
-	max-width: 3rem;
-	padding: 10px 0;
+	width: 56px;
+	min-width: 56px;
+	padding: 12px 8px;
 	text-align: center;
 }
 
-.edminboost-role-matrix__icon-col {
-	position: relative;
-}
-
-.edminboost-role-matrix__icon-col .dashicons {
-	display: inline-block;
-	width: 20px;
-	height: 20px;
-	font-size: 20px;
-	line-height: 1;
-	vertical-align: middle;
+.edminboost-role-matrix__check-label {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0;
+	cursor: pointer;
 }
 
 .edminboost-role-matrix__check input[type="checkbox"] {
-	display: block;
-	width: 16px;
-	height: 16px;
-	margin: 0 auto;
+	margin: 0;
+}
+
+.edminboost-role-matrix__check.is-not-in-layout {
+	background: #fafafa;
+}
+
+.edminboost-role-matrix__check.is-protected {
+	background: #fcfcfc;
+}
+
+.edminboost-role-matrix__check.is-capability-restricted {
+	background: #fcfcfc;
+}
+
+.edminboost-role-matrix__check.is-capability-restricted.is-not-in-layout {
+	background: #fafafa;
+}
+
+.edminboost-role-matrix tbody th.edminboost-role-matrix__role-col {
+	font-weight: 600;
+	font-size: 13px;
+	white-space: nowrap;
 }
 
 /* Badge preview */
@@ -1840,7 +2231,8 @@ body.edminboost-plugin-screen .edminboost-settings-form > .submit {
 }
 
 .edminboost-cc-form .button.is-saving,
-.edminboost-settings-form .button.is-saving {
+.edminboost-settings-form .button.is-saving,
+.edminboost-save-preset .button.is-saving {
 	opacity: 0.65;
 }
 

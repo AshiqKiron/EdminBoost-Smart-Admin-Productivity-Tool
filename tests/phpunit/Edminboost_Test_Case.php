@@ -17,6 +17,7 @@ abstract class Edminboost_Test_Case extends WP_UnitTestCase {
 		parent::setUp();
 		delete_option( EDMINBOOST_Settings::OPTION_NAME );
 		delete_option( EDMINBOOST_Settings::VERSION_OPTION );
+		EDMINBOOST_Command_Center::reset_static_caches();
 		wp_set_current_user( $this->factory->user->create( array( 'role' => 'administrator' ) ) );
 	}
 

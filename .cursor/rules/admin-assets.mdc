@@ -34,9 +34,13 @@ alwaysApply: false
 		emptyMenuCanvas, removeFromSidebar, customMenuPathRequired, customMenuLabelRequired,
 		customMenuPathInvalid, customMenuDuplicate, selectLayoutPreset, saveAndLaunch,
 		presetBadgeBuiltIn, presetBadgeSaved, presetBadgeVirtual, emptyLayoutPreview,
+		emptySidebarPreview, previewWordPressLogo, previewProfile,
 		pageLoading, pageLoadFailed
 	},
-	presets: object,          // resolved preset layouts for JS (from get_picker_presets)
+	presets: object,          // resolved preset layouts for JS (top_bar_items, sidebar_items, menu_studio, visible_*_slugs)
+	roleMatrix: {             // Layout Presets role visibility matrix
+		protectedSlugs, protectedSlugsByRole, accessibleSlugsByRole
+	},
 	presetCategories: object, // category labels from EDMINBOOST_Command_Center::get_preset_categories()
 	themePresets: object,     // from EDMINBOOST_Theme::get_presets_for_js()
 	themeColorLabels: object, // from EDMINBOOST_Theme::get_color_labels()
@@ -81,7 +85,8 @@ alwaysApply: false
 - Prefix all selectors with `.edminboost-` to avoid admin conflicts.
 - Layout: `.edminboost-wrap`, `.edminboost-dashboard`, `.edminboost-card`, `.edminboost-status`.
 - Dashboard: `.edminboost-home-wrap` (+ `.edminboost-home-wrap--wizard` before setup), `.edminboost-home-hero`, `.edminboost-dashboard-overview`, `.edminboost-overview-grid`, `.edminboost-overview-card`, `.edminboost-overview-card__preview`.
-- Overview previews: `.edminboost-overview-theme-preview` (+ `__bar`, `__layout`, `__sidebar`, `__main`, `__accent`, `__line`, `__swatches`, `__swatch`), `.edminboost-overview-topbar-preview` (+ `__canvas`, `__brand`, `__items`, `__item`, `__badge`, `__more`, `__profile`, `--empty`).
+- Overview previews: `.edminboost-overview-theme-preview` (+ `__bar`, `__layout`, `__sidebar`, `__main`, `__accent`, `__line`, `__swatches`, `__swatch`), `.edminboost-overview-topbar-preview` (+ `__canvas`, `__brand`, `__items`, `__item`, `__badge`, `__more`, `__profile`, `--empty`), `.edminboost-overview-sidebar-preview` (+ `__list`, `__item`, `__label`, `__more`, `__empty`, `--empty`).
+- Setting help: `.edminboost-setting-info` (+ `__trigger`, `__tooltip`); hover/focus reveals tooltip.
 - Overview pickers: `.edminboost-overview-theme-picker`, `.edminboost-overview-topbar-links-picker` (+ `__toggle`, `__label`, `__list`, `__option`, `__option-main`, `__option-name`, `__option-meta`, `__empty`).
 - CC tab loading: `.edminboost-cc-nav.is-loading`, `.edminboost-wrap.is-cc-loading`.
 - Setup wizard: `.edminboost-setup-wizard`, `.edminboost-setup-stepper` (+ `__item`, `__number`, `__label`), `.edminboost-setup-step`, `.edminboost-setup-wizard__footer`, `.edminboost-setup-review__*`, `.edminboost-preset-picker` (+ `--wizard` / `--full`, compact listbox + embedded top bar preview).
@@ -89,7 +94,7 @@ alwaysApply: false
 - Command Center: `.edminboost-cc-wrap`, `.edminboost-cc-nav`, `.edminboost-cc-hero`, `.edminboost-cc-footer`.
 - Billing: `.edminboost-billing-current`, `.edminboost-billing-plans`, `.edminboost-billing-plan` (+ `__badge`, `__header`, `__price`, `__features`, `__footer`, `__upgrade`; modifiers `.is-featured`, `.is-current`).
 - Mapper: `.edminboost-mapper-layout`, `.edminboost-mapper-search`, `.edminboost-discovered-list`, `.edminboost-discovered-item` (+ `__toggle`, `__checkbox`, `__handle`, `__icon`), `.edminboost-topbar-canvas` (+ `.is-drag-over`), `.edminboost-topbar-item`, `.edminboost-item-drawer`, `.edminboost-topbar-summary`.
-- Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-role-matrix`.
+- Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-role-matrix-wrap`, `.edminboost-role-matrix` (+ `__role-col`, `__preset-col`, `__menu-col`, `__menu-heading`, `__menu-label`, `__check`, `__check-label`, `__row`; modifiers `.is-not-in-layout`, `.is-protected`, `.is-capability-restricted`).
 - Appearance / behavior: `.edminboost-badge-preview`, `.edminboost-drawer-width-custom`, `.edminboost-drawer-width-preview__*` (width slider live preview), `.edminboost-animation-speed-picker` (+ `__toggle`, `__list`, `__option`, `__preview`, `__preview-drawer`; duration via `--edminboost-animation-preview-ms`).
 - Menu Studio: `.edminboost-menu-studio-layout`, `.edminboost-menu-studio-panel`, `.edminboost-menu-canvas`, `.edminboost-menu-discovered-list`.
 - Theme UI (settings markup): `.edminboost-theme-preset-colors`, `.edminboost-theme-color-swatches`, `.edminboost-theme-color-swatch`, `.edminboost-theme-custom-colors`, `.edminboost-theme-color-row`, `.edminboost-theme-preview` (+ `__bar`, `__badge`, `__accent`, `__muted`).
@@ -128,6 +133,7 @@ alwaysApply: false
 | `edminboost-overview-theme-preview.php` | Theme mini-preview partial |
 | `edminboost-overview-topbar-links-picker.php` | Read-only top bar links dropdown |
 | `edminboost-overview-topbar-preview.php` | Top bar mini-preview partial |
+| `edminboost-overview-sidebar-preview.php` | Sidebar mini-preview partial |
 | `edminboost-settings-page.php` | Settings page shell (CC nav + form) |
 | `edminboost-appearance-page.php` | Theme, panel/badges, declutter |
 | `edminboost-home-advanced-look.php` | Panel width, badges, animation speed (Appearance) |
@@ -176,18 +182,19 @@ Runs on Appearance page (`#edminboost-appearance-form`). Key elements: `input[na
 
 ## Layout preset picker JS (`initLayoutPresetPicker`)
 
-Key elements: `#edminboost_layout_preset`, `#edminboost-layout-preset-picker`, `#edminboost_layout_preset_toggle`, `#edminboost-layout-preset-list`, `#edminboost-layout-preset-name`, `#edminboost-layout-preset-badge`, `#edminboost-layout-preset-desc`, `.edminboost-preset-picker .edminboost-overview-topbar-preview`, `#edminboost-overview-layout-preview`.
+Key elements: `#edminboost_layout_preset`, `#edminboost-layout-preset-picker`, `#edminboost_layout_preset_toggle`, `#edminboost-layout-preset-list`, `#edminboost-layout-preset-name`, `#edminboost-layout-preset-badge`, `#edminboost-layout-preset-desc`, `.edminboost-preset-picker .edminboost-overview-topbar-preview`, `.edminboost-preset-picker .edminboost-overview-sidebar-preview`, `#edminboost-overview-layout-preview`, `#edminboost-overview-layout-sidebar-preview`.
 
 - Custom listbox mirrors theme preset picker UX; options grouped by `edminboostData.presetCategories`.
 - `renderTopBarPreview( presetId )` rebuilds embedded mini admin bar (max 4 links + overflow) from resolved preset `top_bar_items`.
+- `renderSidebarPreview( presetId )` rebuilds `.edminboost-overview-sidebar-preview` from preset `sidebar_items` (max 5 + overflow).
 - `syncPresetCatalogFn` rebuilds grouped options when AJAX save returns refreshed `presets`.
 - Used on setup wizard step 1, Layout Presets page, and Dashboard overview (`preset_picker_mode === 'overview'`); Presets page apply/duplicate/export stays in `initPresets`.
 
 ## Dashboard overview JS (`initDashboardOverview`)
 
-Key elements: `#edminboost-dashboard-overview-form`, `#edminboost_dashboard_apply_preset`, `#edminboost-layout-preset-list`, `#edminboost-theme-preset-list`, `#edminboost-overview-topbar-links-picker`, `#edminboost_overview_topbar_links_toggle`, `#edminboost-overview-layout-preview`, `#edminboost-overview-theme-preview`, `#edminboost-overview-topbar-preview`.
+Key elements: `#edminboost-dashboard-overview-form`, `#edminboost_dashboard_apply_preset`, `#edminboost-layout-preset-list`, `#edminboost-theme-preset-list`, `#edminboost-overview-topbar-links-picker`, `#edminboost_overview_topbar_links_toggle`, `#edminboost-overview-layout-preview`, `#edminboost-overview-layout-sidebar-preview`, `#edminboost-overview-theme-preview`, `#edminboost-overview-topbar-preview`.
 
-- Layout preset option click sets `_apply_preset` hidden field and AJAX-saves; refreshes top bar previews and links list from `edminboostData.presets`.
+- Layout preset option click sets `_apply_preset` hidden field and AJAX-saves; refreshes top bar + sidebar previews and links list from `edminboostData.presets`.
 - Theme preset option click AJAX-saves theme preset without full reload; updates theme preview swatches.
 - Read-only top bar links picker toggles `#edminboost-overview-topbar-links-list` (closes on scroll via `initPickerCloseOnScroll`).
 - Skips live `document.body` theme preview in `initTheme` when overview form is present.
@@ -213,6 +220,14 @@ Key elements: hidden `#edminboost_theme_preset`, custom listbox `#edminboost-the
 - Intercepts `.edminboost-cc-form` and `.edminboost-settings-form` submit; POSTs `FormData` to `edminboostData.settingsSave.ajaxUrl` with action `edminboost_save_settings`.
 - Uses nonce from form (`settings_fields()`); shows inline success/error notice; optional reload via `saveSettingsForm( form, { reload: true } )`.
 - Success payload may include `presets`, `selected_preset`, `default_preset`, `setup_complete`, `message` — `applySettingsSaveResult()` syncs `edminboostData.presets` and reloads Dashboard via CC nav when wizard completes.
+
+## Presets page JS (`initPresets` / `initRoleMatrix`)
+
+Key elements: `#edminboost-presets-form`, `.edminboost-role-matrix`, `.edminboost-role-preset-select`, `.edminboost-role-matrix__check input[type="checkbox"]`.
+
+- `initRoleMatrix()` syncs visibility checkboxes when assigned preset changes; uses `edminboostData.roleMatrix` and preset `visible_top_level_menu_slugs`.
+- Protected slugs stay checked/disabled; items outside preset get `.is-not-in-layout` and start unchecked on preset change.
+- Apply/duplicate/save/export preset actions remain in `initPresets`.
 
 ## Enqueuing
 

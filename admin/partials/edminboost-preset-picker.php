@@ -84,7 +84,7 @@ $preview_aria    = sprintf(
 ?>
 <div class="edminboost-preset-picker edminboost-preset-picker--<?php echo esc_attr( $preset_picker_mode ); ?>">
 	<fieldset class="edminboost-fieldset edminboost-layout-preset-fieldset">
-		<legend><?php esc_html_e( 'Layout preset', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+		<legend><?php esc_html_e( 'Layout preset', EDMINBOOST_TEXT_DOMAIN ); ?><?php EDMINBOOST_Setting_Help::echo_icon( 'layout_preset' ); ?></legend>
 
 		<select
 			id="edminboost_layout_preset"
@@ -202,10 +202,28 @@ $preview_aria    = sprintf(
 	</fieldset>
 
 	<?php if ( $show_preset_preview ) : ?>
-		<?php
-		$show_interaction = false;
-		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
-		?>
+		<div class="edminboost-layout-preset-previews">
+			<?php
+			$sidebar_items      = EDMINBOOST_Command_Center::resolve_preset_sidebar_preview_items( $selected_preset, $cc_settings );
+			$preview_limit      = 5;
+			$preview_id         = 'wizard' === $preset_picker_mode
+				? 'edminboost-wizard-layout-sidebar-preview'
+				: 'edminboost-layout-sidebar-preview';
+			$preview_aria_label = sprintf(
+				/* translators: %s: layout preset name */
+				__( 'Sidebar menu preview for the %s layout preset', EDMINBOOST_TEXT_DOMAIN ),
+				$selected_name
+			);
+			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-sidebar-preview.php';
+
+			$preview_id         = 'wizard' === $preset_picker_mode
+				? 'edminboost-wizard-layout-preset-preview'
+				: 'edminboost-layout-preset-preview';
+			$preview_aria_label = $preview_aria;
+			$show_interaction   = false;
+			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
+			?>
+		</div>
 	<?php endif; ?>
 
 	<?php if ( 'full' === $preset_picker_mode ) : ?>
@@ -227,14 +245,6 @@ $preview_aria    = sprintf(
 				/>
 				<?php esc_html_e( 'Set as site default', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</label>
-			<button
-				type="button"
-				class="button button-small edminboost-preset-duplicate"
-				id="edminboost-preset-duplicate-btn"
-				<?php echo $selected_system ? 'disabled' : ''; ?>
-			>
-				<?php esc_html_e( 'Duplicate', EDMINBOOST_TEXT_DOMAIN ); ?>
-			</button>
 			<button type="button" class="button button-small edminboost-preset-export" id="edminboost-preset-export-btn">
 				<?php esc_html_e( 'Export JSON', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</button>
