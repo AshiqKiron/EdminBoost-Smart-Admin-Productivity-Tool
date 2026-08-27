@@ -126,7 +126,7 @@ array(
 - Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php`, `edminboost-home-advanced-look.php` (which requires `edminboost-animation-speed-field.php`), and `edminboost-declutter-settings.php`.
 - Settings: `edminboost-settings-page.php` — expects `$cc_settings`, `$current_page`; JSON export/import only (paste or file). CC save forms include hidden `edminboost_settings[enabled]=1` so partial saves do not disable the plugin.
 - Feature pages: `edminboost-{productivity,security,performance}-page.php` — include `edminboost-feature-fields.php` with `$section`.
-- White Label: `edminboost-white-label-page.php` — expects `$cc_settings`, `$current_page`; fields under `white_label`.
+- White Label: `edminboost-white-label-page.php` — expects `$cc_settings`, `$current_page`; fields under `white_label`; includes `edminboost-white-label-plugin-preview.php` (`$wl`, `$defaults` from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).
 - Billing: `edminboost-billing-page.php` — expects `$cc_settings`, `$current_page`; plans from `EDMINBOOST_Command_Center::get_billing_plans()`.
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
 - Setup wizard partials: `edminboost-setup-wizard.php` (includes `edminboost-preset-picker.php`, `edminboost-theme-settings.php`, `edminboost-topbar-summary.php`, `edminboost-setup-review.php`).

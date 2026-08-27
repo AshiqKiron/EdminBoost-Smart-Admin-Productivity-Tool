@@ -119,6 +119,7 @@
 		initDashboardOverview( root );
 		initPresets( root );
 		initSetupWizard( root );
+		initWhiteLabel( root );
 		initCommandCenterForms( root );
 		initSettingsForm( root );
 		initBackupSettings( root );
@@ -1692,6 +1693,126 @@
 		initBehaviorBadgePreview( root );
 		initBehaviorDrawerWidthCustom( root );
 		initBehaviorAnimationSpeed( root );
+	}
+
+	function initWhiteLabel( root ) {
+		var enabledToggle = root.querySelector( '#edminboost_wl_enabled' );
+		var dependentSections = [
+			root.querySelector( '#edminboost-wl-status-section' ),
+			root.querySelector( '#edminboost-wl-rebrand-section' )
+		].filter( function ( section ) {
+			return !! section;
+		} );
+
+		function setWhiteLabelSectionEnabled( section, isEnabled ) {
+			section.classList.toggle( 'is-disabled', ! isEnabled );
+			section.setAttribute( 'aria-disabled', isEnabled ? 'false' : 'true' );
+
+			section.querySelectorAll( 'input, textarea, select, button, a[href]' ).forEach( function ( control ) {
+				if ( isEnabled ) {
+					if ( Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostWlTabindex' ) ) {
+						if ( '' === control.dataset.edminboostWlTabindex ) {
+							control.removeAttribute( 'tabindex' );
+						} else {
+							control.setAttribute( 'tabindex', control.dataset.edminboostWlTabindex );
+						}
+
+						delete control.dataset.edminboostWlTabindex;
+					}
+
+					control.removeAttribute( 'aria-disabled' );
+					return;
+				}
+
+				if ( ! Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostWlTabindex' ) ) {
+					control.dataset.edminboostWlTabindex = control.getAttribute( 'tabindex' ) || '';
+				}
+
+				control.setAttribute( 'tabindex', '-1' );
+				control.setAttribute( 'aria-disabled', 'true' );
+			} );
+		}
+
+		function syncWhiteLabelDependentSections() {
+			var isEnabled = enabledToggle && enabledToggle.checked;
+
+			dependentSections.forEach( function ( section ) {
+				setWhiteLabelSectionEnabled( section, isEnabled );
+			} );
+		}
+
+		if ( enabledToggle && dependentSections.length ) {
+			enabledToggle.addEventListener( 'change', syncWhiteLabelDependentSections );
+			syncWhiteLabelDependentSections();
+		}
+
+		var section = root.querySelector( '#edminboost-wl-rebrand-section' );
+
+		if ( ! section ) {
+			return;
+		}
+
+		var preview = section.querySelector( '#edminboost-wl-rebrand-preview' );
+		var nameEl = section.querySelector( '#edminboost_wl_plugin_name' );
+		var descriptionEl = section.querySelector( '#edminboost_wl_plugin_description' );
+		var authorEl = section.querySelector( '#edminboost_wl_plugin_author' );
+		var uriEl = section.querySelector( '#edminboost_wl_plugin_uri' );
+		var menuLabelEl = section.querySelector( '#edminboost_wl_menu_label' );
+		var previewName = section.querySelector( '#edminboost-wl-preview-name' );
+		var previewDescription = section.querySelector( '#edminboost-wl-preview-description' );
+		var previewAuthorLink = section.querySelector( '#edminboost-wl-preview-author-link' );
+		var previewMenuLabel = section.querySelector( '#edminboost-wl-preview-menu-label' );
+
+		if ( ! preview || ! previewName || ! previewDescription || ! previewAuthorLink || ! previewMenuLabel ) {
+			return;
+		}
+
+		function resolveFieldValue( input, defaultKey ) {
+			var value = input && typeof input.value === 'string' ? input.value.trim() : '';
+
+			if ( '' !== value ) {
+				return value;
+			}
+
+			return preview.getAttribute( 'data-default-' + defaultKey ) || '';
+		}
+
+		function updatePreview() {
+			var name = resolveFieldValue( nameEl, 'name' );
+			var description = resolveFieldValue( descriptionEl, 'description' );
+			var author = resolveFieldValue( authorEl, 'author' );
+			var uri = resolveFieldValue( uriEl, 'uri' );
+			var menuLabel = resolveFieldValue( menuLabelEl, 'menu-label' );
+
+			previewName.textContent = name;
+			previewDescription.textContent = description;
+			previewAuthorLink.textContent = author;
+			previewMenuLabel.textContent = menuLabel;
+
+			if ( uri ) {
+				previewAuthorLink.setAttribute( 'href', uri );
+				previewAuthorLink.removeAttribute( 'tabindex' );
+			} else {
+				previewAuthorLink.setAttribute( 'href', '#' );
+				previewAuthorLink.setAttribute( 'tabindex', '-1' );
+			}
+		}
+
+		[ nameEl, descriptionEl, authorEl, uriEl, menuLabelEl ].forEach( function ( input ) {
+			if ( ! input ) {
+				return;
+			}
+
+			input.addEventListener( 'input', updatePreview );
+		} );
+
+		previewAuthorLink.addEventListener( 'click', function ( event ) {
+			if ( ! resolveFieldValue( uriEl, 'uri' ) ) {
+				event.preventDefault();
+			}
+		} );
+
+		updatePreview();
 	}
 
 	function initBehaviorBadgePreview( root ) {

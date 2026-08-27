@@ -16,7 +16,7 @@ alwaysApply: false
 - On `DOMContentLoaded`, call `initCommandCenterNav()`, `initPickerCloseOnScroll()`, `reinitEdminboostPage( root )`, and `primeCommandCenterHistory()`.
 - `reinitEdminboostPage( root )` sets `data-edminboost-ready="true"` and runs all page inits — also called after CC tab AJAX swaps.
 - Module refs: `syncPresetCatalogFn`, `syncThemeSettingsFn` (set by `initLayoutPresetPicker` / `initTheme`; called from `applySettingsSaveResult()`), `pendingDashboardOverviewSave` (in-flight overview save Promise; CC nav waits before swapping tabs).
-- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Appearance page), `initTheme`, `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initBackupSettings` (Settings export/import) — each no-ops if target elements are absent.
+- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Appearance page), `initTheme`, `initWhiteLabel` (White Label master toggle + live rebrand preview), `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initBackupSettings` (Settings export/import) — each no-ops if target elements are absent.
 - `initBehavior` delegates to `initBehaviorBadgePreview` (toggle badge style previews), `initBehaviorDrawerWidthCustom` (custom width slider + live preview), and `initBehaviorAnimationSpeed` (animation speed listbox + drawer micro-previews).
 
 `edminboostData` shape:
@@ -92,6 +92,8 @@ alwaysApply: false
 - Setting help: `.edminboost-setting-info` (+ `__trigger`, `__tooltip`); hover/focus reveals tooltip.
 - Overview pickers: `.edminboost-overview-theme-picker`, `.edminboost-overview-topbar-links-picker` (+ `__toggle`, `__label`, `__list`, `__option`, `__option-main`, `__option-name`, `__option-meta`, `__empty`).
 - CC tab loading: `.edminboost-cc-nav.is-loading`, `.edminboost-wrap.is-cc-loading`.
+- CC dependent sections: `.edminboost-cc-section.is-disabled` (opacity + pointer-events off; used on White Label until master toggle is on).
+- White Label rebrand: `.edminboost-wl-rebrand-layout` (+ `__fields`, `__row`, `__field`), `.edminboost-wl-rebrand-preview` (+ `__lead`, `__panel`, `__heading`, `__plugin-row`, `__plugin-title`, `__plugin-version`, `__plugin-meta`, `__plugin-author`, `__menu`, `__menu-item.is-target`); stacks at `960px`.
 - Setup wizard: `.edminboost-setup-wizard`, `.edminboost-setup-stepper` (+ `__item`, `__number`, `__label`), `.edminboost-setup-step`, `.edminboost-setup-wizard__footer`, `.edminboost-setup-review__*`, `.edminboost-preset-picker` (+ `--wizard` / `--full`, compact listbox + embedded top bar preview).
 - Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`.
 - Command Center: `.edminboost-cc-wrap`, `.edminboost-cc-nav`, `.edminboost-cc-hero`, `.edminboost-cc-footer`.
@@ -151,6 +153,8 @@ alwaysApply: false
 | `edminboost-menu-studio-page.php` | Sidebar menu builder |
 | `edminboost-billing-page.php` | Billing plan cards (Free / Pro / Agency) |
 | `edminboost-theme-settings.php` | Visual theme controls (shared partial) |
+| `edminboost-white-label-page.php` | White Label page shell |
+| `edminboost-white-label-plugin-preview.php` | Live plugin row + sidebar menu preview |
 
 Use `fieldset` + `legend` for grouped settings; label every input; `screen-reader-text` for icon-only controls.
 
@@ -210,6 +214,14 @@ Key elements: `#edminboost-setup-wizard-form`, `.edminboost-setup-stepper__item`
 - Four-step stepper toggles visible panels; Back/Next/Submit footer controls step navigation.
 - Layout preset selection updates hidden `_apply_preset` / `default_preset` and re-renders top bar summary from `edminboostData.presets`.
 - Final submit uses marker `command_center[_setup_wizard_save]` = `1` (sets `onboarding_completed` server-side when top bar items are saved).
+
+## White Label JS (`initWhiteLabel`)
+
+Key elements: `#edminboost_wl_enabled`, `#edminboost-wl-status-section`, `#edminboost-wl-rebrand-section`, `#edminboost-wl-rebrand-preview`, `#edminboost_wl_plugin_name`, `#edminboost_wl_plugin_description`, `#edminboost_wl_plugin_author`, `#edminboost_wl_plugin_uri`, `#edminboost_wl_menu_label`, `#edminboost-wl-preview-name`, `#edminboost-wl-preview-description`, `#edminboost-wl-preview-author-link`, `#edminboost-wl-preview-menu-label`.
+
+- Master toggle adds `.is-disabled` + `aria-disabled="true"` on dependent sections; sets `tabindex="-1"` / `aria-disabled` on nested controls (restores prior tabindex when re-enabled).
+- Live preview reads empty fields from `#edminboost-wl-rebrand-preview` `data-default-*` attributes (server defaults from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).
+- Author link uses `#` + `tabindex="-1"` when URI is empty; `click` prevented when no URI.
 
 ## Theme JS (`initTheme`)
 

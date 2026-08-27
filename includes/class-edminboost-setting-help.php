@@ -218,7 +218,7 @@ class EDMINBOOST_Setting_Help {
 			'heartbeat_control'          => __( 'Slow or disable the Heartbeat API on admin screens, the post editor, or the front end.', EDMINBOOST_TEXT_DOMAIN ),
 
 			// White label.
-			'wl_enabled'                 => __( 'Enables agency branding replacements across wp-admin and the login screen.', EDMINBOOST_TEXT_DOMAIN ),
+			'wl_enabled'                 => __( 'Master switch for white-label branding in wp-admin: sidebar menu label, Plugins screen row, and admin footer options below.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_hide_credit'             => __( 'Removes the default WordPress version credit from the admin footer.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_show_ip'                 => __( 'Include the visitor IP address in the system status footer.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_show_php_version'        => __( 'Include the PHP version in the system status footer.', EDMINBOOST_TEXT_DOMAIN ),
@@ -226,14 +226,11 @@ class EDMINBOOST_Setting_Help {
 			'wl_show_memory_usage'       => __( 'Include current PHP memory usage in the system status footer.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_show_memory_limit'       => __( 'Include the PHP memory limit in the system status footer.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_show_memory_available'   => __( 'Include estimated available memory in the system status footer.', EDMINBOOST_TEXT_DOMAIN ),
-			'wl_login_logo'              => __( 'Media library attachment ID for the logo on the login screen.', EDMINBOOST_TEXT_DOMAIN ),
-			'wl_login_bg'                => __( 'Background color for the login screen (hex).', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_plugin_name'             => __( 'Replaces the plugin name on the Plugins screen and in plugin row meta.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_plugin_description'    => __( 'Replaces the plugin description shown on the Plugins screen.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_plugin_author'           => __( 'Replaces the author name shown for this plugin.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_plugin_uri'              => __( 'Replaces the plugin website link on the Plugins screen.', EDMINBOOST_TEXT_DOMAIN ),
 			'wl_menu_label'              => __( 'Replaces the EdminBoost item label in the wp-admin sidebar menu.', EDMINBOOST_TEXT_DOMAIN ),
-			'wl_lock'                    => __( 'Hides the White Label settings page from other administrators until the plugin is reactivated.', EDMINBOOST_TEXT_DOMAIN ),
 
 			// Settings page.
 			'enabled'                    => __( 'Master switch for EdminBoost features, the Command Center bar, Menu Studio, and visual theme.', EDMINBOOST_TEXT_DOMAIN ),

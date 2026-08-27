@@ -1,6 +1,6 @@
 <?php
 /**
- * White-label branding, login customization, and system status footer.
+ * White-label branding and system status footer.
  *
  * @package EdminBoost
  */
@@ -22,9 +22,6 @@ class EDMINBOOST_White_Label {
 	public static function register_hooks() {
 		add_filter( 'admin_footer_text', array( __CLASS__, 'filter_admin_footer_text' ), 100 );
 		add_filter( 'update_footer', array( __CLASS__, 'filter_update_footer' ), 100 );
-		add_action( 'login_enqueue_scripts', array( __CLASS__, 'login_styles' ) );
-		add_filter( 'login_headerurl', array( __CLASS__, 'login_header_url' ) );
-		add_filter( 'login_headertext', array( __CLASS__, 'login_header_text' ) );
 		add_filter( 'all_plugins', array( __CLASS__, 'filter_plugin_row' ) );
 		add_filter( 'admin_menu', array( __CLASS__, 'filter_menu_label' ), 999 );
 		add_action( 'admin_head', array( __CLASS__, 'print_admin_favicon' ) );
@@ -45,8 +42,6 @@ class EDMINBOOST_White_Label {
 			'show_memory_usage'    => false,
 			'show_memory_limit'    => false,
 			'show_memory_available' => false,
-			'login_logo_id'        => 0,
-			'login_bg_color'       => '',
 			'admin_logo_light_id'  => 0,
 			'admin_logo_dark_id'   => 0,
 			'plugin_name'          => '',
@@ -54,7 +49,6 @@ class EDMINBOOST_White_Label {
 			'plugin_author'        => '',
 			'plugin_uri'           => '',
 			'menu_label'           => '',
-			'lock_white_label'     => false,
 		);
 	}
 
@@ -82,6 +76,31 @@ class EDMINBOOST_White_Label {
 	}
 
 	/**
+	 * Default plugin metadata from the plugin header and admin menu label.
+	 *
+	 * Used by the White Label rebranding preview when custom fields are empty.
+	 *
+	 * @return array{plugin_name:string,plugin_description:string,plugin_author:string,plugin_uri:string,menu_label:string}
+	 */
+	public static function get_plugin_header_defaults() {
+		if ( ! function_exists( 'get_plugin_data' ) ) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+
+		$data = get_plugin_data( EDMINBOOST_PLUGIN_FILE, false, false );
+
+		return array(
+			'plugin_name'        => isset( $data['Name'] ) ? (string) $data['Name'] : '',
+			'plugin_description' => isset( $data['Description'] ) ? (string) $data['Description'] : '',
+			'plugin_author'      => isset( $data['AuthorName'] ) ? (string) $data['AuthorName'] : '',
+			'plugin_uri'         => isset( $data['PluginURI'] ) && '' !== $data['PluginURI']
+				? (string) $data['PluginURI']
+				: ( isset( $data['AuthorURI'] ) ? (string) $data['AuthorURI'] : '' ),
+			'menu_label'         => __( 'EdminBoost', EDMINBOOST_TEXT_DOMAIN ),
+		);
+	}
+
+	/**
 	 * Sanitize white-label input.
 	 *
 	 * @param array $raw Raw input.
@@ -102,16 +121,13 @@ class EDMINBOOST_White_Label {
 		$output['show_memory_usage']     = ! empty( $raw['show_memory_usage'] );
 		$output['show_memory_limit']     = ! empty( $raw['show_memory_limit'] );
 		$output['show_memory_available'] = ! empty( $raw['show_memory_available'] );
-		$output['login_logo_id']         = absint( $raw['login_logo_id'] ?? 0 );
 		$output['admin_logo_light_id']   = absint( $raw['admin_logo_light_id'] ?? 0 );
 		$output['admin_logo_dark_id']    = absint( $raw['admin_logo_dark_id'] ?? 0 );
-		$output['login_bg_color']        = EDMINBOOST_Theme::sanitize_hex_color( $raw['login_bg_color'] ?? '' );
 		$output['plugin_name']           = sanitize_text_field( wp_unslash( $raw['plugin_name'] ?? '' ) );
 		$output['plugin_description']    = sanitize_textarea_field( wp_unslash( $raw['plugin_description'] ?? '' ) );
 		$output['plugin_author']         = sanitize_text_field( wp_unslash( $raw['plugin_author'] ?? '' ) );
 		$output['plugin_uri']            = esc_url_raw( wp_unslash( $raw['plugin_uri'] ?? '' ) );
 		$output['menu_label']            = sanitize_text_field( wp_unslash( $raw['menu_label'] ?? '' ) );
-		$output['lock_white_label']      = ! empty( $raw['lock_white_label'] );
 
 		return $output;
 	}
@@ -217,53 +233,6 @@ class EDMINBOOST_White_Label {
 			'available' => size_format( $available ),
 			'percent'   => $limit_bytes > 0 ? (int) round( ( $used_bytes / $limit_bytes ) * 100 ) : 0,
 		);
-	}
-
-	/**
-	 * Login page styles.
-	 *
-	 * @return void
-	 */
-	public static function login_styles() {
-		if ( ! self::is_active() ) {
-			return;
-		}
-
-		$wl = self::get_settings();
-		$css = '';
-
-		if ( ! empty( $wl['login_bg_color'] ) ) {
-			$css .= 'body.login{background-color:' . $wl['login_bg_color'] . ';}';
-		}
-
-		if ( ! empty( $wl['login_logo_id'] ) ) {
-			$url = wp_get_attachment_image_url( $wl['login_logo_id'], 'medium' );
-			if ( $url ) {
-				$css .= '#login h1 a{background-image:url(' . esc_url( $url ) . ');background-size:contain;width:auto;max-width:320px;}';
-			}
-		}
-
-		if ( $css ) {
-			echo '<style id="edminboost-white-label-login">' . wp_strip_all_tags( $css ) . '</style>';
-		}
-	}
-
-	/**
-	 * Login logo URL.
-	 *
-	 * @return string
-	 */
-	public static function login_header_url() {
-		return home_url( '/' );
-	}
-
-	/**
-	 * Login logo title.
-	 *
-	 * @return string
-	 */
-	public static function login_header_text() {
-		return get_bloginfo( 'name' );
 	}
 
 	/**

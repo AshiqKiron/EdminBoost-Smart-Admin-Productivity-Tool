@@ -438,7 +438,6 @@ class EDMINBOOST_Command_Center {
 				'features'     => array(
 					__( 'Everything in Pro', EDMINBOOST_TEXT_DOMAIN ),
 					__( '10 site license pack', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Agency white-label lock controls', EDMINBOOST_TEXT_DOMAIN ),
 					__( 'Settings export and import per site', EDMINBOOST_TEXT_DOMAIN ),
 				),
 				'featured'     => false,

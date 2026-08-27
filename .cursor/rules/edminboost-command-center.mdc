@@ -1,6 +1,6 @@
 ---
 description: Command Center patterns — dashboard, appearance, top bar, presets, menu studio, theme, feature pages, billing, white label, live admin bar
-globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings,setting-help}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,billing-page,dashboard-overview,declutter-settings,feature-fields,home-advanced-look,mapper,overview-sidebar-preview,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,white-label-page,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
+globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings,setting-help}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,billing-page,dashboard-overview,declutter-settings,feature-fields,home-advanced-look,mapper,overview-sidebar-preview,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,white-label-page,white-label-plugin-preview,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
 alwaysApply: false
 ---
 
@@ -106,7 +106,7 @@ edminboost_settings[command_center][behavior][drawer_width|drawer_width_custom|a
 edminboost_settings[command_center][theme][preset|mode|font|font_size|admin_favicon_id|admin_bg_color|schedule_dark_mode|custom_accent|custom_surface|custom_text|custom_top|custom_sidebar|status_*]
 edminboost_settings[command_center][_menu_studio_save]                              # marker: 1 when Menu Studio form submits
 edminboost_settings[command_center][menu_studio][enabled|order|submenu_order|hidden_items|custom_items|use_colors|colors|menu_width|font_size|icon_display|text_display|padding]
-edminboost_settings[white_label][enabled|hide_wp_footer_credit|show_*|login_*|admin_logo_*|plugin_*|menu_label|lock_white_label]
+edminboost_settings[white_label][enabled|hide_wp_footer_credit|show_*|admin_logo_*|plugin_*|menu_label]
 ```
 
 CC + settings forms use class `.edminboost-cc-form` or `.edminboost-settings-form`; JS intercepts submit and POSTs to `wp_ajax_edminboost_save_settings` (nonce from `settings_fields()`).
@@ -166,7 +166,8 @@ Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when
 | `edminboost-productivity-page.php` | Productivity feature page shell |
 | `edminboost-security-page.php` | Security feature page shell |
 | `edminboost-performance-page.php` | Performance feature page shell |
-| `edminboost-white-label-page.php` | White-label branding, login, plugin row, system status footer |
+| `edminboost-white-label-page.php` | White Label page shell — master toggle, system status footer, plugin rebranding fields |
+| `edminboost-white-label-plugin-preview.php` | Live plugin row + sidebar menu preview (`$wl`, `$defaults` from `get_plugin_header_defaults()`) |
 | `edminboost-billing-page.php` | Billing plan cards (Free / Pro / Agency); current plan from `get_active_billing_plan()` |
 | `edminboost-appearance-page.php` | Theme (Appearance) page shell + form |
 | `edminboost-preset-picker.php` | Layout preset dropdown (`$preset_picker_mode`: `wizard`, `full`, or `overview`; grouped by `get_preset_categories()`) |
@@ -210,12 +211,12 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Separate from
 
 Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Config under `settings['white_label']`.
 
-- `get_defaults()`, `get_settings()`, `sanitize()`, `is_active()` — branding + login + footer helpers.
+- `get_defaults()`, `get_settings()`, `sanitize()`, `is_active()` — branding + footer helpers.
+- `get_plugin_header_defaults()` — plugin header + menu label fallbacks for empty rebranding fields and the live preview.
 - `filter_admin_footer_text()` / `filter_update_footer()` — system status footer lines when enabled.
-- `login_styles()`, `login_header_url()`, `login_header_text()` — login screen branding.
 - `filter_plugin_row()` — rename plugin on Plugins screen; `filter_menu_label()` — rename EdminBoost menu item.
 - `print_admin_favicon()` — admin favicon from `admin_logo_light_id` / `admin_logo_dark_id`.
-- `lock_white_label` hides White Label page from non-super-admins when set.
+- UI: `#edminboost_wl_enabled` master toggle; `#edminboost-wl-status-section` and `#edminboost-wl-rebrand-section` get `.is-disabled` until enabled (`initWhiteLabel` in admin JS).
 
 ## Rules
 
@@ -234,6 +235,7 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Config under 
 - Presets page JS (`initPresets` → `initRoleMatrix`): `.edminboost-role-matrix` syncs visibility checkboxes when `.edminboost-role-preset-select` changes; uses `edminboostData.roleMatrix` (`protectedSlugs`, `protectedSlugsByRole`, `accessibleSlugsByRole`) and preset `visible_top_level_menu_slugs`; `.is-not-in-layout` / `.is-capability-restricted` cell modifiers.
 - Setting help (`EDMINBOOST_Setting_Help`): `echo_icon( $key )` beside field labels; hidden on Dashboard (`should_show()`); tooltip registry in `get_tooltips()`.
 - Behavior JS (`initBehaviorAnimationSpeed`): hidden `#edminboost_animation_speed` syncs with `.edminboost-animation-speed-picker` listbox; previews use `--edminboost-animation-preview-ms` per option; live drawer reads saved speed via `EDMINBOOST_Command_Center::get_animation_duration_ms()` → `edminboostCcBar.animationMs` and shell `--edminboost-cc-drawer-duration`.
+- White Label JS (`initWhiteLabel`): `#edminboost_wl_enabled` toggles `.is-disabled` + `aria-disabled` on `#edminboost-wl-status-section` / `#edminboost-wl-rebrand-section`; live `#edminboost-wl-rebrand-preview` updates from plugin name, description, author, URI, and menu label inputs via `data-default-*` fallbacks.
 - Custom admin link: `#edminboost-custom-link-path`, `#edminboost-custom-link-label`, `#edminboost-custom-link-anchor` — path may include `#fragment`; duplicate check uses slug+anchor.
 - Item drawer: `#edminboost-item-anchor` edits the selected canvas item's anchor; `#edminboost-drawer-preview` (visible when interaction is `drawer`) triggers AJAX preview via `edminboostCcOpenDrawer`.
 - Badge sources (`wc_orders`, `comments`, `forms_entries`, etc.) are local counters only — no remote API calls.

@@ -23,7 +23,7 @@ includes/
   class-edminboost-theme.php                  # visual theme presets + CSS tokens
   class-edminboost-features.php               # feature registry
   class-edminboost-feature-settings.php       # feature defaults, sanitize, enable checks
-  class-edminboost-white-label.php            # agency branding + login customization
+  class-edminboost-white-label.php            # agency branding + system status footer
   class-edminboost-setting-help.php           # setting field info tooltips (non-Dashboard pages)
   class-edminboost-{activator,deactivator,i18n}.php
   features/
@@ -53,7 +53,7 @@ readme.txt
 - Layout presets configure both the top bar (`top_bar_items`) and sidebar (`menu_studio`); `apply_preset()` and form `_apply_preset` saves replace both via `EDMINBOOST_Settings::sanitize_command_center()` (preset sidebar replaces prior `menu_studio`, does not merge). Use Top Bar and Menu Studio for granular overrides.
 - Setting help: `EDMINBOOST_Setting_Help` — accessible info-icon tooltips on CC/feature pages (hidden on Dashboard); registry keyed by setting ID; call `echo_icon( $key )` beside labels.
 - Visual theme: `EDMINBOOST_Theme` — CSS-token presets (20+ skins + Custom, light/dark/auto mode, scheduled dark mode, system fonts, font size, admin favicon/background, post status colors, five color tokens); config under `command_center.theme`; loads on all wp-admin when enabled, plus live CC bar and drawer on the front end.
-- White label: `EDMINBOOST_White_Label` — plugin row/menu branding, login screen, admin favicon, system status footer; config under `white_label`; registered in `EDMINBOOST_Plugin::run()`.
+- White label: `EDMINBOOST_White_Label` — plugin row/menu rebranding, admin favicon, system status footer; config under `white_label`; registered in `EDMINBOOST_Plugin::run()`. White Label page includes live plugin rebranding preview (`edminboost-white-label-plugin-preview.php`); dependent sections disable until master toggle is on.
 - Feature settings: `EDMINBOOST_Feature_Settings` — centralized `features` defaults, `normalize()`, `is_enabled()`, and `sanitize()`; legacy `admin_bar` / `admin_menu` keys are stripped on read.
 - Version tracker: `edminboost_version` (`EDMINBOOST_Settings::VERSION_OPTION`), seeded on activation.
 - Features extend `EDMINBOOST_Feature_Base` in `includes/features/`, loaded by `EDMINBOOST_Features`.

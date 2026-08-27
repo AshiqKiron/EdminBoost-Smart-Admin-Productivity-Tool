@@ -53,6 +53,10 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
+* Disable White Label system status footer and plugin rebranding fields until the master branding toggle is enabled.
+* Remove the White Label lock setting that hid the page until plugin reactivation.
+* Add a live preview to White Label plugin rebranding so name, description, author, URL, and menu label updates appear as you type.
+* Remove login screen branding from White Label (logo and background color).
 * Filter Layout Presets role visibility defaults by each user role's WordPress capabilities; restricted items start unchecked but can be enabled manually.
 * Redesign the Layouts page “Who sees what” section: roles on the left, top-level menu checkboxes on the right in a scrollable matrix with labeled column headers.
 * Role visibility matrix now lists every top-level sidebar menu item, even when Menu Studio hides items from the live admin sidebar.
