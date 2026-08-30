@@ -31,6 +31,7 @@ define( 'EDMINBOOST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_SLUG', 'edminboost-smart-admin-productivity-tool' );
 define( 'EDMINBOOST_TEXT_DOMAIN', EDMINBOOST_PLUGIN_SLUG );
+define( 'EDMINBOOST_PLUGIN_DOCS_URL', 'https://asphaltthemes.com/edminboost/docs' );
 
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-activator.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-deactivator.php';

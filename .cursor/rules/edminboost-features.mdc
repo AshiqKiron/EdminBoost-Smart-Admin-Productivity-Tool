@@ -72,8 +72,8 @@ Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, S
 
 | ID | Class | Hooks |
 |----|-------|-------|
-| `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` (inline CSS; preserves error/warning notices) |
-| `hide_screen_help` | `EDMINBOOST_Hide_Screen_Help` | `admin_head` (hides Screen Options + Help tabs) |
+| `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` (inline CSS; preserves error/warning notices); Productivity UI: live preview item `data-preview="hide_admin_notices"` in `#edminboost-productivity-admin-notices-preview` |
+| `hide_screen_help` | `EDMINBOOST_Hide_Screen_Help` | `admin_head` (hides Screen Options + Help tabs); Productivity UI: live preview item `data-preview="hide_screen_help"` in `#edminboost-productivity-admin-notices-preview` |
 | `dashboard_widgets` | `EDMINBOOST_Dashboard` | `wp_dashboard_setup` (99), `admin_init`; Productivity UI: master `#edminboost_dashboard_widgets_enabled` + dependent `#edminboost-dashboard-widgets-options` (`.edminboost-dependent-section`; disabled until toggle on — see `initProductivityFeatures` in `admin-assets.mdc`) |
 | `admin_footer` | `EDMINBOOST_Admin_Footer` | `admin_footer_text`; Productivity UI: master `#edminboost_admin_footer_enabled` + dependent `#edminboost-admin-footer-options` (`.edminboost-dependent-section`) |
 | `post_duplicator` | `EDMINBOOST_Post_Duplicator` | `post_row_actions`, `page_row_actions`, `admin_action_edminboost_duplicate_post` |
@@ -96,8 +96,8 @@ Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, S
 
 | ID | Class | Hooks |
 |----|-------|-------|
-| `disable_emojis` | `EDMINBOOST_Disable_Emojis` | `init` / `admin_init` per `scope` |
-| `remove_asset_versions` | `EDMINBOOST_Remove_Asset_Versions` | `style_loader_src`, `script_loader_src` |
-| `remove_dashicons_frontend` | `EDMINBOOST_Remove_Dashicons_Frontend` | `wp_enqueue_scripts` |
+| `disable_emojis` | `EDMINBOOST_Disable_Emojis` | `init` / `admin_init` per `scope`; Performance UI: live preview (`$preview = emoji`) in `edminboost-performance-preview.php` — `#edminboost-performance-emoji-preview` synced by `initPerformanceFeatures` |
+| `remove_asset_versions` | `EDMINBOOST_Remove_Asset_Versions` | `style_loader_src`, `script_loader_src`; Performance UI: live preview item `data-preview="remove_asset_versions"` |
+| `remove_dashicons_frontend` | `EDMINBOOST_Remove_Dashicons_Frontend` | `wp_enqueue_scripts`; Performance UI: live preview item `data-preview="remove_dashicons_frontend"` |
 | `heartbeat_control` | `EDMINBOOST_Heartbeat_Control` | `heartbeat_settings` filter per context (`admin`, `editor`, `frontend`); Performance UI uses `.edminboost-select-rows` with setting help keys `heartbeat_admin`, `heartbeat_editor`, `heartbeat_frontend` |
-| `disable_embeds` | `EDMINBOOST_Disable_Embeds` | `wp_enqueue_scripts`, `tiny_mce_plugins`, oEmbed filters |
+| `disable_embeds` | `EDMINBOOST_Disable_Embeds` | `wp_enqueue_scripts`, `tiny_mce_plugins`, oEmbed filters; Performance UI: live preview item `data-preview="disable_embeds"` in `#edminboost-performance-assets-preview` |

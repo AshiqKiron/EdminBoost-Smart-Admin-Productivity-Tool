@@ -122,6 +122,7 @@
 		initWhiteLabel( root );
 		initSecurityFeatures( root );
 		initProductivityFeatures( root );
+		initPerformanceFeatures( root );
 		initCommandCenterForms( root );
 		initSettingsForm( root );
 		initBackupSettings( root );
@@ -1736,6 +1737,123 @@
 
 			adminFooterToggle.addEventListener( 'change', syncAdminFooterOptions );
 			syncAdminFooterOptions();
+		}
+
+		var adminNoticesPreview = root.querySelector( '#edminboost-productivity-admin-notices-preview' );
+
+		if ( adminNoticesPreview ) {
+			var productivityToggles = {
+				hide_admin_notices: root.querySelector( '#edminboost_hide_admin_notices' ),
+				hide_screen_help: root.querySelector( '#edminboost_hide_screen_help' )
+			};
+
+			function syncAdminNoticesPreview() {
+				Object.keys( productivityToggles ).forEach( function ( key ) {
+					var toggle = productivityToggles[ key ];
+					var items = adminNoticesPreview.querySelectorAll( '[data-preview="' + key + '"]' );
+
+					items.forEach( function ( item ) {
+						syncPerformancePreviewItem( item, toggle && toggle.checked );
+					} );
+				} );
+			}
+
+			Object.keys( productivityToggles ).forEach( function ( key ) {
+				var toggle = productivityToggles[ key ];
+				if ( toggle ) {
+					toggle.addEventListener( 'change', syncAdminNoticesPreview );
+				}
+			} );
+
+			syncAdminNoticesPreview();
+		}
+	}
+
+	function syncPerformancePreviewItem( item, isRemoved ) {
+		item.classList.toggle( 'is-removed', isRemoved );
+
+		var tooltipLoaded = item.dataset.tooltipLoaded || '';
+		var tooltipRemoved = item.dataset.tooltipRemoved || '';
+		var tooltipText = isRemoved ? tooltipRemoved : tooltipLoaded;
+
+		if ( tooltipText ) {
+			item.setAttribute( 'aria-label', tooltipText );
+		}
+
+		var tooltip = item.querySelector( '.edminboost-performance-preview__tooltip' );
+		if ( tooltip && tooltipText ) {
+			tooltip.textContent = tooltipText;
+		}
+	}
+
+	function initPerformanceFeatures( root ) {
+		var emojiToggle = root.querySelector( '#edminboost_disable_emojis_enabled' );
+		var emojiScope = root.querySelector( '#edminboost_disable_emojis_scope' );
+		var emojiPreview = root.querySelector( '#edminboost-performance-emoji-preview' );
+
+		if ( emojiPreview ) {
+			function scopeApplies( area ) {
+				if ( ! emojiToggle || ! emojiToggle.checked ) {
+					return false;
+				}
+
+				var scope = emojiScope ? emojiScope.value : 'admin';
+				return scope === 'both' || scope === area;
+			}
+
+			function syncEmojiPreview() {
+				emojiPreview.querySelectorAll( '[data-scope]' ).forEach( function ( panel ) {
+					var applies = scopeApplies( panel.dataset.scope );
+
+					panel.classList.toggle( 'is-active', applies );
+
+					panel.querySelectorAll( '.edminboost-performance-preview__item' ).forEach( function ( item ) {
+						syncPerformancePreviewItem( item, applies );
+					} );
+				} );
+			}
+
+			if ( emojiToggle ) {
+				emojiToggle.addEventListener( 'change', syncEmojiPreview );
+			}
+
+			if ( emojiScope ) {
+				emojiScope.addEventListener( 'change', syncEmojiPreview );
+			}
+
+			syncEmojiPreview();
+		}
+
+		var assetsPreview = root.querySelector( '#edminboost-performance-assets-preview' );
+
+		if ( assetsPreview ) {
+			var assetToggles = {
+				remove_asset_versions: root.querySelector( '#edminboost_remove_asset_versions' ),
+				remove_dashicons_frontend: root.querySelector( '#edminboost_remove_dashicons_frontend' ),
+				disable_embeds: root.querySelector( '#edminboost_disable_embeds' )
+			};
+
+			function syncAssetsPreview() {
+				Object.keys( assetToggles ).forEach( function ( key ) {
+					var toggle = assetToggles[ key ];
+					var item = assetsPreview.querySelector( '[data-preview="' + key + '"]' );
+
+					if ( ! item ) {
+						return;
+					}
+
+					syncPerformancePreviewItem( item, toggle && toggle.checked );
+				} );
+			}
+
+			Object.keys( assetToggles ).forEach( function ( key ) {
+				var toggle = assetToggles[ key ];
+				if ( toggle ) {
+					toggle.addEventListener( 'change', syncAssetsPreview );
+				}
+			} );
+
+			syncAssetsPreview();
 		}
 	}
 

@@ -32,6 +32,10 @@ $post_types = get_post_types( array( 'public' => true ), 'objects' );
 		<input type="checkbox" id="edminboost_hide_screen_help" name="<?php echo esc_attr( $features_key ); ?>[hide_screen_help]" value="1" <?php checked( ! empty( $features['hide_screen_help'] ) ); ?> />
 		<?php esc_html_e( 'Hide Screen Options and Help tabs.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
+	<?php
+	$preview = 'admin_notices';
+	include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-productivity-preview.php';
+	?>
 </fieldset>
 
 <?php
@@ -229,6 +233,10 @@ $login_redirects_options_aria  = $login_redirects_enabled ? 'false' : 'true';
 			<option value="both" <?php selected( $features['disable_emojis']['scope'] ?? 'admin', 'both' ); ?>><?php esc_html_e( 'Admin and front end', EDMINBOOST_TEXT_DOMAIN ); ?></option>
 		</select>
 	</p>
+	<?php
+	$preview = 'emoji';
+	include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-performance-preview.php';
+	?>
 </fieldset>
 
 <fieldset class="edminboost-fieldset">
@@ -248,6 +256,10 @@ $login_redirects_options_aria  = $login_redirects_enabled ? 'false' : 'true';
 		<?php EDMINBOOST_Setting_Help::echo_icon( 'disable_embeds' ); ?>
 		<?php esc_html_e( 'Disable WordPress embeds and oEmbed discovery.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</label>
+	<?php
+	$preview = 'assets';
+	include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-performance-preview.php';
+	?>
 </fieldset>
 
 <fieldset class="edminboost-fieldset">

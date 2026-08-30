@@ -693,6 +693,27 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
+	 * Add a documentation link on the plugins screen.
+	 *
+	 * @param array  $links       Plugin row meta links.
+	 * @param string $plugin_file Plugin basename.
+	 * @return array
+	 */
+	public function add_plugin_row_meta( $links, $plugin_file ) {
+		if ( EDMINBOOST_PLUGIN_BASENAME !== $plugin_file ) {
+			return $links;
+		}
+
+		$links[] = sprintf(
+			'<a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
+			esc_url( EDMINBOOST_PLUGIN_DOCS_URL ),
+			esc_html__( 'Docs', EDMINBOOST_TEXT_DOMAIN )
+		);
+
+		return $links;
+	}
+
+	/**
 	 * Whether the given admin page slug belongs to this plugin.
 	 *
 	 * @param string|null $page Optional page slug; reads $_GET['page'] when null.

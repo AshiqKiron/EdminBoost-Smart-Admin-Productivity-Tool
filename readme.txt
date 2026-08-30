@@ -53,6 +53,9 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
+* Add a Docs link on the Plugins screen after Visit plugin site.
+* Add live previews on the Performance tab for emoji scripts and asset optimization checkboxes, with theme-aware colors and descriptive preview labels.
+* Add live previews on the Productivity tab for hide admin notices and hide Screen Options/Help toggles.
 * Disable White Label system status footer and plugin rebranding fields until the master branding toggle is enabled.
 * Remove the White Label lock setting that hid the page until plugin reactivation.
 * Add a live preview to White Label plugin rebranding so name, description, author, URL, and menu label updates appear as you type.

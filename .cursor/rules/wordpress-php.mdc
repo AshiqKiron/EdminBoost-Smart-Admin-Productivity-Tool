@@ -53,6 +53,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 - White label: `EDMINBOOST_White_Label::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - Setting help: `EDMINBOOST_Setting_Help` — static helpers only; required in bootstrap; no hooks.
 - Admin submenu order: `EDMINBOOST_Admin::normalize_plugin_submenu()` on `admin_menu` priority 999 in `EDMINBOOST_Plugin::run()`.
+- Plugins screen row meta: `plugin_row_meta` → `EDMINBOOST_Admin::add_plugin_row_meta()` adds Docs link (`EDMINBOOST_PLUGIN_DOCS_URL`, `target="_blank"`, `rel="noopener noreferrer"`).
 - Admin page titles: `EDMINBOOST_Admin::register_plugin_submenu_page()` / `bind_admin_page_title()` set `$title` on `load-{hook}` (fixes PHP 8.1+ warnings for tab-only pages with null parent).
 - New productivity modules: extend `EDMINBOOST_Feature_Base`, register in `EDMINBOOST_Features`; defaults/enable/sanitize via `EDMINBOOST_Feature_Settings` (see `edminboost-features.mdc`).
 - Settings: `EDMINBOOST_Settings::get()`, `::is_enabled()`, `::is_feature_enabled()`, `::get_feature_settings()`; feature shape helpers in `EDMINBOOST_Feature_Settings`.
@@ -125,7 +126,7 @@ array(
 - Dashboard: `edminboost-admin-page.php` — expects `$cc_settings`, `$current_page`; includes setup wizard or dashboard overview.
 - Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php`, `edminboost-home-advanced-look.php` (which requires `edminboost-animation-speed-field.php`), and `edminboost-declutter-settings.php`.
 - Settings: `edminboost-settings-page.php` — expects `$cc_settings`, `$current_page`; JSON export/import only (paste or file). CC save forms include hidden `edminboost_settings[enabled]=1` so partial saves do not disable the plugin.
-- Feature pages: `edminboost-{productivity,security,performance}-page.php` — include `edminboost-feature-fields.php` with `$section`.
+- Feature pages: `edminboost-{productivity,security,performance}-page.php` — include `edminboost-feature-fields.php` with `$section`. Productivity admin-notices fieldset includes `edminboost-productivity-preview.php` (`$preview`: `admin_notices`; `$features`). Performance emoji/assets fieldsets include `edminboost-performance-preview.php` (`$preview`: `emoji`|`assets`; `$features`). Both preview partials use theme colors via `EDMINBOOST_Theme::resolve_preview_colors()`.
 - White Label: `edminboost-white-label-page.php` — expects `$cc_settings`, `$current_page`; fields under `white_label`; includes `edminboost-white-label-plugin-preview.php` (`$wl`, `$defaults` from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).
 - Billing: `edminboost-billing-page.php` — expects `$cc_settings`, `$current_page`; plans from `EDMINBOOST_Command_Center::get_billing_plans()`.
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).

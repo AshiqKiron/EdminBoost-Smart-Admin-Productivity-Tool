@@ -16,7 +16,7 @@ alwaysApply: false
 - On `DOMContentLoaded`, call `initCommandCenterNav()`, `initPickerCloseOnScroll()`, `reinitEdminboostPage( root )`, and `primeCommandCenterHistory()`.
 - `reinitEdminboostPage( root )` sets `data-edminboost-ready="true"` and runs all page inits — also called after CC tab AJAX swaps.
 - Module refs: `syncPresetCatalogFn`, `syncThemeSettingsFn` (set by `initLayoutPresetPicker` / `initTheme`; called from `applySettingsSaveResult()`), `pendingDashboardOverviewSave` (in-flight overview save Promise; CC nav waits before swapping tabs).
-- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Appearance page), `initTheme`, `initWhiteLabel` (White Label master toggle + live rebrand preview), `initSecurityFeatures` (Security login redirects master toggle), `initProductivityFeatures` (Productivity dashboard widgets + admin footer master toggles), `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initBackupSettings` (Settings export/import) — each no-ops if target elements are absent.
+- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Appearance page), `initTheme`, `initWhiteLabel` (White Label master toggle + live rebrand preview), `initSecurityFeatures` (Security login redirects master toggle), `initProductivityFeatures` (Productivity admin notices live preview + dashboard widgets + admin footer master toggles), `initPerformanceFeatures` (Performance emoji scope + asset toggle live previews), `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initBackupSettings` (Settings export/import) — each no-ops if target elements are absent.
 - `initBehavior` delegates to `initBehaviorBadgePreview` (toggle badge style previews), `initBehaviorDrawerWidthCustom` (custom width slider + live preview), and `initBehaviorAnimationSpeed` (animation speed listbox + drawer micro-previews).
 
 `edminboostData` shape:
@@ -101,6 +101,7 @@ alwaysApply: false
 - Mapper: `.edminboost-mapper-layout`, `.edminboost-mapper-search`, `.edminboost-discovered-list`, `.edminboost-discovered-item` (+ `__toggle`, `__checkbox`, `__handle`, `__icon`), `.edminboost-topbar-canvas` (+ `.is-drag-over`), `.edminboost-topbar-item`, `.edminboost-item-drawer`, `.edminboost-topbar-summary`.
 - Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-role-matrix-wrap`, `.edminboost-role-matrix` (+ `__role-col`, `__preset-col`, `__menu-col`, `__menu-heading`, `__menu-label`, `__check`, `__check-label`, `__row`; modifiers `.is-not-in-layout`, `.is-protected`, `.is-capability-restricted`).
 - Appearance / behavior: `.edminboost-badge-preview`, `.edminboost-drawer-width-custom`, `.edminboost-drawer-width-preview__*` (width slider live preview), `.edminboost-animation-speed-picker` (+ `__toggle`, `__list`, `__option`, `__preview`, `__preview-drawer`; duration via `--edminboost-animation-preview-ms`).
+- Performance previews: `.edminboost-performance-preview` (+ `__lead`, `__desc`, `__panels`, `__panel`, `__heading`, `__list`, `__list--stacked`, `__item`, `__item-label`, `__code-wrap`, `__code`, `__code--suffix`, `__status-dot`, `__tooltip`); panels/items use `.is-active` / `.is-removed`; inline `--eb-op-*` vars on preview root; theme-active overrides at end of file under `body.edminboost-theme-active .edminboost-wrap .edminboost-performance-preview*`.
 - Menu Studio: `.edminboost-menu-studio-layout`, `.edminboost-menu-studio-panel`, `.edminboost-menu-canvas`, `.edminboost-menu-discovered-list`.
 - Theme UI (settings markup): `.edminboost-theme-preset-colors`, `.edminboost-theme-color-swatches`, `.edminboost-theme-color-swatch`, `.edminboost-theme-custom-colors`, `.edminboost-theme-color-row`, `.edminboost-theme-preview` (+ `__bar`, `__badge`, `__accent`, `__muted`).
 - Theme on plugin screens: `body.edminboost-theme-active .edminboost-wrap …` rules at end of `edminboost-admin.css` consume `--eb-*` tokens.
@@ -146,7 +147,9 @@ alwaysApply: false
 | `edminboost-animation-speed-field.php` | Animation speed picker partial (`$cc_key`, `$behavior`) |
 | `edminboost-preset-picker.php` | Layout preset dropdown (`wizard` / `full` / `overview` modes) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list |
-| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: productivity, security, performance); checkbox rows place `EDMINBOOST_Setting_Help::echo_icon()` before the input; multi-select groups (e.g. Heartbeat) use `.edminboost-select-rows` with per-field help keys; master toggles wrap nested fields in `.edminboost-dependent-section` (`.is-disabled` when off): `#edminboost-login-redirects-options`, `#edminboost-dashboard-widgets-options`, `#edminboost-admin-footer-options` |
+| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: productivity, security, performance); checkbox rows place `EDMINBOOST_Setting_Help::echo_icon()` before the input; multi-select groups (e.g. Heartbeat) use `.edminboost-select-rows` with per-field help keys; master toggles wrap nested fields in `.edminboost-dependent-section` (`.is-disabled` when off): `#edminboost-login-redirects-options`, `#edminboost-dashboard-widgets-options`, `#edminboost-admin-footer-options`; Productivity admin-notices fieldset includes `edminboost-productivity-preview.php`; Performance emoji/assets fieldsets include `edminboost-performance-preview.php` |
+| `edminboost-productivity-preview.php` | Live Productivity admin-notices preview (`$preview`: `admin_notices`; `$features`); `#edminboost-productivity-admin-notices-preview`; reuses `.edminboost-performance-preview` classes; theme colors via `EDMINBOOST_Theme::resolve_preview_colors()` |
+| `edminboost-performance-preview.php` | Live Performance tab previews (`$preview`: `emoji` \| `assets`; `$features`); `#edminboost-performance-emoji-preview`, `#edminboost-performance-assets-preview`; theme colors via `EDMINBOOST_Theme::resolve_preview_colors()` |
 | `edminboost-command-center-nav.php` | CC sub-navigation |
 | `edminboost-mapper-page.php` | Top bar / layout studio |
 | `edminboost-presets-page.php` | Layout presets & role matrix |
@@ -234,12 +237,22 @@ Key elements: `#edminboost_login_redirects_enabled`, `#edminboost-login-redirect
 - Master toggle disables redirect URL fields (default login/logout + per-role URLs) when login redirects are off.
 - Server-rendered initial state mirrors toggle (`is-disabled` + `aria-disabled` on `#edminboost-login-redirects-options` in `edminboost-feature-fields.php`).
 
-### Productivity dependents (`initProductivityFeatures`)
+### Productivity dependents + live preview (`initProductivityFeatures`)
 
-Key elements: `#edminboost_dashboard_widgets_enabled`, `#edminboost-dashboard-widgets-options`; `#edminboost_admin_footer_enabled`, `#edminboost-admin-footer-options` (both `.edminboost-dependent-section`).
+Key elements: `#edminboost_dashboard_widgets_enabled`, `#edminboost-dashboard-widgets-options`; `#edminboost_admin_footer_enabled`, `#edminboost-admin-footer-options` (both `.edminboost-dependent-section`); `#edminboost-productivity-admin-notices-preview` (+ `#edminboost_hide_admin_notices`, `#edminboost_hide_screen_help`; items `[data-preview]`).
 
 - Dashboard widgets master toggle disables per-widget checkboxes when off; admin footer master toggle disables the custom text field when off.
-- Server-rendered initial state mirrors each toggle in `edminboost-feature-fields.php`.
+- Admin notices preview: removable items sync via shared `syncPerformancePreviewItem()` when matching toggle is checked; non-removable items (error/warning notices) stay visible.
+- Server-rendered initial state mirrors each toggle in `edminboost-feature-fields.php` and saved settings in `edminboost-productivity-preview.php`.
+
+### Performance live previews (`initPerformanceFeatures`)
+
+Key elements: `#edminboost-performance-emoji-preview` (+ `#edminboost_disable_emojis_enabled`, `#edminboost_disable_emojis_scope`; panels `[data-scope]`); `#edminboost-performance-assets-preview` (+ `#edminboost_remove_asset_versions`, `#edminboost_remove_dashicons_frontend`, `#edminboost_disable_embeds`; items `[data-preview]`).
+
+- Shared helper `syncPerformancePreviewItem( item, isRemoved )` toggles `.is-removed`, updates `aria-label`, and syncs child `.edminboost-performance-preview__tooltip` from `data-tooltip-loaded` / `data-tooltip-removed`.
+- Emoji preview: active panel + removed items when toggle on and scope matches (`admin`, `frontend`, or `both`).
+- Assets preview: each item reflects its matching checkbox (`remove_asset_versions`, `remove_dashicons_frontend`, `disable_embeds`).
+- Server-rendered initial state mirrors saved settings in `edminboost-performance-preview.php`.
 
 ## Theme JS (`initTheme`)
 

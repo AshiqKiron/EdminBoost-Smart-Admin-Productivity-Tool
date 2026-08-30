@@ -1,6 +1,6 @@
 ---
 description: Command Center patterns — dashboard, appearance, top bar, presets, menu studio, theme, feature pages, billing, white label, live admin bar
-globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings,setting-help}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,billing-page,dashboard-overview,declutter-settings,feature-fields,home-advanced-look,mapper,overview-sidebar-preview,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,white-label-page,white-label-plugin-preview,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
+globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings,setting-help}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,billing-page,dashboard-overview,declutter-settings,feature-fields,home-advanced-look,mapper,overview-sidebar-preview,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,performance-preview,productivity-preview,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,white-label-page,white-label-plugin-preview,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
 alwaysApply: false
 ---
 
@@ -162,7 +162,9 @@ Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when
 | `edminboost-overview-topbar-preview.php` | Mini admin bar link strip (`$preview_items`, `$preview_id`, optional `$preview_limit`, `$show_interaction`, `$compact_preview`); icon-only tips use `__tip` + child `__tooltip` (`role="tooltip"`), not `title` |
 | `edminboost-overview-sidebar-preview.php` | Mini sidebar menu strip (`$sidebar_items`, `$preview_id`, `$preview_limit`) |
 | `edminboost-settings-page.php` | Settings page shell (JSON backup/import; no settings form) |
-| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: `productivity`, `security`, `performance`) |
+| `edminboost-feature-fields.php` | Shared feature toggles (`$section`: `productivity`, `security`, `performance`); Productivity admin-notices fieldset + Performance emoji/assets fieldsets include live preview partials |
+| `edminboost-productivity-preview.php` | Live Productivity admin-notices preview (`$preview`: `admin_notices`; `$features`); `#edminboost-productivity-admin-notices-preview` |
+| `edminboost-performance-preview.php` | Live Performance previews (`$preview`: `emoji` \| `assets`; `$features`); `#edminboost-performance-emoji-preview`, `#edminboost-performance-assets-preview` |
 | `edminboost-productivity-page.php` | Productivity feature page shell |
 | `edminboost-security-page.php` | Security feature page shell |
 | `edminboost-performance-page.php` | Performance feature page shell |
@@ -197,6 +199,7 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`.
 Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Separate from `look_skin` (behavior bundles).
 
 - `get_defaults()`, `get_presets()`, `get_modes()`, `get_fonts()`, `get_color_labels()`, `get_presets_for_js()`, `sanitize()` — preset/mode/font/custom color settings; also `font_size`, `admin_favicon_id`, `admin_bg_color`, `schedule_dark_mode`, post status color tokens.
+- `resolve_preview_colors( $preset_id, $mode = 'light', $theme = null )` — resolved accent/surface/text/topbar/sidebar/content hex for preview UIs (Dashboard overview, theme picker, Productivity + Performance live previews); ignores active custom colors when previewing a different preset.
 - `uses_custom_colors( $theme )` — true when `preset === 'custom'` or legacy `use_custom_colors` flag is set.
 - `is_active()` — plugin enabled + logged in + (`is_admin()` **or** live CC bar / Layout Studio on front end).
 - `register_hooks()` — body/admin body classes, `edminboost-themes.css`, inline custom color overrides via `print_custom_color_overrides()`.
@@ -237,7 +240,8 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Config under 
 - Behavior JS (`initBehaviorAnimationSpeed`): hidden `#edminboost_animation_speed` syncs with `.edminboost-animation-speed-picker` listbox; previews use `--edminboost-animation-preview-ms` per option; live drawer reads saved speed via `EDMINBOOST_Command_Center::get_animation_duration_ms()` → `edminboostCcBar.animationMs` and shell `--edminboost-cc-drawer-duration`.
 - White Label JS (`initWhiteLabel`): `#edminboost_wl_enabled` toggles `.is-disabled` + `aria-disabled` on `#edminboost-wl-status-section` / `#edminboost-wl-rebrand-section`; live `#edminboost-wl-rebrand-preview` updates from plugin name, description, author, URI, and menu label inputs via `data-default-*` fallbacks.
 - Security JS (`initSecurityFeatures`): `#edminboost_login_redirects_enabled` toggles `.is-disabled` + `aria-disabled` on `#edminboost-login-redirects-options` (`.edminboost-dependent-section`); uses shared `syncDependentSection()`.
-- Productivity JS (`initProductivityFeatures`): `#edminboost_dashboard_widgets_enabled` / `#edminboost_admin_footer_enabled` toggle `.is-disabled` + `aria-disabled` on `#edminboost-dashboard-widgets-options` and `#edminboost-admin-footer-options` via `syncDependentSection()`.
+- Productivity JS (`initProductivityFeatures`): `#edminboost-productivity-admin-notices-preview` syncs `[data-preview]` items from `#edminboost_hide_admin_notices` / `#edminboost_hide_screen_help` via `syncPerformancePreviewItem()`; `#edminboost_dashboard_widgets_enabled` / `#edminboost_admin_footer_enabled` toggle `.is-disabled` + `aria-disabled` on `#edminboost-dashboard-widgets-options` and `#edminboost-admin-footer-options` via `syncDependentSection()`.
+- Performance JS (`initPerformanceFeatures`): `#edminboost-performance-emoji-preview` syncs admin/front-end panels from `#edminboost_disable_emojis_enabled` + `#edminboost_disable_emojis_scope`; `#edminboost-performance-assets-preview` syncs items from asset toggles (`remove_asset_versions`, `remove_dashicons_frontend`, `disable_embeds`); uses `syncPerformancePreviewItem()` for `.is-removed`, tooltips, and `aria-label`.
 - Custom admin link: `#edminboost-custom-link-path`, `#edminboost-custom-link-label`, `#edminboost-custom-link-anchor` — path may include `#fragment`; duplicate check uses slug+anchor.
 - Item drawer: `#edminboost-item-anchor` edits the selected canvas item's anchor; `#edminboost-drawer-preview` (visible when interaction is `drawer`) triggers AJAX preview via `edminboostCcOpenDrawer`.
 - Badge sources (`wc_orders`, `comments`, `forms_entries`, etc.) are local counters only — no remote API calls.
