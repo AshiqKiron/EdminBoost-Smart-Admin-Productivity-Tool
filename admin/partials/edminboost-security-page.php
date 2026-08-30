@@ -29,6 +29,9 @@ $section     = 'security';
 		<?php settings_fields( EDMINBOOST_Settings::SETTINGS_GROUP ); ?>
 		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
 		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-feature-fields.php'; ?>
-		<p class="submit"><?php submit_button( __( 'Save security settings', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?></p>
+		<?php
+		$save_label = __( 'Save security settings', EDMINBOOST_TEXT_DOMAIN );
+		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
+		?>
 	</form>
 </div>

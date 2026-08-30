@@ -26,7 +26,7 @@ $theme_key   = $option_name . '[command_center][theme]';
 	<header class="edminboost-cc-hero">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<p class="edminboost-cc-hero__lead">
-			<?php esc_html_e( 'Customize colors, fonts, slide-out panels, badges, and admin bar cleanup.', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<?php esc_html_e( 'Customize colors, fonts, and admin bar cleanup.', EDMINBOOST_TEXT_DOMAIN ); ?>
 		</p>
 	</header>
 
@@ -36,18 +36,11 @@ $theme_key   = $option_name . '[command_center][theme]';
 
 		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-theme-settings.php'; ?>
 
-		<section class="edminboost-card edminboost-cc-section edminboost-home-look" id="edminboost-appearance-look" aria-labelledby="edminboost-appearance-look-heading">
-			<h2 id="edminboost-appearance-look-heading"><?php esc_html_e( 'Panel & badges', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
-			<p class="description">
-				<?php esc_html_e( 'Adjust slide-out panel style and notification badges. These settings do not change which links appear in your top bar.', EDMINBOOST_TEXT_DOMAIN ); ?>
-			</p>
-			<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-home-advanced-look.php'; ?>
-		</section>
-
 		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-declutter-settings.php'; ?>
 
-		<p class="submit">
-			<?php submit_button( __( 'Save appearance', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
-		</p>
+		<?php
+		$save_label = __( 'Save appearance', EDMINBOOST_TEXT_DOMAIN );
+		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
+		?>
 	</form>
 </div>

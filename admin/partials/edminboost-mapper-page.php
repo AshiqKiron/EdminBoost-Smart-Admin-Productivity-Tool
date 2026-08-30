@@ -13,6 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 $option_name     = EDMINBOOST_Settings::OPTION_NAME;
+$behavior        = isset( $cc_settings['behavior'] ) && is_array( $cc_settings['behavior'] )
+	? $cc_settings['behavior']
+	: EDMINBOOST_Command_Center::get_defaults()['behavior'];
+$cc_key          = $option_name . '[command_center][behavior]';
 $discovered      = EDMINBOOST_Command_Center::get_discovered_menu_items();
 $top_bar_items   = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
 	? $cc_settings['top_bar_items']
@@ -280,14 +284,24 @@ foreach ( $top_bar_items as $item ) {
 					</aside>
 				</section>
 
+				<section class="edminboost-card edminboost-cc-section edminboost-home-look" id="edminboost-mapper-look" aria-labelledby="edminboost-mapper-look-heading">
+					<h2 id="edminboost-mapper-look-heading"><?php esc_html_e( 'Panel & badges', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+					<p class="description">
+						<?php esc_html_e( 'Adjust slide-out panel style and notification badges. These settings do not change which links appear in your top bar.', EDMINBOOST_TEXT_DOMAIN ); ?>
+					</p>
+					<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-home-advanced-look.php'; ?>
+				</section>
+
 				<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
 				<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_layout_studio_save]" value="1" />
 				<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_mark_setup_complete]" value="1" />
 				<div id="edminboost-topbar-hidden-inputs"></div>
 
-				<p class="submit edminboost-mapper-submit">
-					<?php submit_button( __( 'Save top bar', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
-				</p>
+				<?php
+				$save_label      = __( 'Save top bar', EDMINBOOST_TEXT_DOMAIN );
+				$wrapper_class   = 'submit edminboost-mapper-submit edminboost-form-actions';
+				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
+				?>
 			</div>
 		</div>
 	</form>

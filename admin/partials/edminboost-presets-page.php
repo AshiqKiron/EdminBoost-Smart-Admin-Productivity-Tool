@@ -217,8 +217,9 @@ $has_matrix        = ! empty( $matrix_items );
 			<?php endif; ?>
 		</section>
 
-		<p class="submit">
-			<?php submit_button( __( 'Save presets', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?>
-		</p>
+		<?php
+		$save_label = __( 'Save presets', EDMINBOOST_TEXT_DOMAIN );
+		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
+		?>
 	</form>
 </div>

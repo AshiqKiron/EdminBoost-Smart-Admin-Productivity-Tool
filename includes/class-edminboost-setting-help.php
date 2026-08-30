@@ -175,9 +175,10 @@ class EDMINBOOST_Setting_Help {
 			'menu_use_colors'            => __( 'Apply the custom color tokens below to the wp-admin sidebar.', EDMINBOOST_TEXT_DOMAIN ),
 			'menu_color_parent_bg'       => __( 'Background for top-level sidebar menu items.', EDMINBOOST_TEXT_DOMAIN ),
 			'menu_color_parent_text'     => __( 'Text color for top-level sidebar menu items.', EDMINBOOST_TEXT_DOMAIN ),
-			'menu_color_parent_active'   => __( 'Background for active or hovered top-level items.', EDMINBOOST_TEXT_DOMAIN ),
+			'menu_color_parent_active'   => __( 'Background for hovered or active top-level sidebar items.', EDMINBOOST_TEXT_DOMAIN ),
 			'menu_color_submenu_bg'      => __( 'Background for fly-out submenu panels.', EDMINBOOST_TEXT_DOMAIN ),
 			'menu_color_submenu_text'    => __( 'Text color for submenu links.', EDMINBOOST_TEXT_DOMAIN ),
+			'menu_color_submenu_hover_text' => __( 'Text color for submenu links on hover or focus.', EDMINBOOST_TEXT_DOMAIN ),
 			'menu_color_notification_bg' => __( 'Background for update count badges on menu items.', EDMINBOOST_TEXT_DOMAIN ),
 			'menu_color_notification_text' => __( 'Text color for update count badges.', EDMINBOOST_TEXT_DOMAIN ),
 

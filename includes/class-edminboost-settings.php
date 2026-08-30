@@ -72,8 +72,33 @@ class EDMINBOOST_Settings {
 	 * @return array
 	 */
 	public static function get() {
-		$defaults = self::get_defaults();
 		$settings = get_option( self::OPTION_NAME, array() );
+
+		if ( ! is_array( $settings ) ) {
+			$settings = array();
+		}
+
+		return self::merge_settings( $settings );
+	}
+
+	/**
+	 * Get normalized plugin defaults for admin form reset.
+	 *
+	 * @return array
+	 */
+	public static function get_form_defaults() {
+		return self::merge_settings( array(), false );
+	}
+
+	/**
+	 * Merge stored settings with plugin defaults.
+	 *
+	 * @param array $settings     Stored or empty settings.
+	 * @param bool  $apply_filter Whether to run the edminboost_settings filter.
+	 * @return array
+	 */
+	private static function merge_settings( $settings, $apply_filter = true ) {
+		$defaults = self::get_defaults();
 
 		if ( ! is_array( $settings ) ) {
 			$settings = array();
@@ -112,6 +137,10 @@ class EDMINBOOST_Settings {
 		}
 
 		$settings = self::migrate_legacy_admin_bar( $settings );
+
+		if ( ! $apply_filter ) {
+			return $settings;
+		}
 
 		/**
 		 * Filter plugin settings after merge.
@@ -629,7 +658,7 @@ class EDMINBOOST_Settings {
 				continue;
 			}
 
-			if ( ! preg_match( '#^[a-zA-Z0-9_\-\./?=&%#]+$#', $path ) ) {
+			if ( ! preg_match( '~^[a-zA-Z0-9_\-\./?=&%#]+$~', $path ) ) {
 				continue;
 			}
 

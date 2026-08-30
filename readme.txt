@@ -53,6 +53,10 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
+* Move Panel & badges controls from Appearance to the Top Bar page, below the live canvas.
+* Add Reset buttons beside Save on Command Center tabs (except Billing and Settings) to discard unsaved changes and reload the page.
+* Fix Menu Studio custom sidebar links not appearing in the wp-admin sidebar (broken path validation regex).
+* Preserve saved Menu Studio custom sidebar links when a layout preset is assigned to a user role.
 * Add a Docs link on the Plugins screen after Visit plugin site.
 * Add live previews on the Performance tab for emoji scripts and asset optimization checkboxes, with theme-aware colors and descriptive preview labels.
 * Add live previews on the Productivity tab for hide admin notices and hide Screen Options/Help toggles.

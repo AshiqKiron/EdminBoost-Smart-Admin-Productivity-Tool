@@ -11,6 +11,81 @@
 class FeaturesTest extends Edminboost_Test_Case {
 
 	/**
+	 * Custom sidebar links survive role preset resolution and appear in the admin menu.
+	 */
+	public function test_resolve_menu_studio_for_user_preserves_custom_items() {
+		$custom_items = array(
+			array(
+				'id'     => 'custom_test_link',
+				'label'  => 'All Pages',
+				'path'   => 'edit.php?post_type=page',
+				'icon'   => 'dashicons-admin-links',
+				'parent' => '',
+			),
+		);
+
+		$cc_settings = array(
+			'default_preset'   => 'system_client',
+			'menu_studio'      => array(
+				'enabled'      => true,
+				'custom_items' => $custom_items,
+			),
+			'role_assignments' => array(
+				'administrator' => 'system_client',
+			),
+		);
+
+		$menu = EDMINBOOST_Command_Center::resolve_menu_studio_for_user( $cc_settings );
+
+		$this->assertSame( $custom_items, $menu['custom_items'] );
+		$this->assertContains(
+			EDMINBOOST_Menu_Studio::get_custom_menu_slug( 'custom_test_link' ),
+			$menu['order']
+		);
+	}
+
+	/**
+	 * Custom sidebar links register on the admin menu when Menu Studio is active.
+	 */
+	public function test_menu_studio_registers_custom_sidebar_links() {
+		global $menu;
+
+		$custom_slug = EDMINBOOST_Menu_Studio::get_custom_menu_slug( 'custom_runtime_link' );
+
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'menu_studio' => array(
+						'enabled'      => true,
+						'order'        => array( 'index.php', $custom_slug ),
+						'custom_items' => array(
+							array(
+								'id'     => 'custom_runtime_link',
+								'label'  => 'Reports',
+								'path'   => 'edit.php',
+								'icon'   => 'dashicons-admin-links',
+								'parent' => '',
+							),
+						),
+					),
+				),
+			)
+		);
+
+		set_current_screen( 'index.php' );
+		do_action( 'admin_menu' );
+
+		$slugs = array();
+		foreach ( $menu as $item ) {
+			if ( ! empty( $item[2] ) ) {
+				$slugs[] = (string) $item[2];
+			}
+		}
+
+		$this->assertContains( $custom_slug, $slugs );
+	}
+
+	/**
 	 * Protected menu slugs list is stable.
 	 */
 	public function test_menu_studio_protected_slugs() {

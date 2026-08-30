@@ -570,6 +570,9 @@ class EDMINBOOST_Admin {
 				'importFileRequired'        => __( 'Choose a JSON file to import.', EDMINBOOST_TEXT_DOMAIN ),
 				'importReadFailed'          => __( 'Could not read the selected file.', EDMINBOOST_TEXT_DOMAIN ),
 				'importFailed'              => __( 'Could not import settings. Check the JSON and try again.', EDMINBOOST_TEXT_DOMAIN ),
+				'formResetConfirm'          => __( 'Reset all fields on this page to their default values? Your saved settings are not changed until you click Save.', EDMINBOOST_TEXT_DOMAIN ),
+				'formResetConfirmYes'       => __( 'Yes, reset to defaults', EDMINBOOST_TEXT_DOMAIN ),
+				'formResetCancel'           => __( 'Cancel', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			'presets'          => self::get_presets_for_js(),
 			'roleMatrix'       => array(
@@ -750,6 +753,7 @@ class EDMINBOOST_Admin {
 		check_ajax_referer( 'edminboost_cc_nav', 'nonce' );
 
 		$page = isset( $_POST['page'] ) ? sanitize_key( wp_unslash( $_POST['page'] ) ) : '';
+		$use_form_defaults = ! empty( $_POST['form_defaults'] );
 
 		if ( ! $this->is_valid_cc_nav_page( $page ) ) {
 			wp_send_json_error(
@@ -760,7 +764,7 @@ class EDMINBOOST_Admin {
 			);
 		}
 
-		$html = $this->capture_cc_page_html( $page );
+		$html = $this->capture_cc_page_html( $page, $use_form_defaults );
 
 		if ( '' === $html ) {
 			wp_send_json_error(
@@ -807,10 +811,20 @@ class EDMINBOOST_Admin {
 	/**
 	 * Render a Command Center page and return its HTML.
 	 *
-	 * @param string $page Admin page slug.
+	 * @param string $page              Admin page slug.
+	 * @param bool   $use_form_defaults When true, render forms with plugin defaults (not saved values).
 	 * @return string
 	 */
-	private function capture_cc_page_html( $page ) {
+	private function capture_cc_page_html( $page, $use_form_defaults = false ) {
+		$form_defaults_filter = null;
+
+		if ( $use_form_defaults ) {
+			$form_defaults_filter = static function () {
+				return EDMINBOOST_Settings::get_form_defaults();
+			};
+			add_filter( 'edminboost_settings', $form_defaults_filter, 9999 );
+		}
+
 		$this->prime_cc_page_context( $page );
 
 		ob_start();
@@ -851,10 +865,19 @@ class EDMINBOOST_Admin {
 				break;
 			default:
 				ob_end_clean();
+				if ( $form_defaults_filter ) {
+					remove_filter( 'edminboost_settings', $form_defaults_filter, 9999 );
+				}
 				return '';
 		}
 
-		return (string) ob_get_clean();
+		$html = (string) ob_get_clean();
+
+		if ( $form_defaults_filter ) {
+			remove_filter( 'edminboost_settings', $form_defaults_filter, 9999 );
+		}
+
+		return $html;
 	}
 
 	/**

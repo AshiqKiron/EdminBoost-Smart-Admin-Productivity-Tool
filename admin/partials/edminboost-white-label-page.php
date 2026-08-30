@@ -127,6 +127,9 @@ $wl_section_aria   = $wl_enabled ? 'false' : 'true';
 			</div>
 		</section>
 
-		<p class="submit"><?php submit_button( __( 'Save white label settings', EDMINBOOST_TEXT_DOMAIN ), 'primary', 'submit', false ); ?></p>
+		<?php
+		$save_label = __( 'Save white label settings', EDMINBOOST_TEXT_DOMAIN );
+		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
+		?>
 	</form>
 </div>

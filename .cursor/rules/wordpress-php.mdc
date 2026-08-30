@@ -56,7 +56,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Plugins screen row meta: `plugin_row_meta` → `EDMINBOOST_Admin::add_plugin_row_meta()` adds Docs link (`EDMINBOOST_PLUGIN_DOCS_URL`, `target="_blank"`, `rel="noopener noreferrer"`).
 - Admin page titles: `EDMINBOOST_Admin::register_plugin_submenu_page()` / `bind_admin_page_title()` set `$title` on `load-{hook}` (fixes PHP 8.1+ warnings for tab-only pages with null parent).
 - New productivity modules: extend `EDMINBOOST_Feature_Base`, register in `EDMINBOOST_Features`; defaults/enable/sanitize via `EDMINBOOST_Feature_Settings` (see `edminboost-features.mdc`).
-- Settings: `EDMINBOOST_Settings::get()`, `::is_enabled()`, `::is_feature_enabled()`, `::get_feature_settings()`; feature shape helpers in `EDMINBOOST_Feature_Settings`.
+- Settings: `EDMINBOOST_Settings::get()`, `::get_form_defaults()` (normalized plugin defaults for admin form reset — no `edminboost_settings` filter), `::is_enabled()`, `::is_feature_enabled()`, `::get_feature_settings()`; feature shape helpers in `EDMINBOOST_Feature_Settings`.
 - Activation seeds defaults via `EDMINBOOST_Activator`; deactivation is a no-op.
 
 ## Settings Option Shape
@@ -85,13 +85,19 @@ array(
 			'custom_sidebar'    => '',
 		),
 		'menu_studio'            => array(
-			'enabled'       => false,
-			'order'         => array(),
-			'submenu_order' => array(),
-			'hidden_items'  => array(),
-			'custom_items'  => array(),  // id, label, path, icon, parent
-			'use_colors'    => false,
-			'colors'        => array( /* parent_*, submenu_*, notification_* hex */ ),
+			'enabled'        => false,
+			'order'          => array(),
+			'submenu_order'  => array(),
+			'hidden_items'   => array(),
+			'custom_items'   => array(),  // id, label, path, icon, parent
+			'use_colors'     => false,
+			'menu_width'     => 160,       // px; clamped 120–300
+			'font_size'      => 14,        // px; clamped 10–24
+			'line_height'    => 20,        // px; clamped 12–36
+			'letter_spacing' => 0,         // px; clamped -2–6
+			'display_mode'   => 'both',    // both | icon | text
+			'padding'        => array( /* wrapper_*, submenu_* px */ ),
+			'colors'         => array( /* parent_*, submenu_*, notification_* hex */ ),
 		),
 		'behavior'             => array(
 			'drawer_width'         => 'standard',  // compact | standard | fullscreen | custom
@@ -116,7 +122,7 @@ array(
 
 ## Command Center Sanitization Notes
 
-- `_apply_preset` (wizard or apply): replaces `top_bar_items` + `menu_studio` from preset; does not merge prior sidebar config (`sanitize_menu_studio( …, null )`).
+- `_apply_preset` (wizard or apply): replaces `top_bar_items` + `menu_studio` from preset on save; does not merge prior sidebar config (`sanitize_menu_studio( …, null )`). Runtime `resolve_menu_studio_for_user()` re-merges stored `custom_items` via `merge_saved_custom_menu_items()` when a role preset is assigned.
 - `_layout_studio_save` / `_menu_studio_save` markers gate top bar / sidebar writes so other CC pages do not clobber saved layouts.
 - Partial `theme.preset` to a built-in skin clears stale `use_custom_colors` (Dashboard overview AJAX saves omit the legacy flag).
 - `apply_preset()` programmatic helper delegates to the same `_apply_preset` sanitize path.
@@ -124,12 +130,13 @@ array(
 ## Partials
 
 - Dashboard: `edminboost-admin-page.php` — expects `$cc_settings`, `$current_page`; includes setup wizard or dashboard overview.
-- Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php`, `edminboost-home-advanced-look.php` (which requires `edminboost-animation-speed-field.php`), and `edminboost-declutter-settings.php`.
+- Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php` and `edminboost-declutter-settings.php`.
 - Settings: `edminboost-settings-page.php` — expects `$cc_settings`, `$current_page`; JSON export/import only (paste or file). CC save forms include hidden `edminboost_settings[enabled]=1` so partial saves do not disable the plugin.
 - Feature pages: `edminboost-{productivity,security,performance}-page.php` — include `edminboost-feature-fields.php` with `$section`. Productivity admin-notices fieldset includes `edminboost-productivity-preview.php` (`$preview`: `admin_notices`; `$features`). Performance emoji/assets fieldsets include `edminboost-performance-preview.php` (`$preview`: `emoji`|`assets`; `$features`). Both preview partials use theme colors via `EDMINBOOST_Theme::resolve_preview_colors()`.
 - White Label: `edminboost-white-label-page.php` — expects `$cc_settings`, `$current_page`; fields under `white_label`; includes `edminboost-white-label-plugin-preview.php` (`$wl`, `$defaults` from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).
 - Billing: `edminboost-billing-page.php` — expects `$cc_settings`, `$current_page`; plans from `EDMINBOOST_Command_Center::get_billing_plans()`.
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
+- Form actions: `edminboost-form-actions.php` — shared Save + Reset footer; set `$save_label`, `$wrapper_tag` (`p`|`footer`|`div`), `$wrapper_class` before include.
 - Setup wizard partials: `edminboost-setup-wizard.php` (includes `edminboost-preset-picker.php`, `edminboost-theme-settings.php`, `edminboost-topbar-summary.php`, `edminboost-setup-review.php`).
 - Dashboard overview previews: `edminboost-overview-topbar-preview.php` (`$preview_items`, `$preview_id`, optional `$preview_limit`, `$show_interaction`, `$compact_preview`; icon tips via `__tip` + child `__tooltip` spans, not `title`), `edminboost-overview-sidebar-preview.php` (`$sidebar_items`, `$preview_id`, `$preview_limit`).
 - Setting help: call `EDMINBOOST_Setting_Help::echo_icon( $key )` beside labels on non-Dashboard CC/feature pages; checkbox rows put the icon before the input; grouped selects use `.edminboost-select-rows` with one registry key per sub-field when help text differs.

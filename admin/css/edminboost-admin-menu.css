@@ -38,7 +38,7 @@ body.edminboost-menu-studio-colors #adminmenu .wp-submenu a {
 
 body.edminboost-menu-studio-colors #adminmenu .wp-submenu a:hover,
 body.edminboost-menu-studio-colors #adminmenu .wp-submenu a:focus {
-	color: var(--eb-ms-submenu-text, inherit);
+	color: var(--eb-ms-submenu-hover-text, var(--eb-ms-submenu-text, inherit));
 }
 
 body.edminboost-menu-studio-colors #adminmenu .awaiting-mod,

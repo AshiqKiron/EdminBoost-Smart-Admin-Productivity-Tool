@@ -104,12 +104,63 @@
 		primeCommandCenterHistory();
 	} );
 
+	function restoreFormControlDefaults( form ) {
+		if ( ! form ) {
+			return;
+		}
+
+		form.querySelectorAll( 'input[type="checkbox"], input[type="radio"]' ).forEach( function ( input ) {
+			input.checked = input.defaultChecked;
+		} );
+
+		form.querySelectorAll( 'select' ).forEach( function ( select ) {
+			Array.prototype.forEach.call( select.options, function ( option ) {
+				option.selected = option.defaultSelected;
+			} );
+		} );
+
+		form.querySelectorAll( 'textarea' ).forEach( function ( textarea ) {
+			textarea.value = textarea.defaultValue;
+		} );
+
+		form.querySelectorAll( 'input' ).forEach( function ( input ) {
+			if (
+				'checkbox' === input.type
+				|| 'radio' === input.type
+				|| 'file' === input.type
+				|| 'button' === input.type
+				|| 'submit' === input.type
+				|| 'reset' === input.type
+				|| 'hidden' === input.type
+			) {
+				return;
+			}
+
+			input.value = input.defaultValue;
+		} );
+	}
+
 	function reinitEdminboostPage( root ) {
 		if ( ! root ) {
 			return;
 		}
 
 		root.setAttribute( 'data-edminboost-ready', 'true' );
+
+		root.querySelectorAll( 'form.edminboost-cc-form, form.edminboost-settings-form' ).forEach( function ( form ) {
+			form.setAttribute( 'autocomplete', 'off' );
+			restoreFormControlDefaults( form );
+		} );
+
+		window.setTimeout( function () {
+			root.querySelectorAll( 'form.edminboost-cc-form, form.edminboost-settings-form' ).forEach( function ( form ) {
+				restoreFormControlDefaults( form );
+
+				form.querySelectorAll( 'input[type="checkbox"], input[type="radio"], select' ).forEach( function ( control ) {
+					control.dispatchEvent( new Event( 'change', { bubbles: true } ) );
+				} );
+			} );
+		}, 0 );
 
 		initMapper( root );
 		initMenuStudio( root );
@@ -125,6 +176,7 @@
 		initPerformanceFeatures( root );
 		initCommandCenterForms( root );
 		initSettingsForm( root );
+		initFormResetButtons( root );
 		initBackupSettings( root );
 	}
 
@@ -290,6 +342,10 @@
 			formData.append( 'action', navConfig.action );
 			formData.append( 'nonce', navConfig.nonce );
 			formData.append( 'page', page );
+
+			if ( options.formDefaults ) {
+				formData.append( 'form_defaults', '1' );
+			}
 
 			window.fetch( navConfig.ajaxUrl, {
 				method: 'POST',
@@ -1116,9 +1172,15 @@
 		var searchInput  = document.getElementById( 'edminboost-menu-search' );
 		var emptyHint    = document.getElementById( 'edminboost-menu-canvas-empty' );
 		var hiddenInputs = document.getElementById( 'edminboost-menu-hidden-inputs' );
-		var useColors    = document.getElementById( 'edminboost_menu_studio_use_colors' );
-		var colorGrid    = document.getElementById( 'edminboost-menu-color-grid' );
-		var colorPreview = document.getElementById( 'edminboost-menu-color-preview' );
+		var useColors      = document.getElementById( 'edminboost_menu_studio_use_colors' );
+		var colorsPanel    = document.getElementById( 'edminboost-menu-colors-panel' );
+		var colorPreview   = document.getElementById( 'edminboost-menu-color-preview' );
+		var layoutPreview  = document.getElementById( 'edminboost-menu-layout-preview' );
+		var menuWidth      = document.getElementById( 'edminboost_menu_width' );
+		var menuFontSize   = document.getElementById( 'edminboost_menu_font_size' );
+		var menuLineHeight = document.getElementById( 'edminboost_menu_line_height' );
+		var menuLetterSpacing = document.getElementById( 'edminboost_menu_letter_spacing' );
+		var menuDisplayMode   = document.getElementById( 'edminboost_menu_display_mode' );
 
 		if ( ! form || ! canvas || ! discovered ) {
 			return;
@@ -1128,7 +1190,24 @@
 		var dragPayload = null;
 		var customItems = [];
 
+		if ( form.dataset.edminboostCustomItems ) {
+			try {
+				customItems = JSON.parse( form.dataset.edminboostCustomItems );
+			} catch ( error ) {
+				customItems = [];
+			}
+		}
+
+		if ( ! Array.isArray( customItems ) ) {
+			customItems = [];
+		}
+
 		canvas.querySelectorAll( '.edminboost-sidebar-item.is-custom' ).forEach( function ( item ) {
+			var existingId = item.dataset.slug ? item.dataset.slug.replace( /^edminboost_ms_/, '' ) : '';
+			if ( existingId && customItems.some( function ( entry ) { return entry.id === existingId; } ) ) {
+				return;
+			}
+
 			customItems.push( {
 				id: item.dataset.slug ? item.dataset.slug.replace( /^edminboost_ms_/, '' ) : '',
 				label: item.dataset.label || '',
@@ -1609,7 +1688,39 @@
 
 				customItems.push( custom );
 
-				if ( ! parent ) {
+				if ( parent ) {
+					var parentItem = canvas.querySelector( '.edminboost-sidebar-item[data-slug="' + parent + '"]' );
+					if ( parentItem ) {
+						var subList = parentItem.querySelector( '.edminboost-sidebar-subitems' );
+						if ( ! subList ) {
+							subList = document.createElement( 'ul' );
+							subList.className = 'edminboost-sidebar-subitems';
+							subList.hidden = false;
+
+							var expand = document.createElement( 'button' );
+							expand.type = 'button';
+							expand.className = 'edminboost-sidebar-item__expand';
+							expand.setAttribute( 'aria-expanded', 'true' );
+							expand.setAttribute( 'aria-label', 'Expand submenu' );
+							expand.innerHTML = '<span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>';
+
+							var row = parentItem.querySelector( '.edminboost-sidebar-item__row' );
+							if ( row ) {
+								row.appendChild( expand );
+							}
+
+							parentItem.appendChild( subList );
+						} else {
+							subList.hidden = false;
+							var parentExpand = parentItem.querySelector( '.edminboost-sidebar-item__expand' );
+							if ( parentExpand ) {
+								parentExpand.setAttribute( 'aria-expanded', 'true' );
+							}
+						}
+
+						subList.appendChild( createSubmenuItem( { slug: slug, label: label }, parent ) );
+					}
+				} else {
 					addToCanvas( {
 						slug: slug,
 						label: label,
@@ -1633,33 +1744,99 @@
 			} );
 		}
 
-		function applyColorPreview() {
-			if ( ! colorPreview ) {
+		function clampNumber( value, min, max, fallback ) {
+			var parsed = parseInt( value, 10 );
+			if ( isNaN( parsed ) ) {
+				return fallback;
+			}
+
+			return Math.max( min, Math.min( max, parsed ) );
+		}
+
+		function applyLayoutPreview() {
+			if ( ! layoutPreview ) {
 				return;
 			}
 
+			var width = clampNumber( menuWidth ? menuWidth.value : '', 120, 300, 160 );
+			var fontSize = clampNumber( menuFontSize ? menuFontSize.value : '', 10, 24, 14 );
+			var lineHeight = clampNumber( menuLineHeight ? menuLineHeight.value : '', 12, 36, 20 );
+			var letterSpacing = clampNumber( menuLetterSpacing ? menuLetterSpacing.value : '', -2, 6, 0 );
+			var displayMode = menuDisplayMode ? menuDisplayMode.value : 'both';
+
+			layoutPreview.style.setProperty( '--eb-ms-preview-width', width + 'px' );
+			layoutPreview.style.setProperty( '--eb-ms-preview-font-size', fontSize + 'px' );
+			layoutPreview.style.setProperty( '--eb-ms-preview-line-height', lineHeight + 'px' );
+			layoutPreview.style.setProperty( '--eb-ms-preview-letter-spacing', letterSpacing + 'px' );
+
+			layoutPreview.classList.remove(
+				'edminboost-menu-layout-preview--icon',
+				'edminboost-menu-layout-preview--text'
+			);
+
+			if ( displayMode === 'icon' ) {
+				layoutPreview.classList.add( 'edminboost-menu-layout-preview--icon' );
+			} else if ( displayMode === 'text' ) {
+				layoutPreview.classList.add( 'edminboost-menu-layout-preview--text' );
+			}
+		}
+
+		function applyColorPreview() {
 			var map = {
 				parent_bg: '--eb-ms-preview-parent-bg',
 				parent_text: '--eb-ms-preview-parent-text',
 				parent_active: '--eb-ms-preview-parent-active',
 				submenu_bg: '--eb-ms-preview-submenu-bg',
 				submenu_text: '--eb-ms-preview-submenu-text',
+				submenu_hover_text: '--eb-ms-preview-submenu-hover-text',
 				notification_bg: '--eb-ms-preview-notification-bg',
 				notification_text: '--eb-ms-preview-notification-text'
 			};
 
+			var targets = [];
+			if ( colorPreview ) {
+				targets.push( colorPreview );
+			}
+			if ( layoutPreview ) {
+				targets.push( layoutPreview );
+			}
+
+			if ( ! targets.length ) {
+				return;
+			}
+
 			Object.keys( map ).forEach( function ( key ) {
-				var input = document.getElementById( 'edminboost_menu_color_' + key );
-				colorPreview.style.removeProperty( map[ key ] );
-				if ( input && input.value ) {
-					colorPreview.style.setProperty( map[ key ], input.value );
-				}
+				var textInput   = document.getElementById( 'edminboost_menu_color_' + key );
+				var pickerInput = textInput ? document.getElementById( 'edminboost_menu_color_' + key + '_picker' ) : null;
+				var value       = textInput && textInput.value ? textInput.value : ( pickerInput ? pickerInput.value : '' );
+
+				targets.forEach( function ( target ) {
+					target.style.removeProperty( map[ key ] );
+					if ( value ) {
+						target.style.setProperty( map[ key ], value );
+					}
+				} );
 			} );
 		}
 
-		if ( useColors && colorGrid ) {
+		[ menuWidth, menuFontSize, menuLineHeight, menuLetterSpacing ].forEach( function ( field ) {
+			if ( ! field ) {
+				return;
+			}
+
+			field.addEventListener( 'input', applyLayoutPreview );
+			field.addEventListener( 'change', applyLayoutPreview );
+		} );
+
+		if ( menuDisplayMode ) {
+			menuDisplayMode.addEventListener( 'change', applyLayoutPreview );
+		}
+
+		applyLayoutPreview();
+
+		if ( useColors && colorsPanel ) {
 			useColors.addEventListener( 'change', function () {
-				colorGrid.hidden = ! useColors.checked;
+				colorsPanel.hidden = ! useColors.checked;
 				applyColorPreview();
 			} );
 		}
@@ -2698,6 +2875,114 @@
 
 	function initSettingsForm( root ) {
 		initAjaxSaveForms( root, '.edminboost-settings-form' );
+	}
+
+	function resetEdminboostForm( form, resetButton ) {
+		if ( ! form ) {
+			window.location.reload();
+			return;
+		}
+
+		var currentPage = edminboostData.currentPage || '';
+
+		if ( loadCommandCenterPageRef && currentPage && edminboostData.ccNav ) {
+			loadCommandCenterPageRef( currentPage, window.location.href, {
+				push: false,
+				formDefaults: true
+			} );
+		}
+	}
+
+	function initFormResetButtons( root ) {
+		var buttons = root.querySelectorAll( '.edminboost-form-reset' );
+
+		if ( ! buttons.length ) {
+			return;
+		}
+
+		buttons.forEach( function ( button ) {
+			if ( button.dataset.edminboostResetBound ) {
+				return;
+			}
+
+			button.dataset.edminboostResetBound = '1';
+
+			button.addEventListener( 'click', function () {
+				var actions = button.closest( '.edminboost-form-actions' );
+
+				if ( ! actions ) {
+					return;
+				}
+
+				showFormResetConfirm( actions, button );
+			} );
+		} );
+	}
+
+	function showFormResetConfirm( actions, resetButton ) {
+		var form = actions.closest( 'form' );
+		var existing = form ? form.querySelector( '.edminboost-form-reset-notice' ) : null;
+
+		if ( existing ) {
+			existing.remove();
+		}
+
+		var notice = document.createElement( 'div' );
+		notice.className = 'notice notice-warning edminboost-form-reset-notice';
+		notice.setAttribute( 'role', 'alert' );
+
+		var paragraph = document.createElement( 'p' );
+		paragraph.className = 'edminboost-form-reset-notice__message';
+		paragraph.textContent = edminboostData.strings.formResetConfirm || '';
+
+		var confirmBtn = document.createElement( 'button' );
+		confirmBtn.type = 'button';
+		confirmBtn.className = 'button button-primary edminboost-form-reset-confirm';
+		confirmBtn.textContent = edminboostData.strings.formResetConfirmYes || '';
+
+		var cancelBtn = document.createElement( 'button' );
+		cancelBtn.type = 'button';
+		cancelBtn.className = 'button edminboost-form-reset-cancel';
+		cancelBtn.textContent = edminboostData.strings.formResetCancel || '';
+
+		var actionWrap = document.createElement( 'span' );
+		actionWrap.className = 'edminboost-form-reset-notice__actions';
+		actionWrap.appendChild( confirmBtn );
+		actionWrap.appendChild( cancelBtn );
+		paragraph.appendChild( actionWrap );
+		notice.appendChild( paragraph );
+
+		actions.parentNode.insertBefore( notice, actions );
+		resetButton.hidden = true;
+		notice.scrollIntoView( { behavior: 'smooth', block: 'nearest' } );
+
+		function closeConfirm( focusReset ) {
+			notice.remove();
+			resetButton.hidden = false;
+			document.removeEventListener( 'keydown', onKeydown );
+
+			if ( focusReset ) {
+				resetButton.focus();
+			}
+		}
+
+		function onKeydown( event ) {
+			if ( event.key === 'Escape' ) {
+				event.preventDefault();
+				closeConfirm( true );
+			}
+		}
+
+		cancelBtn.addEventListener( 'click', function () {
+			closeConfirm( true );
+		} );
+
+		confirmBtn.addEventListener( 'click', function () {
+			resetEdminboostForm( form, resetButton );
+		} );
+
+		document.addEventListener( 'keydown', onKeydown );
+		cancelBtn.focus();
 	}
 
 	function initAjaxSaveForms( root, selector ) {

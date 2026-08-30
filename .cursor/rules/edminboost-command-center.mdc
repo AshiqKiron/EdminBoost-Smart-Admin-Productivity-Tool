@@ -1,6 +1,6 @@
 ---
 description: Command Center patterns — dashboard, appearance, top bar, presets, menu studio, theme, feature pages, billing, white label, live admin bar
-globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings,setting-help}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,billing-page,dashboard-overview,declutter-settings,feature-fields,home-advanced-look,mapper,overview-sidebar-preview,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,performance-preview,productivity-preview,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,white-label-page,white-label-plugin-preview,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
+globs: "includes/class-edminboost-command-center*.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings,setting-help}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,billing-page,dashboard-overview,declutter-settings,feature-fields,form-actions,home-advanced-look,mapper,overview-sidebar-preview,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,performance-preview,productivity-preview,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-settings,topbar-summary,white-label-page,white-label-plugin-preview,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
 alwaysApply: false
 ---
 
@@ -15,7 +15,8 @@ Shared config UI for top-bar layout, presets/roles, and look settings. Data stor
 - `get_nav_items()` — full CC tab nav (`get_page_links()` pages + tab-only Productivity, Security, Performance, White Label)
 - `get_billing_plans()`, `get_active_billing_plan()` — Billing page plan catalog (UI placeholder; checkout not wired yet)
 - `resolve_top_bar_items_for_user( $cc_settings )` — applies `role_assignments` preset top bar layouts at runtime
-- `resolve_menu_studio_for_user( $cc_settings )` — applies `role_assignments` preset sidebar config, then `apply_role_visibility_to_menu_studio()`
+- `resolve_menu_studio_for_user( $cc_settings )` — applies `role_assignments` preset sidebar config, then `merge_saved_custom_menu_items()` (preserves stored `custom_items` + order/submenu placement), then `apply_role_visibility_to_menu_studio()`
+- `merge_saved_custom_menu_items( $menu_studio, $saved_menu )` — merges saved `custom_items` from stored settings into role-resolved sidebar config; re-appends custom slugs to `order` / `submenu_order`
 - `resolve_preset_menu_studio( $preset_id, $cc_settings )` — sidebar `menu_studio` shape for a preset
 - `resolve_preset_sidebar_preview_items( $preset_id, $cc_settings )` — ordered sidebar preview items for pickers/Dashboard
 - `get_preset_visible_menu_slugs()` / `get_preset_visible_top_level_menu_slugs()` — visible slugs for role matrix sync
@@ -81,7 +82,7 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 - Performance: `render_performance_page()` → `admin/partials/edminboost-performance-page.php` (`$section = performance`)
 - White Label: `render_white_label_page()` → `admin/partials/edminboost-white-label-page.php`
 - Billing: `render_billing_page()` → `admin/partials/edminboost-billing-page.php` (plan cards from `get_billing_plans()`; upgrade buttons are placeholders until checkout ships)
-- Appearance (Theme): `render_appearance_page()` → `admin/partials/edminboost-appearance-page.php` (visual theme, panel/badges, admin bar declutter)
+- Appearance (Theme): `render_appearance_page()` → `admin/partials/edminboost-appearance-page.php` (visual theme, admin bar declutter)
 - Top Bar: `render_mapper_page()` → `admin/partials/edminboost-mapper-page.php`
 - Layout Presets: `render_presets_page()` → `admin/partials/edminboost-presets-page.php`
 - Menu Studio: `render_menu_studio_page()` → `admin/partials/edminboost-menu-studio-page.php`
@@ -105,7 +106,7 @@ edminboost_settings[command_center][role_assignments][role_key]
 edminboost_settings[command_center][behavior][drawer_width|drawer_width_custom|animation_speed|...]
 edminboost_settings[command_center][theme][preset|mode|font|font_size|admin_favicon_id|admin_bg_color|schedule_dark_mode|custom_accent|custom_surface|custom_text|custom_top|custom_sidebar|status_*]
 edminboost_settings[command_center][_menu_studio_save]                              # marker: 1 when Menu Studio form submits
-edminboost_settings[command_center][menu_studio][enabled|order|submenu_order|hidden_items|custom_items|use_colors|colors|menu_width|font_size|icon_display|text_display|padding]
+edminboost_settings[command_center][menu_studio][enabled|order|submenu_order|hidden_items|custom_items|use_colors|colors|menu_width|font_size|line_height|letter_spacing|display_mode|padding]
 edminboost_settings[white_label][enabled|hide_wp_footer_credit|show_*|admin_logo_*|plugin_*|menu_label]
 ```
 
@@ -113,7 +114,7 @@ CC + settings forms use class `.edminboost-cc-form` or `.edminboost-settings-for
 
 Sanitization: `EDMINBOOST_Settings::sanitize_command_center()` (private) — whitelist personas, presets, icons, interactions, badge sources, behavior enums.
 
-When `_apply_preset` is present (setup wizard or Dashboard/Presets apply), sanitizer replaces `top_bar_items` and `menu_studio` from the preset definition — passes `null` as the merge baseline to `sanitize_menu_studio()` so prior custom sidebar config is not retained. Sets `$preset_layout_applied` / `$preset_menu_applied` so stray `top_bar_items` / `menu_studio` keys in the same payload cannot overwrite the preset. Partial theme saves that set a built-in `theme.preset` clear stale `use_custom_colors` so Dashboard overview picks do not stick on `custom`.
+When `_apply_preset` is present (setup wizard or Dashboard/Presets apply), sanitizer replaces `top_bar_items` and `menu_studio` from the preset definition — passes `null` as the merge baseline to `sanitize_menu_studio()` so prior custom sidebar config is not retained on save. At runtime, `resolve_menu_studio_for_user()` still re-merges stored `custom_items` via `merge_saved_custom_menu_items()` when a role preset is assigned. Sets `$preset_layout_applied` / `$preset_menu_applied` so stray `top_bar_items` / `menu_studio` keys in the same payload cannot overwrite the preset. Partial theme saves that set a built-in `theme.preset` clear stale `use_custom_colors` so Dashboard overview picks do not stick on `custom`.
 
 Layout Studio save: when `_layout_studio_save` is present, `top_bar_items` is always sanitized — an empty array clears the stored layout (fix for removing all items). Other CC pages omit this field so they do not overwrite `top_bar_items`.
 
@@ -179,20 +180,23 @@ Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when
 | `edminboost-animation-speed-field.php` | Shared animation speed picker (screen-reader `<select>` + custom listbox UI); requires `$cc_key`, `$behavior` |
 | `edminboost-home-advanced-look.php` | Panel width, badges, animation speed (Appearance page) |
 | `edminboost-declutter-settings.php` | Admin bar cleanup toggles (Appearance page) |
-| `edminboost-menu-studio-page.php` | Sidebar reorder, hide, custom links, colors |
+| `edminboost-menu-studio-page.php` | Sidebar reorder, hide, custom links (top-level + submenu), layout/typography live preview, colors live preview |
 | `edminboost-theme-settings.php` | Visual theme preset picker, mode/font selects, custom color pickers |
+| `edminboost-form-actions.php` | Shared Save + Reset footer (`$save_label`, `$wrapper_tag` = `p`|`footer`|`div`, `$wrapper_class`) |
 
 ## Menu Studio: `EDMINBOOST_Menu_Studio`
 
 Not a feature module — registered in `EDMINBOOST_Plugin::run()`.
 
 - `is_active()` — plugin enabled + resolved `menu_studio.enabled`.
-- `get_settings()` — `EDMINBOOST_Command_Center::resolve_menu_studio_for_user()` (role preset + visibility), not raw stored config.
-- `register_custom_items()` on `admin_menu` (5) — adds saved custom sidebar links.
-- `apply_menu_changes()` on `admin_menu` (998) — reorders, hides, and nests submenus per saved config.
-- `enqueue_styles()` — when active + `use_colors`, loads `edminboost-admin-menu.css` + inline color CSS vars.
-- `filter_body_class()` — adds `edminboost-menu-studio-active` (+ `edminboost-menu-studio-colors` when colors on).
+- `get_settings()` — `EDMINBOOST_Command_Center::resolve_menu_studio_for_user()` (role preset + custom-item merge + visibility), not raw stored config.
+- `get_custom_menu_slug( $id )` — returns `edminboost_ms_{sanitize_key(id)}`; use consistently for custom slugs in CC helpers and tests.
+- `register_custom_items()` on `admin_menu` (99) — adds saved custom sidebar links (top-level and submenu).
+- `apply_menu_changes()` on `admin_menu` (998) — reorders, hides, and nests submenus per saved config; `ensure_custom_items_in_menu()` appends registered custom top-level items missing from a rebuilt order.
+- `enqueue_styles()` — when active, loads `edminboost-admin-menu.css` + inline CSS vars (layout/typography always; color vars when `use_colors`); display-mode body classes via `filter_body_class()`.
+- `filter_body_class()` — adds `edminboost-menu-studio-active` (+ `edminboost-menu-studio-colors` when colors on; display-mode classes `edminboost-menu-studio-display--{both|icon|text}`).
 - `get_protected_slugs()` — never hide or reorder away: `index.php`, `plugins.php`, `EDMINBOOST_Admin::PAGE_SLUG` (sanitizer strips these from `hidden_items`).
+- Custom item path validation uses `~^[a-zA-Z0-9_\-\./?=&%#]+$~` (tilde delimiters — `#` is valid in admin paths/fragments).
 
 ## Visual Theme: `EDMINBOOST_Theme`
 
@@ -228,10 +232,11 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Config under 
 - `role_assignments` stores preset IDs per role; first matching role applies preset top bar (`resolve_top_bar_items_for_user()`) and sidebar (`resolve_menu_studio_for_user()`).
 - `role_visibility` stores hidden slugs per role (inverted from visible checkboxes in UI). Matrix lists every top-level menu item from `get_role_matrix_menu_items()` — including items hidden by Menu Studio. Items outside the assigned preset start unchecked but remain enabled; capability-restricted items also start unchecked (`.is-capability-restricted`). Protected slugs (Dashboard, Plugins, EdminBoost) stay checked and disabled.
 - Mapper JS (`initMapper`) syncs visible canvas items to hidden inputs (`#edminboost-topbar-hidden-inputs`) before submit — includes `anchor` per item.
-- CC tab navigation JS (`initCommandCenterNav`): intercepts `.edminboost-cc-nav__link` clicks; waits for `pendingDashboardOverviewSave` when set; POSTs to `edminboostData.ccNav` (`edminboost_load_cc_page`); swaps `.edminboost-wrap` HTML, updates `history.pushState`, calls `reinitEdminboostPage()`; falls back to full navigation on failure. Nav links use `data-edminboost-page` + `href` for deep links. AJAX tab loads call `ensure_discovery_menu_snapshot()` server-side (`prime_cc_page_context()`).
+- CC tab navigation JS (`initCommandCenterNav`): intercepts `.edminboost-cc-nav__link` clicks; waits for `pendingDashboardOverviewSave` when set; POSTs to `edminboostData.ccNav` (`edminboost_load_cc_page`); optional `form_defaults=1` re-renders with plugin defaults for form reset (read-only — no `update_option()`); swaps `.edminboost-wrap` HTML, updates `history.pushState`, calls `reinitEdminboostPage()`; falls back to full navigation on failure. Nav links use `data-edminboost-page` + `href` for deep links. AJAX tab loads call `ensure_discovery_menu_snapshot()` server-side (`prime_cc_page_context()`).
 - Dashboard overview JS (`initDashboardOverview`): `#edminboost-dashboard-overview-form` — layout preset list click sets `#edminboost_dashboard_apply_preset` and AJAX-saves via `saveSettingsForm` (reload on success); theme preset list click updates `edminboostData.themeSettings`, syncs `#edminboost_theme_preset` + `syncThemeSettingsFn()` (live body preview), updates overview theme swatches, and silent AJAX-saves; read-only `#edminboost-overview-topbar-links-picker` lists configured links; live previews `#edminboost-overview-layout-preview`, `#edminboost-overview-layout-sidebar-preview`, `#edminboost-overview-theme-preview`, `#edminboost-overview-topbar-preview`.
 - Mapper UX: discovered rows are draggable to canvas; row click toggles checkbox (except handle/toggle areas); canvas and shell accept drops; `is-active` on discovered rows mirrors canvas membership for items **without** an anchor (anchored/custom links do not toggle discovered checkboxes). Plugin search: `#edminboost-plugin-search` filters discovered list by label.
-- Menu Studio JS (`initMenuStudio`): mirrors mapper patterns for sidebar — `#edminboost-menu-studio-form`, `#edminboost-menu-canvas`, `#edminboost-menu-discovered-list`, `#edminboost-menu-hidden-inputs`, custom link fields `#edminboost-menu-custom-*`; marker `command_center[_menu_studio_save]` = `1`.
+- Menu Studio JS (`initMenuStudio`): mirrors mapper patterns for sidebar — `#edminboost-menu-studio-form` (`data-edminboost-custom-items` JSON bootstrap), `#edminboost-menu-canvas`, `#edminboost-menu-discovered-list`, `#edminboost-menu-hidden-inputs`, custom link fields `#edminboost-menu-custom-*` (supports submenu parent); layout live preview `#edminboost-menu-layout-preview` synced from `#edminboost_menu_width`, `#edminboost_menu_font_size`, `#edminboost_menu_line_height`, `#edminboost_menu_letter_spacing`, `#edminboost_menu_display_mode` via `applyLayoutPreview()`; colors panel `#edminboost-menu-colors-panel` toggled by `#edminboost_menu_studio_use_colors`, live preview `#edminboost-menu-color-preview` via `applyColorPreview()` (also syncs layout preview; picker ↔ hex sync on `.edminboost-menu-color-row`; includes `submenu_hover_text`); marker `command_center[_menu_studio_save]` = `1`.
+- Form reset JS (`initFormResetButtons`): `.edminboost-form-reset` in `.edminboost-form-actions` shows confirm notice, then reloads current tab with `form_defaults=1` via CC nav AJAX; server uses `EDMINBOOST_Settings::get_form_defaults()` through the `edminboost_settings` filter during render only — user must Save to persist.
 - Theme JS (`initTheme`): preset dropdown / custom listbox `#edminboost-theme-preset-picker`, mode/font selects, live `#edminboost-theme-preview`; uses `edminboostData.themePresets` for swatch updates and body class preview (Appearance, setup wizard, and Dashboard overview via synced `#edminboost_theme_preset` + `syncThemeSettingsFn`). AJAX save response `theme` key syncs `edminboostData.themeSettings` on non-dashboard forms.
 - Setup wizard JS (`initSetupWizard`): `#edminboost-setup-wizard-form`, stepper `.edminboost-setup-stepper__item`, steps `.edminboost-setup-step`, `#edminboost-setup-back` / `#edminboost-setup-next` / `#edminboost-setup-submit`; syncs layout preset radios to hidden `_apply_preset` / `default_preset`, renders top bar preview via `edminboostData.presets`; marker `command_center[_setup_wizard_save]` = `1`.
 - Layout preset picker JS (`initLayoutPresetPicker`): custom listbox `#edminboost-layout-preset-picker` on setup wizard, Layout Presets page, and Dashboard overview; grouped options via `edminboostData.presetCategories`; live `.edminboost-overview-topbar-preview` and `.edminboost-overview-sidebar-preview` from `edminboostData.presets` (`sidebar_items`, `visible_top_level_menu_slugs`); `syncPresetCatalogFn` refreshes picker after AJAX save; duplicate/apply/save actions on Presets page stay in `initPresets`.

@@ -22,7 +22,7 @@ class EDMINBOOST_Menu_Studio {
 	 * @return void
 	 */
 	public static function register_hooks() {
-		add_action( 'admin_menu', array( __CLASS__, 'register_custom_items' ), 5 );
+		add_action( 'admin_menu', array( __CLASS__, 'register_custom_items' ), 99 );
 		add_action( 'admin_menu', array( __CLASS__, 'apply_menu_changes' ), 998 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_styles' ) );
 		add_filter( 'admin_body_class', array( __CLASS__, 'filter_body_class' ) );
@@ -205,9 +205,52 @@ class EDMINBOOST_Menu_Studio {
 			$new_menu[] = $item;
 		}
 
-		$menu = $new_menu;
+		$menu = self::ensure_custom_items_in_menu( $new_menu, $menu_by_slug, $settings );
 
 		self::apply_submenu_order( $settings );
+	}
+
+	/**
+	 * Append registered custom top-level menu items missing from a rebuilt order.
+	 *
+	 * @param array[] $menu         Reordered top-level menu items.
+	 * @param array[] $menu_by_slug Menu items keyed by slug before reordering.
+	 * @param array   $settings     Menu Studio settings.
+	 * @return array[]
+	 */
+	private static function ensure_custom_items_in_menu( $menu, $menu_by_slug, $settings ) {
+		$custom_items = isset( $settings['custom_items'] ) && is_array( $settings['custom_items'] )
+			? $settings['custom_items']
+			: array();
+
+		if ( empty( $custom_items ) ) {
+			return $menu;
+		}
+
+		$present = array();
+		foreach ( $menu as $item ) {
+			if ( empty( $item[2] ) ) {
+				continue;
+			}
+
+			$present[ (string) $item[2] ] = true;
+		}
+
+		foreach ( $custom_items as $item ) {
+			if ( ! empty( $item['parent'] ) || empty( $item['id'] ) ) {
+				continue;
+			}
+
+			$slug = self::get_custom_menu_slug( $item['id'] );
+			if ( ! empty( $present[ $slug ] ) || ! isset( $menu_by_slug[ $slug ] ) ) {
+				continue;
+			}
+
+			$menu[]            = $menu_by_slug[ $slug ];
+			$present[ $slug ] = true;
+		}
+
+		return $menu;
 	}
 
 	/**
@@ -342,6 +385,7 @@ class EDMINBOOST_Menu_Studio {
 			'parent_active'     => '--eb-ms-parent-active',
 			'submenu_bg'        => '--eb-ms-submenu-bg',
 			'submenu_text'      => '--eb-ms-submenu-text',
+			'submenu_hover_text' => '--eb-ms-submenu-hover-text',
 			'notification_bg'   => '--eb-ms-notification-bg',
 			'notification_text' => '--eb-ms-notification-text',
 		);
@@ -430,7 +474,7 @@ class EDMINBOOST_Menu_Studio {
 			return '';
 		}
 
-		if ( ! preg_match( '#^[a-zA-Z0-9_\-\./?=&%#]+$#', $path ) ) {
+		if ( ! preg_match( '~^[a-zA-Z0-9_\-\./?=&%#]+$~', $path ) ) {
 			return '';
 		}
 

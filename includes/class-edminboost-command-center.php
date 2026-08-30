@@ -202,6 +202,7 @@ class EDMINBOOST_Command_Center {
 				'parent_active'     => '',
 				'submenu_bg'        => '',
 				'submenu_text'      => '',
+				'submenu_hover_text' => '',
 				'notification_bg'   => '',
 				'notification_text' => '',
 			),
@@ -1380,6 +1381,10 @@ class EDMINBOOST_Command_Center {
 			? $cc_settings['role_assignments']
 			: array();
 
+		$saved_menu = isset( $cc_settings['menu_studio'] ) && is_array( $cc_settings['menu_studio'] )
+			? $cc_settings['menu_studio']
+			: array();
+
 		foreach ( $user->roles as $role ) {
 			if ( empty( $assignments[ $role ] ) ) {
 				continue;
@@ -1389,7 +1394,71 @@ class EDMINBOOST_Command_Center {
 			break;
 		}
 
+		$menu_studio = self::merge_saved_custom_menu_items( $menu_studio, $saved_menu );
+
 		return self::apply_role_visibility_to_menu_studio( $menu_studio, $user->roles, $cc_settings );
+	}
+
+	/**
+	 * Preserve saved Menu Studio custom sidebar links when preset layouts are applied.
+	 *
+	 * @param array $menu_studio Resolved Menu Studio settings.
+	 * @param array $saved_menu  Stored Menu Studio settings from settings.
+	 * @return array
+	 */
+	public static function merge_saved_custom_menu_items( $menu_studio, $saved_menu ) {
+		if ( ! is_array( $menu_studio ) || ! is_array( $saved_menu ) ) {
+			return $menu_studio;
+		}
+
+		$saved_custom = isset( $saved_menu['custom_items'] ) && is_array( $saved_menu['custom_items'] )
+			? $saved_menu['custom_items']
+			: array();
+
+		if ( empty( $saved_custom ) ) {
+			return $menu_studio;
+		}
+
+		$defaults = self::get_menu_studio_defaults();
+		$menu_studio = wp_parse_args( $menu_studio, $defaults );
+		$menu_studio['custom_items'] = $saved_custom;
+
+		$order = isset( $menu_studio['order'] ) && is_array( $menu_studio['order'] )
+			? $menu_studio['order']
+			: array();
+		$submenu_order = isset( $menu_studio['submenu_order'] ) && is_array( $menu_studio['submenu_order'] )
+			? $menu_studio['submenu_order']
+			: array();
+
+		foreach ( $saved_custom as $item ) {
+			if ( empty( $item['id'] ) ) {
+				continue;
+			}
+
+			$slug   = EDMINBOOST_Menu_Studio::get_custom_menu_slug( $item['id'] );
+			$parent = isset( $item['parent'] ) ? (string) $item['parent'] : '';
+
+			if ( '' !== $parent ) {
+				if ( ! isset( $submenu_order[ $parent ] ) || ! is_array( $submenu_order[ $parent ] ) ) {
+					$submenu_order[ $parent ] = array();
+				}
+
+				if ( ! in_array( $slug, $submenu_order[ $parent ], true ) ) {
+					$submenu_order[ $parent ][] = $slug;
+				}
+
+				continue;
+			}
+
+			if ( ! in_array( $slug, $order, true ) ) {
+				$order[] = $slug;
+			}
+		}
+
+		$menu_studio['order']         = $order;
+		$menu_studio['submenu_order'] = $submenu_order;
+
+		return $menu_studio;
 	}
 
 	/**
@@ -2210,11 +2279,11 @@ class EDMINBOOST_Command_Center {
 			}
 		}
 
-		$merged['enabled']        = true;
-		$merged['order']          = $resolved_visible;
-		$merged['hidden_items']   = $hidden;
-		$merged['submenu_order']  = array();
-		$merged['custom_items']   = array();
+		$merged['enabled']       = true;
+		$merged['order']         = $resolved_visible;
+		$merged['hidden_items']  = $hidden;
+		$merged['submenu_order'] = array();
+		$merged['custom_items']  = array();
 
 		return $merged;
 	}
@@ -2803,11 +2872,27 @@ class EDMINBOOST_Command_Center {
 				continue;
 			}
 
-			if ( ! empty( $custom['parent'] ) ) {
+			$slug   = EDMINBOOST_Menu_Studio::get_custom_menu_slug( $custom['id'] );
+			$parent = isset( $custom['parent'] ) ? (string) $custom['parent'] : '';
+
+			if ( '' !== $parent ) {
+				if ( ! isset( $by_slug[ $parent ] ) ) {
+					continue;
+				}
+
+				if ( ! isset( $by_slug[ $parent ]['children'] ) || ! is_array( $by_slug[ $parent ]['children'] ) ) {
+					$by_slug[ $parent ]['children'] = array();
+				}
+
+				$by_slug[ $parent ]['children'][] = array(
+					'slug'   => $slug,
+					'label'  => $custom['label'],
+					'custom' => true,
+				);
+
 				continue;
 			}
 
-			$slug = 'edminboost_ms_' . sanitize_key( $custom['id'] );
 			$by_slug[ $slug ] = array(
 				'slug'     => $slug,
 				'label'    => $custom['label'],
