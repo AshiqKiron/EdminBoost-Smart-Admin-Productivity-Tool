@@ -45,6 +45,21 @@ test.describe( 'Appearance settings', () => {
 		await expect( page.locator( '#edminboost_hide_comments' ) ).toBeVisible();
 	} );
 
+	test( 'declutter preview hides admin bar items when toggles are checked', async ( { page } ) => {
+		await page.goto( pages.appearance );
+		await expect( page.locator( '#edminboost-declutter-preview' ) ).toBeVisible();
+
+		const logoItem = page.locator( '#edminboost-declutter-preview [data-preview="hide_wp_logo"]' );
+		await expect( logoItem ).toBeVisible();
+		await expect( logoItem ).not.toHaveClass( /is-hidden/ );
+
+		await page.locator( '#edminboost_hide_wp_logo' ).check();
+		await expect( logoItem ).toHaveClass( /is-hidden/ );
+
+		await page.locator( '#edminboost_hide_wp_logo' ).uncheck();
+		await expect( logoItem ).not.toHaveClass( /is-hidden/ );
+	} );
+
 	test( 'legacy behavior URL redirects to Appearance', async ( { page } ) => {
 		await page.goto( pages.behavior );
 		await expect( page ).toHaveURL( new RegExp( `page=${ pages.appearance.split( 'page=' )[1] }$` ) );

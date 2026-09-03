@@ -53,13 +53,21 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
-* Move Panel & badges controls from Appearance to the Top Bar page, below the live canvas.
+* Expand Pro plan feature list on the Billing page with numbered catalog highlights (layout presets, theme skins, badge counters, and more).
+* Save the current top bar and sidebar layout as a named custom preset from the Layout Presets page; rename saved presets inline from the preset actions row.
+* Fix visual theme accent colors not applying to core wp-admin UI on the Plugins screen and other admin pages (active plugin rows, buttons, links, and form focus states now follow the selected theme).
+* Fix Menu Studio sidebar colors staying active after Reset to defaults and Save when "Apply custom sidebar colors" is turned off.
+* Remove the "Apply custom sidebar colors" toggle from Menu Studio; sidebar color fields are always available when Menu Studio is enabled.
+* Add a live preview panel to Appearance extras for font size, admin background, favicon, post status colors, and scheduled dark mode.
+* Restyle Appearance extras controls with grouped fields, range slider, color pickers, and a side-by-side preview layout.
+* Move Panel & badges controls from Appearance to the Top Bar page, below the live canvas; keep that section disabled until at least one top bar link uses AJAX slide-out drawer interaction.
 * Add Reset buttons beside Save on Command Center tabs (except Billing and Settings) to discard unsaved changes and reload the page.
 * Fix Menu Studio custom sidebar links not appearing in the wp-admin sidebar (broken path validation regex).
 * Preserve saved Menu Studio custom sidebar links when a layout preset is assigned to a user role.
 * Add a Docs link on the Plugins screen after Visit plugin site.
 * Add live previews on the Performance tab for emoji scripts and asset optimization checkboxes, with theme-aware colors and descriptive preview labels.
-* Add live previews on the Productivity tab for hide admin notices and hide Screen Options/Help toggles.
+* Add live previews on the Productivity tab for hide admin notices and hide Screen Options/Help toggles, using native WordPress notice and screen tab markup.
+* Add a live dashboard widgets preview on the Productivity tab that reflects the master toggle and per-widget removal checkboxes.
 * Disable White Label system status footer and plugin rebranding fields until the master branding toggle is enabled.
 * Remove the White Label lock setting that hid the page until plugin reactivation.
 * Add a live preview to White Label plugin rebranding so name, description, author, URL, and menu label updates appear as you type.

@@ -548,6 +548,7 @@ class EDMINBOOST_Admin {
 				'presetApplied'             => __( 'Preset applied.', EDMINBOOST_TEXT_DOMAIN ),
 				'presetNameRequired'        => __( 'Enter a name for your preset.', EDMINBOOST_TEXT_DOMAIN ),
 				'presetSaved'               => __( 'Preset saved.', EDMINBOOST_TEXT_DOMAIN ),
+				'presetRenamed'             => __( 'Preset renamed.', EDMINBOOST_TEXT_DOMAIN ),
 				'presetDuplicated'          => __( 'Preset duplicated.', EDMINBOOST_TEXT_DOMAIN ),
 				'emptyMenuCanvas'           => __( 'Drag menu items here to reorder your admin sidebar.', EDMINBOOST_TEXT_DOMAIN ),
 				'removeFromSidebar'         => __( 'Remove from sidebar', EDMINBOOST_TEXT_DOMAIN ),
@@ -1011,6 +1012,14 @@ class EDMINBOOST_Admin {
 		) {
 			$selected_preset = ! empty( $new_custom_ids ) ? (string) reset( $new_custom_ids ) : '';
 			$message         = __( 'Preset saved.', EDMINBOOST_TEXT_DOMAIN );
+		} elseif (
+			! empty( $cc_raw['_rename_custom_preset'] )
+			&& is_array( $cc_raw['_rename_custom_preset'] )
+			&& ! empty( $cc_raw['_rename_custom_preset']['id'] )
+			&& ! empty( $cc_raw['_rename_custom_preset']['name'] )
+		) {
+			$selected_preset = sanitize_key( $cc_raw['_rename_custom_preset']['id'] );
+			$message         = __( 'Preset renamed.', EDMINBOOST_TEXT_DOMAIN );
 		}
 
 		return array(

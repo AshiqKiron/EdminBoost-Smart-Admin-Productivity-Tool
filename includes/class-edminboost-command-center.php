@@ -180,7 +180,7 @@ class EDMINBOOST_Command_Center {
 			'submenu_order'  => array(),
 			'hidden_items'   => array(),
 			'custom_items'   => array(),
-			'use_colors'     => false,
+			'use_colors'     => true,
 			'menu_width'     => 160,
 			'font_size'      => 14,
 			'line_height'    => 20,
@@ -387,11 +387,48 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
+	 * Catalog counts for Billing page feature bullets.
+	 *
+	 * @return array{scenario_presets: int, theme_skins: int, badge_sources: int}
+	 */
+	private static function get_billing_catalog_counts() {
+		$scenario_presets = 0;
+
+		foreach ( self::get_system_presets() as $preset ) {
+			if ( isset( $preset['category'] ) && 'scenario' === $preset['category'] ) {
+				++$scenario_presets;
+			}
+		}
+
+		$theme_presets = EDMINBOOST_Theme::get_presets();
+		$theme_skins   = count( $theme_presets );
+
+		if ( isset( $theme_presets['custom'] ) ) {
+			--$theme_skins;
+		}
+
+		$badge_source_options = self::get_badge_sources();
+		$badge_sources        = count( $badge_source_options );
+
+		if ( isset( $badge_source_options[''] ) ) {
+			--$badge_sources;
+		}
+
+		return array(
+			'scenario_presets' => $scenario_presets,
+			'theme_skins'      => max( 0, $theme_skins ),
+			'badge_sources'    => max( 0, $badge_sources ),
+		);
+	}
+
+	/**
 	 * Available subscription plans for the Billing page.
 	 *
 	 * @return array<string, array{id: string, name: string, price: int, price_label: string, sites: int, sites_label: string, description: string, features: string[], featured: bool}> Sites is 0 for unlimited.
 	 */
 	public static function get_billing_plans() {
+		$counts = self::get_billing_catalog_counts();
+
 		return array(
 			'free' => array(
 				'id'           => 'free',
@@ -420,10 +457,26 @@ class EDMINBOOST_Command_Center {
 				'description'  => __( 'Premium admin customization for one production site.', EDMINBOOST_TEXT_DOMAIN ),
 				'features'     => array(
 					__( 'Everything in Free', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'By use case layout presets and saved layouts', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Full visual theme library (20+ skins)', EDMINBOOST_TEXT_DOMAIN ),
+					sprintf(
+						/* translators: %d: number of by use case layout presets */
+						__( '%d by use case layout presets', EDMINBOOST_TEXT_DOMAIN ),
+						$counts['scenario_presets']
+					),
+					__( 'Unlimited saved custom layouts', EDMINBOOST_TEXT_DOMAIN ),
+					sprintf(
+						/* translators: %d: number of visual theme skins */
+						__( '%d visual theme skins plus Custom colors', EDMINBOOST_TEXT_DOMAIN ),
+						$counts['theme_skins']
+					),
 					__( 'Menu Studio sidebar builder', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'White-label branding and login screen', EDMINBOOST_TEXT_DOMAIN ),
+					sprintf(
+						/* translators: %d: number of live badge counter sources */
+						__( '%d live top bar badge counters', EDMINBOOST_TEXT_DOMAIN ),
+						$counts['badge_sources']
+					),
+					__( 'Slide-out drawer panels for admin screens', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Role-based menu visibility matrix', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'White-label branding', EDMINBOOST_TEXT_DOMAIN ),
 					__( 'Priority email support', EDMINBOOST_TEXT_DOMAIN ),
 				),
 				'featured'     => true,
@@ -439,7 +492,6 @@ class EDMINBOOST_Command_Center {
 				'features'     => array(
 					__( 'Everything in Pro', EDMINBOOST_TEXT_DOMAIN ),
 					__( '10 site license pack', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Settings export and import per site', EDMINBOOST_TEXT_DOMAIN ),
 				),
 				'featured'     => false,
 			),

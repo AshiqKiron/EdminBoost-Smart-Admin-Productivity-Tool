@@ -37,4 +37,33 @@ test.describe( 'Productivity features', () => {
 			page.locator( 'input[name="edminboost_settings[features][hide_admin_notices]"]' )
 		).toBeVisible();
 	} );
+
+	test( 'productivity toggles default to unchecked after form reset', async ( { page } ) => {
+		await page.goto( pages.productivity );
+		await expect( page.locator( '.edminboost-wrap[data-edminboost-ready="true"]' ) ).toBeVisible();
+
+		const noticesCheckbox = page.locator(
+			'input[name="edminboost_settings[features][hide_admin_notices]"]'
+		);
+		const screenTabsCheckbox = page.locator(
+			'input[name="edminboost_settings[features][hide_screen_help]"]'
+		);
+
+		if ( ! await noticesCheckbox.isChecked() ) {
+			await noticesCheckbox.check();
+		}
+		if ( ! await screenTabsCheckbox.isChecked() ) {
+			await screenTabsCheckbox.check();
+		}
+
+		await page.click( '#submit' );
+		await waitForSettingsSaved( page );
+
+		await page.locator( '.edminboost-form-reset' ).click();
+		await page.locator( '.edminboost-form-reset-confirm' ).click();
+		await expect( page.locator( '.edminboost-wrap[data-edminboost-ready="true"]' ) ).toBeVisible();
+
+		await expect( noticesCheckbox ).not.toBeChecked();
+		await expect( screenTabsCheckbox ).not.toBeChecked();
+	} );
 } );

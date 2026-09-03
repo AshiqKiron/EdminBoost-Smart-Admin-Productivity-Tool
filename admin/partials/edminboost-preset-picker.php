@@ -248,6 +248,27 @@ $preview_aria    = sprintf(
 			<button type="button" class="button button-small edminboost-preset-export" id="edminboost-preset-export-btn">
 				<?php esc_html_e( 'Export JSON', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</button>
+			<div class="edminboost-rename-preset" id="edminboost-rename-preset" hidden>
+				<label class="edminboost-save-preset__label" for="edminboost_rename_preset_name_input">
+					<?php esc_html_e( 'Preset name', EDMINBOOST_TEXT_DOMAIN ); ?>
+				</label>
+				<input
+					type="text"
+					class="regular-text edminboost-save-preset__input"
+					id="edminboost_rename_preset_name_input"
+					placeholder="<?php echo esc_attr__( 'Enter a name for your preset', EDMINBOOST_TEXT_DOMAIN ); ?>"
+					autocomplete="off"
+				/>
+				<button type="button" class="button button-primary" id="edminboost-rename-preset-confirm-btn">
+					<?php esc_html_e( 'Rename preset', EDMINBOOST_TEXT_DOMAIN ); ?>
+				</button>
+				<button type="button" class="button" id="edminboost-rename-preset-cancel-btn">
+					<?php esc_html_e( 'Cancel', EDMINBOOST_TEXT_DOMAIN ); ?>
+				</button>
+			</div>
+			<button type="button" class="button button-small edminboost-preset-rename" id="edminboost-preset-rename-btn" hidden>
+				<?php esc_html_e( 'Rename preset', EDMINBOOST_TEXT_DOMAIN ); ?>
+			</button>
 		</div>
 	<?php endif; ?>
 </div>

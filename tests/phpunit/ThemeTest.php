@@ -193,4 +193,29 @@ class ThemeTest extends Edminboost_Test_Case {
 
 		$this->assertFalse( EDMINBOOST_Theme::is_active() );
 	}
+
+	/**
+	 * Hex colors convert to RGB triplets for WordPress admin CSS variables.
+	 */
+	public function test_hex_to_rgb_triplet() {
+		$this->assertSame( '0, 143, 46', EDMINBOOST_Theme::hex_to_rgb_triplet( '#008f2e' ) );
+		$this->assertSame( '34, 113, 177', EDMINBOOST_Theme::hex_to_rgb_triplet( '#2271b1' ) );
+		$this->assertSame( '', EDMINBOOST_Theme::hex_to_rgb_triplet( 'invalid' ) );
+	}
+
+	/**
+	 * WordPress admin theme bridge maps preset accents to core UI variables.
+	 */
+	public function test_get_wp_admin_theme_bridge_rules_terminal_light() {
+		$rules = EDMINBOOST_Theme::get_wp_admin_theme_bridge_rules(
+			array(
+				'preset' => 'terminal',
+				'mode'   => 'light',
+			)
+		);
+
+		$this->assertStringContainsString( '--wp-admin-theme-color:#008f2e;', $rules );
+		$this->assertStringContainsString( '--wp-admin-theme-color--rgb:0, 143, 46;', $rules );
+		$this->assertStringContainsString( '--wp-admin-theme-color-darker-10:#006b23;', $rules );
+	}
 }

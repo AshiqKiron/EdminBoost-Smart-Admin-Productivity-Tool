@@ -74,15 +74,23 @@ array(
 		'role_visibility'      => array(),
 		'look_skin'              => '',
 		'theme'                  => array(
-			'preset'            => 'default',
-			'mode'              => 'light',   // light | dark | auto
-			'font'              => 'inherit',
-			'use_custom_colors' => false,     // derived: true when preset is custom
-			'custom_accent'     => '',
-			'custom_surface'    => '',
-			'custom_text'       => '',
-			'custom_top'        => '',
-			'custom_sidebar'    => '',
+			'preset'             => 'default',
+			'mode'               => 'light',   // light | dark | auto
+			'font'               => 'inherit',
+			'font_size'          => 14,          // px; clamped 12–20
+			'admin_favicon_id'   => 0,
+			'admin_bg_color'     => '',
+			'admin_bg_image_id'  => 0,
+			'schedule_dark_mode' => false,
+			'dark_mode_start'    => '18:00',
+			'dark_mode_end'      => '06:00',
+			'use_custom_colors'  => false,     // derived: true when preset is custom
+			'custom_accent'      => '',
+			'custom_surface'     => '',
+			'custom_text'        => '',
+			'custom_top'         => '',
+			'custom_sidebar'     => '',
+			'status_*'           => '',        // post status row hex colors (publish, draft, …)
 		),
 		'menu_studio'            => array(
 			'enabled'        => false,
@@ -124,13 +132,16 @@ array(
 
 - `_apply_preset` (wizard or apply): replaces `top_bar_items` + `menu_studio` from preset on save; does not merge prior sidebar config (`sanitize_menu_studio( …, null )`). Runtime `resolve_menu_studio_for_user()` re-merges stored `custom_items` via `merge_saved_custom_menu_items()` when a role preset is assigned.
 - `_layout_studio_save` / `_menu_studio_save` markers gate top bar / sidebar writes so other CC pages do not clobber saved layouts.
+- Menu Studio save with `use_colors` disabled resets `menu_studio.colors` to defaults (avoids stale custom sidebar colors).
+- `_save_custom_preset[name]` appends a new `custom_*` preset from current layout; `_rename_custom_preset[id|name]` renames a saved custom preset label.
 - Partial `theme.preset` to a built-in skin clears stale `use_custom_colors` (Dashboard overview AJAX saves omit the legacy flag).
 - `apply_preset()` programmatic helper delegates to the same `_apply_preset` sanitize path.
 
 ## Partials
 
 - Dashboard: `edminboost-admin-page.php` — expects `$cc_settings`, `$current_page`; includes setup wizard or dashboard overview.
-- Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php` and `edminboost-declutter-settings.php`.
+- Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php` (with `edminboost-theme-extras-preview.php`) and `edminboost-declutter-settings.php` (with `edminboost-declutter-preview.php`; panel/badge behavior fields moved to Top Bar).
+- Top Bar: `edminboost-mapper-page.php` — expects `$cc_settings`, `$current_page`; includes `#edminboost-mapper-look` with `edminboost-home-advanced-look.php` for drawer width, badge style, and animation speed (`command_center.behavior`).
 - Settings: `edminboost-settings-page.php` — expects `$cc_settings`, `$current_page`; JSON export/import only (paste or file). CC save forms include hidden `edminboost_settings[enabled]=1` so partial saves do not disable the plugin.
 - Feature pages: `edminboost-{productivity,security,performance}-page.php` — include `edminboost-feature-fields.php` with `$section`. Productivity admin-notices fieldset includes `edminboost-productivity-preview.php` (`$preview`: `admin_notices`; `$features`). Performance emoji/assets fieldsets include `edminboost-performance-preview.php` (`$preview`: `emoji`|`assets`; `$features`). Both preview partials use theme colors via `EDMINBOOST_Theme::resolve_preview_colors()`.
 - White Label: `edminboost-white-label-page.php` — expects `$cc_settings`, `$current_page`; fields under `white_label`; includes `edminboost-white-label-plugin-preview.php` (`$wl`, `$defaults` from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).

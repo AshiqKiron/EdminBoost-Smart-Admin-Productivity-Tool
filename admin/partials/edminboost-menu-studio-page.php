@@ -89,6 +89,7 @@ $color_fields = array(
 
 		<p class="edminboost-menu-studio-enable">
 			<label for="edminboost_menu_studio_enabled">
+				<input type="hidden" name="<?php echo esc_attr( $ms_key ); ?>[enabled]" value="0" />
 				<input
 					type="checkbox"
 					id="edminboost_menu_studio_enabled"
@@ -291,7 +292,20 @@ $color_fields = array(
 							<div class="edminboost-menu-layout-fields">
 								<div class="edminboost-menu-layout-row">
 									<label for="edminboost_menu_width"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_width' ); ?><?php esc_html_e( 'Menu width (px)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
-									<input type="number" class="small-text edminboost-menu-layout-input" id="edminboost_menu_width" name="<?php echo esc_attr( $ms_key ); ?>[menu_width]" value="<?php echo esc_attr( $menu_studio['menu_width'] ?? 160 ); ?>" min="120" max="300" />
+									<div class="edminboost-menu-layout-control">
+										<input
+											type="range"
+											class="edminboost-menu-layout-range"
+											id="edminboost_menu_width_range"
+											min="120"
+											max="300"
+											step="1"
+											value="<?php echo esc_attr( $menu_studio['menu_width'] ?? 160 ); ?>"
+											aria-describedby="edminboost_menu_width"
+										/>
+										<input type="number" class="small-text edminboost-menu-layout-input" id="edminboost_menu_width" name="<?php echo esc_attr( $ms_key ); ?>[menu_width]" value="<?php echo esc_attr( $menu_studio['menu_width'] ?? 160 ); ?>" min="120" max="300" />
+										<span class="edminboost-menu-layout-unit">px</span>
+									</div>
 								</div>
 
 								<fieldset class="edminboost-menu-layout-typography">
@@ -299,15 +313,54 @@ $color_fields = array(
 									<div class="edminboost-menu-layout-typography__grid">
 										<div class="edminboost-menu-layout-field">
 											<label for="edminboost_menu_font_size"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_font_size' ); ?><?php esc_html_e( 'Font size (px)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
-											<input type="number" class="small-text edminboost-menu-layout-input" id="edminboost_menu_font_size" name="<?php echo esc_attr( $ms_key ); ?>[font_size]" value="<?php echo esc_attr( $menu_studio['font_size'] ?? 14 ); ?>" min="10" max="24" />
+											<div class="edminboost-menu-layout-control">
+												<input
+													type="range"
+													class="edminboost-menu-layout-range"
+													id="edminboost_menu_font_size_range"
+													min="10"
+													max="24"
+													step="1"
+													value="<?php echo esc_attr( $menu_studio['font_size'] ?? 14 ); ?>"
+													aria-describedby="edminboost_menu_font_size"
+												/>
+												<input type="number" class="small-text edminboost-menu-layout-input" id="edminboost_menu_font_size" name="<?php echo esc_attr( $ms_key ); ?>[font_size]" value="<?php echo esc_attr( $menu_studio['font_size'] ?? 14 ); ?>" min="10" max="24" />
+												<span class="edminboost-menu-layout-unit">px</span>
+											</div>
 										</div>
 										<div class="edminboost-menu-layout-field">
 											<label for="edminboost_menu_line_height"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_line_height' ); ?><?php esc_html_e( 'Line height (px)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
-											<input type="number" class="small-text edminboost-menu-layout-input" id="edminboost_menu_line_height" name="<?php echo esc_attr( $ms_key ); ?>[line_height]" value="<?php echo esc_attr( $menu_studio['line_height'] ?? 20 ); ?>" min="12" max="36" />
+											<div class="edminboost-menu-layout-control">
+												<input
+													type="range"
+													class="edminboost-menu-layout-range"
+													id="edminboost_menu_line_height_range"
+													min="12"
+													max="36"
+													step="1"
+													value="<?php echo esc_attr( $menu_studio['line_height'] ?? 20 ); ?>"
+													aria-describedby="edminboost_menu_line_height"
+												/>
+												<input type="number" class="small-text edminboost-menu-layout-input" id="edminboost_menu_line_height" name="<?php echo esc_attr( $ms_key ); ?>[line_height]" value="<?php echo esc_attr( $menu_studio['line_height'] ?? 20 ); ?>" min="12" max="36" />
+												<span class="edminboost-menu-layout-unit">px</span>
+											</div>
 										</div>
 										<div class="edminboost-menu-layout-field">
 											<label for="edminboost_menu_letter_spacing"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_letter_spacing' ); ?><?php esc_html_e( 'Letter spacing (px)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
-											<input type="number" class="small-text edminboost-menu-layout-input" id="edminboost_menu_letter_spacing" name="<?php echo esc_attr( $ms_key ); ?>[letter_spacing]" value="<?php echo esc_attr( $menu_studio['letter_spacing'] ?? 0 ); ?>" min="-2" max="6" />
+											<div class="edminboost-menu-layout-control">
+												<input
+													type="range"
+													class="edminboost-menu-layout-range"
+													id="edminboost_menu_letter_spacing_range"
+													min="-2"
+													max="6"
+													step="1"
+													value="<?php echo esc_attr( $menu_studio['letter_spacing'] ?? 0 ); ?>"
+													aria-describedby="edminboost_menu_letter_spacing"
+												/>
+												<input type="number" class="small-text edminboost-menu-layout-input" id="edminboost_menu_letter_spacing" name="<?php echo esc_attr( $ms_key ); ?>[letter_spacing]" value="<?php echo esc_attr( $menu_studio['letter_spacing'] ?? 0 ); ?>" min="-2" max="6" />
+												<span class="edminboost-menu-layout-unit">px</span>
+											</div>
 										</div>
 									</div>
 								</fieldset>
@@ -347,20 +400,9 @@ $color_fields = array(
 				<section class="edminboost-card edminboost-menu-studio-panel edminboost-menu-studio-colors" aria-labelledby="edminboost-menu-colors-heading">
 					<h2 id="edminboost-menu-colors-heading"><?php esc_html_e( 'Sidebar Colors', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 					<p class="description"><?php esc_html_e( 'Customize parent menu, submenu, and notification badge colors across wp-admin.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+					<input type="hidden" name="<?php echo esc_attr( $ms_key ); ?>[use_colors]" value="1" />
 
-					<label class="edminboost-checkbox-row" for="edminboost_menu_studio_use_colors">
-						<input
-							type="checkbox"
-							id="edminboost_menu_studio_use_colors"
-							name="<?php echo esc_attr( $ms_key ); ?>[use_colors]"
-							value="1"
-							<?php checked( ! empty( $menu_studio['use_colors'] ) ); ?>
-						/>
-						<?php EDMINBOOST_Setting_Help::echo_icon( 'menu_use_colors' ); ?>
-						<?php esc_html_e( 'Apply custom sidebar colors', EDMINBOOST_TEXT_DOMAIN ); ?>
-					</label>
-
-					<div class="edminboost-menu-colors-panel__grid" id="edminboost-menu-colors-panel" <?php echo empty( $menu_studio['use_colors'] ) ? 'hidden' : ''; ?>>
+					<div class="edminboost-menu-colors-panel__grid" id="edminboost-menu-colors-panel">
 						<div class="edminboost-menu-colors-panel__fields">
 							<div class="edminboost-menu-color-grid" id="edminboost-menu-color-grid">
 								<?php foreach ( $color_fields as $color_key => $color_meta ) : ?>

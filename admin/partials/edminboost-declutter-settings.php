@@ -48,4 +48,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 			<?php esc_html_e( 'Hide Customize link', EDMINBOOST_TEXT_DOMAIN ); ?>
 		</label>
 	</div>
+
+	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-declutter-preview.php'; ?>
 </section>

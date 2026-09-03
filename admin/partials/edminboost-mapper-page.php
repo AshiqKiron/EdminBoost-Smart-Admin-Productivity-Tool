@@ -284,10 +284,10 @@ foreach ( $top_bar_items as $item ) {
 					</aside>
 				</section>
 
-				<section class="edminboost-card edminboost-cc-section edminboost-home-look" id="edminboost-mapper-look" aria-labelledby="edminboost-mapper-look-heading">
+				<section class="edminboost-card edminboost-cc-section edminboost-home-look is-disabled" id="edminboost-mapper-look" aria-labelledby="edminboost-mapper-look-heading" aria-disabled="true">
 					<h2 id="edminboost-mapper-look-heading"><?php esc_html_e( 'Panel & badges', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 					<p class="description">
-						<?php esc_html_e( 'Adjust slide-out panel style and notification badges. These settings do not change which links appear in your top bar.', EDMINBOOST_TEXT_DOMAIN ); ?>
+						<?php esc_html_e( 'Adjust slide-out panel style and notification badges. Set a top bar link to AJAX slide-out drawer to configure these settings.', EDMINBOOST_TEXT_DOMAIN ); ?>
 					</p>
 					<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-home-advanced-look.php'; ?>
 				</section>

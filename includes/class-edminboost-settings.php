@@ -457,6 +457,13 @@ class EDMINBOOST_Settings {
 			);
 		}
 
+		if ( ! empty( $raw['_rename_custom_preset'] ) && is_array( $raw['_rename_custom_preset'] ) ) {
+			$output['presets'] = self::rename_custom_preset(
+				$raw['_rename_custom_preset'],
+				isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array()
+			);
+		}
+
 		if ( ! empty( $raw['_duplicate_preset'] ) ) {
 			$source_id = sanitize_key( $raw['_duplicate_preset'] );
 			$duplicate = self::duplicate_custom_preset( $source_id, $output );
@@ -503,6 +510,9 @@ class EDMINBOOST_Settings {
 
 		if ( isset( $raw['use_colors'] ) ) {
 			$output['use_colors'] = ! empty( $raw['use_colors'] );
+			if ( ! $output['use_colors'] ) {
+				$output['colors'] = $defaults['colors'];
+			}
 		}
 
 		if ( isset( $raw['menu_width'] ) ) {
@@ -715,6 +725,26 @@ class EDMINBOOST_Settings {
 				'menu_studio'   => self::sanitize_menu_studio( $menu_studio ),
 			),
 		);
+	}
+
+	/**
+	 * Rename a saved custom preset.
+	 *
+	 * @param array $raw     Raw rename payload.
+	 * @param array $presets Existing custom presets.
+	 * @return array
+	 */
+	private static function rename_custom_preset( $raw, $presets ) {
+		$preset_id = isset( $raw['id'] ) ? sanitize_key( $raw['id'] ) : '';
+		$name      = isset( $raw['name'] ) ? sanitize_text_field( wp_unslash( $raw['name'] ) ) : '';
+
+		if ( '' === $preset_id || '' === $name || ! isset( $presets[ $preset_id ] ) ) {
+			return self::sanitize_custom_presets( $presets );
+		}
+
+		$presets[ $preset_id ]['name'] = $name;
+
+		return self::sanitize_custom_presets( $presets );
 	}
 
 	/**

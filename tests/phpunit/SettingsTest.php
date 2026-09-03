@@ -45,6 +45,21 @@ class SettingsTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Productivity notice and screen tab toggles default to off.
+	 */
+	public function test_productivity_feature_defaults_are_off() {
+		$defaults = EDMINBOOST_Feature_Settings::get_defaults();
+
+		$this->assertFalse( $defaults['hide_admin_notices'] );
+		$this->assertFalse( $defaults['hide_screen_help'] );
+
+		$form_defaults = EDMINBOOST_Settings::get_form_defaults();
+
+		$this->assertFalse( $form_defaults['features']['hide_admin_notices'] );
+		$this->assertFalse( $form_defaults['features']['hide_screen_help'] );
+	}
+
+	/**
 	 * Dashboard widgets enabled when master toggle is on.
 	 */
 	public function test_is_feature_enabled_dashboard_widgets() {
@@ -155,6 +170,46 @@ class SettingsTest extends Edminboost_Test_Case {
 		$this->assertSame(
 			array( 'edit.php' ),
 			$result['command_center']['menu_studio']['hidden_items']
+		);
+	}
+
+	/**
+	 * Menu Studio save with use_colors disabled clears custom sidebar colors.
+	 */
+	public function test_sanitize_menu_studio_disabling_colors_clears_tokens() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'menu_studio' => array(
+						'enabled'    => true,
+						'use_colors' => true,
+						'colors'     => array(
+							'parent_bg'   => '#111111',
+							'parent_text' => '#eeeeee',
+						),
+					),
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'command_center' => array(
+					'_menu_studio_save' => 1,
+					'menu_studio'       => array(
+						'enabled'    => 1,
+						'use_colors' => 0,
+					),
+				),
+			)
+		);
+
+		$menu_studio = $result['command_center']['menu_studio'];
+
+		$this->assertFalse( $menu_studio['use_colors'] );
+		$this->assertSame(
+			EDMINBOOST_Command_Center::get_menu_studio_defaults()['colors'],
+			$menu_studio['colors']
 		);
 	}
 
@@ -492,6 +547,106 @@ class SettingsTest extends Edminboost_Test_Case {
 		$this->assertSame( 'midnight', $result['command_center']['theme']['preset'] );
 		$this->assertNotEmpty( $result['command_center']['top_bar_items'] );
 		$this->assertSame( 'system_client', $result['command_center']['default_preset'] );
+	}
+
+	/**
+	 * Saving a custom layout preset stores the user-provided name and sidebar config.
+	 */
+	public function test_sanitize_save_custom_preset_with_name() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'top_bar_items' => array(
+						array(
+							'slug'         => 'index.php',
+							'label'        => 'Dashboard',
+							'icon'         => 'dashicons-dashboard',
+							'interaction'  => 'redirect',
+							'badge_source' => '',
+							'anchor'       => '',
+						),
+					),
+					'menu_studio'   => array(
+						'enabled'      => true,
+						'order'        => array( 'index.php' ),
+						'hidden_items' => array( 'edit.php' ),
+					),
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'command_center' => array(
+					'_save_custom_preset' => array(
+						'name' => 'Agency Client Layout',
+					),
+				),
+			)
+		);
+
+		$presets = $result['command_center']['presets'];
+
+		$this->assertCount( 1, $presets );
+		$preset = reset( $presets );
+		$this->assertSame( 'Agency Client Layout', $preset['name'] );
+		$this->assertSame( 'index.php', $preset['top_bar_items'][0]['slug'] );
+		$this->assertTrue( $preset['menu_studio']['enabled'] );
+		$this->assertContains( 'edit.php', $preset['menu_studio']['hidden_items'] );
+	}
+
+	/**
+	 * Renaming a saved custom preset updates the stored label.
+	 */
+	public function test_sanitize_rename_custom_preset() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'top_bar_items' => array(
+						array(
+							'slug'         => 'index.php',
+							'label'        => 'Dashboard',
+							'icon'         => 'dashicons-dashboard',
+							'interaction'  => 'redirect',
+							'badge_source' => '',
+							'anchor'       => '',
+						),
+					),
+					'presets'       => array(
+						'custom_test1234' => array(
+							'name'          => 'Old Name',
+							'system'        => false,
+							'top_bar_items' => array(
+								array(
+									'slug'         => 'index.php',
+									'label'        => 'Dashboard',
+									'icon'         => 'dashicons-dashboard',
+									'interaction'  => 'redirect',
+									'badge_source' => '',
+									'anchor'       => '',
+								),
+							),
+						),
+					),
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'command_center' => array(
+					'_rename_custom_preset' => array(
+						'id'   => 'custom_test1234',
+						'name' => 'Updated Layout Name',
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			'Updated Layout Name',
+			$result['command_center']['presets']['custom_test1234']['name']
+		);
 	}
 
 	/**

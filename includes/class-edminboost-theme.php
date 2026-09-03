@@ -679,6 +679,7 @@ class EDMINBOOST_Theme {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ), 5 );
 		add_action( 'admin_head', array( __CLASS__, 'print_custom_color_overrides' ), 20 );
 		add_action( 'wp_head', array( __CLASS__, 'print_custom_color_overrides' ), 20 );
+		add_action( 'admin_head', array( __CLASS__, 'print_wp_admin_theme_bridge' ), 21 );
 		add_action( 'admin_head', array( __CLASS__, 'print_theme_extras' ), 25 );
 	}
 
@@ -757,6 +758,191 @@ class EDMINBOOST_Theme {
 			EDMINBOOST_PLUGIN_URL . 'admin/css/edminboost-themes.css',
 			array(),
 			EDMINBOOST_VERSION
+		);
+	}
+
+	/**
+	 * Convert a hex color to an RGB triplet for WordPress admin CSS variables.
+	 *
+	 * @param string $hex Hex color.
+	 * @return string Comma-separated R, G, B values or empty string.
+	 */
+	public static function hex_to_rgb_triplet( $hex ) {
+		$hex = self::sanitize_hex_color( $hex );
+
+		if ( ! $hex ) {
+			return '';
+		}
+
+		$hex = ltrim( $hex, '#' );
+
+		if ( 3 === strlen( $hex ) ) {
+			$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+		}
+
+		if ( 6 !== strlen( $hex ) ) {
+			return '';
+		}
+
+		return sprintf(
+			'%d, %d, %d',
+			hexdec( substr( $hex, 0, 2 ) ),
+			hexdec( substr( $hex, 2, 2 ) ),
+			hexdec( substr( $hex, 4, 2 ) )
+		);
+	}
+
+	/**
+	 * Build WordPress admin theme CSS variable declarations for a resolved accent pair.
+	 *
+	 * @param string $accent Accent hex color.
+	 * @param string $hover  Hover/darker accent hex color.
+	 * @return string CSS custom property declarations.
+	 */
+	public static function build_wp_admin_theme_var_rules( $accent, $hover ) {
+		$accent = self::sanitize_hex_color( $accent );
+		$hover  = self::sanitize_hex_color( $hover );
+
+		if ( ! $accent ) {
+			return '';
+		}
+
+		if ( ! $hover ) {
+			$hover = self::darken_hex( $accent, 12 );
+		}
+
+		$rgb = self::hex_to_rgb_triplet( $accent );
+
+		if ( ! $rgb ) {
+			return '';
+		}
+
+		return '--wp-admin-theme-color:' . $accent . ';'
+			. '--wp-admin-theme-color--rgb:' . $rgb . ';'
+			. '--wp-admin-theme-color-darker-10:' . $hover . ';'
+			. '--wp-admin-theme-color-darker-20:' . $hover . ';';
+	}
+
+	/**
+	 * Print inline CSS mapping EdminBoost accent colors to WordPress admin UI variables.
+	 *
+	 * @return void
+	 */
+	public static function print_wp_admin_theme_bridge() {
+		if ( ! self::is_active() || ! is_admin() ) {
+			return;
+		}
+
+		$rules = self::get_wp_admin_theme_bridge_rules();
+
+		if ( '' === $rules ) {
+			return;
+		}
+
+		echo '<style id="edminboost-wp-admin-theme-bridge">' . wp_strip_all_tags( $rules ) . '</style>';
+	}
+
+	/**
+	 * Resolve CSS rules bridging EdminBoost accents to WordPress admin theme variables.
+	 *
+	 * @param array|null $theme Optional merged theme settings.
+	 * @return string CSS rules.
+	 */
+	public static function get_wp_admin_theme_bridge_rules( $theme = null ) {
+		if ( null === $theme ) {
+			$theme = self::get_settings();
+		} else {
+			$theme = wp_parse_args( $theme, self::get_defaults() );
+		}
+
+		$preset_id = sanitize_key( $theme['preset'] );
+		$mode      = sanitize_key( $theme['mode'] );
+		$rules     = array();
+
+		if ( 'auto' === $mode ) {
+			$light_colors = self::resolve_preview_colors( $preset_id, 'light', $theme );
+			$dark_colors  = self::resolve_preview_colors( $preset_id, 'dark', $theme );
+			$light_rules  = self::build_wp_admin_theme_var_rules(
+				$light_colors['accent'],
+				self::resolve_accent_hover_hex( $preset_id, 'light', $light_colors['accent'], $theme )
+			);
+			$dark_rules   = self::build_wp_admin_theme_var_rules(
+				$dark_colors['accent'],
+				self::resolve_accent_hover_hex( $preset_id, 'dark', $dark_colors['accent'], $theme )
+			);
+
+			if ( $light_rules ) {
+				$rules[] = '@media (prefers-color-scheme:light),(prefers-color-scheme:no-preference){body.edminboost-theme-active{' . $light_rules . '}}';
+			}
+
+			if ( $dark_rules ) {
+				$rules[] = '@media (prefers-color-scheme:dark){body.edminboost-theme-active{' . $dark_rules . '}}';
+			}
+		} else {
+			$colors    = self::resolve_preview_colors( $preset_id, $mode, $theme );
+			$var_rules = self::build_wp_admin_theme_var_rules(
+				$colors['accent'],
+				self::resolve_accent_hover_hex( $preset_id, $mode, $colors['accent'], $theme )
+			);
+
+			if ( $var_rules ) {
+				$rules[] = 'body.edminboost-theme-active{' . $var_rules . '}';
+			}
+		}
+
+		return implode( '', $rules );
+	}
+
+	/**
+	 * Resolve the accent hover color for a preset and mode.
+	 *
+	 * @param string $preset_id Preset key.
+	 * @param string $mode      light, dark, or auto.
+	 * @param string $accent    Resolved accent hex color.
+	 * @param array  $theme     Merged theme settings.
+	 * @return string
+	 */
+	private static function resolve_accent_hover_hex( $preset_id, $mode, $accent, $theme ) {
+		if ( self::uses_custom_colors( $theme ) ) {
+			return self::darken_hex( $accent, 12 );
+		}
+
+		$tokens = self::get_css_tokens( $preset_id, $mode );
+
+		if ( ! empty( $tokens['--eb-accent-hover'] ) ) {
+			$hover = trim( $tokens['--eb-accent-hover'] );
+
+			if ( preg_match( '/^#[0-9a-f]{3,8}$/i', $hover ) ) {
+				return strtolower( $hover );
+			}
+		}
+
+		return self::darken_hex( $accent, 12 );
+	}
+
+	/**
+	 * Darken a hex color by a percentage.
+	 *
+	 * @param string $hex     Hex color.
+	 * @param int    $percent Percentage to darken (0-100).
+	 * @return string
+	 */
+	private static function darken_hex( $hex, $percent = 12 ) {
+		$hex = self::sanitize_hex_color( $hex );
+
+		if ( ! $hex ) {
+			return '';
+		}
+
+		$hex     = ltrim( $hex, '#' );
+		$percent = max( 0, min( 100, absint( $percent ) ) );
+		$factor  = ( 100 - $percent ) / 100;
+
+		return sprintf(
+			'#%02x%02x%02x',
+			max( 0, (int) round( hexdec( substr( $hex, 0, 2 ) ) * $factor ) ),
+			max( 0, (int) round( hexdec( substr( $hex, 2, 2 ) ) * $factor ) ),
+			max( 0, (int) round( hexdec( substr( $hex, 4, 2 ) ) * $factor ) )
 		);
 	}
 

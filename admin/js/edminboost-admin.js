@@ -7,7 +7,10 @@
 
 	var loadCommandCenterPageRef     = null;
 	var syncPresetCatalogFn          = null;
+	var syncRolePresetSelectsFn      = null;
 	var syncThemeSettingsFn          = null;
+	var syncThemeExtrasPreviewFn     = null;
+	var syncDeclutterPreviewThemeFn  = null;
 	var pendingDashboardOverviewSave = null;
 
 	function resolveThemePreviewMode( mode ) {
@@ -166,6 +169,7 @@
 		initMenuStudio( root );
 		initBehavior( root );
 		initTheme( root );
+		initThemeExtras( root );
 		initLayoutPresetPicker( root );
 		initDashboardOverview( root );
 		initPresets( root );
@@ -174,6 +178,7 @@
 		initSecurityFeatures( root );
 		initProductivityFeatures( root );
 		initPerformanceFeatures( root );
+		initDeclutterPreview( root );
 		initCommandCenterForms( root );
 		initSettingsForm( root );
 		initFormResetButtons( root );
@@ -504,8 +509,23 @@
 			emptyHint.hidden = getItems().length > 0;
 		}
 
+		function syncPanelBadgesVisibility() {
+			var panelSection = document.getElementById( 'edminboost-mapper-look' );
+
+			if ( ! panelSection ) {
+				return;
+			}
+
+			var hasDrawer = getItems().some( function ( item ) {
+				return ( item.dataset.interaction || 'redirect' ) === 'drawer';
+			} );
+
+			syncDependentSection( panelSection, hasDrawer );
+		}
+
 		function syncHiddenInputs() {
 			if ( ! hiddenInputs ) {
+				syncPanelBadgesVisibility();
 				return;
 			}
 
@@ -530,6 +550,8 @@
 					hiddenInputs.appendChild( input );
 				} );
 			} );
+
+			syncPanelBadgesVisibility();
 		}
 
 		function createTopBarItem( data ) {
@@ -1040,6 +1062,7 @@
 				}
 				selectedItem.dataset.interaction = radio.value;
 				updateDrawerPreviewVisibility();
+				syncPanelBadgesVisibility();
 				syncHiddenInputs();
 			} );
 		} );
@@ -1172,14 +1195,16 @@
 		var searchInput  = document.getElementById( 'edminboost-menu-search' );
 		var emptyHint    = document.getElementById( 'edminboost-menu-canvas-empty' );
 		var hiddenInputs = document.getElementById( 'edminboost-menu-hidden-inputs' );
-		var useColors      = document.getElementById( 'edminboost_menu_studio_use_colors' );
-		var colorsPanel    = document.getElementById( 'edminboost-menu-colors-panel' );
 		var colorPreview   = document.getElementById( 'edminboost-menu-color-preview' );
 		var layoutPreview  = document.getElementById( 'edminboost-menu-layout-preview' );
 		var menuWidth      = document.getElementById( 'edminboost_menu_width' );
+		var menuWidthRange = document.getElementById( 'edminboost_menu_width_range' );
 		var menuFontSize   = document.getElementById( 'edminboost_menu_font_size' );
+		var menuFontSizeRange = document.getElementById( 'edminboost_menu_font_size_range' );
 		var menuLineHeight = document.getElementById( 'edminboost_menu_line_height' );
+		var menuLineHeightRange = document.getElementById( 'edminboost_menu_line_height_range' );
 		var menuLetterSpacing = document.getElementById( 'edminboost_menu_letter_spacing' );
+		var menuLetterSpacingRange = document.getElementById( 'edminboost_menu_letter_spacing_range' );
 		var menuDisplayMode   = document.getElementById( 'edminboost_menu_display_mode' );
 
 		if ( ! form || ! canvas || ! discovered ) {
@@ -1753,6 +1778,37 @@
 			return Math.max( min, Math.min( max, parsed ) );
 		}
 
+		function bindMenuLayoutControl( numberInput, rangeInput, min, max, fallback ) {
+			if ( ! numberInput || ! rangeInput ) {
+				return;
+			}
+
+			function syncFrom( source ) {
+				var value = clampNumber(
+					source === 'range' ? rangeInput.value : numberInput.value,
+					min,
+					max,
+					fallback
+				);
+
+				numberInput.value = String( value );
+				rangeInput.value = String( value );
+				applyLayoutPreview();
+			}
+
+			rangeInput.addEventListener( 'input', function () {
+				syncFrom( 'range' );
+			} );
+
+			numberInput.addEventListener( 'input', function () {
+				syncFrom( 'input' );
+			} );
+
+			numberInput.addEventListener( 'change', function () {
+				syncFrom( 'input' );
+			} );
+		}
+
 		function applyLayoutPreview() {
 			if ( ! layoutPreview ) {
 				return;
@@ -1819,27 +1875,16 @@
 			} );
 		}
 
-		[ menuWidth, menuFontSize, menuLineHeight, menuLetterSpacing ].forEach( function ( field ) {
-			if ( ! field ) {
-				return;
-			}
-
-			field.addEventListener( 'input', applyLayoutPreview );
-			field.addEventListener( 'change', applyLayoutPreview );
-		} );
+		bindMenuLayoutControl( menuWidth, menuWidthRange, 120, 300, 160 );
+		bindMenuLayoutControl( menuFontSize, menuFontSizeRange, 10, 24, 14 );
+		bindMenuLayoutControl( menuLineHeight, menuLineHeightRange, 12, 36, 20 );
+		bindMenuLayoutControl( menuLetterSpacing, menuLetterSpacingRange, -2, 6, 0 );
 
 		if ( menuDisplayMode ) {
 			menuDisplayMode.addEventListener( 'change', applyLayoutPreview );
 		}
 
 		applyLayoutPreview();
-
-		if ( useColors && colorsPanel ) {
-			useColors.addEventListener( 'change', function () {
-				colorsPanel.hidden = ! useColors.checked;
-				applyColorPreview();
-			} );
-		}
 
 		root.querySelectorAll( '.edminboost-menu-color-row' ).forEach( function ( row ) {
 			var picker = row.querySelector( 'input[type="color"]' );
@@ -1916,33 +1961,71 @@
 			syncAdminFooterOptions();
 		}
 
-		var adminNoticesPreview = root.querySelector( '#edminboost-productivity-admin-notices-preview' );
+		var productivityPreviewRows = [
+			{
+				layoutId: 'edminboost-productivity-hide-notices-layout',
+				previewId: 'edminboost-productivity-notices-preview',
+				toggleId: 'edminboost_hide_admin_notices',
+				previewKey: 'hide_admin_notices'
+			},
+			{
+				layoutId: 'edminboost-productivity-hide-screen-layout',
+				previewId: 'edminboost-productivity-screen-preview',
+				toggleId: 'edminboost_hide_screen_help',
+				previewKey: 'hide_screen_help'
+			}
+		];
 
-		if ( adminNoticesPreview ) {
-			var productivityToggles = {
-				hide_admin_notices: root.querySelector( '#edminboost_hide_admin_notices' ),
-				hide_screen_help: root.querySelector( '#edminboost_hide_screen_help' )
-			};
+		productivityPreviewRows.forEach( function ( rowConfig ) {
+			var layout = root.querySelector( '#' + rowConfig.layoutId );
+			var preview = root.querySelector( '#' + rowConfig.previewId );
 
-			function syncAdminNoticesPreview() {
-				Object.keys( productivityToggles ).forEach( function ( key ) {
-					var toggle = productivityToggles[ key ];
-					var items = adminNoticesPreview.querySelectorAll( '[data-preview="' + key + '"]' );
+			if ( ! layout || ! preview ) {
+				return;
+			}
 
-					items.forEach( function ( item ) {
-						syncPerformancePreviewItem( item, toggle && toggle.checked );
-					} );
+			function syncProductivityPreviewRow() {
+				var toggle = layout.querySelector( '#' + rowConfig.toggleId );
+				var items = preview.querySelectorAll( '[data-preview="' + rowConfig.previewKey + '"]' );
+
+				items.forEach( function ( item ) {
+					syncProductivityPreviewItem( item, toggle && toggle.checked );
 				} );
 			}
 
-			Object.keys( productivityToggles ).forEach( function ( key ) {
-				var toggle = productivityToggles[ key ];
-				if ( toggle ) {
-					toggle.addEventListener( 'change', syncAdminNoticesPreview );
+			function handleProductivityPreviewToggleChange( event ) {
+				if ( ! event.target || event.target.id !== rowConfig.toggleId ) {
+					return;
 				}
-			} );
 
-			syncAdminNoticesPreview();
+				syncProductivityPreviewRow();
+			}
+
+			layout.addEventListener( 'change', handleProductivityPreviewToggleChange );
+			layout.addEventListener( 'input', handleProductivityPreviewToggleChange );
+			syncProductivityPreviewRow();
+		} );
+
+		var dashboardWidgetsLayout = root.querySelector( '#edminboost-productivity-dashboard-widgets-layout' );
+		var dashboardWidgetsPreview = root.querySelector( '#edminboost-productivity-dashboard-preview' );
+
+		if ( dashboardWidgetsLayout && dashboardWidgetsPreview ) {
+			function syncDashboardWidgetsPreview() {
+				var masterEnabled = dashboardWidgetsToggle && dashboardWidgetsToggle.checked;
+				var items = dashboardWidgetsPreview.querySelectorAll( '[data-widget-key]' );
+
+				items.forEach( function ( item ) {
+					var widgetKey = item.dataset.widgetKey || '';
+					var widgetToggle = dashboardWidgetsLayout.querySelector( '#edminboost_widget_' + widgetKey );
+					var isRemoved = masterEnabled && widgetToggle && widgetToggle.checked;
+
+					syncProductivityPreviewItem( item, isRemoved );
+				} );
+			}
+
+			dashboardWidgetsLayout.addEventListener( 'change', syncDashboardWidgetsPreview );
+			dashboardWidgetsLayout.addEventListener( 'input', syncDashboardWidgetsPreview );
+			syncDashboardWidgetsPreview();
 		}
 	}
 
@@ -1961,6 +2044,91 @@
 		if ( tooltip && tooltipText ) {
 			tooltip.textContent = tooltipText;
 		}
+	}
+
+	function syncProductivityPreviewItem( item, isRemoved ) {
+		item.classList.toggle( 'is-removed', isRemoved );
+
+		var tooltipLoaded = item.dataset.tooltipLoaded || '';
+		var tooltipRemoved = item.dataset.tooltipRemoved || '';
+		var tooltipText = isRemoved ? tooltipRemoved : tooltipLoaded;
+
+		if ( tooltipText ) {
+			item.setAttribute( 'aria-label', tooltipText );
+		}
+
+		var tooltip = item.querySelector( '.edminboost-productivity-preview__tooltip' );
+		if ( tooltip && tooltipText ) {
+			tooltip.textContent = tooltipText;
+		}
+	}
+
+	function syncDeclutterPreviewItem( item, isHidden ) {
+		item.classList.toggle( 'is-hidden', isHidden );
+
+		var tooltipVisible = item.dataset.tooltipVisible || '';
+		var tooltipHidden = item.dataset.tooltipHidden || '';
+		var tooltipText = isHidden ? tooltipHidden : tooltipVisible;
+
+		if ( tooltipText ) {
+			item.setAttribute( 'aria-label', tooltipText );
+		}
+
+		var tooltip = item.querySelector( '.edminboost-declutter-preview__tooltip' );
+		if ( tooltip && tooltipText ) {
+			tooltip.textContent = tooltipText;
+		}
+	}
+
+	function initDeclutterPreview( root ) {
+		var preview = root.querySelector( '#edminboost-declutter-preview' );
+
+		if ( ! preview ) {
+			syncDeclutterPreviewThemeFn = null;
+			return;
+		}
+
+		var declutterToggles = {
+			hide_wp_logo: root.querySelector( '#edminboost_hide_wp_logo' ),
+			hide_update_counters: root.querySelector( '#edminboost_hide_update_counters' ),
+			hide_howdy: root.querySelector( '#edminboost_hide_howdy' ),
+			hide_comments: root.querySelector( '#edminboost_hide_comments' ),
+			hide_new_content: root.querySelector( '#edminboost_hide_new_content' ),
+			hide_customize: root.querySelector( '#edminboost_hide_customize' )
+		};
+
+		function syncDeclutterPreviewThemeColors() {
+			var presetSelect = document.getElementById( 'edminboost_theme_preset' );
+			var modeSelect   = document.getElementById( 'edminboost_theme_mode' );
+			var themePresets = edminboostData.themePresets || {};
+			var preset       = presetSelect ? presetSelect.value : 'default';
+			var mode         = modeSelect ? modeSelect.value : 'light';
+			var colors       = getThemePreviewColors( themePresets, preset, mode );
+
+			applyThemePreviewColorVars( preview, colors );
+		}
+
+		function syncDeclutterPreview() {
+			Object.keys( declutterToggles ).forEach( function ( key ) {
+				var toggle = declutterToggles[ key ];
+				var items = preview.querySelectorAll( '[data-preview="' + key + '"]' );
+
+				items.forEach( function ( item ) {
+					syncDeclutterPreviewItem( item, toggle && toggle.checked );
+				} );
+			} );
+		}
+
+		Object.keys( declutterToggles ).forEach( function ( key ) {
+			var toggle = declutterToggles[ key ];
+			if ( toggle ) {
+				toggle.addEventListener( 'change', syncDeclutterPreview );
+			}
+		} );
+
+		syncDeclutterPreviewThemeColors();
+		syncDeclutterPreview();
+		syncDeclutterPreviewThemeFn = syncDeclutterPreviewThemeColors;
 	}
 
 	function initPerformanceFeatures( root ) {
@@ -2741,6 +2909,14 @@
 
 			applyCustomColors( body );
 			syncPresetPickerSelection();
+
+			if ( typeof syncThemeExtrasPreviewFn === 'function' ) {
+				syncThemeExtrasPreviewFn();
+			}
+
+			if ( typeof syncDeclutterPreviewThemeFn === 'function' ) {
+				syncDeclutterPreviewThemeFn();
+			}
 		}
 
 		function bindColorField( field ) {
@@ -2867,6 +3043,298 @@
 		}
 
 		updateThemePreview();
+	}
+
+	function initThemeExtras( root ) {
+		var preview = root.querySelector( '#edminboost-theme-extras-preview' );
+
+		if ( ! preview ) {
+			syncThemeExtrasPreviewFn = null;
+			return;
+		}
+
+		var fontSizeInput      = root.querySelector( '#edminboost_font_size' );
+		var fontSizeRange      = root.querySelector( '#edminboost_font_size_range' );
+		var bgColorInput       = root.querySelector( '#edminboost_admin_bg_color' );
+		var bgColorPicker      = root.querySelector( '#edminboost_admin_bg_color_picker' );
+		var bgImageInput       = root.querySelector( '#edminboost_admin_bg_image_id' );
+		var faviconInput       = root.querySelector( '#edminboost_admin_favicon_id' );
+		var scheduleToggle     = root.querySelector( '#edminboost_schedule_dark_mode' );
+		var scheduleSection    = root.querySelector( '#edminboost-theme-schedule-options' );
+		var scheduleStartInput = root.querySelector( '#edminboost_dark_mode_start' );
+		var scheduleEndInput   = root.querySelector( '#edminboost_dark_mode_end' );
+		var schedulePanel      = root.querySelector( '#edminboost-theme-extras-preview-schedule' );
+		var scheduleTrack      = preview.querySelector( '.edminboost-theme-extras-preview__schedule-track' );
+		var scheduleStartLabel = root.querySelector( '#edminboost-theme-extras-preview-schedule-start' );
+		var scheduleEndLabel   = root.querySelector( '#edminboost-theme-extras-preview-schedule-end' );
+		var faviconWrap        = root.querySelector( '#edminboost-theme-extras-preview-favicon' );
+		var viewport           = root.querySelector( '#edminboost-theme-extras-preview-viewport' );
+		var presetSelect       = document.getElementById( 'edminboost_theme_preset' );
+		var modeSelect         = document.getElementById( 'edminboost_theme_mode' );
+		var themePresets       = edminboostData.themePresets || {};
+		var statusInputs       = root.querySelectorAll( '.edminboost-theme-extras-status-input' );
+
+		function clampFontSize( value ) {
+			var size = parseInt( value, 10 );
+
+			if ( Number.isNaN( size ) ) {
+				size = 14;
+			}
+
+			return Math.max( 12, Math.min( 20, size ) );
+		}
+
+		function getCustomColorValuesForPreview() {
+			var defaults = themePresets.custom && themePresets.custom.colors ? themePresets.custom.colors : {};
+
+			function readColor( textId, fallback ) {
+				var input = document.getElementById( textId );
+				return input && /^#[0-9a-fA-F]{3,6}$/.test( input.value ) ? input.value : ( fallback || '#ffffff' );
+			}
+
+			return {
+				accent: readColor( 'edminboost_custom_accent', defaults.accent ),
+				surface: readColor( 'edminboost_custom_surface', defaults.surface ),
+				text: readColor( 'edminboost_custom_text', defaults.text ),
+				topbar: readColor( 'edminboost_custom_top', defaults.topbar ),
+				sidebar: readColor( 'edminboost_custom_sidebar', defaults.sidebar ),
+				content: readColor( 'edminboost_custom_content', defaults.content )
+			};
+		}
+
+		function syncPreviewThemeColors() {
+			var preset = presetSelect ? presetSelect.value : 'default';
+			var mode   = modeSelect ? modeSelect.value : 'light';
+			var colors = 'custom' === preset
+				? getCustomColorValuesForPreview()
+				: getThemePreviewColors( themePresets, preset, mode );
+
+			applyThemePreviewColorVars( preview, colors );
+		}
+
+		function timeToMinutes( timeValue ) {
+			var parts = ( timeValue || '00:00' ).split( ':' );
+			var hours = parseInt( parts[ 0 ], 10 );
+			var mins  = parseInt( parts[ 1 ], 10 );
+
+			if ( Number.isNaN( hours ) || Number.isNaN( mins ) ) {
+				return 0;
+			}
+
+			return ( hours * 60 ) + mins;
+		}
+
+		function formatTimeLabel( timeValue ) {
+			return timeValue || '00:00';
+		}
+
+		function buildScheduleGradient( startValue, endValue ) {
+			var startMin = timeToMinutes( startValue );
+			var endMin   = timeToMinutes( endValue );
+			var startPct = ( startMin / 1440 ) * 100;
+			var endPct   = ( endMin / 1440 ) * 100;
+			var light    = '#c5d9ed';
+			var dark     = '#1d2327';
+
+			if ( startMin === endMin ) {
+				return light;
+			}
+
+			if ( startMin < endMin ) {
+				return 'linear-gradient(90deg, ' + light + ' 0%, ' + light + ' ' + startPct + '%, ' + dark + ' ' + startPct + '%, ' + dark + ' ' + endPct + '%, ' + light + ' ' + endPct + '%, ' + light + ' 100%)';
+			}
+
+			return 'linear-gradient(90deg, ' + dark + ' 0%, ' + dark + ' ' + endPct + '%, ' + light + ' ' + endPct + '%, ' + light + ' ' + startPct + '%, ' + dark + ' ' + startPct + '%, ' + dark + ' 100%)';
+		}
+
+		function syncSchedulePreview() {
+			var enabled = scheduleToggle && scheduleToggle.checked;
+			var start   = scheduleStartInput ? scheduleStartInput.value : '18:00';
+			var end     = scheduleEndInput ? scheduleEndInput.value : '06:00';
+
+			if ( scheduleSection ) {
+				syncDependentSection( scheduleSection, enabled );
+			}
+
+			if ( schedulePanel ) {
+				schedulePanel.hidden = ! enabled;
+				schedulePanel.classList.toggle( 'is-active', enabled );
+			}
+
+			if ( scheduleStartLabel ) {
+				scheduleStartLabel.textContent = formatTimeLabel( start );
+			}
+
+			if ( scheduleEndLabel ) {
+				scheduleEndLabel.textContent = formatTimeLabel( end );
+			}
+
+			if ( scheduleTrack ) {
+				scheduleTrack.style.background = buildScheduleGradient( start, end );
+			}
+		}
+
+		function syncAttachmentPreview( input, wrapOrViewport, savedIdKey, savedUrlKey, fallbackMarkup ) {
+			if ( ! input ) {
+				return;
+			}
+
+			var target = wrapOrViewport;
+			var id     = parseInt( input.value, 10 ) || 0;
+			var savedId = parseInt( preview.getAttribute( savedIdKey ), 10 ) || 0;
+			var savedUrl = preview.getAttribute( savedUrlKey ) || '';
+
+			if ( target === viewport ) {
+				if ( id > 0 && id === savedId && savedUrl ) {
+					target.style.backgroundImage = 'url("' + savedUrl + '")';
+				} else {
+					target.style.backgroundImage = '';
+				}
+				return;
+			}
+
+			if ( ! target ) {
+				return;
+			}
+
+			target.innerHTML = '';
+
+			if ( id > 0 && id === savedId && savedUrl ) {
+				var img = document.createElement( 'img' );
+				img.src = savedUrl;
+				img.alt = '';
+				img.width = 16;
+				img.height = 16;
+				target.appendChild( img );
+				return;
+			}
+
+			if ( id > 0 ) {
+				var pending = document.createElement( 'span' );
+				pending.className = 'dashicons dashicons-format-image';
+				pending.setAttribute( 'aria-hidden', 'true' );
+				pending.title = 'Preview after save';
+				target.appendChild( pending );
+				return;
+			}
+
+			target.innerHTML = fallbackMarkup;
+		}
+
+		function syncStatusRowPreview( input ) {
+			var status = input.id.replace( 'edminboost_status_', '' );
+			var row    = preview.querySelector( '.edminboost-theme-extras-preview__status-row[data-status="' + status + '"]' );
+
+			if ( ! row ) {
+				return;
+			}
+
+			if ( /^#[0-9a-fA-F]{3,6}$/.test( input.value ) ) {
+				row.style.backgroundColor = input.value;
+			} else {
+				row.style.removeProperty( 'background-color' );
+			}
+		}
+
+		function syncFontSizeControls( source ) {
+			if ( ! fontSizeInput || ! fontSizeRange ) {
+				return;
+			}
+
+			var size = clampFontSize( source === 'range' ? fontSizeRange.value : fontSizeInput.value );
+
+			fontSizeInput.value = String( size );
+			fontSizeRange.value = String( size );
+			preview.style.setProperty( '--eb-te-font-size', size + 'px' );
+		}
+
+		function syncBackgroundColorPreview() {
+			if ( bgColorInput && /^#[0-9a-fA-F]{3,6}$/.test( bgColorInput.value ) ) {
+				preview.style.setProperty( '--eb-te-bg', bgColorInput.value );
+				return;
+			}
+
+			preview.style.removeProperty( '--eb-te-bg' );
+		}
+
+		function bindColorPair( picker, text, onSync ) {
+			if ( ! picker || ! text ) {
+				return;
+			}
+
+			picker.addEventListener( 'input', function () {
+				text.value = picker.value;
+				onSync();
+			} );
+
+			text.addEventListener( 'input', function () {
+				if ( /^#[0-9a-fA-F]{6}$/.test( text.value ) ) {
+					picker.value = text.value;
+					onSync();
+				}
+			} );
+		}
+
+		function applyThemeExtrasPreview() {
+			syncPreviewThemeColors();
+			syncFontSizeControls( 'input' );
+			syncBackgroundColorPreview();
+			syncSchedulePreview();
+			syncAttachmentPreview( faviconInput, faviconWrap, 'data-favicon-id', 'data-favicon-url', '<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>' );
+			syncAttachmentPreview( bgImageInput, viewport, 'data-bg-image-id', 'data-bg-image-url', '' );
+			statusInputs.forEach( syncStatusRowPreview );
+		}
+
+		syncThemeExtrasPreviewFn = applyThemeExtrasPreview;
+
+		if ( fontSizeRange ) {
+			fontSizeRange.addEventListener( 'input', function () {
+				syncFontSizeControls( 'range' );
+			} );
+		}
+
+		if ( fontSizeInput ) {
+			fontSizeInput.addEventListener( 'input', function () {
+				syncFontSizeControls( 'input' );
+			} );
+		}
+
+		bindColorPair( bgColorPicker, bgColorInput, syncBackgroundColorPreview );
+
+		statusInputs.forEach( function ( input ) {
+			var picker = root.querySelector( '#' + input.id + '_picker' );
+			bindColorPair( picker, input, function () {
+				syncStatusRowPreview( input );
+			} );
+		} );
+
+		if ( scheduleToggle ) {
+			scheduleToggle.addEventListener( 'change', syncSchedulePreview );
+		}
+
+		if ( scheduleStartInput ) {
+			scheduleStartInput.addEventListener( 'input', syncSchedulePreview );
+			scheduleStartInput.addEventListener( 'change', syncSchedulePreview );
+		}
+
+		if ( scheduleEndInput ) {
+			scheduleEndInput.addEventListener( 'input', syncSchedulePreview );
+			scheduleEndInput.addEventListener( 'change', syncSchedulePreview );
+		}
+
+		if ( faviconInput ) {
+			faviconInput.addEventListener( 'input', function () {
+				syncAttachmentPreview( faviconInput, faviconWrap, 'data-favicon-id', 'data-favicon-url', '<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>' );
+			} );
+		}
+
+		if ( bgImageInput ) {
+			bgImageInput.addEventListener( 'input', function () {
+				syncAttachmentPreview( bgImageInput, viewport, 'data-bg-image-id', 'data-bg-image-url', '' );
+			} );
+		}
+
+		applyThemeExtrasPreview();
 	}
 
 	function initCommandCenterForms( root ) {
@@ -3007,6 +3475,10 @@
 
 		if ( data.presets ) {
 			edminboostData.presets = data.presets;
+
+			if ( typeof syncRolePresetSelectsFn === 'function' ) {
+				syncRolePresetSelectsFn( data.presets );
+			}
 
 			if ( typeof syncPresetCatalogFn === 'function' ) {
 				var layoutPreset = data.active_layout_preset || data.selected_preset || '';
@@ -4367,25 +4839,41 @@
 		var form            = document.getElementById( 'edminboost-presets-form' );
 		var applyField      = document.getElementById( 'edminboost_apply_preset' );
 		var saveNameField   = document.getElementById( 'edminboost_save_custom_preset_name' );
+		var renameIdField   = document.getElementById( 'edminboost_rename_custom_preset_id' );
+		var renameNameField = document.getElementById( 'edminboost_rename_custom_preset_name' );
 		var savePresetBtn   = document.getElementById( 'edminboost-save-preset-btn' );
 		var savePresetRoot  = document.getElementById( 'edminboost-save-preset' );
 		var savePresetForm  = document.getElementById( 'edminboost-save-preset-form' );
 		var savePresetInput = document.getElementById( 'edminboost_save_preset_name_input' );
 		var savePresetConfirmBtn = document.getElementById( 'edminboost-save-preset-confirm-btn' );
 		var savePresetCancelBtn  = document.getElementById( 'edminboost-save-preset-cancel-btn' );
+		var renamePresetRoot     = document.getElementById( 'edminboost-rename-preset' );
+		var renamePresetBtn      = document.getElementById( 'edminboost-preset-rename-btn' );
+		var renamePresetInput    = document.getElementById( 'edminboost_rename_preset_name_input' );
+		var renamePresetConfirmBtn = document.getElementById( 'edminboost-rename-preset-confirm-btn' );
+		var renamePresetCancelBtn  = document.getElementById( 'edminboost-rename-preset-cancel-btn' );
 		var applyBtn        = document.getElementById( 'edminboost-preset-apply-btn' );
 		var exportBtn       = document.getElementById( 'edminboost-preset-export-btn' );
 		var layoutSelect    = document.getElementById( 'edminboost_layout_preset' );
 		var defaultField    = document.getElementById( 'edminboost_layout_default_preset' );
 		var defaultCheckbox = document.getElementById( 'edminboost_layout_preset_default_checkbox' );
-		var presetCatalog   = edminboostData.presets || {};
 
 		if ( ! form ) {
 			return;
 		}
 
+		function getPresetCatalog() {
+			return edminboostData.presets || {};
+		}
+
 		function getSelectedPresetId() {
 			return layoutSelect ? layoutSelect.value : '';
+		}
+
+		function isSavedCustomPreset( presetId ) {
+			var preset = getPresetCatalog()[ presetId ] || {};
+
+			return presetId && ! preset.system && ! preset.virtual && 0 === presetId.indexOf( 'custom_' );
 		}
 
 		function clearActionFields() {
@@ -4395,14 +4883,108 @@
 			if ( saveNameField ) {
 				saveNameField.value = '';
 			}
+			if ( renameIdField ) {
+				renameIdField.value = '';
+			}
+			if ( renameNameField ) {
+				renameNameField.value = '';
+			}
 		}
 
-		function preparePresetAction( field, value ) {
+		function preparePresetAction( field, value, secondField, secondValue ) {
 			clearActionFields();
 
 			if ( field ) {
 				field.value = value;
 			}
+
+			if ( secondField ) {
+				secondField.value = secondValue || '';
+			}
+		}
+
+		function syncRenamePresetVisibility() {
+			var presetId   = getSelectedPresetId();
+			var canRename  = isSavedCustomPreset( presetId );
+			var isEditing  = renamePresetRoot && ! renamePresetRoot.hidden;
+
+			if ( renamePresetBtn ) {
+				renamePresetBtn.hidden = ! canRename || isEditing;
+			}
+
+			if ( renamePresetRoot && ! canRename ) {
+				renamePresetRoot.hidden = true;
+
+				if ( renamePresetInput ) {
+					renamePresetInput.value = '';
+				}
+			}
+		}
+
+		function openRenamePresetForm() {
+			var presetId = getSelectedPresetId();
+			var preset   = getPresetCatalog()[ presetId ] || {};
+
+			if ( ! renamePresetRoot || ! isSavedCustomPreset( presetId ) ) {
+				return;
+			}
+
+			renamePresetRoot.hidden = false;
+
+			if ( renamePresetBtn ) {
+				renamePresetBtn.hidden = true;
+			}
+
+			if ( renamePresetInput ) {
+				renamePresetInput.value = preset.name || presetId;
+				renamePresetInput.focus();
+				renamePresetInput.select();
+			}
+		}
+
+		function closeRenamePresetForm() {
+			if ( renamePresetRoot ) {
+				renamePresetRoot.hidden = true;
+			}
+
+			if ( renamePresetInput ) {
+				renamePresetInput.value = '';
+			}
+
+			syncRenamePresetVisibility();
+		}
+
+		function submitRenamePreset() {
+			if ( ! form || ! renameIdField || ! renameNameField || ! renamePresetInput ) {
+				return;
+			}
+
+			var presetId = getSelectedPresetId();
+			var name     = renamePresetInput.value.trim();
+
+			if ( ! isSavedCustomPreset( presetId ) ) {
+				return;
+			}
+
+			if ( ! name ) {
+				showFormNotice(
+					form,
+					'error',
+					edminboostData.strings.presetNameRequired || 'Enter a name for your preset.'
+				);
+				renamePresetInput.focus();
+				return;
+			}
+
+			preparePresetAction( renameIdField, presetId, renameNameField, name );
+			saveSettingsForm( form, {
+				submitBtn: renamePresetConfirmBtn,
+				message: edminboostData.strings.presetRenamed || 'Preset renamed.',
+				onSuccess: function () {
+					clearActionFields();
+					closeRenamePresetForm();
+				}
+			} );
 		}
 
 		form.addEventListener( 'submit', function () {
@@ -4516,10 +5098,40 @@
 			} );
 		}
 
+		if ( renamePresetBtn ) {
+			renamePresetBtn.addEventListener( 'click', openRenamePresetForm );
+		}
+
+		if ( renamePresetCancelBtn ) {
+			renamePresetCancelBtn.addEventListener( 'click', closeRenamePresetForm );
+		}
+
+		if ( renamePresetConfirmBtn ) {
+			renamePresetConfirmBtn.addEventListener( 'click', submitRenamePreset );
+		}
+
+		if ( renamePresetInput ) {
+			renamePresetInput.addEventListener( 'keydown', function ( event ) {
+				if ( event.key === 'Enter' ) {
+					event.preventDefault();
+					submitRenamePreset();
+				} else if ( event.key === 'Escape' ) {
+					event.preventDefault();
+					closeRenamePresetForm();
+				}
+			} );
+		}
+
+		if ( layoutSelect ) {
+			layoutSelect.addEventListener( 'change', syncRenamePresetVisibility );
+		}
+
+		syncRenamePresetVisibility();
+
 		if ( exportBtn ) {
 			exportBtn.addEventListener( 'click', function () {
 				var presetId = getSelectedPresetId() || 'preset';
-				var preset   = presetCatalog[ presetId ] || {};
+				var preset   = getPresetCatalog()[ presetId ] || {};
 				var payload  = {
 					id: presetId,
 					name: preset.name || presetId,
@@ -4540,7 +5152,7 @@
 			} );
 		}
 
-		initRoleMatrix( form, presetCatalog );
+		initRoleMatrix( form, getPresetCatalog() );
 	}
 
 	/**
@@ -4549,10 +5161,12 @@
 	 * @param {HTMLFormElement} form Presets page form.
 	 * @param {Object} presetCatalog Resolved preset layouts from edminboostData.presets.
 	 */
-		function initRoleMatrix( form, presetCatalog ) {
+		function initRoleMatrix( form, presetCatalogRef ) {
 		var matrix = form.querySelector( '.edminboost-role-matrix' );
+		var presetCatalog = presetCatalogRef || {};
 
 		if ( ! matrix ) {
+			syncRolePresetSelectsFn = null;
 			return;
 		}
 
@@ -4662,6 +5276,45 @@
 				syncRoleRowVisibility( selectEl, true );
 			} );
 		} );
+
+		function syncRolePresetSelects( catalog ) {
+			if ( catalog ) {
+				presetCatalog = catalog;
+			}
+
+			matrix.querySelectorAll( '.edminboost-role-preset-select' ).forEach( function ( selectEl ) {
+				var currentValue = selectEl.value;
+				var defaultLabel = selectEl.options.length ? selectEl.options[0].textContent : '';
+
+				while ( selectEl.options.length > 0 ) {
+					selectEl.remove( 0 );
+				}
+
+				var defaultOption = document.createElement( 'option' );
+				defaultOption.value = '';
+				defaultOption.textContent = defaultLabel || '— Use site default —';
+				selectEl.appendChild( defaultOption );
+
+				Object.keys( presetCatalog ).forEach( function ( presetId ) {
+					var preset = presetCatalog[ presetId ] || {};
+
+					if ( preset.virtual ) {
+						return;
+					}
+
+					var option = document.createElement( 'option' );
+					option.value = presetId;
+					option.textContent = preset.name || presetId;
+					selectEl.appendChild( option );
+				} );
+
+				if ( currentValue && presetCatalog[ currentValue ] && ! presetCatalog[ currentValue ].virtual ) {
+					selectEl.value = currentValue;
+				}
+			} );
+		}
+
+		syncRolePresetSelectsFn = syncRolePresetSelects;
 	}
 
 	function initBackupSettings( root ) {

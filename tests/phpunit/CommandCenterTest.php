@@ -236,6 +236,10 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertSame( 1, $plans['pro']['sites'] );
 		$this->assertSame( 10, $plans['agency']['sites'] );
 		$this->assertSame( 'free', EDMINBOOST_Command_Center::get_active_billing_plan() );
+		$this->assertGreaterThanOrEqual( 9, count( $plans['pro']['features'] ) );
+		$this->assertStringContainsString( '10', $plans['pro']['features'][1] );
+		$this->assertStringContainsString( '20', $plans['pro']['features'][3] );
+		$this->assertStringContainsString( '5', $plans['pro']['features'][5] );
 	}
 
 	/**

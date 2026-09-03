@@ -1,6 +1,6 @@
 <?php
 /**
- * Advanced look settings (slide-out panel, badges, admin bar cleanup).
+ * Advanced look settings (slide-out panel, badges).
  *
  * @package EdminBoost
  *

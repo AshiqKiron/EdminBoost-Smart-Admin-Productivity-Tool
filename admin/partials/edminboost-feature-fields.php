@@ -20,22 +20,38 @@ $post_types = get_post_types( array( 'public' => true ), 'objects' );
 ?>
 
 <?php if ( 'productivity' === $section ) : ?>
-<fieldset class="edminboost-fieldset">
+<fieldset class="edminboost-fieldset edminboost-productivity-fieldset">
 	<legend><?php esc_html_e( 'Admin notices', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
-	<label class="edminboost-checkbox-row" for="edminboost_hide_admin_notices">
-		<?php EDMINBOOST_Setting_Help::echo_icon( 'hide_admin_notices' ); ?>
-		<input type="checkbox" id="edminboost_hide_admin_notices" name="<?php echo esc_attr( $features_key ); ?>[hide_admin_notices]" value="1" <?php checked( ! empty( $features['hide_admin_notices'] ) ); ?> />
-		<?php esc_html_e( 'Hide routine admin notices. Errors and warnings remain visible.', EDMINBOOST_TEXT_DOMAIN ); ?>
-	</label>
-	<label class="edminboost-checkbox-row" for="edminboost_hide_screen_help">
-		<?php EDMINBOOST_Setting_Help::echo_icon( 'hide_screen_help' ); ?>
-		<input type="checkbox" id="edminboost_hide_screen_help" name="<?php echo esc_attr( $features_key ); ?>[hide_screen_help]" value="1" <?php checked( ! empty( $features['hide_screen_help'] ) ); ?> />
-		<?php esc_html_e( 'Hide Screen Options and Help tabs.', EDMINBOOST_TEXT_DOMAIN ); ?>
-	</label>
-	<?php
-	$preview = 'admin_notices';
-	include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-productivity-preview.php';
-	?>
+	<div class="edminboost-productivity-layout edminboost-productivity-layout--stacked" id="edminboost-productivity-hide-notices-layout">
+		<div class="edminboost-productivity-fields">
+			<label class="edminboost-checkbox-row" for="edminboost_hide_admin_notices">
+				<?php EDMINBOOST_Setting_Help::echo_icon( 'hide_admin_notices' ); ?>
+				<input type="checkbox" id="edminboost_hide_admin_notices" name="<?php echo esc_attr( $features_key ); ?>[hide_admin_notices]" value="1" <?php checked( ! empty( $features['hide_admin_notices'] ) ); ?> />
+				<?php esc_html_e( 'Hide routine admin notices. Errors and warnings remain visible.', EDMINBOOST_TEXT_DOMAIN ); ?>
+			</label>
+		</div>
+		<?php
+		$preview = 'notices';
+		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-productivity-preview.php';
+		?>
+	</div>
+</fieldset>
+
+<fieldset class="edminboost-fieldset edminboost-productivity-fieldset">
+	<legend><?php esc_html_e( 'Screen tabs', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+	<div class="edminboost-productivity-layout edminboost-productivity-layout--stacked" id="edminboost-productivity-hide-screen-layout">
+		<div class="edminboost-productivity-fields">
+			<label class="edminboost-checkbox-row" for="edminboost_hide_screen_help">
+				<?php EDMINBOOST_Setting_Help::echo_icon( 'hide_screen_help' ); ?>
+				<input type="checkbox" id="edminboost_hide_screen_help" name="<?php echo esc_attr( $features_key ); ?>[hide_screen_help]" value="1" <?php checked( ! empty( $features['hide_screen_help'] ) ); ?> />
+				<?php esc_html_e( 'Hide Screen Options and Help tabs.', EDMINBOOST_TEXT_DOMAIN ); ?>
+			</label>
+		</div>
+		<?php
+		$preview = 'screen_help';
+		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-productivity-preview.php';
+		?>
+	</div>
 </fieldset>
 
 <?php
@@ -43,20 +59,30 @@ $dashboard_widgets_enabled = ! empty( $features['dashboard_widgets']['enabled'] 
 $dashboard_widgets_options_class = 'edminboost-dependent-section' . ( $dashboard_widgets_enabled ? '' : ' is-disabled' );
 $dashboard_widgets_options_aria  = $dashboard_widgets_enabled ? 'false' : 'true';
 ?>
-<fieldset class="edminboost-fieldset">
+<fieldset class="edminboost-fieldset edminboost-productivity-fieldset">
 	<legend><?php esc_html_e( 'Dashboard widgets', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
-	<label class="edminboost-checkbox-row" for="edminboost_dashboard_widgets_enabled">
-		<?php EDMINBOOST_Setting_Help::echo_icon( 'dashboard_widgets_enabled' ); ?>
-		<input type="checkbox" id="edminboost_dashboard_widgets_enabled" name="<?php echo esc_attr( $features_key ); ?>[dashboard_widgets][enabled]" value="1" <?php checked( $dashboard_widgets_enabled ); ?> />
-		<?php esc_html_e( 'Remove selected default dashboard widgets.', EDMINBOOST_TEXT_DOMAIN ); ?>
-	</label>
-	<div id="edminboost-dashboard-widgets-options" class="<?php echo esc_attr( $dashboard_widgets_options_class ); ?>" aria-disabled="<?php echo esc_attr( $dashboard_widgets_options_aria ); ?>">
-		<?php foreach ( $widget_labels as $widget_key => $widget_label ) : ?>
-			<label class="edminboost-checkbox-row" for="edminboost_widget_<?php echo esc_attr( $widget_key ); ?>">
-				<input type="checkbox" id="edminboost_widget_<?php echo esc_attr( $widget_key ); ?>" name="<?php echo esc_attr( $features_key ); ?>[dashboard_widgets][<?php echo esc_attr( $widget_key ); ?>]" value="1" <?php checked( ! empty( $features['dashboard_widgets'][ $widget_key ] ) ); ?> />
-				<?php echo esc_html( $widget_label ); ?>
+	<div class="edminboost-productivity-layout" id="edminboost-productivity-dashboard-widgets-layout">
+		<div class="edminboost-productivity-fields">
+			<label class="edminboost-checkbox-row" for="edminboost_dashboard_widgets_enabled">
+				<?php EDMINBOOST_Setting_Help::echo_icon( 'dashboard_widgets_enabled' ); ?>
+				<span class="edminboost-checkbox-row__main">
+					<input type="checkbox" id="edminboost_dashboard_widgets_enabled" name="<?php echo esc_attr( $features_key ); ?>[dashboard_widgets][enabled]" value="1" <?php checked( $dashboard_widgets_enabled ); ?> />
+					<span class="edminboost-checkbox-row__text"><?php esc_html_e( 'Remove selected default dashboard widgets.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+				</span>
 			</label>
-		<?php endforeach; ?>
+			<div id="edminboost-dashboard-widgets-options" class="<?php echo esc_attr( $dashboard_widgets_options_class ); ?>" aria-disabled="<?php echo esc_attr( $dashboard_widgets_options_aria ); ?>">
+				<?php foreach ( $widget_labels as $widget_key => $widget_label ) : ?>
+					<label class="edminboost-checkbox-row" for="edminboost_widget_<?php echo esc_attr( $widget_key ); ?>">
+						<input type="checkbox" id="edminboost_widget_<?php echo esc_attr( $widget_key ); ?>" name="<?php echo esc_attr( $features_key ); ?>[dashboard_widgets][<?php echo esc_attr( $widget_key ); ?>]" value="1" <?php checked( ! empty( $features['dashboard_widgets'][ $widget_key ] ) ); ?> />
+						<?php echo esc_html( $widget_label ); ?>
+					</label>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<?php
+		$preview = 'dashboard_widgets';
+		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-productivity-preview.php';
+		?>
 	</div>
 </fieldset>
 

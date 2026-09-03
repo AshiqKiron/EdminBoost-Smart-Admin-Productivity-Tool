@@ -54,7 +54,7 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 | Structured + scope | `disable_emojis` | `enabled` + `scope` (`admin`, `frontend`, `both`) |
 | Structured + post types | `post_duplicator`, `disable_comments`, `post_order` | `enabled` + selected post types |
 
-Sidebar hide/reorder lives in Menu Studio (`command_center.menu_studio`), not the feature registry — see `edminboost-command-center.mdc`. Admin bar cleanup toggles live in Appearance (`command_center.behavior`), not the feature registry — legacy `features.admin_bar` migrates on read.
+Sidebar hide/reorder lives in Menu Studio (`command_center.menu_studio`), not the feature registry — see `edminboost-command-center.mdc`. Admin bar cleanup toggles live in Theme/Appearance (`command_center.behavior` declutter keys); drawer width, badge style, and animation speed UI live on Top Bar — legacy `features.admin_bar` migrates on read.
 
 ## Feature Pages
 

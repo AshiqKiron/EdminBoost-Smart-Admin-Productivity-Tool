@@ -1,6 +1,6 @@
 <?php
 /**
- * Appearance settings — visual theme, panel behavior, declutter.
+ * Appearance settings — visual theme and declutter.
  *
  * @package EdminBoost
  *

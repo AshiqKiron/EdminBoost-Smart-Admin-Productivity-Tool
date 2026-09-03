@@ -71,6 +71,8 @@ $has_matrix        = ! empty( $matrix_items );
 		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
 		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_apply_preset]" id="edminboost_apply_preset" value="" />
 		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_save_custom_preset][name]" id="edminboost_save_custom_preset_name" value="" />
+		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_rename_custom_preset][id]" id="edminboost_rename_custom_preset_id" value="" />
+		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_rename_custom_preset][name]" id="edminboost_rename_custom_preset_name" value="" />
 
 		<section class="edminboost-card edminboost-cc-section">
 			<?php
