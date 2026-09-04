@@ -263,7 +263,7 @@
 		document.addEventListener( 'click', function ( event ) {
 			var link = event.target.closest( '.edminboost-cc-nav__link' );
 
-			if ( ! link ) {
+			if ( ! link || link.hasAttribute( 'data-edminboost-external' ) ) {
 				return;
 			}
 
@@ -2282,6 +2282,91 @@
 			syncWhiteLabelDependentSections();
 		}
 
+		initWhiteLabelStatusPreview( root );
+		initWhiteLabelRebrandPreview( root );
+	}
+
+	function syncWhiteLabelStatusPreviewItem( item, isVisible ) {
+		item.classList.toggle( 'is-hidden', ! isVisible );
+
+		var tooltip = item.querySelector( '.edminboost-wl-status-preview__tooltip' );
+		var tooltipText = isVisible
+			? item.getAttribute( 'data-tooltip-visible' )
+			: item.getAttribute( 'data-tooltip-hidden' );
+
+		item.setAttribute( 'aria-label', tooltipText || '' );
+
+		if ( tooltip ) {
+			tooltip.textContent = tooltipText || '';
+		}
+	}
+
+	function initWhiteLabelStatusPreview( root ) {
+		var statusSection = root.querySelector( '#edminboost-wl-status-section' );
+
+		if ( ! statusSection ) {
+			return;
+		}
+
+		var preview = statusSection.querySelector( '#edminboost-wl-status-preview' );
+
+		if ( ! preview ) {
+			return;
+		}
+
+		var previewLine = preview.querySelector( '#edminboost-wl-status-preview-line' );
+		var previewEmpty = preview.querySelector( '#edminboost-wl-status-preview-empty' );
+		var statusToggles = {
+			show_ip: statusSection.querySelector( '#edminboost_wl_show_ip' ),
+			show_php_version: statusSection.querySelector( '#edminboost_wl_show_php_version' ),
+			show_wp_version: statusSection.querySelector( '#edminboost_wl_show_wp_version' ),
+			show_memory_usage: statusSection.querySelector( '#edminboost_wl_show_memory_usage' ),
+			show_memory_limit: statusSection.querySelector( '#edminboost_wl_show_memory_limit' ),
+			show_memory_available: statusSection.querySelector( '#edminboost_wl_show_memory_available' )
+		};
+
+		function syncStatusFooterPreview() {
+			var visibleCount = 0;
+
+			Object.keys( statusToggles ).forEach( function ( key ) {
+				var toggle = statusToggles[ key ];
+				var items = preview.querySelectorAll( '[data-preview="' + key + '"]' );
+				var isVisible = toggle && toggle.checked;
+
+				if ( isVisible ) {
+					visibleCount += 1;
+				}
+
+				items.forEach( function ( item ) {
+					syncWhiteLabelStatusPreviewItem( item, isVisible );
+				} );
+			} );
+
+			var hasVisible = visibleCount > 0;
+
+			preview.classList.toggle( 'is-empty', ! hasVisible );
+
+			if ( previewLine ) {
+				previewLine.hidden = ! hasVisible;
+			}
+
+			if ( previewEmpty ) {
+				previewEmpty.hidden = hasVisible;
+			}
+		}
+
+		Object.keys( statusToggles ).forEach( function ( key ) {
+			var toggle = statusToggles[ key ];
+
+			if ( toggle ) {
+				toggle.addEventListener( 'change', syncStatusFooterPreview );
+			}
+		} );
+
+		syncStatusFooterPreview();
+	}
+
+	function initWhiteLabelRebrandPreview( root ) {
 		var section = root.querySelector( '#edminboost-wl-rebrand-section' );
 
 		if ( ! section ) {
@@ -5212,10 +5297,10 @@
 				preset = presetCatalog[ presetId ] || {};
 			}
 
-			if ( preset.visible_top_level_menu_slugs && preset.visible_top_level_menu_slugs.length ) {
-				slugs = preset.visible_top_level_menu_slugs.slice();
-			} else if ( preset.visible_menu_slugs && preset.visible_menu_slugs.length ) {
+			if ( preset.visible_menu_slugs && preset.visible_menu_slugs.length ) {
 				slugs = preset.visible_menu_slugs.slice();
+			} else if ( preset.visible_top_level_menu_slugs && preset.visible_top_level_menu_slugs.length ) {
+				slugs = preset.visible_top_level_menu_slugs.slice();
 			} else {
 				slugs = extractSlugs( preset.top_bar_items );
 			}

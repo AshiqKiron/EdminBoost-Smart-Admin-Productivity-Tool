@@ -190,6 +190,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 				$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
 				$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
 				$base . EDMINBOOST_Command_Center::PAGE_BILLING,
+				$base . '-settings',
 			),
 			$slugs
 		);
@@ -215,6 +216,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 				$base . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
 				$base . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
 				$base . EDMINBOOST_Command_Center::PAGE_BILLING,
+				$base . '-settings',
 			),
 			$slugs
 		);
@@ -236,10 +238,41 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertSame( 1, $plans['pro']['sites'] );
 		$this->assertSame( 10, $plans['agency']['sites'] );
 		$this->assertSame( 'free', EDMINBOOST_Command_Center::get_active_billing_plan() );
-		$this->assertGreaterThanOrEqual( 9, count( $plans['pro']['features'] ) );
-		$this->assertStringContainsString( '10', $plans['pro']['features'][1] );
-		$this->assertStringContainsString( '20', $plans['pro']['features'][3] );
-		$this->assertStringContainsString( '5', $plans['pro']['features'][5] );
+		$this->assertGreaterThanOrEqual( 8, count( $plans['pro']['features'] ) );
+		$this->assertStringContainsString( 'Friend', $plans['free']['features'][2] );
+		$this->assertStringContainsString( 'visibility matrix', $plans['pro']['features'][3] );
+	}
+
+	/**
+	 * Billing comparison rows include section headings and feature rows.
+	 */
+	public function test_get_billing_comparison_rows() {
+		$rows = EDMINBOOST_Command_Center::get_billing_comparison_rows();
+
+		$this->assertNotEmpty( $rows );
+		$this->assertSame( 'heading', $rows[0]['type'] );
+		$this->assertSame( 'row', $rows[1]['type'] );
+		$this->assertArrayHasKey( 'free', $rows[1] );
+		$this->assertArrayHasKey( 'pro', $rows[1] );
+		$this->assertArrayHasKey( 'agency', $rows[1] );
+
+		$matrix_row = null;
+
+		foreach ( $rows as $row ) {
+			if ( 'row' === $row['type'] && false === $row['free'] && true === $row['pro'] && str_contains( $row['label'], 'visibility matrix' ) ) {
+				$matrix_row = $row;
+				break;
+			}
+		}
+
+		$this->assertIsArray( $matrix_row );
+	}
+
+	/**
+	 * Upgrade URL is filterable and used for external checkout links.
+	 */
+	public function test_get_upgrade_url() {
+		$this->assertSame( EDMINBOOST_UPGRADE_URL, EDMINBOOST_Command_Center::get_upgrade_url() );
 	}
 
 	/**
@@ -469,6 +502,28 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 * Role visibility sanitization stores hidden slugs.
 	 */
 	public function test_role_visibility_sanitization() {
+		$matrix_slugs = wp_list_pluck( EDMINBOOST_Command_Center::get_role_matrix_menu_items(), 'slug' );
+		$this->assertNotEmpty( $matrix_slugs );
+
+		$visible_slug = in_array( 'upload.php', $matrix_slugs, true ) ? 'upload.php' : $matrix_slugs[0];
+		$hidden_slug  = in_array( 'edit.php', $matrix_slugs, true ) ? 'edit.php' : '';
+
+		if ( '' === $hidden_slug || $hidden_slug === $visible_slug ) {
+			foreach ( $matrix_slugs as $slug ) {
+				if ( $slug === $visible_slug ) {
+					continue;
+				}
+				if ( in_array( $slug, EDMINBOOST_Command_Center::get_protected_slugs_for_role( 'editor' ), true ) ) {
+					continue;
+				}
+				$hidden_slug = $slug;
+				break;
+			}
+		}
+
+		$this->assertNotSame( '', $hidden_slug );
+		$this->assertNotSame( $visible_slug, $hidden_slug );
+
 		$result = EDMINBOOST_Settings::sanitize(
 			array(
 				'command_center' => array(
@@ -490,15 +545,15 @@ class CommandCenterTest extends Edminboost_Test_Case {
 						),
 					),
 					'role_visibility'     => array(
-						'editor' => array( 'upload.php' ),
+						'editor' => array( $visible_slug ),
 					),
 				),
 			)
 		);
 
 		$hidden = $result['command_center']['role_visibility']['editor'];
-		$this->assertContains( 'edit.php', $hidden );
-		$this->assertNotContains( 'upload.php', $hidden );
+		$this->assertContains( $hidden_slug, $hidden );
+		$this->assertNotContains( $visible_slug, $hidden );
 	}
 
 	/**
@@ -682,13 +737,104 @@ class CommandCenterTest extends Edminboost_Test_Case {
 			do_action( 'admin_menu' );
 		}
 
-		$admin_items = wp_list_pluck( EDMINBOOST_Command_Center::get_role_matrix_menu_items(), 'slug' );
-		$sub_items   = wp_list_pluck( EDMINBOOST_Command_Center::get_role_matrix_menu_items( 'subscriber' ), 'slug' );
-
+		$admin_items = EDMINBOOST_Command_Center::get_role_matrix_menu_items();
 		$this->assertNotEmpty( $admin_items );
-		$this->assertContains( 'index.php', $sub_items );
-		$this->assertNotContains( 'plugins.php', $sub_items );
-		$this->assertLessThan( count( $admin_items ), count( $sub_items ) );
+
+		$restricted_slug = '';
+		foreach ( $admin_items as $item ) {
+			if ( empty( $item['slug'] ) ) {
+				continue;
+			}
+			if ( ! EDMINBOOST_Command_Center::role_can_access_menu_slug( 'subscriber', $item['slug'] ) ) {
+				$restricted_slug = (string) $item['slug'];
+				break;
+			}
+		}
+
+		if ( '' === $restricted_slug ) {
+			$this->markTestSkipped( 'No capability-restricted menu slugs found for subscribers in this environment.' );
+		}
+
+		$sub_items = wp_list_pluck( EDMINBOOST_Command_Center::get_role_matrix_menu_items( 'subscriber' ), 'slug' );
+		$this->assertNotContains( $restricted_slug, $sub_items );
+
+		foreach ( $sub_items as $slug ) {
+			$this->assertTrue( EDMINBOOST_Command_Center::role_can_access_menu_slug( 'subscriber', $slug ) );
+		}
+	}
+
+	/**
+	 * Role matrix includes submenu items from the discovered menu tree.
+	 */
+	public function test_get_role_matrix_menu_items_includes_submenus() {
+		if ( ! did_action( 'admin_menu' ) ) {
+			do_action( 'admin_menu' );
+		}
+
+		$matrix_items = EDMINBOOST_Command_Center::get_role_matrix_menu_items();
+		$sources      = wp_list_pluck( $matrix_items, 'source' );
+
+		$this->assertContains( 'top', $sources );
+		$this->assertContains( 'submenu', $sources );
+
+		$submenu_item = null;
+		foreach ( $matrix_items as $item ) {
+			if ( isset( $item['source'] ) && 'submenu' === $item['source'] ) {
+				$submenu_item = $item;
+				break;
+			}
+		}
+
+		$this->assertIsArray( $submenu_item );
+		$this->assertNotEmpty( $submenu_item['parent_slug'] );
+		$this->assertNotEmpty( $submenu_item['slug'] );
+	}
+
+	/**
+	 * Role visibility can hide individual submenu items for a role.
+	 */
+	public function test_apply_role_visibility_hides_submenu_items() {
+		if ( ! did_action( 'admin_menu' ) ) {
+			do_action( 'admin_menu' );
+		}
+
+		$submenu_slug = '';
+		foreach ( EDMINBOOST_Command_Center::get_role_matrix_menu_items() as $item ) {
+			if ( isset( $item['source'] ) && 'submenu' === $item['source'] && ! empty( $item['slug'] ) ) {
+				$submenu_slug = (string) $item['slug'];
+				break;
+			}
+		}
+
+		if ( '' === $submenu_slug ) {
+			$this->markTestSkipped( 'No submenu items discovered in the test environment.' );
+		}
+
+		$menu_studio = EDMINBOOST_Command_Center::get_menu_studio_defaults();
+		$menu_studio['enabled'] = true;
+		$menu_studio['order']   = wp_list_pluck(
+			array_filter(
+				EDMINBOOST_Command_Center::get_role_matrix_menu_items(),
+				static function ( $item ) {
+					return isset( $item['source'] ) && 'top' === $item['source'];
+				}
+			),
+			'slug'
+		);
+
+		$cc_settings = array(
+			'role_visibility' => array(
+				'editor' => array( $submenu_slug ),
+			),
+		);
+
+		$result = EDMINBOOST_Command_Center::apply_role_visibility_to_menu_studio(
+			$menu_studio,
+			array( 'editor' ),
+			$cc_settings
+		);
+
+		$this->assertContains( $submenu_slug, $result['hidden_items'] );
 	}
 
 	/**

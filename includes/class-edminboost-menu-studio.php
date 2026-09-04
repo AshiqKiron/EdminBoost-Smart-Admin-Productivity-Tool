@@ -151,6 +151,12 @@ class EDMINBOOST_Menu_Studio {
 				continue;
 			}
 
+			$parent_slug = EDMINBOOST_Command_Center::get_top_level_menu_slug( $menu_slug );
+			if ( '' !== $parent_slug && $parent_slug !== $menu_slug ) {
+				remove_submenu_page( $parent_slug, $menu_slug );
+				continue;
+			}
+
 			remove_menu_page( $menu_slug );
 		}
 

@@ -53,7 +53,8 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
-* Expand Pro plan feature list on the Billing page with numbered catalog highlights (layout presets, theme skins, badge counters, and more).
+* Remove in-plugin Free vs Pro feature gating — the free WordPress.org build includes all Command Center and feature tools with no Freemius or license code.
+* Redirect the Billing admin page to the external upgrade URL (`EDMINBOOST_UPGRADE_URL`); CC nav opens the same link in a new tab.
 * Save the current top bar and sidebar layout as a named custom preset from the Layout Presets page; rename saved presets inline from the preset actions row.
 * Fix visual theme accent colors not applying to core wp-admin UI on the Plugins screen and other admin pages (active plugin rows, buttons, links, and form focus states now follow the selected theme).
 * Fix Menu Studio sidebar colors staying active after Reset to defaults and Save when "Apply custom sidebar colors" is turned off.
@@ -70,11 +71,12 @@ Yes. When uninstalled, all plugin options are removed from the database.
 * Add a live dashboard widgets preview on the Productivity tab that reflects the master toggle and per-widget removal checkboxes.
 * Disable White Label system status footer and plugin rebranding fields until the master branding toggle is enabled.
 * Remove the White Label lock setting that hid the page until plugin reactivation.
+* Add a live preview to White Label system status footer toggles so IP, PHP, WordPress, and memory details appear as you enable them.
 * Add a live preview to White Label plugin rebranding so name, description, author, URL, and menu label updates appear as you type.
 * Remove login screen branding from White Label (logo and background color).
 * Filter Layout Presets role visibility defaults by each user role's WordPress capabilities; restricted items start unchecked but can be enabled manually.
-* Redesign the Layouts page “Who sees what” section: roles on the left, top-level menu checkboxes on the right in a scrollable matrix with labeled column headers.
-* Role visibility matrix now lists every top-level sidebar menu item, even when Menu Studio hides items from the live admin sidebar.
+* Redesign the Layouts page “Who sees what” section: roles on the left, sidebar menu checkboxes on the right in a scrollable matrix with labeled column headers.
+* Role visibility matrix now lists every sidebar menu item (top-level and submenu), even when Menu Studio hides items from the live admin sidebar.
 * Role visibility checkboxes stay enabled when an item is outside the assigned preset; they start unchecked instead of being disabled.
 * Add a Billing page with Free ($0), Pro ($49 / 1 site), and Agency ($99 / 10 sites) plans in the Command Center and EdminBoost sidebar menu.
 * Fix top bar icons not rendering for plugin menus that use SVG or image sidebar icons.

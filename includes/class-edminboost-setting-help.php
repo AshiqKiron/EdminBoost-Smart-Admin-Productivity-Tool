@@ -144,7 +144,7 @@ class EDMINBOOST_Setting_Help {
 			// Layout presets.
 			'layout_preset'              => __( 'Apply a built-in or saved template that configures the top bar and left sidebar menu. Use Top Bar and Menu Studio for custom granular control.', EDMINBOOST_TEXT_DOMAIN ),
 			'role_assignments'           => __( 'Assign a layout preset per user role. The first matching role for a logged-in user determines their top bar layout and sidebar menu visibility.', EDMINBOOST_TEXT_DOMAIN ),
-			'role_visibility'            => __( 'Hide specific top-level admin menu items from selected roles. Checked items remain visible in the top bar and sidebar for that role. Items outside the assigned preset start unchecked but can still be enabled. Items the role cannot access by default also start unchecked—you may enable them manually.', EDMINBOOST_TEXT_DOMAIN ),
+			'role_visibility'            => __( 'Hide specific admin menu items from selected roles. Checked items remain visible in the top bar and sidebar for that role, including individual submenu pages. Items outside the assigned preset start unchecked but can still be enabled. Items the role cannot access by default also start unchecked—you may enable them manually.', EDMINBOOST_TEXT_DOMAIN ),
 
 			// Top bar mapper.
 			'discovered_pages'           => __( 'Admin menu pages scanned from your sidebar. Toggle or drag items onto the top bar canvas.', EDMINBOOST_TEXT_DOMAIN ),

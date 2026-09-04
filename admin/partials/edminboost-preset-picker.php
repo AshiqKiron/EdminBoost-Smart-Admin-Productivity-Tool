@@ -174,9 +174,13 @@ $preview_aria    = sprintf(
 								} else {
 									$badge_label = __( 'Saved', EDMINBOOST_TEXT_DOMAIN );
 								}
+								$option_classes  = 'edminboost-layout-preset-picker__option';
+								if ( $is_selected ) {
+									$option_classes .= ' is-selected';
+								}
 								?>
 								<li
-									class="edminboost-layout-preset-picker__option<?php echo $is_selected ? ' is-selected' : ''; ?>"
+									class="<?php echo esc_attr( $option_classes ); ?>"
 									role="option"
 									tabindex="-1"
 									data-value="<?php echo esc_attr( $preset_id ); ?>"

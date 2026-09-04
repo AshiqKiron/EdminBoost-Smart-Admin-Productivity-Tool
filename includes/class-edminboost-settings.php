@@ -284,7 +284,9 @@ class EDMINBOOST_Settings {
 		 * @param array $sanitized Sanitized settings.
 		 * @param array $input     Raw input.
 		 */
-		return apply_filters( 'edminboost_sanitize_settings', $sanitized, $input );
+		$sanitized = apply_filters( 'edminboost_sanitize_settings', $sanitized, $input );
+
+		return $sanitized;
 	}
 
 	/**

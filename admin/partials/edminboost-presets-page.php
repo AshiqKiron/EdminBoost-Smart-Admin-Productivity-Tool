@@ -41,7 +41,7 @@ $has_matrix        = ! empty( $matrix_items );
 		</div>
 		<div class="edminboost-cc-hero__actions">
 			<div class="edminboost-save-preset" id="edminboost-save-preset">
-				<button type="button" class="button edminboost-save-preset__trigger" id="edminboost-save-preset-btn" <?php echo $has_layout ? '' : 'disabled'; ?>>
+				<button type="button" class="button edminboost-save-preset__trigger" id="edminboost-save-preset-btn" <?php disabled( ! $has_layout ); ?>>
 					<?php esc_html_e( 'Save current layout as preset', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</button>
 				<div class="edminboost-save-preset__form" id="edminboost-save-preset-form">
@@ -102,16 +102,30 @@ $has_matrix        = ! empty( $matrix_items );
 								</th>
 								<?php foreach ( $matrix_items as $item ) : ?>
 									<?php
-									$item_slug  = isset( $item['slug'] ) ? $item['slug'] : '';
-									$item_label = isset( $item['label'] ) ? $item['label'] : $item_slug;
+									$item_slug       = isset( $item['slug'] ) ? $item['slug'] : '';
 									if ( '' === $item_slug ) {
 										continue;
 									}
+									$item_label      = isset( $item['label'] ) ? $item['label'] : $item_slug;
+									$item_source     = isset( $item['source'] ) ? $item['source'] : 'top';
+									$is_submenu      = 'submenu' === $item_source;
+									$parent_label    = isset( $item['parent_label'] ) ? $item['parent_label'] : '';
+									$column_classes  = 'edminboost-role-matrix__menu-col';
+									if ( $is_submenu ) {
+										$column_classes .= ' is-submenu';
+									}
 									?>
-									<th scope="col" class="edminboost-role-matrix__menu-col">
+									<th scope="col" class="<?php echo esc_attr( $column_classes ); ?>">
 										<span class="edminboost-role-matrix__menu-heading">
-											<span class="dashicons <?php echo esc_attr( isset( $item['icon'] ) ? $item['icon'] : 'dashicons-admin-generic' ); ?>" aria-hidden="true"></span>
-											<span class="edminboost-role-matrix__menu-label"><?php echo esc_html( $item_label ); ?></span>
+											<?php if ( ! $is_submenu ) : ?>
+												<span class="dashicons <?php echo esc_attr( isset( $item['icon'] ) ? $item['icon'] : 'dashicons-admin-generic' ); ?>" aria-hidden="true"></span>
+											<?php endif; ?>
+											<span class="edminboost-role-matrix__menu-label">
+												<?php if ( $is_submenu && '' !== $parent_label ) : ?>
+													<span class="edminboost-role-matrix__menu-parent"><?php echo esc_html( $parent_label ); ?></span>
+												<?php endif; ?>
+												<span class="edminboost-role-matrix__menu-name"><?php echo esc_html( $item_label ); ?></span>
+											</span>
 										</span>
 									</th>
 								<?php endforeach; ?>
@@ -153,6 +167,9 @@ $has_matrix        = ! empty( $matrix_items );
 											continue;
 										}
 										$item_label      = isset( $item['label'] ) ? $item['label'] : $item_slug;
+										$item_source     = isset( $item['source'] ) ? $item['source'] : 'top';
+										$is_submenu      = 'submenu' === $item_source;
+										$parent_label    = isset( $item['parent_label'] ) ? $item['parent_label'] : '';
 										$can_access      = EDMINBOOST_Command_Center::role_can_access_menu_slug( $role_key, $item_slug );
 										$hidden_for_role = isset( $role_visibility[ $role_key ] ) && is_array( $role_visibility[ $role_key ] )
 											? $role_visibility[ $role_key ]
@@ -160,7 +177,7 @@ $has_matrix        = ! empty( $matrix_items );
 										$has_saved_visibility = array_key_exists( $role_key, $role_visibility );
 										$is_hidden            = in_array( $item_slug, $hidden_for_role, true );
 										$protected_slugs      = EDMINBOOST_Command_Center::get_protected_slugs_for_role( $role_key );
-										$is_protected         = in_array( $item_slug, $protected_slugs, true );
+										$is_protected         = ! $is_submenu && in_array( $item_slug, $protected_slugs, true );
 										$field_id             = 'edminboost_vis_' . sanitize_html_class( $role_key . '_' . $item_slug );
 
 										if ( $is_protected ) {
@@ -172,6 +189,9 @@ $has_matrix        = ! empty( $matrix_items );
 										}
 
 										$cell_classes = 'edminboost-role-matrix__check';
+										if ( $is_submenu ) {
+											$cell_classes .= ' is-submenu';
+										}
 										if ( $is_protected ) {
 											$cell_classes .= ' is-protected';
 										} elseif ( ! $can_access ) {
@@ -185,14 +205,26 @@ $has_matrix        = ! empty( $matrix_items );
 											<label class="edminboost-role-matrix__check-label" for="<?php echo esc_attr( $field_id ); ?>">
 												<span class="screen-reader-text">
 													<?php
-													echo esc_html(
-														sprintf(
-															/* translators: 1: role name, 2: item label */
-															__( 'Show %2$s for %1$s', EDMINBOOST_TEXT_DOMAIN ),
-															$role_label,
-															$item_label
-														)
-													);
+													if ( $is_submenu && '' !== $parent_label ) {
+														echo esc_html(
+															sprintf(
+																/* translators: 1: role name, 2: parent menu label, 3: submenu label */
+																__( 'Show %2$s › %3$s for %1$s', EDMINBOOST_TEXT_DOMAIN ),
+																$role_label,
+																$parent_label,
+																$item_label
+															)
+														);
+													} else {
+														echo esc_html(
+															sprintf(
+																/* translators: 1: role name, 2: item label */
+																__( 'Show %2$s for %1$s', EDMINBOOST_TEXT_DOMAIN ),
+																$role_label,
+																$item_label
+															)
+														);
+													}
 													?>
 												</span>
 												<input
@@ -214,7 +246,7 @@ $has_matrix        = ! empty( $matrix_items );
 					</table>
 				</div>
 				<p class="description">
-					<?php esc_html_e( 'Checked menu items stay visible in the top bar and sidebar for that role. Uncheck to hide tools from clients or editors. Items not included in the assigned preset start unchecked; you can still enable them manually. Items this role cannot access by default appear unchecked—you may enable them if needed.', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Checked menu items stay visible in the top bar and sidebar for that role. Uncheck to hide tools from clients or editors. Submenu columns control individual pages under a parent menu. Items not included in the assigned preset start unchecked; you can still enable them manually. Items this role cannot access by default appear unchecked—you may enable them if needed.', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</p>
 			<?php endif; ?>
 		</section>

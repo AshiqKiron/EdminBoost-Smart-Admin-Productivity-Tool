@@ -97,6 +97,7 @@ $drawer_width_custom = max(
 			<?php require EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-animation-speed-field.php'; ?>
 
 			<label class="edminboost-checkbox-row" for="edminboost_glassmorphism">
+				<?php EDMINBOOST_Setting_Help::echo_icon( 'glassmorphism' ); ?>
 				<input
 					type="checkbox"
 					id="edminboost_glassmorphism"
@@ -104,7 +105,6 @@ $drawer_width_custom = max(
 					value="1"
 					<?php checked( ! empty( $behavior['glassmorphism'] ) ); ?>
 				/>
-				<?php EDMINBOOST_Setting_Help::echo_icon( 'glassmorphism' ); ?>
 				<?php esc_html_e( 'Enable backdrop blur', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</label>
 

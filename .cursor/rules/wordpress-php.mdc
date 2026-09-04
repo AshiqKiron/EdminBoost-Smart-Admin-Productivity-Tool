@@ -39,7 +39,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Privileged AJAX: `wp_ajax_edminboost_cc_drawer_preview` on `EDMINBOOST_Command_Center_Bar` (Layout Studio drawer preview); `wp_ajax_edminboost_save_settings` on `EDMINBOOST_Admin` (CC + settings AJAX save); `wp_ajax_edminboost_load_cc_page` on `EDMINBOOST_Admin` (CC tab HTML without full reload); `wp_ajax_edminboost_export_settings` / `wp_ajax_edminboost_import_settings` on `EDMINBOOST_Admin` (Settings JSON backup).
 - Use Settings API for options (`register_setting`, `add_settings_section`, `add_settings_field`).
 - Enqueue assets with `EDMINBOOST_VERSION` as the version string.
-- Pass data to JS via `wp_localize_script()` — `edminboostData` on plugin screens (includes `themeSettings` from `EDMINBOOST_Theme::get_settings()`); `edminboostCcBar` on the live CC bar drawer script. AJAX save (`ajax_save_settings`) returns `theme`, `active_layout_preset`, refreshed `presets`, and related keys via `build_ajax_save_response()`.
+- Pass data to JS via `wp_localize_script()` — `edminboostData` on plugin screens (includes `isPro`, `billingUrl`, `canSaveCustomPreset`, `themeSettings`, preset/theme `requiresPro` flags); `edminboostCcBar` on the live CC bar drawer script. AJAX save (`ajax_save_settings`) returns `theme`, `active_layout_preset`, refreshed `presets`, and related keys via `build_ajax_save_response()`.
 - Page slugs: use `EDMINBOOST_Admin::PAGE_SLUG` and `EDMINBOOST_Command_Center::PAGE_*` suffixes.
 
 ## Class Wiring
@@ -51,6 +51,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Menu Studio: `EDMINBOOST_Menu_Studio::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - Visual theme: `EDMINBOOST_Theme::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - White label: `EDMINBOOST_White_Label::register_hooks()` in `EDMINBOOST_Plugin::run()`.
+- Pro gating: `EDMINBOOST_Pro` — static helpers only; required in bootstrap; no hooks. Plan enforcement runs in `EDMINBOOST_Settings::sanitize()` and runtime CC/Menu Studio resolution.
 - Setting help: `EDMINBOOST_Setting_Help` — static helpers only; required in bootstrap; no hooks.
 - Admin submenu order: `EDMINBOOST_Admin::normalize_plugin_submenu()` on `admin_menu` priority 999 in `EDMINBOOST_Plugin::run()`.
 - Plugins screen row meta: `plugin_row_meta` → `EDMINBOOST_Admin::add_plugin_row_meta()` adds Docs link (`EDMINBOOST_PLUGIN_DOCS_URL`, `target="_blank"`, `rel="noopener noreferrer"`).
@@ -132,7 +133,7 @@ array(
 
 - `_apply_preset` (wizard or apply): replaces `top_bar_items` + `menu_studio` from preset on save; does not merge prior sidebar config (`sanitize_menu_studio( …, null )`). Runtime `resolve_menu_studio_for_user()` re-merges stored `custom_items` via `merge_saved_custom_menu_items()` when a role preset is assigned.
 - `_layout_studio_save` / `_menu_studio_save` markers gate top bar / sidebar writes so other CC pages do not clobber saved layouts.
-- Menu Studio save with `use_colors` disabled resets `menu_studio.colors` to defaults (avoids stale custom sidebar colors).
+- Menu Studio save with `use_colors` disabled resets `menu_studio.colors` to defaults (legacy path — current UI always submits hidden `use_colors=1`).
 - `_save_custom_preset[name]` appends a new `custom_*` preset from current layout; `_rename_custom_preset[id|name]` renames a saved custom preset label.
 - Partial `theme.preset` to a built-in skin clears stale `use_custom_colors` (Dashboard overview AJAX saves omit the legacy flag).
 - `apply_preset()` programmatic helper delegates to the same `_apply_preset` sanitize path.
@@ -143,9 +144,9 @@ array(
 - Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php` (with `edminboost-theme-extras-preview.php`) and `edminboost-declutter-settings.php` (with `edminboost-declutter-preview.php`; panel/badge behavior fields moved to Top Bar).
 - Top Bar: `edminboost-mapper-page.php` — expects `$cc_settings`, `$current_page`; includes `#edminboost-mapper-look` with `edminboost-home-advanced-look.php` for drawer width, badge style, and animation speed (`command_center.behavior`).
 - Settings: `edminboost-settings-page.php` — expects `$cc_settings`, `$current_page`; JSON export/import only (paste or file). CC save forms include hidden `edminboost_settings[enabled]=1` so partial saves do not disable the plugin.
-- Feature pages: `edminboost-{productivity,security,performance}-page.php` — include `edminboost-feature-fields.php` with `$section`. Productivity admin-notices fieldset includes `edminboost-productivity-preview.php` (`$preview`: `admin_notices`; `$features`). Performance emoji/assets fieldsets include `edminboost-performance-preview.php` (`$preview`: `emoji`|`assets`; `$features`). Both preview partials use theme colors via `EDMINBOOST_Theme::resolve_preview_colors()`.
-- White Label: `edminboost-white-label-page.php` — expects `$cc_settings`, `$current_page`; fields under `white_label`; includes `edminboost-white-label-plugin-preview.php` (`$wl`, `$defaults` from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).
-- Billing: `edminboost-billing-page.php` — expects `$cc_settings`, `$current_page`; plans from `EDMINBOOST_Command_Center::get_billing_plans()`.
+- Feature pages: `edminboost-{productivity,security,performance}-page.php` — include `edminboost-feature-fields.php` with `$section`. Productivity fieldsets include `edminboost-productivity-preview.php` (`$preview`: `admin_notices`|`screen`|`dashboard_widgets`; `$features`). Performance emoji/assets fieldsets include `edminboost-performance-preview.php` (`$preview`: `emoji`|`assets`; `$features`). Both preview partials use theme colors via `EDMINBOOST_Theme::resolve_preview_colors()`.
+- White Label: `edminboost-white-label-page.php` — expects `$cc_settings`, `$current_page`; Pro-gated form; fields under `white_label`; includes `edminboost-white-label-status-preview.php` and `edminboost-white-label-plugin-preview.php` (`$wl`, `$defaults` from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).
+- Billing: `edminboost-billing-page.php` — expects `$cc_settings`, `$current_page`; plans from `get_billing_plans()`, comparison rows from `get_billing_comparison_rows()`, upgrade URL from `get_upgrade_url()`; CTAs via `edminboost-billing-plan-cta.php`.
 - Command Center pages: expect `$cc_settings`, `$current_page` (set by `render_command_center_page()`).
 - Form actions: `edminboost-form-actions.php` — shared Save + Reset footer; set `$save_label`, `$wrapper_tag` (`p`|`footer`|`div`), `$wrapper_class` before include.
 - Setup wizard partials: `edminboost-setup-wizard.php` (includes `edminboost-preset-picker.php`, `edminboost-theme-settings.php`, `edminboost-topbar-summary.php`, `edminboost-setup-review.php`).

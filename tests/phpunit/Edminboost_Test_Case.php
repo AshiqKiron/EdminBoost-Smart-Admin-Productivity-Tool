@@ -23,6 +23,13 @@ abstract class Edminboost_Test_Case extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Tear down filters between tests.
+	 */
+	public function tearDown(): void {
+		parent::tearDown();
+	}
+
+	/**
 	 * Seed default plugin settings.
 	 *
 	 * @param array $overrides Settings overrides.

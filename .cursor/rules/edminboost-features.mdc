@@ -53,6 +53,7 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 | Structured + text | `admin_footer` | `enabled` + non-empty `text` |
 | Structured + scope | `disable_emojis` | `enabled` + `scope` (`admin`, `frontend`, `both`) |
 | Structured + post types | `post_duplicator`, `disable_comments`, `post_order` | `enabled` + selected post types |
+| Pro-gated | `login_redirects` | requires `EDMINBOOST_Pro::is_active()` + master `enabled` toggle |
 
 Sidebar hide/reorder lives in Menu Studio (`command_center.menu_studio`), not the feature registry — see `edminboost-command-center.mdc`. Admin bar cleanup toggles live in Theme/Appearance (`command_center.behavior` declutter keys); drawer width, badge style, and animation speed UI live on Top Bar — legacy `features.admin_bar` migrates on read.
 
@@ -72,9 +73,9 @@ Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, S
 
 | ID | Class | Hooks |
 |----|-------|-------|
-| `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` (inline CSS; preserves error/warning notices); Productivity UI: live preview item `data-preview="hide_admin_notices"` in `#edminboost-productivity-admin-notices-preview` |
-| `hide_screen_help` | `EDMINBOOST_Hide_Screen_Help` | `admin_head` (hides Screen Options + Help tabs); Productivity UI: live preview item `data-preview="hide_screen_help"` in `#edminboost-productivity-admin-notices-preview` |
-| `dashboard_widgets` | `EDMINBOOST_Dashboard` | `wp_dashboard_setup` (99), `admin_init`; Productivity UI: master `#edminboost_dashboard_widgets_enabled` + dependent `#edminboost-dashboard-widgets-options` (`.edminboost-dependent-section`; disabled until toggle on — see `initProductivityFeatures` in `admin-assets.mdc`) |
+| `hide_admin_notices` | `EDMINBOOST_Hide_Notices` | `admin_enqueue_scripts` (inline CSS; preserves error/warning notices); Productivity UI: live preview in `#edminboost-productivity-notices-preview` |
+| `hide_screen_help` | `EDMINBOOST_Hide_Screen_Help` | `admin_head` (hides Screen Options + Help tabs); Productivity UI: live preview in `#edminboost-productivity-screen-preview` |
+| `dashboard_widgets` | `EDMINBOOST_Dashboard` | `wp_dashboard_setup` (99), `admin_init`; Productivity UI: master `#edminboost_dashboard_widgets_enabled` + dependent `#edminboost-dashboard-widgets-options` + live preview `#edminboost-productivity-dashboard-preview` |
 | `admin_footer` | `EDMINBOOST_Admin_Footer` | `admin_footer_text`; Productivity UI: master `#edminboost_admin_footer_enabled` + dependent `#edminboost-admin-footer-options` (`.edminboost-dependent-section`) |
 | `post_duplicator` | `EDMINBOOST_Post_Duplicator` | `post_row_actions`, `page_row_actions`, `admin_action_edminboost_duplicate_post` |
 | `classic_widgets` | `EDMINBOOST_Classic_Widgets` | `after_setup_theme` (disables block widgets) |
@@ -89,7 +90,7 @@ Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, S
 | `disable_xmlrpc` | `EDMINBOOST_Disable_Xmlrpc` | `xmlrpc_enabled`, `wp_headers` |
 | `disable_feeds` | `EDMINBOOST_Disable_Feeds` | `do_feed*` actions |
 | `rest_api_hardening` | `EDMINBOOST_Rest_Api_Hardening` | `rest_authentication_errors`, `rest_index` |
-| `login_redirects` | `EDMINBOOST_Login_Redirects` | `login_redirect`, `wp_logout`; Security UI: master `#edminboost_login_redirects_enabled` + dependent `#edminboost-login-redirects-options` (`.edminboost-dependent-section`; disabled until toggle on — see `initSecurityFeatures` in `admin-assets.mdc`) |
+| `login_redirects` | `EDMINBOOST_Login_Redirects` | `login_redirect`, `wp_logout`; Security UI: Pro-gated fieldset (`login_redirects` feature key) with master `#edminboost_login_redirects_enabled` + dependent `#edminboost-login-redirects-options` (`.edminboost-dependent-section`; disabled until toggle on — see `initSecurityFeatures` in `admin-assets.mdc`); `EDMINBOOST_Feature_Settings::is_enabled()` returns false on Free |
 | `disable_comments` | `EDMINBOOST_Disable_Comments` | `admin_init`, `wp_before_admin_bar_render`, filters on comments |
 
 ### Performance

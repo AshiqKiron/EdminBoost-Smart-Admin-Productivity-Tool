@@ -17,14 +17,20 @@ $nav_items = EDMINBOOST_Command_Center::get_nav_items();
 	<ul class="edminboost-cc-nav__list">
 		<?php foreach ( $nav_items as $item ) : ?>
 			<?php
-			$is_active = ( $current_page === $item['slug'] );
-			$url       = admin_url( 'admin.php?page=' . $item['slug'] );
+			$is_active  = ( $current_page === $item['slug'] );
+			$is_external = ! empty( $item['external'] ) && ! empty( $item['url'] );
+			$url        = $is_external ? $item['url'] : admin_url( 'admin.php?page=' . $item['slug'] );
 			?>
 			<li class="edminboost-cc-nav__item">
 				<a
 					class="edminboost-cc-nav__link<?php echo $is_active ? ' is-active' : ''; ?>"
 					href="<?php echo esc_url( $url ); ?>"
 					data-edminboost-page="<?php echo esc_attr( $item['slug'] ); ?>"
+					<?php if ( $is_external ) : ?>
+						target="_blank"
+						rel="noopener noreferrer"
+						data-edminboost-external="1"
+					<?php endif; ?>
 					<?php echo $is_active ? ' aria-current="page"' : ''; ?>
 				>
 					<?php echo esc_html( $item['label'] ); ?>

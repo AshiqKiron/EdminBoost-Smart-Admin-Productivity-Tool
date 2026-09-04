@@ -16,7 +16,7 @@ alwaysApply: false
 - On `DOMContentLoaded`, call `initCommandCenterNav()`, `initPickerCloseOnScroll()`, `reinitEdminboostPage( root )`, and `primeCommandCenterHistory()`.
 - `reinitEdminboostPage( root )` sets `data-edminboost-ready="true"`, sets `autocomplete="off"` on CC/settings forms, runs `restoreFormControlDefaults()` (syncs controls to server-rendered `default*` attributes, then re-dispatches `change` after a tick for live previews), and runs all page inits — also called after CC tab AJAX swaps.
 - Module refs: `syncPresetCatalogFn`, `syncThemeSettingsFn` (set by `initLayoutPresetPicker` / `initTheme`; called from `applySettingsSaveResult()`), `syncThemeExtrasPreviewFn` (set by `initThemeExtras`; called from `updateThemePreview()`), `syncDeclutterPreviewThemeFn` (set by `initDeclutterPreview`; called from `updateThemePreview()`), `pendingDashboardOverviewSave` (in-flight overview save Promise; CC nav waits before swapping tabs).
-- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Top Bar page panel/badges), `initTheme`, `initThemeExtras` (Appearance extras live preview + schedule dependent section), `initDeclutterPreview` (Appearance declutter live preview), `initWhiteLabel` (White Label master toggle + live rebrand preview), `initSecurityFeatures` (Security login redirects master toggle), `initProductivityFeatures` (Productivity admin notices live preview + dashboard widgets + admin footer master toggles), `initPerformanceFeatures` (Performance emoji scope + asset toggle live previews), `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initFormResetButtons` (Reset to defaults confirm + CC tab reload), `initBackupSettings` (Settings export/import) — each no-ops if target elements are absent.
+- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Top Bar page panel/badges), `initTheme`, `initThemeExtras` (Appearance extras live preview + schedule dependent section), `initDeclutterPreview` (Appearance declutter live preview), `initWhiteLabel` (White Label master toggle + status/rebrand live previews), `initSecurityFeatures` (Security login redirects master toggle), `initProductivityFeatures` (Productivity stacked live previews + dashboard widgets + admin footer master toggles), `initPerformanceFeatures` (Performance emoji scope + asset toggle live previews), `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initFormResetButtons` (Reset to defaults confirm + CC tab reload), `initBackupSettings` (Settings export/import), `initProLocks` (Free-tier `.is-pro-locked` section disabling) — each no-ops if target elements are absent.
 - `initBehavior` delegates to `initBehaviorBadgePreview` (toggle badge style previews), `initBehaviorDrawerWidthCustom` (custom width slider + live preview), and `initBehaviorAnimationSpeed` (animation speed listbox + drawer micro-previews).
 
 `edminboostData` shape:
@@ -24,6 +24,9 @@ alwaysApply: false
 ```javascript
 {
 	version: string,
+	isPro: boolean,           // EDMINBOOST_Pro::is_active()
+	billingUrl: string,       // EDMINBOOST_Pro::get_billing_url()
+	canSaveCustomPreset: boolean,
 	currentPage: string,
 	optionName: 'edminboost_settings',
 	strings: {
@@ -32,6 +35,7 @@ alwaysApply: false
 		customLinkAnchorInvalid, customLinkDuplicate, drawerPreviewFailed,
 		drawerWidthPreviewCaption, settingsSaved, settingsSaveFailed,
 		presetApplied, presetNameRequired, presetSaved, presetDuplicated, skinSaved,
+		proPresetLocked, proThemeLocked,
 		emptyMenuCanvas, removeFromSidebar, customMenuPathRequired, customMenuLabelRequired,
 		customMenuPathInvalid, customMenuDuplicate, selectLayoutPreset, saveAndLaunch,
 		presetBadgeBuiltIn, presetBadgeSaved, presetBadgeVirtual, emptyLayoutPreview,
@@ -39,12 +43,12 @@ alwaysApply: false
 		pageLoading, pageLoadFailed,
 		formResetConfirm, formResetConfirmYes, formResetCancel
 	},
-	presets: object,          // resolved preset layouts for JS (top_bar_items, sidebar_items, menu_studio, visible_*_slugs)
+	presets: object,          // resolved preset layouts for JS (top_bar_items, sidebar_items, menu_studio, visible_*_slugs, requiresPro)
 	roleMatrix: {             // Layout Presets role visibility matrix
 		protectedSlugs, protectedSlugsByRole, accessibleSlugsByRole
 	},
 	presetCategories: object, // category labels from EDMINBOOST_Command_Center::get_preset_categories()
-	themePresets: object,     // from EDMINBOOST_Theme::get_presets_for_js()
+	themePresets: object,     // from EDMINBOOST_Theme::get_presets_for_js() (includes requiresPro)
 	themeColorLabels: object, // from EDMINBOOST_Theme::get_color_labels()
 	themeSettings: object,    // from EDMINBOOST_Theme::get_settings() — current theme preset/mode/font/custom colors
 	settingsSave: { ajaxUrl, action: 'edminboost_save_settings' },
@@ -90,18 +94,21 @@ alwaysApply: false
 - Dashboard: `.edminboost-home-wrap` (+ `.edminboost-home-wrap--wizard` before setup), `.edminboost-home-hero`, `.edminboost-dashboard-overview`, `.edminboost-overview-grid`, `.edminboost-overview-card`, `.edminboost-overview-card__preview`.
 - Overview previews: `.edminboost-overview-theme-preview` (+ `__bar`, `__layout`, `__sidebar`, `__main`, `__accent`, `__line`, `__swatches`, `__swatch`), `.edminboost-overview-topbar-preview` (+ `__canvas`, `__brand`, `__items`, `__item`, `__tip`, `__tooltip`, `__badge`, `__more`, `__profile`, `--compact`, `--empty`), `.edminboost-overview-sidebar-preview` (+ `__list`, `__item`, `__label`, `__more`, `__empty`, `--empty`).
 - Top bar preview tooltips: use child `<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip">` (not `title`); visible on hover/focus-within in `--compact` mode only; canvas/items use `overflow: visible` so tooltips are not clipped.
-- Setting help: `.edminboost-setting-info` (+ `__trigger`, `__tooltip`); hover/focus reveals tooltip.
+- Setting help: `.edminboost-setting-info` (+ `__trigger`, `__tooltip`); hover/focus reveals tooltip; icon uses `flex-shrink: 0` + centered alignment; labels/descriptions with icons use `:has(.edminboost-setting-info)` inline-flex alignment.
 - Overview pickers: `.edminboost-overview-theme-picker`, `.edminboost-overview-topbar-links-picker` (+ `__toggle`, `__label`, `__list`, `__option`, `__option-main`, `__option-name`, `__option-meta`, `__empty`).
 - CC tab loading: `.edminboost-cc-nav.is-loading`, `.edminboost-wrap.is-cc-loading`.
 - Dependent sections: `.edminboost-cc-section.is-disabled`, `.edminboost-dependent-section.is-disabled` (opacity + pointer-events off + `user-select: none`; White Label and Top Bar Panel & badges use `.edminboost-cc-section` — `#edminboost-mapper-look`; scheduled dark mode time fields use `.edminboost-dependent-section` on `#edminboost-theme-schedule-options`; Security login redirects, dashboard widgets, and admin footer use `.edminboost-dependent-section` on `#edminboost-login-redirects-options`, `#edminboost-dashboard-widgets-options`, and `#edminboost-admin-footer-options`).
 - White Label rebrand: `.edminboost-wl-rebrand-layout` (+ `__fields`, `__row`, `__field`), `.edminboost-wl-rebrand-preview` (+ `__lead`, `__panel`, `__heading`, `__plugin-row`, `__plugin-title`, `__plugin-version`, `__plugin-meta`, `__plugin-author`, `__menu`, `__menu-item.is-target`); stacks at `960px`.
+- White Label status preview: `.edminboost-wl-status-layout` (+ `__fields`), `.edminboost-wl-status-preview` (+ `__lead`, `__desc`, `__footer`, `__credit`, `__status`, `__line`, `__segment`, `__segment-text`, `__tooltip`, `__empty`; `.is-empty` when no segments enabled); `#edminboost-wl-status-preview`.
+- Productivity previews: `.edminboost-productivity-preview` (+ `__lead`, `__canvas`, `__viewport`, `__topbar`, `__main`, `__notices`, `__notice`, `__screen-meta`, `__screen-tab`, `__dashboard`, `__dashboard-area`, `__widget`, `__tooltip`; modifiers `--admin_notices`, `--screen`, `--dashboard_widgets`; `.is-removed` on hideable items); stacked field layouts `.edminboost-productivity-layout` (+ `--stacked`).
 - Setup wizard: `.edminboost-setup-wizard`, `.edminboost-setup-stepper` (+ `__item`, `__number`, `__label`), `.edminboost-setup-step`, `.edminboost-setup-wizard__footer`, `.edminboost-setup-review__*`, `.edminboost-preset-picker` (+ `--wizard` / `--full`, compact listbox + embedded top bar preview).
-- Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row`, `.edminboost-checkbox-grid`, `.edminboost-select-rows` (+ `.edminboost-select-row` two-column label/select grid for grouped dropdowns such as Heartbeat control).
+- Settings form: `.edminboost-fieldset`, `.edminboost-checkbox-row` (center-aligned by default; rows with `.edminboost-checkbox-row__main` stay top-aligned), `.edminboost-checkbox-grid`, `.edminboost-select-rows` (+ `.edminboost-select-row` two-column label/select grid for grouped dropdowns such as Heartbeat control).
 - Command Center: `.edminboost-cc-wrap`, `.edminboost-cc-nav`, `.edminboost-cc-hero`, `.edminboost-cc-footer`.
 - Form actions: `.edminboost-form-actions` (flex Save + Reset row), `.edminboost-form-reset`, `.edminboost-form-reset-notice` (+ `__message`, `__actions`, `.edminboost-form-reset-confirm`, `.edminboost-form-reset-cancel`; dismissible warning notice inserted above actions; Escape cancels).
-- Billing: `.edminboost-billing-current`, `.edminboost-billing-plans`, `.edminboost-billing-plan` (+ `__badge`, `__header`, `__price`, `__features`, `__footer`, `__upgrade`; modifiers `.is-featured`, `.is-current`).
+- Billing: `.edminboost-billing-current`, `.edminboost-billing-plans`, `.edminboost-billing-plan` (+ `__badge`, `__header`, `__price`, `__features`, `__footer`, `__upgrade`; modifiers `.is-featured`, `.is-current`); comparison table `.edminboost-billing-comparison` (+ `__lead`, `__legend`, `__wrap`, `__table`, `__feature-col`, `__plan-col`, `__plan-name`, `__plan-price`, `__plan-current`, `__heading-row`, `__feature-row`, `__feature-label`, `__feature-detail`, `__status` with `.is-included` / `.is-excluded`, `__value`, `__cta-row`, `__cta`; plan column modifiers `.is-plan-{free|pro|agency}`, `.is-featured`, `.is-current`).
+- Pro gating: `.edminboost-pro-badge`, `.edminboost-pro-upgrade`, `.edminboost-pro-section.is-pro-locked` (controls disabled via `initProLocks` + `syncDependentSection`); preset pickers `.edminboost-layout-preset-picker__option.is-pro-locked`, `.edminboost-theme-preset-picker__option.is-pro-locked`; role matrix `.edminboost-role-matrix__check.is-pro-locked`.
 - Mapper: `.edminboost-mapper-layout`, `.edminboost-mapper-search`, `.edminboost-discovered-list`, `.edminboost-discovered-item` (+ `__toggle`, `__checkbox`, `__handle`, `__icon`), `.edminboost-topbar-canvas` (+ `.is-drag-over`), `.edminboost-topbar-item`, `.edminboost-item-drawer`, `.edminboost-topbar-summary`.
-- Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-save-preset` (+ `__trigger`, `__form`, `__label`, `__input`; `.is-editing` toggles inline name form), `.edminboost-rename-preset` (+ `__label`, `__input`; `[hidden]` when preset is not a saved custom preset), `.edminboost-role-matrix-wrap`, `.edminboost-role-matrix` (+ `__role-col`, `__preset-col`, `__menu-col`, `__menu-heading`, `__menu-label`, `__check`, `__check-label`, `__row`; modifiers `.is-not-in-layout`, `.is-protected`, `.is-capability-restricted`).
+- Presets: `.edminboost-preset-grid`, `.edminboost-preset-card`, `.edminboost-save-preset` (+ `__trigger`, `__form`, `__label`, `__input`; `.is-editing` toggles inline name form), `.edminboost-rename-preset` (+ `__label`, `__input`; `[hidden]` when preset is not a saved custom preset), `.edminboost-role-matrix-wrap`, `.edminboost-role-matrix` (+ `__role-col`, `__preset-col`, `__menu-col`, `__menu-heading`, `__menu-label`, `__menu-parent`, `__menu-name`, `__check`, `__check-label`, `__row`; modifiers `.is-not-in-layout`, `.is-protected`, `.is-capability-restricted`, `.is-submenu` on menu columns and check cells).
 - Appearance / behavior: `.edminboost-badge-preview`, `.edminboost-drawer-width-custom`, `.edminboost-drawer-width-preview__*` (width slider live preview), `.edminboost-animation-speed-picker` (+ `__toggle`, `__list`, `__option`, `__preview`, `__preview-drawer`; duration via `--edminboost-animation-preview-ms`).
 - Performance previews: `.edminboost-performance-preview` (+ `__lead`, `__desc`, `__panels`, `__panel`, `__heading`, `__list`, `__list--stacked`, `__item`, `__item-label`, `__code-wrap`, `__code`, `__code--suffix`, `__status-dot`, `__tooltip`); panels/items use `.is-active` / `.is-removed`; inline `--eb-op-*` vars on preview root; theme-active overrides at end of file under `body.edminboost-theme-active .edminboost-wrap .edminboost-performance-preview*`.
 - Menu Studio: `.edminboost-menu-studio-layout`, `.edminboost-menu-studio-panel`, `.edminboost-menu-canvas`, `.edminboost-menu-discovered-list`, `.edminboost-menu-layout-panel` (+ `__grid`, `__fields`), `.edminboost-menu-layout-preview` (+ `__lead`, `__sidebar`, `__item`, `__icon`, `__label`, `__badge`; modifiers `--icon`, `--text`; sticky preview vars `--eb-ms-preview-*`), `.edminboost-menu-colors-panel__grid` (+ `__fields`), `.edminboost-menu-color-grid`, `.edminboost-menu-color-row` (+ `.edminboost-menu-color-controls`, `.edminboost-menu-color-input`), `.edminboost-menu-color-preview-panel` (+ `__lead`), `.edminboost-menu-color-preview` (+ `__parent`, `__submenu`, `__badge`).
@@ -146,7 +153,7 @@ alwaysApply: false
 | `edminboost-overview-topbar-links-picker.php` | Read-only top bar links dropdown |
 | `edminboost-overview-topbar-preview.php` | Top bar mini-preview partial |
 | `edminboost-overview-sidebar-preview.php` | Sidebar mini-preview partial |
-| `edminboost-settings-page.php` | Settings page shell (CC nav + JSON backup/import; no settings form) |
+| `edminboost-settings-page.php` | Settings page shell (CC nav + JSON backup/import; `#edminboost-backup-section` Pro-gated) |
 | `edminboost-appearance-page.php` | Theme, declutter |
 | `edminboost-home-advanced-look.php` | Panel width, badges, animation speed (Top Bar) |
 | `edminboost-declutter-settings.php` | Admin bar cleanup toggles; includes `edminboost-declutter-preview.php` |
@@ -156,23 +163,26 @@ alwaysApply: false
 | `edminboost-preset-picker.php` | Layout preset dropdown (`wizard` / `full` / `overview` modes) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list |
 | `edminboost-feature-fields.php` | Shared feature toggles (`$section`: productivity, security, performance); checkbox rows place `EDMINBOOST_Setting_Help::echo_icon()` before the input; multi-select groups (e.g. Heartbeat) use `.edminboost-select-rows` with per-field help keys; master toggles wrap nested fields in `.edminboost-dependent-section` (`.is-disabled` when off): `#edminboost-login-redirects-options`, `#edminboost-dashboard-widgets-options`, `#edminboost-admin-footer-options`; Productivity admin-notices fieldset includes `edminboost-productivity-preview.php`; Performance emoji/assets fieldsets include `edminboost-performance-preview.php` |
-| `edminboost-productivity-preview.php` | Live Productivity admin-notices preview (`$preview`: `admin_notices`; `$features`); `#edminboost-productivity-admin-notices-preview`; reuses `.edminboost-performance-preview` classes; theme colors via `EDMINBOOST_Theme::resolve_preview_colors()` |
+| `edminboost-productivity-preview.php` | Live Productivity previews (`$preview`: `admin_notices` \| `screen` \| `dashboard_widgets`; `$features`); `#edminboost-productivity-{notices,screen,dashboard}-preview`; `.edminboost-productivity-preview` markup |
 | `edminboost-performance-preview.php` | Live Performance tab previews (`$preview`: `emoji` \| `assets`; `$features`); `#edminboost-performance-emoji-preview`, `#edminboost-performance-assets-preview`; theme colors via `EDMINBOOST_Theme::resolve_preview_colors()` |
 | `edminboost-command-center-nav.php` | CC sub-navigation |
 | `edminboost-mapper-page.php` | Top bar builder + `#edminboost-mapper-look` Panel & badges section (includes `edminboost-home-advanced-look.php`) |
 | `edminboost-presets-page.php` | Layout presets & role matrix |
 | `edminboost-menu-studio-page.php` | Sidebar menu builder |
-| `edminboost-billing-page.php` | Billing plan cards (Free / Pro / Agency) |
+| `edminboost-billing-page.php` | Billing plan cards + feature comparison table (Free / Pro / Agency) |
+| `edminboost-billing-plan-cta.php` | Shared plan CTA partial (current plan button or external upgrade link) |
 | `edminboost-theme-settings.php` | Visual theme controls + Appearance extras section (includes `edminboost-theme-extras-preview.php`) |
-| `edminboost-white-label-page.php` | White Label page shell |
+| `edminboost-white-label-page.php` | White Label page shell (Pro-gated form) |
 | `edminboost-white-label-plugin-preview.php` | Live plugin row + sidebar menu preview |
+| `edminboost-white-label-status-preview.php` | Live system status footer preview (`#edminboost-wl-status-preview`) |
+| `edminboost-pro-upgrade.php` | Shared Pro upgrade prompt partial |
 | `edminboost-form-actions.php` | Shared Save + Reset footer (`$save_label`, `$wrapper_tag`, `$wrapper_class`; included by CC/feature pages) |
 
 Use `fieldset` + `legend` for grouped settings; label every input; `screen-reader-text` for icon-only controls.
 
 ## Menu Studio JS (`initMenuStudio`)
 
-Key elements: `#edminboost-menu-studio-form` (`data-edminboost-custom-items`), `#edminboost-menu-canvas`, `#edminboost-menu-discovered-list`, `#edminboost-menu-hidden-inputs`, `#edminboost-menu-search`, `#edminboost-menu-canvas-empty`, custom link fields `#edminboost-menu-custom-path`, `#edminboost-menu-custom-label`, `#edminboost-menu-custom-parent`, `#edminboost-menu-custom-add`; layout fields `#edminboost_menu_width`, `#edminboost_menu_font_size`, `#edminboost_menu_line_height`, `#edminboost_menu_letter_spacing`, `#edminboost_menu_display_mode`, live preview `#edminboost-menu-layout-preview`; colors toggle `#edminboost_menu_studio_use_colors`, panel `#edminboost-menu-colors-panel`, preview `#edminboost-menu-color-preview`, rows `.edminboost-menu-color-row`.
+Key elements: `#edminboost-menu-studio-form` (`data-edminboost-custom-items`), `#edminboost-menu-canvas`, `#edminboost-menu-discovered-list`, `#edminboost-menu-hidden-inputs`, `#edminboost-menu-search`, `#edminboost-menu-canvas-empty`, custom link fields `#edminboost-menu-custom-path`, `#edminboost-menu-custom-label`, `#edminboost-menu-custom-parent`, `#edminboost-menu-custom-add` (Pro-gated); layout fields `#edminboost_menu_width`, `#edminboost_menu_font_size`, `#edminboost_menu_line_height`, `#edminboost_menu_letter_spacing`, `#edminboost_menu_display_mode` (Pro-gated), live preview `#edminboost-menu-layout-preview`; colors panel `#edminboost-menu-colors-panel` (always on — hidden `use_colors=1`), preview `#edminboost-menu-color-preview`, rows `.edminboost-menu-color-row`.
 
 - Mirrors mapper drag/drop patterns for sidebar reorder, hide, and custom links (top-level + submenu under parent).
 - Bootstraps `customItems` from `form.dataset.edminboostCustomItems` (avoids duplicating server-rendered custom rows).
@@ -205,7 +215,7 @@ Runs on Top Bar page (`#edminboost-mapper-form`) and any form that includes pane
 
 ## CC tab navigation JS (`initCommandCenterNav`)
 
-- Intercepts `.edminboost-cc-nav__link` inside `.edminboost-wrap` (skips modified clicks / `_blank`).
+- Intercepts `.edminboost-cc-nav__link` inside `.edminboost-wrap` (skips modified clicks / `_blank` / `data-edminboost-external="1"` external links).
 - If `pendingDashboardOverviewSave` is set, waits for that Promise before loading the next tab (`loadCommandCenterPageNow`).
 - POSTs `page` to `edminboostData.ccNav` (`edminboost_load_cc_page`); optional `form_defaults=1` re-renders the tab with plugin defaults (form reset — does not write options); replaces `.edminboost-wrap` with parsed response HTML.
 - Updates `document.title`, `edminboostData.currentPage`, and `history.pushState` / `popstate`; calls `reinitEdminboostPage()`.
@@ -218,6 +228,7 @@ Key elements: `#edminboost_layout_preset`, `#edminboost-layout-preset-picker`, `
 
 - Custom listbox mirrors theme preset picker UX; options grouped by `edminboostData.presetCategories`.
 - `renderTopBarPreview( presetId )` rebuilds embedded mini admin bar (max 4 links + overflow) from resolved preset `top_bar_items`; icon tips use `createTopBarPreviewTip()` / overflow uses `appendTopBarPreviewTooltip()` (accessible tooltip spans, not `title`).
+- `setSelectedPreset( preset )` blocks Pro-locked presets via `isLayoutPresetProLocked()` (`edminboostData.strings.proPresetLocked` alert).
 - `renderSidebarPreview( presetId )` rebuilds `.edminboost-overview-sidebar-preview` from preset `sidebar_items` (max 5 + overflow).
 - `syncPresetCatalogFn` rebuilds grouped options when AJAX save returns refreshed `presets`.
 - Used on setup wizard step 1, Layout Presets page, and Dashboard overview (`preset_picker_mode === 'overview'`); Presets page apply/duplicate/export stays in `initPresets`.
@@ -245,10 +256,11 @@ Shared helper `syncDependentSection( section, isEnabled )` applies the master-to
 
 ### White Label (`initWhiteLabel`)
 
-Key elements: `#edminboost_wl_enabled`, `#edminboost-wl-status-section`, `#edminboost-wl-rebrand-section`, `#edminboost-wl-rebrand-preview`, `#edminboost_wl_plugin_name`, `#edminboost_wl_plugin_description`, `#edminboost_wl_plugin_author`, `#edminboost_wl_plugin_uri`, `#edminboost_wl_menu_label`, `#edminboost-wl-preview-name`, `#edminboost-wl-preview-description`, `#edminboost-wl-preview-author-link`, `#edminboost-wl-preview-menu-label`.
+Key elements: `#edminboost_wl_enabled`, `#edminboost-wl-status-section`, `#edminboost-wl-rebrand-section`, `#edminboost-wl-status-preview`, `#edminboost-wl-rebrand-preview`, `#edminboost_wl_plugin_name`, `#edminboost_wl_plugin_description`, `#edminboost_wl_plugin_author`, `#edminboost_wl_plugin_uri`, `#edminboost_wl_menu_label`, `#edminboost-wl-preview-name`, `#edminboost-wl-preview-description`, `#edminboost-wl-preview-author-link`, `#edminboost-wl-preview-menu-label`.
 
 - Master toggle disables `.edminboost-cc-section` dependents (`#edminboost-wl-status-section`, `#edminboost-wl-rebrand-section`).
-- Live preview reads empty fields from `#edminboost-wl-rebrand-preview` `data-default-*` attributes (server defaults from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).
+- `initWhiteLabelStatusPreview()` syncs `#edminboost-wl-status-preview` segments (`.edminboost-wl-status-preview__segment`) from status footer toggles; shows/hides `#edminboost-wl-status-preview-empty` vs `#edminboost-wl-status-preview-line`.
+- `initWhiteLabelRebrandPreview()` reads empty fields from `#edminboost-wl-rebrand-preview` `data-default-*` attributes (server defaults from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).
 - Author link uses `#` + `tabindex="-1"` when URI is empty; `click` prevented when no URI.
 
 ### Security login redirects (`initSecurityFeatures`)
@@ -260,11 +272,11 @@ Key elements: `#edminboost_login_redirects_enabled`, `#edminboost-login-redirect
 
 ### Productivity dependents + live preview (`initProductivityFeatures`)
 
-Key elements: `#edminboost_dashboard_widgets_enabled`, `#edminboost-dashboard-widgets-options`; `#edminboost_admin_footer_enabled`, `#edminboost-admin-footer-options` (both `.edminboost-dependent-section`); `#edminboost-productivity-admin-notices-preview` (+ `#edminboost_hide_admin_notices`, `#edminboost_hide_screen_help`; items `[data-preview]`).
+Key elements: `#edminboost-productivity-hide-notices-layout`, `#edminboost-productivity-notices-preview`; `#edminboost-productivity-hide-screen-layout`, `#edminboost-productivity-screen-preview`; `#edminboost-productivity-dashboard-widgets-layout`, `#edminboost-productivity-dashboard-preview`; `#edminboost_dashboard_widgets_enabled`, `#edminboost-dashboard-widgets-options`; `#edminboost_admin_footer_enabled`, `#edminboost-admin-footer-options`.
 
+- Stacked fieldsets pair controls with `.edminboost-productivity-preview` side panels (notices, screen meta, dashboard widgets).
 - Dashboard widgets master toggle disables per-widget checkboxes when off; admin footer master toggle disables the custom text field when off.
-- Admin notices preview: removable items sync via shared `syncPerformancePreviewItem()` when matching toggle is checked; non-removable items (error/warning notices) stay visible.
-- Server-rendered initial state mirrors each toggle in `edminboost-feature-fields.php` and saved settings in `edminboost-productivity-preview.php`.
+- Removable preview items sync via shared `syncPerformancePreviewItem()` when matching toggle is checked.
 
 ### Performance live previews (`initPerformanceFeatures`)
 
@@ -280,6 +292,7 @@ Key elements: `#edminboost-performance-emoji-preview` (+ `#edminboost_disable_em
 Key elements: hidden `#edminboost_theme_preset`, custom listbox `#edminboost-theme-preset-picker` (+ `#edminboost_theme_preset_toggle`, `#edminboost-theme-preset-list`), `#edminboost_theme_mode`, `#edminboost_theme_font`, `#edminboost-theme-preset-desc`, `#edminboost-theme-custom-colors`, `#edminboost-theme-preview`, custom fields `#edminboost_custom_{accent|surface|text|top|sidebar}` + matching `*_picker` inputs.
 
 - Preset listbox toggles custom color pickers (`preset === 'custom'`); updates toggle swatches and description from `edminboostData.themePresets`.
+- `setSelectedPreset( preset )` blocks Pro-locked skins via `isThemePresetProLocked()` (`edminboostData.strings.proThemeLocked` alert).
 - `#edminboost_theme_preset` `change` listener runs `updateThemePreview()` (including Dashboard overview when the hidden select is synced from the overview theme picker).
 - Exposes `syncThemeSettingsFn( themeSettings )` — syncs preset/mode/font/custom color fields then calls `updateThemePreview()`; bootstraps from `edminboostData.themeSettings` when preset differs from the hidden select.
 - Live preview applies body classes (`edminboost-theme--*`, `edminboost-theme-mode--*`, `edminboost-theme-font--*`) and inline `--eb-*` vars on `document.body` and `#edminboost-theme-preview`.
@@ -322,19 +335,26 @@ Key elements: `.edminboost-form-reset` inside `.edminboost-form-actions` (from `
 - Uses nonce from form (`settings_fields()`); shows inline success/error notice unless `silent`; optional reload via `{ reload: true }`.
 - Success payload may include `presets`, `selected_preset`, `active_layout_preset`, `default_preset`, `theme`, `setup_complete`, `message` — `applySettingsSaveResult()` syncs `edminboostData.presets` (and `syncPresetCatalogFn` when `active_layout_preset` or `selected_preset` is set), updates `edminboostData.themeSettings` + calls `syncThemeSettingsFn` on non-dashboard forms, and reloads Dashboard via CC nav when wizard completes.
 
+## Pro locks JS (`initProLocks`)
+
+- No-ops when `edminboostData.isPro`.
+- Finds `.is-pro-locked` inside `root`; calls `syncDependentSection( section, false )` to disable nested controls.
+- Restores keyboard access to `.edminboost-pro-upgrade a` (Billing links stay focusable).
+- Called from `reinitEdminboostPage()` after CC tab AJAX swaps.
+
 ## Backup/import JS (`initBackupSettings`)
 
 Key elements: `#edminboost-backup-section`, `#edminboost-export-settings`, `#edminboost-import-settings`, `#edminboost-import-method-paste` / `#edminboost-import-method-file`, `#edminboost-import-paste-panel`, `#edminboost-import-file-panel`, `#edminboost-import-json`, `#edminboost-import-file`.
 
-- Export POSTs to `edminboost_export_settings` and downloads `export-YYYY-MM-DD.json`.
-- Import reads pasted JSON or a selected `.json` file (`FileReader`), POSTs to `edminboost_import_settings`, reloads on success; errors use `window.alert()`.
+- Export POSTs to `edminboost_export_settings` and downloads `export-YYYY-MM-DD.json` (Pro only — server returns 403 on Free).
+- Import reads pasted JSON or a selected `.json` file (`FileReader`), POSTs to `edminboost_import_settings` (Pro only), reloads on success; errors use `window.alert()`.
 - Paste vs file panels toggle via CSS `:has( #edminboost-import-method-paste:checked )` on `#edminboost-backup-section` (no extra JS).
 
 ## Presets page JS (`initPresets` / `initRoleMatrix`)
 
 Key elements: `#edminboost-presets-form`, `#edminboost_layout_preset`, `#edminboost_apply_preset`, `#edminboost_save_custom_preset_name`, `#edminboost_rename_custom_preset_id`, `#edminboost_rename_custom_preset_name`, `#edminboost-save-preset` (+ `#edminboost-save-preset-btn`, `#edminboost-save-preset-form`, `#edminboost_save_preset_name_input`, confirm/cancel buttons), `#edminboost-rename-preset` (+ `#edminboost-preset-rename-btn`, `#edminboost_rename_preset_name_input`, confirm/cancel buttons), `#edminboost-preset-apply-btn`, `#edminboost-preset-export-btn`, `.edminboost-role-matrix`, `.edminboost-role-preset-select`, `.edminboost-role-matrix__check input[type="checkbox"]`.
 
-- `initRoleMatrix()` syncs visibility checkboxes when assigned preset changes; uses `edminboostData.roleMatrix` and preset `visible_top_level_menu_slugs`.
+- `initRoleMatrix()` syncs visibility checkboxes when assigned preset changes; uses `edminboostData.roleMatrix` and preset `visible_menu_slugs` (falls back to `visible_top_level_menu_slugs`, then `top_bar_items` slugs).
 - Protected slugs stay checked/disabled; items outside preset get `.is-not-in-layout` and start unchecked on preset change.
 - Save custom preset: `#edminboost-save-preset-btn` reveals inline form; confirm sets hidden `_save_custom_preset[name]` via `preparePresetAction()` and AJAX-submits the form (disabled when no layout is configured).
 - Rename custom preset: `#edminboost-preset-rename-btn` visible only for saved `custom_*` presets (`isSavedCustomPreset()`); confirm sets `_rename_custom_preset[id|name]` hidden fields and submits.

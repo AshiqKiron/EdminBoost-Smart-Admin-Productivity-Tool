@@ -244,6 +244,7 @@ foreach ( $top_bar_items as $item ) {
 						<span class="description"><?php esc_html_e( 'Scroll to a section on the page when the link is opened.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 					</p>
 
+					<div>
 					<fieldset class="edminboost-fieldset">
 						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_interaction' ); ?><?php esc_html_e( 'Interaction', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 						<label class="edminboost-checkbox-row">
@@ -272,6 +273,7 @@ foreach ( $top_bar_items as $item ) {
 							<?php endforeach; ?>
 						</select>
 					</p>
+					</div>
 
 					<p>
 						<button type="button" class="button" id="edminboost-drawer-close">

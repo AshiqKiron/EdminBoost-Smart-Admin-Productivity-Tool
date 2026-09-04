@@ -20,16 +20,16 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 - CC drawer preview AJAX (`edminboost_cc_drawer_preview`): `current_user_can( CAPABILITY )`, `check_ajax_referer( 'edminboost_cc_drawer_preview' )`, `is_mapper_preview_context()`, validate slug via `is_valid_drawer_slug()`.
 - Settings save AJAX (`edminboost_save_settings`): `current_user_can( CAPABILITY )`, verify nonce against `EDMINBOOST_Settings::SETTINGS_GROUP . '-options'`, sanitize via `EDMINBOOST_Settings::sanitize()` before `update_option()`.
 - CC tab navigation AJAX (`edminboost_load_cc_page`): `current_user_can( CAPABILITY )`, `check_ajax_referer( 'edminboost_cc_nav' )`, validate `page` via `EDMINBOOST_Admin::is_valid_cc_nav_page()` (whitelist from `EDMINBOOST_Command_Center::get_nav_items()`); render server-side HTML only — no raw partial paths from the client. Optional `form_defaults=1` applies `EDMINBOOST_Settings::get_form_defaults()` via the `edminboost_settings` filter during render only (form reset — does not call `update_option()`).
-- Settings export/import AJAX (`edminboost_export_settings` / `edminboost_import_settings`): `current_user_can( CAPABILITY )`, verify nonce (`edminboost_export_settings` / `edminboost_import_settings`); import decodes JSON and sanitizes via `EDMINBOOST_Settings::sanitize()` before `update_option()`.
+- Settings export/import AJAX (`edminboost_export_settings` / `edminboost_import_settings`): `current_user_can( CAPABILITY )`, verify nonce (`edminboost_export_settings` / `edminboost_import_settings`); require `EDMINBOOST_Pro::is_active()` (403 on Free); import decodes JSON and sanitizes via `EDMINBOOST_Settings::sanitize()` before `update_option()`.
 - SQL: `$wpdb->prepare()` only; prefer Options API (`edminboost_*`) over custom tables.
 
 ## Directory & Privacy
 
 - No obfuscated code, undisclosed telemetry, or hidden external requests.
-- No tracking or data transmission to external servers (current plugin behavior).
+- No tracking or data transmission to external servers (current plugin behavior). Billing upgrade CTAs are user-initiated links to the external pricing page (`EDMINBOOST_UPGRADE_URL`) — no background requests, checkout API, or license validation.
 - Badge sources (WooCommerce orders, comments, updates, WPForms entries) read local WordPress data only — no remote API calls. WPForms count uses a guarded `$wpdb` read when the plugin and table exist.
 - No public-site credit injection by default (admin footer replacement is opt-in).
-- No spammy readme, deceptive "free" behavior, or fake trial logic.
+- No spammy readme, deceptive "free" behavior, or fake trial logic. Free tier limits must be enforced on save (`EDMINBOOST_Pro::enforce_plan_limits()`) and at runtime (live CC bar, Menu Studio) — not UI-only locks.
 - Any future remote integration must be documented, justified, and opt-in.
 
 ## Code Quality

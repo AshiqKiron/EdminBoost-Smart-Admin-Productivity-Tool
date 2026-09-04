@@ -93,9 +93,13 @@ $custom_colors  = isset( $theme_presets['custom']['colors'] ) ? $theme_presets['
 						'custom' === $preset_id ? $theme : null
 					);
 					$is_selected   = ( $active_preset === $preset_id );
+					$option_class  = 'edminboost-theme-preset-picker__option';
+					if ( $is_selected ) {
+						$option_class .= ' is-selected';
+					}
 					?>
 					<li
-						class="edminboost-theme-preset-picker__option<?php echo $is_selected ? ' is-selected' : ''; ?>"
+						class="<?php echo esc_attr( $option_class ); ?>"
 						role="option"
 						tabindex="-1"
 						data-value="<?php echo esc_attr( $preset_id ); ?>"

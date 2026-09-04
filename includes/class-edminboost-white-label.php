@@ -72,7 +72,8 @@ class EDMINBOOST_White_Label {
 	 * @return bool
 	 */
 	public static function is_active() {
-		return EDMINBOOST_Settings::is_enabled() && ! empty( self::get_settings()['enabled'] );
+		return EDMINBOOST_Settings::is_enabled()
+			&& ! empty( self::get_settings()['enabled'] );
 	}
 
 	/**
@@ -162,58 +163,75 @@ class EDMINBOOST_White_Label {
 			return $text;
 		}
 
-		$wl     = self::get_settings();
-		$parts  = array();
-		$memory = self::get_memory_stats();
-
-		if ( ! empty( $wl['show_ip'] ) ) {
-			$parts[] = sprintf(
-				/* translators: %s: IP address */
-				__( 'IP: %s', EDMINBOOST_TEXT_DOMAIN ),
-				isset( $_SERVER['SERVER_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['SERVER_ADDR'] ) ) : '—'
-			);
-		}
-
-		if ( ! empty( $wl['show_php_version'] ) ) {
-			$parts[] = 'PHP ' . PHP_VERSION;
-		}
-
-		if ( ! empty( $wl['show_wp_version'] ) ) {
-			global $wp_version;
-			$parts[] = 'WP ' . $wp_version;
-		}
-
-		if ( ! empty( $wl['show_memory_usage'] ) ) {
-			$parts[] = sprintf(
-				/* translators: 1: used memory, 2: limit, 3: percent */
-				__( 'Memory: %1$s of %2$s (%3$s%%)', EDMINBOOST_TEXT_DOMAIN ),
-				$memory['used'],
-				$memory['limit'],
-				$memory['percent']
-			);
-		}
-
-		if ( ! empty( $wl['show_memory_limit'] ) ) {
-			$parts[] = sprintf(
-				/* translators: %s: memory limit */
-				__( 'Limit: %s', EDMINBOOST_TEXT_DOMAIN ),
-				$memory['limit']
-			);
-		}
-
-		if ( ! empty( $wl['show_memory_available'] ) ) {
-			$parts[] = sprintf(
-				/* translators: %s: available memory */
-				__( 'Available: %s', EDMINBOOST_TEXT_DOMAIN ),
-				$memory['available']
-			);
-		}
+		$parts = self::get_status_footer_parts( self::get_settings() );
 
 		if ( empty( $parts ) ) {
 			return $text;
 		}
 
-		return implode( ' | ', $parts );
+		return implode( ' | ', array_values( $parts ) );
+	}
+
+	/**
+	 * Sample text for each system status footer segment.
+	 *
+	 * Used by the White Label settings preview and runtime footer output.
+	 *
+	 * @return array<string,string>
+	 */
+	public static function get_status_footer_segment_texts() {
+		global $wp_version;
+
+		$memory = self::get_memory_stats();
+		$ip     = isset( $_SERVER['SERVER_ADDR'] )
+			? sanitize_text_field( wp_unslash( $_SERVER['SERVER_ADDR'] ) )
+			: '—';
+
+		return array(
+			'show_ip'               => sprintf(
+				/* translators: %s: IP address */
+				__( 'IP: %s', EDMINBOOST_TEXT_DOMAIN ),
+				$ip
+			),
+			'show_php_version'      => 'PHP ' . PHP_VERSION,
+			'show_wp_version'       => 'WP ' . $wp_version,
+			'show_memory_usage'     => sprintf(
+				/* translators: 1: used memory, 2: limit, 3: percent */
+				__( 'Memory: %1$s of %2$s (%3$s%%)', EDMINBOOST_TEXT_DOMAIN ),
+				$memory['used'],
+				$memory['limit'],
+				$memory['percent']
+			),
+			'show_memory_limit'     => sprintf(
+				/* translators: %s: memory limit */
+				__( 'Limit: %s', EDMINBOOST_TEXT_DOMAIN ),
+				$memory['limit']
+			),
+			'show_memory_available' => sprintf(
+				/* translators: %s: available memory */
+				__( 'Available: %s', EDMINBOOST_TEXT_DOMAIN ),
+				$memory['available']
+			),
+		);
+	}
+
+	/**
+	 * Build enabled system status footer line parts.
+	 *
+	 * @param array|null $wl White label settings.
+	 * @return array<string,string>
+	 */
+	public static function get_status_footer_parts( $wl = null ) {
+		$wl = is_array( $wl ) ? wp_parse_args( $wl, self::get_defaults() ) : self::get_settings();
+		$parts = array();
+
+		foreach ( self::get_status_footer_segment_texts() as $key => $text ) {
+			if ( ! empty( $wl[ $key ] ) ) {
+				$parts[ $key ] = $text;
+			}
+		}
+
+		return $parts;
 	}
 
 	/**

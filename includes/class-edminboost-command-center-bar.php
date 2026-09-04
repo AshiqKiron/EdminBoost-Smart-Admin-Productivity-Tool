@@ -631,7 +631,8 @@ class EDMINBOOST_Command_Center_Bar {
 	 */
 	public static function get_items_for_current_user() {
 		$cc_settings = EDMINBOOST_Command_Center::get_settings();
-		$items       = EDMINBOOST_Command_Center::resolve_top_bar_items_for_user( $cc_settings );
+
+		$items = EDMINBOOST_Command_Center::resolve_top_bar_items_for_user( $cc_settings );
 
 		if ( empty( $items ) ) {
 			return array();

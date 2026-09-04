@@ -387,7 +387,21 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
-	 * Catalog counts for Billing page feature bullets.
+	 * External upgrade / pricing page URL for Billing CTAs.
+	 *
+	 * @return string
+	 */
+	public static function get_upgrade_url() {
+		/**
+		 * Filter the external upgrade / pricing page URL.
+		 *
+		 * @param string $url Default upgrade URL.
+		 */
+		return (string) apply_filters( 'edminboost_upgrade_url', EDMINBOOST_UPGRADE_URL );
+	}
+
+	/**
+	 * Catalog counts for Billing page copy.
 	 *
 	 * @return array{scenario_presets: int, theme_skins: int, badge_sources: int}
 	 */
@@ -430,70 +444,289 @@ class EDMINBOOST_Command_Center {
 		$counts = self::get_billing_catalog_counts();
 
 		return array(
-			'free' => array(
-				'id'           => 'free',
-				'name'         => __( 'Free', EDMINBOOST_TEXT_DOMAIN ),
-				'price'        => 0,
-				'price_label'  => __( '$0', EDMINBOOST_TEXT_DOMAIN ),
-				'sites'        => 0,
-				'sites_label'  => __( 'Unlimited sites', EDMINBOOST_TEXT_DOMAIN ),
-				'description'  => __( 'Core Command Center tools on unlimited WordPress sites.', EDMINBOOST_TEXT_DOMAIN ),
-				'features'     => array(
+			'free'   => array(
+				'id'          => 'free',
+				'name'        => __( 'Free', EDMINBOOST_TEXT_DOMAIN ),
+				'price'       => 0,
+				'price_label' => __( '$0', EDMINBOOST_TEXT_DOMAIN ),
+				'sites'       => 0,
+				'sites_label' => __( 'Unlimited sites', EDMINBOOST_TEXT_DOMAIN ),
+				'description' => __( 'Core Command Center tools on unlimited WordPress sites.', EDMINBOOST_TEXT_DOMAIN ),
+				'features'    => array(
 					__( 'Dashboard setup wizard', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Top bar builder', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Default and by-role layout presets', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Default, Midnight, Terminal, and Custom theme presets', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Top bar builder (redirect links)', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Friend\'s Website and Family Member\'s Site layout presets', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'By-role layout presets', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'One saved custom layout preset', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Default, Midnight, and Terminal theme presets', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Menu Studio sidebar reorder and hide', EDMINBOOST_TEXT_DOMAIN ),
 					__( 'Productivity, security, and performance tools', EDMINBOOST_TEXT_DOMAIN ),
 				),
-				'featured'     => false,
+				'featured'    => false,
 			),
-			'pro'  => array(
-				'id'           => 'pro',
-				'name'         => __( 'Pro', EDMINBOOST_TEXT_DOMAIN ),
-				'price'        => 49,
-				'price_label'  => __( '$49', EDMINBOOST_TEXT_DOMAIN ),
-				'sites'        => 1,
-				'sites_label'  => __( '1 site', EDMINBOOST_TEXT_DOMAIN ),
-				'description'  => __( 'Premium admin customization for one production site.', EDMINBOOST_TEXT_DOMAIN ),
-				'features'     => array(
+			'pro'    => array(
+				'id'          => 'pro',
+				'name'        => __( 'Pro', EDMINBOOST_TEXT_DOMAIN ),
+				'price'       => 49,
+				'price_label' => __( '$49', EDMINBOOST_TEXT_DOMAIN ),
+				'sites'       => 1,
+				'sites_label' => __( '1 site', EDMINBOOST_TEXT_DOMAIN ),
+				'description' => __( 'Premium admin customization for one production site.', EDMINBOOST_TEXT_DOMAIN ),
+				'features'    => array(
 					__( 'Everything in Free', EDMINBOOST_TEXT_DOMAIN ),
 					sprintf(
-						/* translators: %d: number of by use case layout presets */
-						__( '%d by use case layout presets', EDMINBOOST_TEXT_DOMAIN ),
-						$counts['scenario_presets']
+						/* translators: %d: number of by use case layout presets beyond Friend and Family */
+						__( '%d additional by use case layout presets', EDMINBOOST_TEXT_DOMAIN ),
+						max( 0, $counts['scenario_presets'] - 2 )
 					),
 					__( 'Unlimited saved custom layouts', EDMINBOOST_TEXT_DOMAIN ),
-					sprintf(
-						/* translators: %d: number of visual theme skins */
-						__( '%d visual theme skins plus Custom colors', EDMINBOOST_TEXT_DOMAIN ),
-						$counts['theme_skins']
-					),
-					__( 'Menu Studio sidebar builder', EDMINBOOST_TEXT_DOMAIN ),
-					sprintf(
-						/* translators: %d: number of live badge counter sources */
-						__( '%d live top bar badge counters', EDMINBOOST_TEXT_DOMAIN ),
-						$counts['badge_sources']
-					),
-					__( 'Slide-out drawer panels for admin screens', EDMINBOOST_TEXT_DOMAIN ),
 					__( 'Role-based menu visibility matrix', EDMINBOOST_TEXT_DOMAIN ),
+					sprintf(
+						/* translators: %d: number of visual theme skins beyond the free set */
+						__( '%d additional visual theme skins', EDMINBOOST_TEXT_DOMAIN ),
+						max( 0, $counts['theme_skins'] - 3 )
+					),
+					__( 'Scheduled dark mode', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Slide-out drawer panels and live badge counters', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Full-screen and custom drawer widths, badge style, animation speed, glassmorphism', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Role-based login and logout redirects', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Custom sidebar links and icon/text display modes', EDMINBOOST_TEXT_DOMAIN ),
 					__( 'White-label branding', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Priority email support', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Settings export and import', EDMINBOOST_TEXT_DOMAIN ),
 				),
-				'featured'     => true,
+				'featured'    => true,
 			),
 			'agency' => array(
-				'id'           => 'agency',
-				'name'         => __( 'Agency', EDMINBOOST_TEXT_DOMAIN ),
-				'price'        => 99,
-				'price_label'  => __( '$99', EDMINBOOST_TEXT_DOMAIN ),
-				'sites'        => 10,
-				'sites_label'  => __( '10 sites', EDMINBOOST_TEXT_DOMAIN ),
-				'description'  => __( 'Deploy EdminBoost across a client portfolio.', EDMINBOOST_TEXT_DOMAIN ),
-				'features'     => array(
+				'id'          => 'agency',
+				'name'        => __( 'Agency', EDMINBOOST_TEXT_DOMAIN ),
+				'price'       => 99,
+				'price_label' => __( '$99', EDMINBOOST_TEXT_DOMAIN ),
+				'sites'       => 10,
+				'sites_label' => __( '10 sites', EDMINBOOST_TEXT_DOMAIN ),
+				'description' => __( 'Deploy EdminBoost across a client portfolio.', EDMINBOOST_TEXT_DOMAIN ),
+				'features'    => array(
 					__( 'Everything in Pro', EDMINBOOST_TEXT_DOMAIN ),
 					__( '10 site license pack', EDMINBOOST_TEXT_DOMAIN ),
 				),
-				'featured'     => false,
+				'featured'    => false,
+			),
+		);
+	}
+
+	/**
+	 * Feature comparison rows for the Billing page table.
+	 *
+	 * Each row is either a section heading (`type` = heading) or a feature row
+	 * (`type` = row) with `free`, `pro`, and `agency` cell values. Booleans render
+	 * as included/not-included; strings render as text.
+	 *
+	 * @return array<int, array<string, mixed>>
+	 */
+	public static function get_billing_comparison_rows() {
+		$counts = self::get_billing_catalog_counts();
+
+		$additional_scenario_presets = max( 0, $counts['scenario_presets'] - 2 );
+		$additional_theme_skins      = max( 0, $counts['theme_skins'] - 3 );
+
+		return array(
+			array(
+				'type'  => 'heading',
+				'label' => __( 'Plan basics', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Annual price', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => __( '$0', EDMINBOOST_TEXT_DOMAIN ),
+				'pro'    => __( '$49', EDMINBOOST_TEXT_DOMAIN ),
+				'agency' => __( '$99', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Site license', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => __( 'Unlimited', EDMINBOOST_TEXT_DOMAIN ),
+				'pro'    => __( '1 site', EDMINBOOST_TEXT_DOMAIN ),
+				'agency' => __( '10 sites', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'type'  => 'heading',
+				'label' => __( 'Layout presets', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Friend & Family presets', EDMINBOOST_TEXT_DOMAIN ),
+				'detail' => __( 'Friend\'s Website and Family Member\'s Site layouts', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => true,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'By-role layout presets', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => true,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Use-case layout presets', EDMINBOOST_TEXT_DOMAIN ),
+				'detail' => sprintf(
+					/* translators: %d: number of additional by use case layout presets */
+					__( '%d scenario presets beyond Friend & Family', EDMINBOOST_TEXT_DOMAIN ),
+					$additional_scenario_presets
+				),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Saved custom layouts', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => __( '1', EDMINBOOST_TEXT_DOMAIN ),
+				'pro'    => __( 'Unlimited', EDMINBOOST_TEXT_DOMAIN ),
+				'agency' => __( 'Unlimited', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Role visibility matrix', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'  => 'heading',
+				'label' => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Top bar (redirect links)', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => true,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Slide-out drawer panels', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Live badge counters', EDMINBOOST_TEXT_DOMAIN ),
+				'detail' => sprintf(
+					/* translators: %d: number of live badge counter sources */
+					__( '%d local counter sources', EDMINBOOST_TEXT_DOMAIN ),
+					$counts['badge_sources']
+				),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Custom drawer widths', EDMINBOOST_TEXT_DOMAIN ),
+				'detail' => __( 'Full-screen and custom panel sizes', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Badge style & effects', EDMINBOOST_TEXT_DOMAIN ),
+				'detail' => __( 'Badge style, animation speed, glassmorphism', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'  => 'heading',
+				'label' => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Sidebar reorder and hide', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => true,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Custom sidebar links', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Icon and text display modes', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'  => 'heading',
+				'label' => __( 'Theme (Appearance)', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Core theme presets', EDMINBOOST_TEXT_DOMAIN ),
+				'detail' => __( 'Default, Midnight, and Terminal', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => true,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Premium theme skins', EDMINBOOST_TEXT_DOMAIN ),
+				'detail' => sprintf(
+					/* translators: %d: number of additional visual theme skins */
+					__( '%d additional skins beyond the free set', EDMINBOOST_TEXT_DOMAIN ),
+					$additional_theme_skins
+				),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Scheduled dark mode', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'  => 'heading',
+				'label' => __( 'Tools and branding', EDMINBOOST_TEXT_DOMAIN ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Utility tool modules', EDMINBOOST_TEXT_DOMAIN ),
+				'detail' => __( 'Productivity, security, and performance tools', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => true,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Login redirects', EDMINBOOST_TEXT_DOMAIN ),
+				'detail' => __( 'Role-based login and logout redirects', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'White-label branding', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Settings export and import', EDMINBOOST_TEXT_DOMAIN ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
 			),
 		);
 	}
@@ -504,7 +737,9 @@ class EDMINBOOST_Command_Center {
 	 * @return string Plan ID (`free`, `pro`, or `agency`).
 	 */
 	public static function get_active_billing_plan() {
-		return 'free';
+		$plan = apply_filters( 'edminboost_active_billing_plan', 'free' );
+
+		return in_array( $plan, array( 'free', 'pro', 'agency' ), true ) ? $plan : 'free';
 	}
 
 	/**
@@ -1767,7 +2002,7 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
-	 * Top-level admin menu items shown in the role visibility matrix.
+	 * Admin menu items shown in the role visibility matrix (top-level + submenu).
 	 *
 	 * @param string $role_key Optional role slug; when set, only items that role can access are returned.
 	 * @return array[]
@@ -1780,21 +2015,59 @@ class EDMINBOOST_Command_Center {
 				continue;
 			}
 
-			$slug = (string) $item['slug'];
-			if ( '' !== $role_key && ! self::role_can_access_menu_slug( $role_key, $slug ) ) {
+			$slug       = (string) $item['slug'];
+			$item_label = isset( $item['label'] ) ? (string) $item['label'] : $slug;
+			$item_icon  = isset( $item['icon'] ) ? (string) $item['icon'] : 'dashicons-admin-generic';
+
+			if ( '' === $role_key || self::role_can_access_menu_slug( $role_key, $slug ) ) {
+				$items[] = array(
+					'slug'          => $slug,
+					'label'         => $item_label,
+					'icon'          => $item_icon,
+					'icon_raw'      => '',
+					'source'        => 'top',
+					'parent_slug'   => '',
+					'parent_label'  => '',
+				);
+			}
+
+			if ( empty( $item['children'] ) || ! is_array( $item['children'] ) ) {
 				continue;
 			}
 
-			$items[] = array(
-				'slug'     => $slug,
-				'label'    => isset( $item['label'] ) ? (string) $item['label'] : $slug,
-				'icon'     => isset( $item['icon'] ) ? (string) $item['icon'] : 'dashicons-admin-generic',
-				'icon_raw' => '',
-				'source'   => 'top',
-			);
+			foreach ( $item['children'] as $child ) {
+				if ( empty( $child['slug'] ) ) {
+					continue;
+				}
+
+				$child_slug = (string) $child['slug'];
+				if ( '' !== $role_key && ! self::role_can_access_menu_slug( $role_key, $child_slug ) ) {
+					continue;
+				}
+
+				$items[] = array(
+					'slug'         => $child_slug,
+					'label'        => isset( $child['label'] ) ? (string) $child['label'] : $child_slug,
+					'icon'         => $item_icon,
+					'icon_raw'     => '',
+					'source'       => 'submenu',
+					'parent_slug'  => $slug,
+					'parent_label' => $item_label,
+				);
+			}
 		}
 
 		return $items;
+	}
+
+	/**
+	 * Resolve a menu slug to its top-level parent slug in the discovered tree.
+	 *
+	 * @param string $slug Menu slug.
+	 * @return string
+	 */
+	public static function get_top_level_menu_slug( $slug ) {
+		return self::resolve_top_level_menu_slug( $slug );
 	}
 
 	/**
@@ -1962,16 +2235,21 @@ class EDMINBOOST_Command_Center {
 				continue;
 			}
 
-			$slug     = (string) $item['slug'];
-			$top_slug = self::resolve_top_level_menu_slug( $slug );
-			if ( '' === $top_slug ) {
-				continue;
-			}
+			$slug   = (string) $item['slug'];
+			$source = isset( $item['source'] ) ? (string) $item['source'] : 'top';
 
 			if ( self::is_item_visible_for_user_roles( $slug, $user_roles, $role_visibility ) ) {
 				continue;
 			}
 
+			if ( 'submenu' === $source ) {
+				if ( ! in_array( $slug, $hidden, true ) ) {
+					$hidden[] = $slug;
+				}
+				continue;
+			}
+
+			$top_slug = $slug;
 			if ( in_array( $top_slug, EDMINBOOST_Menu_Studio::get_protected_slugs(), true ) ) {
 				continue;
 			}

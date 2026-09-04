@@ -49,41 +49,46 @@ $wl_section_aria   = $wl_enabled ? 'false' : 'true';
 
 		<section id="edminboost-wl-status-section" class="<?php echo esc_attr( $wl_section_class ); ?>" aria-disabled="<?php echo esc_attr( $wl_section_aria ); ?>">
 			<h2><?php esc_html_e( 'System status footer', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
-			<?php
-			$status_fields = array(
-				'show_ip'               => array(
-					'label' => __( 'Show IP address', EDMINBOOST_TEXT_DOMAIN ),
-					'help'  => 'wl_show_ip',
-				),
-				'show_php_version'      => array(
-					'label' => __( 'Show PHP version', EDMINBOOST_TEXT_DOMAIN ),
-					'help'  => 'wl_show_php_version',
-				),
-				'show_wp_version'       => array(
-					'label' => __( 'Show WordPress version', EDMINBOOST_TEXT_DOMAIN ),
-					'help'  => 'wl_show_wp_version',
-				),
-				'show_memory_usage'     => array(
-					'label' => __( 'Show memory usage', EDMINBOOST_TEXT_DOMAIN ),
-					'help'  => 'wl_show_memory_usage',
-				),
-				'show_memory_limit'     => array(
-					'label' => __( 'Show memory limit', EDMINBOOST_TEXT_DOMAIN ),
-					'help'  => 'wl_show_memory_limit',
-				),
-				'show_memory_available' => array(
-					'label' => __( 'Show memory available', EDMINBOOST_TEXT_DOMAIN ),
-					'help'  => 'wl_show_memory_available',
-				),
-			);
-			foreach ( $status_fields as $field_key => $field_meta ) :
-				?>
-				<label class="edminboost-checkbox-row" for="edminboost_wl_<?php echo esc_attr( $field_key ); ?>">
-					<input type="checkbox" id="edminboost_wl_<?php echo esc_attr( $field_key ); ?>" name="<?php echo esc_attr( $wl_key ); ?>[<?php echo esc_attr( $field_key ); ?>]" value="1" <?php checked( ! empty( $wl[ $field_key ] ) ); ?> />
-					<?php EDMINBOOST_Setting_Help::echo_icon( $field_meta['help'] ); ?>
-					<?php echo esc_html( $field_meta['label'] ); ?>
-				</label>
-			<?php endforeach; ?>
+			<div class="edminboost-wl-status-layout">
+				<div class="edminboost-wl-status-fields">
+					<?php
+					$status_fields = array(
+						'show_ip'               => array(
+							'label' => __( 'Show IP address', EDMINBOOST_TEXT_DOMAIN ),
+							'help'  => 'wl_show_ip',
+						),
+						'show_php_version'      => array(
+							'label' => __( 'Show PHP version', EDMINBOOST_TEXT_DOMAIN ),
+							'help'  => 'wl_show_php_version',
+						),
+						'show_wp_version'       => array(
+							'label' => __( 'Show WordPress version', EDMINBOOST_TEXT_DOMAIN ),
+							'help'  => 'wl_show_wp_version',
+						),
+						'show_memory_usage'     => array(
+							'label' => __( 'Show memory usage', EDMINBOOST_TEXT_DOMAIN ),
+							'help'  => 'wl_show_memory_usage',
+						),
+						'show_memory_limit'     => array(
+							'label' => __( 'Show memory limit', EDMINBOOST_TEXT_DOMAIN ),
+							'help'  => 'wl_show_memory_limit',
+						),
+						'show_memory_available' => array(
+							'label' => __( 'Show memory available', EDMINBOOST_TEXT_DOMAIN ),
+							'help'  => 'wl_show_memory_available',
+						),
+					);
+					foreach ( $status_fields as $field_key => $field_meta ) :
+						?>
+						<label class="edminboost-checkbox-row" for="edminboost_wl_<?php echo esc_attr( $field_key ); ?>">
+							<input type="checkbox" id="edminboost_wl_<?php echo esc_attr( $field_key ); ?>" name="<?php echo esc_attr( $wl_key ); ?>[<?php echo esc_attr( $field_key ); ?>]" value="1" <?php checked( ! empty( $wl[ $field_key ] ) ); ?> />
+							<?php EDMINBOOST_Setting_Help::echo_icon( $field_meta['help'] ); ?>
+							<?php echo esc_html( $field_meta['label'] ); ?>
+						</label>
+					<?php endforeach; ?>
+				</div>
+				<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-white-label-status-preview.php'; ?>
+			</div>
 		</section>
 
 		<section id="edminboost-wl-rebrand-section" class="<?php echo esc_attr( $wl_section_class ); ?>" aria-disabled="<?php echo esc_attr( $wl_section_aria ); ?>">
