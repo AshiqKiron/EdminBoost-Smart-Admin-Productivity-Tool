@@ -4,17 +4,17 @@
  *
  * @package EdminBoost
  *
- * @var array  $preview_colors Resolved theme color tokens (accent, surface, text, topbar, sidebar, content).
- * @var string $preview_id     Root element id.
+ * @var array  $edminboost_preview_colors Resolved theme color tokens (legacy include variable).
+ * @var string $edminboost_preview_id     Root element id (legacy include variable).
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$preview_id     = isset( $preview_id ) ? $preview_id : 'edminboost-overview-theme-preview';
-$preview_colors = isset( $preview_colors ) && is_array( $preview_colors ) ? $preview_colors : array();
-$defaults       = array(
+$edminboost_preview_id     = isset( $edminboost_preview_id ) ? $edminboost_preview_id : 'edminboost-overview-theme-preview';
+$edminboost_preview_colors = isset( $edminboost_preview_colors ) && is_array( $edminboost_preview_colors ) ? $edminboost_preview_colors : array();
+$edminboost_color_defaults = array(
 	'accent'  => '#2271b1',
 	'surface' => '#ffffff',
 	'text'    => '#1d2327',
@@ -22,22 +22,22 @@ $defaults       = array(
 	'sidebar' => '#1d2327',
 	'content' => '#f0f0f1',
 );
-$preview_colors = wp_parse_args( $preview_colors, $defaults );
+$edminboost_preview_colors = wp_parse_args( $edminboost_preview_colors, $edminboost_color_defaults );
 
-$style_vars = sprintf(
+$edminboost_style_vars = sprintf(
 	'--eb-op-accent:%1$s;--eb-op-surface:%2$s;--eb-op-text:%3$s;--eb-op-top:%4$s;--eb-op-sidebar:%5$s;--eb-op-content:%6$s;',
-	esc_attr( $preview_colors['accent'] ),
-	esc_attr( $preview_colors['surface'] ),
-	esc_attr( $preview_colors['text'] ),
-	esc_attr( $preview_colors['topbar'] ),
-	esc_attr( $preview_colors['sidebar'] ),
-	esc_attr( $preview_colors['content'] )
+	esc_attr( $edminboost_preview_colors['accent'] ),
+	esc_attr( $edminboost_preview_colors['surface'] ),
+	esc_attr( $edminboost_preview_colors['text'] ),
+	esc_attr( $edminboost_preview_colors['topbar'] ),
+	esc_attr( $edminboost_preview_colors['sidebar'] ),
+	esc_attr( $edminboost_preview_colors['content'] )
 );
 ?>
 <div
 	class="edminboost-overview-card__preview edminboost-overview-theme-preview"
-	id="<?php echo esc_attr( $preview_id ); ?>"
-	style="<?php echo esc_attr( $style_vars ); ?>"
+	id="<?php echo esc_attr( $edminboost_preview_id ); ?>"
+	style="<?php echo esc_attr( $edminboost_style_vars ); ?>"
 	role="img"
 	aria-label="<?php esc_attr_e( 'Admin color theme preview', EDMINBOOST_TEXT_DOMAIN ); ?>"
 >
@@ -51,14 +51,14 @@ $style_vars = sprintf(
 		</div>
 	</div>
 	<ul class="edminboost-overview-theme-preview__swatches" aria-hidden="true">
-		<?php foreach ( EDMINBOOST_Theme::get_color_labels() as $color_key => $color_label ) : ?>
+		<?php foreach ( EDMINBOOST_Theme::get_color_labels() as $edminboost_color_key => $edminboost_color_label ) : ?>
 			<?php
-			$chip_color = isset( $preview_colors[ $color_key ] ) ? $preview_colors[ $color_key ] : $defaults['accent'];
+			$edminboost_chip_color = isset( $edminboost_preview_colors[ $edminboost_color_key ] ) ? $edminboost_preview_colors[ $edminboost_color_key ] : $edminboost_color_defaults['accent'];
 			?>
 			<li
 				class="edminboost-overview-theme-preview__swatch"
-				style="background-color: <?php echo esc_attr( $chip_color ); ?>;"
-				title="<?php echo esc_attr( $color_label ); ?>"
+				style="background-color: <?php echo esc_attr( $edminboost_chip_color ); ?>;"
+				title="<?php echo esc_attr( $edminboost_color_label ); ?>"
 			></li>
 		<?php endforeach; ?>
 	</ul>

@@ -71,7 +71,7 @@ class EDMINBOOST_Custom_Admin_Columns extends EDMINBOOST_Feature_Base {
 				if ( ! empty( $config['id'] ) ) {
 					$new['edminboost_id'] = __( 'ID', EDMINBOOST_TEXT_DOMAIN );
 				}
-				if ( ! empty( $config['meta_key'] ) ) {
+				if ( ! empty( $config['post_meta_key'] ) ) {
 					$new['edminboost_meta'] = __( 'Meta', EDMINBOOST_TEXT_DOMAIN );
 				}
 			}
@@ -94,7 +94,7 @@ class EDMINBOOST_Custom_Admin_Columns extends EDMINBOOST_Feature_Base {
 
 		switch ( $column ) {
 			case 'edminboost_thumb':
-				echo get_the_post_thumbnail( $post_id, array( 40, 40 ) );
+				echo wp_kses_post( get_the_post_thumbnail( $post_id, array( 40, 40 ) ) );
 				break;
 
 			case 'edminboost_id':
@@ -102,8 +102,8 @@ class EDMINBOOST_Custom_Admin_Columns extends EDMINBOOST_Feature_Base {
 				break;
 
 			case 'edminboost_meta':
-				if ( ! empty( $config['meta_key'] ) ) {
-					echo esc_html( (string) get_post_meta( $post_id, $config['meta_key'], true ) );
+				if ( ! empty( $config['post_meta_key'] ) ) {
+					echo esc_html( (string) get_post_meta( $post_id, $config['post_meta_key'], true ) );
 				}
 				break;
 		}

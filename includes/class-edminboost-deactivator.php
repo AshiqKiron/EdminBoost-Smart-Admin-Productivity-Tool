@@ -23,6 +23,6 @@ class EDMINBOOST_Deactivator {
 	 * @return void
 	 */
 	public static function deactivate() {
-		// No scheduled events to clear at this time.
+		delete_transient( 'edminboost_activation_redirect' );
 	}
 }

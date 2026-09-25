@@ -42,7 +42,7 @@ class EDMINBOOST_Hide_Screen_Help extends EDMINBOOST_Feature_Base {
 	 */
 	public function register_hooks() {
 		add_filter( 'screen_options_show_screen', array( $this, 'filter_screen_options' ) );
-		add_action( 'admin_head', array( $this, 'hide_help_tab' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_hide_styles' ) );
 	}
 
 	/**
@@ -60,15 +60,25 @@ class EDMINBOOST_Hide_Screen_Help extends EDMINBOOST_Feature_Base {
 	}
 
 	/**
-	 * Remove contextual help tabs via CSS fallback.
+	 * Add inline CSS to hide Screen Options and Help tabs on non-plugin screens.
 	 *
+	 * @param string $hook_suffix Current admin page hook.
 	 * @return void
 	 */
-	public function hide_help_tab() {
+	public function enqueue_hide_styles( $hook_suffix ) {
+		unset( $hook_suffix );
+
 		if ( EDMINBOOST_Admin::is_plugin_admin_page() ) {
 			return;
 		}
 
-		echo '<style id="edminboost-hide-screen-help">#screen-meta-links .show-settings,#contextual-help-link-wrap{display:none!important;}</style>';
+		$handle = 'edminboost-hide-screen-help';
+
+		wp_register_style( $handle, false, array(), EDMINBOOST_VERSION );
+		wp_enqueue_style( $handle );
+		wp_add_inline_style(
+			$handle,
+			'#screen-meta-links .show-settings,#contextual-help-link-wrap{display:none!important;}'
+		);
 	}
 }

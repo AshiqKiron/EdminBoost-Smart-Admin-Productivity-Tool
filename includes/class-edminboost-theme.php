@@ -378,6 +378,7 @@ class EDMINBOOST_Theme {
 				'name'         => $preset['name'],
 				'description'  => $preset['description'],
 				'colors'       => $preset['colors'],
+				'requiresPro'  => ! EDMINBOOST_Pro::is_theme_preset_available( $preset_id ),
 				'colorsByMode' => array(
 					'light' => self::resolve_preview_colors( $preset_id, 'light' ),
 					'dark'  => self::resolve_preview_colors( $preset_id, 'dark' ),
@@ -677,10 +678,6 @@ class EDMINBOOST_Theme {
 		add_filter( 'body_class', array( __CLASS__, 'filter_body_class' ), 20 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ), 5 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_assets' ), 5 );
-		add_action( 'admin_head', array( __CLASS__, 'print_custom_color_overrides' ), 20 );
-		add_action( 'wp_head', array( __CLASS__, 'print_custom_color_overrides' ), 20 );
-		add_action( 'admin_head', array( __CLASS__, 'print_wp_admin_theme_bridge' ), 21 );
-		add_action( 'admin_head', array( __CLASS__, 'print_theme_extras' ), 25 );
 	}
 
 	/**
@@ -759,6 +756,40 @@ class EDMINBOOST_Theme {
 			array(),
 			EDMINBOOST_VERSION
 		);
+
+		self::attach_inline_styles();
+	}
+
+	/**
+	 * Attach dynamic theme CSS via wp_add_inline_style().
+	 *
+	 * @return void
+	 */
+	private static function attach_inline_styles() {
+		$chunks = array();
+
+		$custom_rules = self::get_custom_color_override_rules();
+		if ( '' !== $custom_rules ) {
+			$chunks[] = $custom_rules;
+		}
+
+		if ( is_admin() ) {
+			$bridge_rules = self::get_wp_admin_theme_bridge_rules();
+			if ( '' !== $bridge_rules ) {
+				$chunks[] = $bridge_rules;
+			}
+
+			$extras_rules = self::get_theme_extras_rules();
+			if ( '' !== $extras_rules ) {
+				$chunks[] = $extras_rules;
+			}
+		}
+
+		if ( empty( $chunks ) ) {
+			return;
+		}
+
+		wp_add_inline_style( 'edminboost-themes', wp_strip_all_tags( implode( '', $chunks ) ) );
 	}
 
 	/**
@@ -821,25 +852,6 @@ class EDMINBOOST_Theme {
 			. '--wp-admin-theme-color--rgb:' . $rgb . ';'
 			. '--wp-admin-theme-color-darker-10:' . $hover . ';'
 			. '--wp-admin-theme-color-darker-20:' . $hover . ';';
-	}
-
-	/**
-	 * Print inline CSS mapping EdminBoost accent colors to WordPress admin UI variables.
-	 *
-	 * @return void
-	 */
-	public static function print_wp_admin_theme_bridge() {
-		if ( ! self::is_active() || ! is_admin() ) {
-			return;
-		}
-
-		$rules = self::get_wp_admin_theme_bridge_rules();
-
-		if ( '' === $rules ) {
-			return;
-		}
-
-		echo '<style id="edminboost-wp-admin-theme-bridge">' . wp_strip_all_tags( $rules ) . '</style>';
 	}
 
 	/**
@@ -947,18 +959,18 @@ class EDMINBOOST_Theme {
 	}
 
 	/**
-	 * Print inline CSS for custom color overrides.
+	 * Resolve CSS rules for custom color overrides.
 	 *
-	 * @return void
+	 * @return string CSS rules.
 	 */
-	public static function print_custom_color_overrides() {
+	public static function get_custom_color_override_rules() {
 		if ( ! self::is_active() ) {
-			return;
+			return '';
 		}
 
 		$theme = self::get_settings();
 		if ( ! self::uses_custom_colors( $theme ) ) {
-			return;
+			return '';
 		}
 
 		$rules = array();
@@ -999,15 +1011,10 @@ class EDMINBOOST_Theme {
 		}
 
 		if ( empty( $rules ) ) {
-			return;
+			return '';
 		}
 
-		echo '<style id="edminboost-theme-custom">';
-		echo 'body.edminboost-theme-active{';
-		// Values are sanitized hex colors from sanitize_hex_color().
-		echo wp_strip_all_tags( implode( '', $rules ) );
-		echo '}';
-		echo '</style>';
+		return 'body.edminboost-theme-active{' . implode( '', $rules ) . '}';
 	}
 
 	/**
@@ -1098,13 +1105,13 @@ class EDMINBOOST_Theme {
 	}
 
 	/**
-	 * Print status colors, background, font size, and scheduled dark mode CSS.
+	 * Resolve status colors, background, font size, and scheduled dark mode CSS.
 	 *
-	 * @return void
+	 * @return string CSS rules.
 	 */
-	public static function print_theme_extras() {
+	public static function get_theme_extras_rules() {
 		if ( ! self::is_active() ) {
-			return;
+			return '';
 		}
 
 		$theme = self::get_settings();
@@ -1139,9 +1146,9 @@ class EDMINBOOST_Theme {
 		}
 
 		if ( empty( $rules ) ) {
-			return;
+			return '';
 		}
 
-		echo '<style id="edminboost-theme-extras">' . wp_strip_all_tags( implode( '', $rules ) ) . '</style>';
+		return implode( '', $rules );
 	}
 }

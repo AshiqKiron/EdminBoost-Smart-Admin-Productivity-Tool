@@ -662,4 +662,35 @@ class SettingsTest extends Edminboost_Test_Case {
 
 		$this->assertTrue( $result['enabled'] );
 	}
+
+	/**
+	 * Unknown default preset IDs are ignored during sanitization.
+	 */
+	public function test_sanitize_default_preset_rejects_unknown_id() {
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'default_preset' => 'system_client',
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'default_preset' => 'not_a_real_preset',
+				),
+			)
+		);
+
+		$this->assertSame( 'system_client', $result['command_center']['default_preset'] );
+	}
+
+	/**
+	 * Text domain matches the plugin header Text Domain field.
+	 */
+	public function test_text_domain_is_edminboost() {
+		$this->assertSame( 'edminboost', EDMINBOOST_TEXT_DOMAIN );
+	}
 }

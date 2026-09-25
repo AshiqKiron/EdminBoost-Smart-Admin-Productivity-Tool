@@ -12,13 +12,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$option_name = EDMINBOOST_Settings::OPTION_NAME;
-$behavior    = isset( $cc_settings['behavior'] ) && is_array( $cc_settings['behavior'] )
+$edminboost_option_name = EDMINBOOST_Settings::OPTION_NAME;
+$edminboost_behavior    = isset( $cc_settings['behavior'] ) && is_array( $cc_settings['behavior'] )
 	? $cc_settings['behavior']
 	: EDMINBOOST_Command_Center::get_defaults()['behavior'];
-$cc_key      = $option_name . '[command_center][behavior]';
-$theme       = EDMINBOOST_Theme::get_settings( $cc_settings );
-$theme_key   = $option_name . '[command_center][theme]';
+$edminboost_cc_key      = $edminboost_option_name . '[command_center][behavior]';
+$edminboost_theme       = EDMINBOOST_Theme::get_settings( $cc_settings );
+$edminboost_theme_key   = $edminboost_option_name . '[command_center][theme]';
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap">
 	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
@@ -32,14 +32,15 @@ $theme_key   = $option_name . '[command_center][theme]';
 
 	<form action="options.php" method="post" class="edminboost-cc-form" id="edminboost-appearance-form">
 		<?php settings_fields( EDMINBOOST_Settings::SETTINGS_GROUP ); ?>
-		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
-
-		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-theme-settings.php'; ?>
-
-		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-declutter-settings.php'; ?>
+		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
 
 		<?php
-		$save_label = __( 'Save appearance', EDMINBOOST_TEXT_DOMAIN );
+		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-theme-settings.php';
+		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-declutter-settings.php';
+		?>
+
+		<?php
+		$edminboost_save_label = __( 'Save appearance', EDMINBOOST_TEXT_DOMAIN );
 		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
 		?>
 	</form>

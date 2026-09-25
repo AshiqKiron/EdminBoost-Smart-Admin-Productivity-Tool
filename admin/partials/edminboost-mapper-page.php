@@ -12,23 +12,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$option_name     = EDMINBOOST_Settings::OPTION_NAME;
-$behavior        = isset( $cc_settings['behavior'] ) && is_array( $cc_settings['behavior'] )
+$edminboost_option_name      = EDMINBOOST_Settings::OPTION_NAME;
+$edminboost_behavior         = isset( $cc_settings['behavior'] ) && is_array( $cc_settings['behavior'] )
 	? $cc_settings['behavior']
 	: EDMINBOOST_Command_Center::get_defaults()['behavior'];
-$cc_key          = $option_name . '[command_center][behavior]';
-$discovered      = EDMINBOOST_Command_Center::get_discovered_menu_items();
-$top_bar_items   = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
+$edminboost_cc_key            = $edminboost_option_name . '[command_center][behavior]';
+$edminboost_discovered        = EDMINBOOST_Command_Center::get_discovered_menu_items();
+$edminboost_top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
 	? $cc_settings['top_bar_items']
 	: array();
-$badge_sources   = EDMINBOOST_Command_Center::get_badge_sources();
-$dashicon_options = EDMINBOOST_Command_Center::get_dashicon_options();
+$edminboost_badge_sources     = EDMINBOOST_Command_Center::get_badge_sources();
+$edminboost_dashicon_options  = EDMINBOOST_Command_Center::get_dashicon_options();
 
-$active_slugs = array();
-foreach ( $top_bar_items as $item ) {
-	if ( ! empty( $item['slug'] ) ) {
-		$item_anchor = isset( $item['anchor'] ) ? (string) $item['anchor'] : '';
-		$active_slugs[] = $item['slug'] . "\0" . $item_anchor;
+$edminboost_active_slugs = array();
+foreach ( $edminboost_top_bar_items as $edminboost_item ) {
+	if ( ! empty( $edminboost_item['slug'] ) ) {
+		$edminboost_item_anchor   = isset( $edminboost_item['anchor'] ) ? (string) $edminboost_item['anchor'] : '';
+		$edminboost_active_slugs[] = $edminboost_item['slug'] . "\0" . $edminboost_item_anchor;
 	}
 }
 ?>
@@ -63,38 +63,38 @@ foreach ( $top_bar_items as $item ) {
 				/>
 
 				<ul class="edminboost-discovered-list" id="edminboost-discovered-list">
-					<?php if ( empty( $discovered ) ) : ?>
+					<?php if ( empty( $edminboost_discovered ) ) : ?>
 						<li class="edminboost-discovered-list__empty">
 							<?php esc_html_e( 'No admin menus detected.', EDMINBOOST_TEXT_DOMAIN ); ?>
 						</li>
 					<?php else : ?>
-						<?php foreach ( $discovered as $index => $menu_item ) : ?>
+						<?php foreach ( $edminboost_discovered as $edminboost_index => $edminboost_menu_item ) : ?>
 							<?php
-							$is_active = in_array( $menu_item['slug'] . "\0", $active_slugs, true );
-							$item_id   = 'edminboost_discovered_' . $index;
-							$source    = isset( $menu_item['source'] ) ? $menu_item['source'] : 'top';
+							$edminboost_is_active = in_array( $edminboost_menu_item['slug'] . "\0", $edminboost_active_slugs, true );
+							$edminboost_item_id   = 'edminboost_discovered_' . $edminboost_index;
+							$edminboost_source    = isset( $edminboost_menu_item['source'] ) ? $edminboost_menu_item['source'] : 'top';
 							?>
 							<li
-								class="edminboost-discovered-item edminboost-discovered-item--<?php echo esc_attr( $source ); ?><?php echo $is_active ? ' is-active' : ''; ?>"
-								data-slug="<?php echo esc_attr( $menu_item['slug'] ); ?>"
-								data-label="<?php echo esc_attr( $menu_item['label'] ); ?>"
-								data-icon="<?php echo esc_attr( $menu_item['icon'] ); ?>"
+								class="edminboost-discovered-item edminboost-discovered-item--<?php echo esc_attr( $edminboost_source ); ?><?php echo $edminboost_is_active ? ' is-active' : ''; ?>"
+								data-slug="<?php echo esc_attr( $edminboost_menu_item['slug'] ); ?>"
+								data-label="<?php echo esc_attr( $edminboost_menu_item['label'] ); ?>"
+								data-icon="<?php echo esc_attr( $edminboost_menu_item['icon'] ); ?>"
 							>
 								<span class="edminboost-discovered-item__handle dashicons dashicons-move" aria-hidden="true"></span>
-								<span class="edminboost-discovered-item__icon dashicons <?php echo esc_attr( $menu_item['icon'] ); ?>" aria-hidden="true"></span>
-								<span class="edminboost-discovered-item__label" title="<?php echo esc_attr( $menu_item['label'] ); ?>"><?php echo esc_html( $menu_item['label'] ); ?></span>
-								<label class="edminboost-discovered-item__toggle" for="<?php echo esc_attr( $item_id ); ?>">
+								<span class="edminboost-discovered-item__icon dashicons <?php echo esc_attr( $edminboost_menu_item['icon'] ); ?>" aria-hidden="true"></span>
+								<span class="edminboost-discovered-item__label" title="<?php echo esc_attr( $edminboost_menu_item['label'] ); ?>"><?php echo esc_html( $edminboost_menu_item['label'] ); ?></span>
+								<label class="edminboost-discovered-item__toggle" for="<?php echo esc_attr( $edminboost_item_id ); ?>">
 									<span class="screen-reader-text">
 										<?php
 										/* translators: %s: menu item label */
-										echo esc_html( sprintf( __( 'Add %s to top bar', EDMINBOOST_TEXT_DOMAIN ), $menu_item['label'] ) );
+										echo esc_html( sprintf( __( 'Add %s to top bar', EDMINBOOST_TEXT_DOMAIN ), $edminboost_menu_item['label'] ) );
 										?>
 									</span>
 									<input
 										type="checkbox"
-										id="<?php echo esc_attr( $item_id ); ?>"
+										id="<?php echo esc_attr( $edminboost_item_id ); ?>"
 										class="edminboost-discovered-item__checkbox"
-										<?php checked( $is_active ); ?>
+										<?php checked( $edminboost_is_active ); ?>
 									/>
 								</label>
 							</li>
@@ -162,36 +162,36 @@ foreach ( $top_bar_items as $item ) {
 							<span class="dashicons dashicons-wordpress"></span>
 						</span>
 						<ul class="edminboost-topbar-canvas__items" id="edminboost-topbar-items">
-							<?php foreach ( $top_bar_items as $index => $item ) : ?>
+							<?php foreach ( $edminboost_top_bar_items as $edminboost_index => $edminboost_item ) : ?>
 								<?php
-								$slug         = isset( $item['slug'] ) ? $item['slug'] : '';
-								$anchor       = isset( $item['anchor'] ) ? $item['anchor'] : '';
-								$label        = isset( $item['label'] ) ? $item['label'] : $slug;
-								$icon         = isset( $item['icon'] ) ? $item['icon'] : 'dashicons-admin-generic';
-								$interaction  = isset( $item['interaction'] ) ? $item['interaction'] : 'redirect';
-								$badge_source = isset( $item['badge_source'] ) ? $item['badge_source'] : '';
+								$edminboost_slug         = isset( $edminboost_item['slug'] ) ? $edminboost_item['slug'] : '';
+								$edminboost_anchor       = isset( $edminboost_item['anchor'] ) ? $edminboost_item['anchor'] : '';
+								$edminboost_label        = isset( $edminboost_item['label'] ) ? $edminboost_item['label'] : $edminboost_slug;
+								$edminboost_icon         = isset( $edminboost_item['icon'] ) ? $edminboost_item['icon'] : 'dashicons-admin-generic';
+								$edminboost_interaction  = isset( $edminboost_item['interaction'] ) ? $edminboost_item['interaction'] : 'redirect';
+								$edminboost_badge_source = isset( $edminboost_item['badge_source'] ) ? $edminboost_item['badge_source'] : '';
 
-								if ( '' === $anchor && false !== strpos( $slug, '#' ) ) {
-									$slug_parts = explode( '#', $slug, 2 );
-									$slug       = $slug_parts[0];
-									$anchor     = isset( $slug_parts[1] ) ? $slug_parts[1] : '';
+								if ( '' === $edminboost_anchor && false !== strpos( $edminboost_slug, '#' ) ) {
+									$edminboost_slug_parts = explode( '#', $edminboost_slug, 2 );
+									$edminboost_slug       = $edminboost_slug_parts[0];
+									$edminboost_anchor     = isset( $edminboost_slug_parts[1] ) ? $edminboost_slug_parts[1] : '';
 								}
 								?>
 								<li
 									class="edminboost-topbar-item"
 									role="listitem"
 									draggable="true"
-									data-slug="<?php echo esc_attr( $slug ); ?>"
-									data-anchor="<?php echo esc_attr( $anchor ); ?>"
-									data-label="<?php echo esc_attr( $label ); ?>"
-									data-icon="<?php echo esc_attr( $icon ); ?>"
-									data-interaction="<?php echo esc_attr( $interaction ); ?>"
-									data-badge-source="<?php echo esc_attr( $badge_source ); ?>"
+									data-slug="<?php echo esc_attr( $edminboost_slug ); ?>"
+									data-anchor="<?php echo esc_attr( $edminboost_anchor ); ?>"
+									data-label="<?php echo esc_attr( $edminboost_label ); ?>"
+									data-icon="<?php echo esc_attr( $edminboost_icon ); ?>"
+									data-interaction="<?php echo esc_attr( $edminboost_interaction ); ?>"
+									data-badge-source="<?php echo esc_attr( $edminboost_badge_source ); ?>"
 								>
-									<button type="button" class="edminboost-topbar-item__btn" aria-label="<?php echo esc_attr( $label ); ?>">
-										<span class="edminboost-topbar-item__icon dashicons <?php echo esc_attr( $icon ); ?>" aria-hidden="true"></span>
-										<span class="edminboost-topbar-item__text"><?php echo esc_html( $label ); ?></span>
-										<?php if ( '' !== $badge_source ) : ?>
+									<button type="button" class="edminboost-topbar-item__btn" aria-label="<?php echo esc_attr( $edminboost_label ); ?>">
+										<span class="edminboost-topbar-item__icon dashicons <?php echo esc_attr( $edminboost_icon ); ?>" aria-hidden="true"></span>
+										<span class="edminboost-topbar-item__text"><?php echo esc_html( $edminboost_label ); ?></span>
+										<?php if ( '' !== $edminboost_badge_source ) : ?>
 											<span class="edminboost-topbar-item__badge" aria-hidden="true">3</span>
 										<?php endif; ?>
 									</button>
@@ -203,7 +203,7 @@ foreach ( $top_bar_items as $item ) {
 						</span>
 					</div>
 
-					<p class="edminboost-topbar-canvas__hint description" id="edminboost-canvas-empty" <?php echo ! empty( $top_bar_items ) ? 'hidden' : ''; ?>>
+					<p class="edminboost-topbar-canvas__hint description" id="edminboost-canvas-empty" <?php echo ! empty( $edminboost_top_bar_items ) ? 'hidden' : ''; ?>>
 						<?php esc_html_e( 'Toggle items from the left panel or drag them here to build your top bar.', EDMINBOOST_TEXT_DOMAIN ); ?>
 					</p>
 
@@ -219,15 +219,15 @@ foreach ( $top_bar_items as $item ) {
 					<fieldset class="edminboost-fieldset">
 						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_icon' ); ?><?php esc_html_e( 'Icon', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 						<div class="edminboost-icon-picker" id="edminboost-icon-picker" role="listbox" aria-label="<?php esc_attr_e( 'Choose dashicon', EDMINBOOST_TEXT_DOMAIN ); ?>">
-							<?php foreach ( $dashicon_options as $dashicon ) : ?>
+							<?php foreach ( $edminboost_dashicon_options as $edminboost_dashicon ) : ?>
 								<button
 									type="button"
 									class="edminboost-icon-picker__btn"
-									data-icon="<?php echo esc_attr( $dashicon ); ?>"
+									data-icon="<?php echo esc_attr( $edminboost_dashicon ); ?>"
 									role="option"
-									aria-label="<?php echo esc_attr( $dashicon ); ?>"
+									aria-label="<?php echo esc_attr( $edminboost_dashicon ); ?>"
 								>
-									<span class="dashicons <?php echo esc_attr( $dashicon ); ?>" aria-hidden="true"></span>
+									<span class="dashicons <?php echo esc_attr( $edminboost_dashicon ); ?>" aria-hidden="true"></span>
 								</button>
 							<?php endforeach; ?>
 						</div>
@@ -244,9 +244,9 @@ foreach ( $top_bar_items as $item ) {
 						<span class="description"><?php esc_html_e( 'Scroll to a section on the page when the link is opened.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 					</p>
 
-					<div>
+					<div class="edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>"<?php echo EDMINBOOST_Pro::feature_attr( 'top_bar_drawer_items' ); ?>>
 					<fieldset class="edminboost-fieldset">
-						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_interaction' ); ?><?php esc_html_e( 'Interaction', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_interaction' ); ?><?php esc_html_e( 'Interaction', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></legend>
 						<label class="edminboost-checkbox-row">
 							<input type="radio" name="edminboost_item_interaction" value="redirect" checked />
 							<?php esc_html_e( 'Direct redirect', EDMINBOOST_TEXT_DOMAIN ); ?>
@@ -266,13 +266,14 @@ foreach ( $top_bar_items as $item ) {
 					<p>
 						<label for="edminboost-item-badge"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_badge_source' ); ?><?php esc_html_e( 'Live badge binding', EDMINBOOST_TEXT_DOMAIN ); ?></label>
 						<select id="edminboost-item-badge" class="regular-text">
-							<?php foreach ( $badge_sources as $source_key => $source_label ) : ?>
-								<option value="<?php echo esc_attr( $source_key ); ?>">
-									<?php echo esc_html( $source_label ); ?>
+							<?php foreach ( $edminboost_badge_sources as $edminboost_source_key => $edminboost_source_label ) : ?>
+								<option value="<?php echo esc_attr( $edminboost_source_key ); ?>">
+									<?php echo esc_html( $edminboost_source_label ); ?>
 								</option>
 							<?php endforeach; ?>
 						</select>
 					</p>
+					<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 					</div>
 
 					<p>
@@ -291,17 +292,24 @@ foreach ( $top_bar_items as $item ) {
 					<p class="description">
 						<?php esc_html_e( 'Adjust slide-out panel style and notification badges. Set a top bar link to AJAX slide-out drawer to configure these settings.', EDMINBOOST_TEXT_DOMAIN ); ?>
 					</p>
-					<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-home-advanced-look.php'; ?>
+					<?php
+					// Included partial expects `$behavior` and `$cc_key` in parent scope.
+					// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+					$behavior = $edminboost_behavior;
+					$cc_key   = $edminboost_cc_key;
+					// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
+					include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-home-advanced-look.php';
+					?>
 				</section>
 
-				<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
-				<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_layout_studio_save]" value="1" />
-				<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_mark_setup_complete]" value="1" />
+				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
+				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_layout_studio_save]" value="1" />
+				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_mark_setup_complete]" value="1" />
 				<div id="edminboost-topbar-hidden-inputs"></div>
 
 				<?php
-				$save_label      = __( 'Save top bar', EDMINBOOST_TEXT_DOMAIN );
-				$wrapper_class   = 'submit edminboost-mapper-submit edminboost-form-actions';
+				$edminboost_save_label    = __( 'Save top bar', EDMINBOOST_TEXT_DOMAIN );
+				$edminboost_wrapper_class = 'submit edminboost-mapper-submit edminboost-form-actions';
 				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
 				?>
 			</div>

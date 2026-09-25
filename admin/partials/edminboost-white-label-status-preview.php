@@ -4,17 +4,19 @@
  *
  * @package EdminBoost
  *
- * @var array $wl White label settings.
+ * @var array $edminboost_wl White label settings.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$wl               = isset( $wl ) && is_array( $wl ) ? $wl : EDMINBOOST_White_Label::get_settings();
-$segment_texts    = EDMINBOOST_White_Label::get_status_footer_segment_texts();
-$enabled_parts    = EDMINBOOST_White_Label::get_status_footer_parts( $wl );
-$segment_labels   = array(
+$edminboost_wl = isset( $edminboost_wl ) && is_array( $edminboost_wl )
+	? $edminboost_wl
+	: ( isset( $wl ) && is_array( $wl ) ? $wl : EDMINBOOST_White_Label::get_settings() );
+$edminboost_segment_texts    = EDMINBOOST_White_Label::get_status_footer_segment_texts();
+$edminboost_enabled_parts    = EDMINBOOST_White_Label::get_status_footer_parts( $edminboost_wl );
+$edminboost_segment_labels   = array(
 	'show_ip'               => __( 'IP address', EDMINBOOST_TEXT_DOMAIN ),
 	'show_php_version'      => __( 'PHP version', EDMINBOOST_TEXT_DOMAIN ),
 	'show_wp_version'       => __( 'WordPress version', EDMINBOOST_TEXT_DOMAIN ),
@@ -22,11 +24,11 @@ $segment_labels   = array(
 	'show_memory_limit'     => __( 'Memory limit', EDMINBOOST_TEXT_DOMAIN ),
 	'show_memory_available' => __( 'Memory available', EDMINBOOST_TEXT_DOMAIN ),
 );
-$has_enabled_part = ! empty( $enabled_parts );
+$edminboost_has_enabled_part = ! empty( $edminboost_enabled_parts );
 ?>
 <div
 	id="edminboost-wl-status-preview"
-	class="edminboost-wl-status-preview<?php echo $has_enabled_part ? '' : ' is-empty'; ?>"
+	class="edminboost-wl-status-preview<?php echo $edminboost_has_enabled_part ? '' : ' is-empty'; ?>"
 	role="region"
 	aria-label="<?php esc_attr_e( 'System status footer live preview', EDMINBOOST_TEXT_DOMAIN ); ?>"
 	aria-live="polite"
@@ -40,43 +42,43 @@ $has_enabled_part = ! empty( $enabled_parts );
 			<span
 				id="edminboost-wl-status-preview-empty"
 				class="edminboost-wl-status-preview__empty"
-				<?php echo $has_enabled_part ? ' hidden' : ''; ?>
+				<?php echo $edminboost_has_enabled_part ? ' hidden' : ''; ?>
 			><?php esc_html_e( 'No status details selected.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 			<span
 				id="edminboost-wl-status-preview-line"
 				class="edminboost-wl-status-preview__line"
-				<?php echo $has_enabled_part ? '' : ' hidden'; ?>
+				<?php echo $edminboost_has_enabled_part ? '' : ' hidden'; ?>
 			>
-				<?php foreach ( $segment_texts as $segment_key => $segment_text ) : ?>
+				<?php foreach ( $edminboost_segment_texts as $edminboost_segment_key => $edminboost_segment_text ) : ?>
 					<?php
-					$is_visible = ! empty( $wl[ $segment_key ] );
-					$segment_class = 'edminboost-wl-status-preview__segment';
-					if ( ! $is_visible ) {
-						$segment_class .= ' is-hidden';
+					$edminboost_is_visible = ! empty( $edminboost_wl[ $edminboost_segment_key ] );
+					$edminboost_segment_class = 'edminboost-wl-status-preview__segment';
+					if ( ! $edminboost_is_visible ) {
+						$edminboost_segment_class .= ' is-hidden';
 					}
 
-					$tooltip_visible = sprintf(
+					$edminboost_tooltip_visible = sprintf(
 						/* translators: %s: footer segment label */
 						__( '%s — Visible', EDMINBOOST_TEXT_DOMAIN ),
-						$segment_labels[ $segment_key ]
+						$edminboost_segment_labels[ $edminboost_segment_key ]
 					);
-					$tooltip_hidden = sprintf(
+					$edminboost_tooltip_hidden = sprintf(
 						/* translators: %s: footer segment label */
 						__( '%s — Hidden', EDMINBOOST_TEXT_DOMAIN ),
-						$segment_labels[ $segment_key ]
+						$edminboost_segment_labels[ $edminboost_segment_key ]
 					);
-					$tooltip_text   = $is_visible ? $tooltip_visible : $tooltip_hidden;
+					$edminboost_tooltip_text   = $edminboost_is_visible ? $edminboost_tooltip_visible : $edminboost_tooltip_hidden;
 					?>
 					<span
-						class="<?php echo esc_attr( $segment_class ); ?>"
-						data-preview="<?php echo esc_attr( $segment_key ); ?>"
-						data-tooltip-visible="<?php echo esc_attr( $tooltip_visible ); ?>"
-						data-tooltip-hidden="<?php echo esc_attr( $tooltip_hidden ); ?>"
+						class="<?php echo esc_attr( $edminboost_segment_class ); ?>"
+						data-preview="<?php echo esc_attr( $edminboost_segment_key ); ?>"
+						data-tooltip-visible="<?php echo esc_attr( $edminboost_tooltip_visible ); ?>"
+						data-tooltip-hidden="<?php echo esc_attr( $edminboost_tooltip_hidden ); ?>"
 						tabindex="0"
-						aria-label="<?php echo esc_attr( $tooltip_text ); ?>"
+						aria-label="<?php echo esc_attr( $edminboost_tooltip_text ); ?>"
 					>
-						<span class="edminboost-wl-status-preview__segment-text"><?php echo esc_html( $segment_text ); ?></span>
-						<span class="edminboost-wl-status-preview__tooltip" role="tooltip"><?php echo esc_html( $tooltip_text ); ?></span>
+						<span class="edminboost-wl-status-preview__segment-text"><?php echo esc_html( $edminboost_segment_text ); ?></span>
+						<span class="edminboost-wl-status-preview__tooltip" role="tooltip"><?php echo esc_html( $edminboost_tooltip_text ); ?></span>
 					</span>
 				<?php endforeach; ?>
 			</span>

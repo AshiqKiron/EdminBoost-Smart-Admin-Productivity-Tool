@@ -19,7 +19,7 @@ Cross-cutting quality standards. See also: `edminboost-project.mdc` (architectur
 ## I18N
 
 - All user-facing strings must be translatable.
-- Use `EDMINBOOST_TEXT_DOMAIN` consistently; it must match `EDMINBOOST_PLUGIN_SLUG`.
+- Use `EDMINBOOST_TEXT_DOMAIN` consistently (`edminboost` — matches the plugin header, distinct from `EDMINBOOST_PLUGIN_SLUG`).
 - Use `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, etc. appropriately.
 - Feature `$name` and `$description` on `EDMINBOOST_Feature_Base` are translated via `get_name()` / `get_description()`.
 - Text domain loads from `/languages` on `plugins_loaded` via `EDMINBOOST_I18n`.

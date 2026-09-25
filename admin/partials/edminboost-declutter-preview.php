@@ -4,24 +4,24 @@
  *
  * @package EdminBoost
  *
- * @var array $behavior Current behavior settings.
+ * @var array $edminboost_behavior Current behavior settings.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$behavior = isset( $behavior ) && is_array( $behavior )
-	? $behavior
+$edminboost_behavior = isset( $edminboost_behavior ) && is_array( $edminboost_behavior )
+	? $edminboost_behavior
 	: EDMINBOOST_Command_Center::get_defaults()['behavior'];
 
-$theme_settings = EDMINBOOST_Theme::get_settings();
-$preview_colors = EDMINBOOST_Theme::resolve_preview_colors(
-	isset( $theme_settings['preset'] ) ? $theme_settings['preset'] : 'default',
-	isset( $theme_settings['mode'] ) ? $theme_settings['mode'] : 'light',
-	$theme_settings
+$edminboost_theme_settings = EDMINBOOST_Theme::get_settings();
+$edminboost_preview_colors = EDMINBOOST_Theme::resolve_preview_colors(
+	isset( $edminboost_theme_settings['preset'] ) ? $edminboost_theme_settings['preset'] : 'default',
+	isset( $edminboost_theme_settings['mode'] ) ? $edminboost_theme_settings['mode'] : 'light',
+	$edminboost_theme_settings
 );
-$color_defaults = array(
+$edminboost_color_defaults = array(
 	'accent'  => '#2271b1',
 	'surface' => '#ffffff',
 	'text'    => '#1d2327',
@@ -29,18 +29,18 @@ $color_defaults = array(
 	'sidebar' => '#1d2327',
 	'content' => '#f0f0f1',
 );
-$preview_colors     = wp_parse_args( $preview_colors, $color_defaults );
-$preview_style_vars = sprintf(
+$edminboost_preview_colors     = wp_parse_args( $edminboost_preview_colors, $edminboost_color_defaults );
+$edminboost_preview_style_vars = sprintf(
 	'--eb-op-accent:%1$s;--eb-op-surface:%2$s;--eb-op-text:%3$s;--eb-op-top:%4$s;--eb-op-sidebar:%5$s;--eb-op-content:%6$s;',
-	esc_attr( $preview_colors['accent'] ),
-	esc_attr( $preview_colors['surface'] ),
-	esc_attr( $preview_colors['text'] ),
-	esc_attr( $preview_colors['topbar'] ),
-	esc_attr( $preview_colors['sidebar'] ),
-	esc_attr( $preview_colors['content'] )
+	esc_attr( $edminboost_preview_colors['accent'] ),
+	esc_attr( $edminboost_preview_colors['surface'] ),
+	esc_attr( $edminboost_preview_colors['text'] ),
+	esc_attr( $edminboost_preview_colors['topbar'] ),
+	esc_attr( $edminboost_preview_colors['sidebar'] ),
+	esc_attr( $edminboost_preview_colors['content'] )
 );
 
-$preview_items = array(
+$edminboost_preview_items = array(
 	array(
 		'key'   => 'hide_wp_logo',
 		'label' => __( 'WordPress logo', EDMINBOOST_TEXT_DOMAIN ),
@@ -79,7 +79,7 @@ $preview_items = array(
 <div
 	id="edminboost-declutter-preview"
 	class="edminboost-declutter-preview"
-	style="<?php echo esc_attr( $preview_style_vars ); ?>"
+	style="<?php echo esc_attr( $edminboost_preview_style_vars ); ?>"
 	role="region"
 	aria-label="<?php esc_attr_e( 'Admin bar cleanup live preview', EDMINBOOST_TEXT_DOMAIN ); ?>"
 	aria-live="polite"
@@ -88,44 +88,44 @@ $preview_items = array(
 	<p class="edminboost-declutter-preview__desc"><?php esc_html_e( 'Shows native WordPress admin bar items affected by the toggles above.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 
 	<div class="edminboost-declutter-preview__canvas" aria-hidden="true">
-		<?php foreach ( $preview_items as $preview_item ) : ?>
+		<?php foreach ( $edminboost_preview_items as $edminboost_preview_item ) : ?>
 			<?php
-			$behavior_key = $preview_item['key'];
-			$is_hidden    = ! empty( $behavior[ $behavior_key ] );
-			$item_class   = 'edminboost-declutter-preview__item';
-			if ( ! empty( $preview_item['class'] ) ) {
-				$item_class .= ' ' . $preview_item['class'];
+			$edminboost_behavior_key = $edminboost_preview_item['key'];
+			$edminboost_is_hidden    = ! empty( $edminboost_behavior[ $edminboost_behavior_key ] );
+			$edminboost_item_class   = 'edminboost-declutter-preview__item';
+			if ( ! empty( $edminboost_preview_item['class'] ) ) {
+				$edminboost_item_class .= ' ' . $edminboost_preview_item['class'];
 			}
-			if ( $is_hidden ) {
-				$item_class .= ' is-hidden';
+			if ( $edminboost_is_hidden ) {
+				$edminboost_item_class .= ' is-hidden';
 			}
 
-			$tooltip_visible = sprintf(
+			$edminboost_tooltip_visible = sprintf(
 				/* translators: %s: admin bar item label */
 				__( '%s — Visible', EDMINBOOST_TEXT_DOMAIN ),
-				$preview_item['label']
+				$edminboost_preview_item['label']
 			);
-			$tooltip_hidden = sprintf(
+			$edminboost_tooltip_hidden = sprintf(
 				/* translators: %s: admin bar item label */
 				__( '%s — Hidden', EDMINBOOST_TEXT_DOMAIN ),
-				$preview_item['label']
+				$edminboost_preview_item['label']
 			);
-			$tooltip_text   = $is_hidden ? $tooltip_hidden : $tooltip_visible;
+			$edminboost_tooltip_text = $edminboost_is_hidden ? $edminboost_tooltip_hidden : $edminboost_tooltip_visible;
 			?>
 			<span
-				class="<?php echo esc_attr( $item_class ); ?>"
-				data-preview="<?php echo esc_attr( $behavior_key ); ?>"
-				data-tooltip-visible="<?php echo esc_attr( $tooltip_visible ); ?>"
-				data-tooltip-hidden="<?php echo esc_attr( $tooltip_hidden ); ?>"
+				class="<?php echo esc_attr( $edminboost_item_class ); ?>"
+				data-preview="<?php echo esc_attr( $edminboost_behavior_key ); ?>"
+				data-tooltip-visible="<?php echo esc_attr( $edminboost_tooltip_visible ); ?>"
+				data-tooltip-hidden="<?php echo esc_attr( $edminboost_tooltip_hidden ); ?>"
 				tabindex="0"
-				aria-label="<?php echo esc_attr( $tooltip_text ); ?>"
+				aria-label="<?php echo esc_attr( $edminboost_tooltip_text ); ?>"
 			>
-				<span class="dashicons <?php echo esc_attr( $preview_item['icon'] ); ?>" aria-hidden="true"></span>
-				<span class="edminboost-declutter-preview__label"><?php echo esc_html( $preview_item['label'] ); ?></span>
-				<?php if ( ! empty( $preview_item['badge'] ) ) : ?>
-					<span class="edminboost-declutter-preview__badge" aria-hidden="true"><?php echo esc_html( $preview_item['badge'] ); ?></span>
+				<span class="dashicons <?php echo esc_attr( $edminboost_preview_item['icon'] ); ?>" aria-hidden="true"></span>
+				<span class="edminboost-declutter-preview__label"><?php echo esc_html( $edminboost_preview_item['label'] ); ?></span>
+				<?php if ( ! empty( $edminboost_preview_item['badge'] ) ) : ?>
+					<span class="edminboost-declutter-preview__badge" aria-hidden="true"><?php echo esc_html( $edminboost_preview_item['badge'] ); ?></span>
 				<?php endif; ?>
-				<span class="edminboost-declutter-preview__tooltip" role="tooltip"><?php echo esc_html( $tooltip_text ); ?></span>
+				<span class="edminboost-declutter-preview__tooltip" role="tooltip"><?php echo esc_html( $edminboost_tooltip_text ); ?></span>
 			</span>
 		<?php endforeach; ?>
 	</div>

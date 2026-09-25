@@ -16,7 +16,7 @@ alwaysApply: false
 - On `DOMContentLoaded`, call `initCommandCenterNav()`, `initPickerCloseOnScroll()`, `reinitEdminboostPage( root )`, and `primeCommandCenterHistory()`.
 - `reinitEdminboostPage( root )` sets `data-edminboost-ready="true"`, sets `autocomplete="off"` on CC/settings forms, runs `restoreFormControlDefaults()` (syncs controls to server-rendered `default*` attributes, then re-dispatches `change` after a tick for live previews), and runs all page inits — also called after CC tab AJAX swaps.
 - Module refs: `syncPresetCatalogFn`, `syncThemeSettingsFn` (set by `initLayoutPresetPicker` / `initTheme`; called from `applySettingsSaveResult()`), `syncThemeExtrasPreviewFn` (set by `initThemeExtras`; called from `updateThemePreview()`), `syncDeclutterPreviewThemeFn` (set by `initDeclutterPreview`; called from `updateThemePreview()`), `pendingDashboardOverviewSave` (in-flight overview save Promise; CC nav waits before swapping tabs).
-- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Top Bar page panel/badges), `initTheme`, `initThemeExtras` (Appearance extras live preview + schedule dependent section), `initDeclutterPreview` (Appearance declutter live preview), `initWhiteLabel` (White Label master toggle + status/rebrand live previews), `initSecurityFeatures` (Security login redirects master toggle), `initProductivityFeatures` (Productivity stacked live previews + dashboard widgets + admin footer master toggles), `initPerformanceFeatures` (Performance emoji scope + asset toggle live previews), `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initFormResetButtons` (Reset to defaults confirm + CC tab reload), `initBackupSettings` (Settings export/import), `initProLocks` (Free-tier `.is-pro-locked` section disabling) — each no-ops if target elements are absent.
+- Page-specific init functions: `initCommandCenterNav` (CC tab AJAX nav), `initSetupWizard` (Dashboard first-run wizard), `initLayoutPresetPicker` (setup wizard + Layout Presets + Dashboard overview compact picker), `initDashboardOverview` (post-setup overview inline save), `initMapper`, `initMenuStudio`, `initBehavior` (Top Bar page panel/badges), `initTheme`, `initThemeExtras` (Appearance extras live preview + schedule dependent section), `initDeclutterPreview` (Appearance declutter live preview), `initWhiteLabel` (White Label master toggle + status/rebrand live previews), `initSecurityFeatures` (Security login redirects master toggle), `initProductivityFeatures` (Productivity stacked live previews + dashboard widgets + admin footer master toggles), `initPerformanceFeatures` (Performance emoji scope + asset toggle live previews), `initPresets` (Layout Presets actions), `initCommandCenterForms`, `initSettingsForm`, `initFormResetButtons` (Reset to defaults confirm + CC tab reload), `initBackupSettings` (Settings export/import), `initProLocks` (legacy `.is-pro-locked` disabling when `!edminboostData.isPro`) — each no-ops if target elements are absent.
 - `initBehavior` delegates to `initBehaviorBadgePreview` (toggle badge style previews), `initBehaviorDrawerWidthCustom` (custom width slider + live preview), and `initBehaviorAnimationSpeed` (animation speed listbox + drawer micro-previews).
 
 `edminboostData` shape:
@@ -360,10 +360,16 @@ Key elements: `#edminboost-presets-form`, `#edminboost_layout_preset`, `#edminbo
 - Rename custom preset: `#edminboost-preset-rename-btn` visible only for saved `custom_*` presets (`isSavedCustomPreset()`); confirm sets `_rename_custom_preset[id|name]` hidden fields and submits.
 - Apply/duplicate/export preset actions also live in `initPresets`; preset picker rename UI in `edminboost-preset-picker.php` mirrors the same hidden fields.
 
+## Menu Duplicator JS (`admin/js/edminboost-menu-duplicator.js`)
+
+- Enqueued by `EDMINBOOST_Menu_Duplicator::enqueue_scripts()` on `nav-menus.php` when a menu is selected.
+- Localized `edminboostMenuDuplicator.url` — nonce-wrapped `admin_action_edminboost_duplicate_menu` URL.
+
 ## Enqueuing
 
 | Handle | File | When |
 |--------|------|------|
+| `edminboost-menu-duplicator` | `admin/js/edminboost-menu-duplicator.js` | Nav Menus screen when Menu Duplicator feature is enabled |
 | `edminboost-themes` | `admin/css/edminboost-themes.css` | `EDMINBOOST_Theme::is_active()` (all wp-admin when plugin enabled; also CC bar front end) |
 | `edminboost-admin` | `admin/js/edminboost-admin.js`, `admin/css/edminboost-admin.css` | Plugin screens (`EDMINBOOST_Admin::is_plugin_screen()`); CSS depends on `edminboost-themes` |
 | `edminboost-admin-menu` | `admin/css/edminboost-admin-menu.css` (+ inline layout/color vars) | Menu Studio active |

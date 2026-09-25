@@ -73,6 +73,7 @@ class EDMINBOOST_White_Label {
 	 */
 	public static function is_active() {
 		return EDMINBOOST_Settings::is_enabled()
+			&& EDMINBOOST_Pro::is_active()
 			&& ! empty( self::get_settings()['enabled'] );
 	}
 
@@ -169,7 +170,9 @@ class EDMINBOOST_White_Label {
 			return $text;
 		}
 
-		return implode( ' | ', array_values( $parts ) );
+		$escaped_parts = array_map( 'esc_html', array_values( $parts ) );
+
+		return implode( ' | ', $escaped_parts );
 	}
 
 	/**

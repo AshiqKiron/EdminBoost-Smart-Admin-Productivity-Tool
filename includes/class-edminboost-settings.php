@@ -286,7 +286,7 @@ class EDMINBOOST_Settings {
 		 */
 		$sanitized = apply_filters( 'edminboost_sanitize_settings', $sanitized, $input );
 
-		return $sanitized;
+		return EDMINBOOST_Pro::enforce_plan_limits( $sanitized );
 	}
 
 	/**
@@ -334,22 +334,24 @@ class EDMINBOOST_Settings {
 
 		if ( ! empty( $raw['_setup_wizard_save'] ) && ! empty( $raw['_apply_preset'] ) ) {
 			$preset_id = sanitize_key( $raw['_apply_preset'] );
-			$items     = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id );
-			if ( ! empty( $items ) ) {
-				$output['top_bar_items']  = self::sanitize_top_bar_items( $items );
-				$output['default_preset'] = $preset_id;
-				$output['menu_studio']    = self::sanitize_menu_studio(
-					EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id, $output ),
-					null
-				);
-				$preset_menu_applied      = true;
-				$preset_layout_applied    = true;
+			if ( EDMINBOOST_Pro::is_layout_preset_available( $preset_id ) ) {
+				$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id );
+				if ( ! empty( $items ) ) {
+					$output['top_bar_items']  = self::sanitize_top_bar_items( $items );
+					$output['default_preset'] = $preset_id;
+					$output['menu_studio']    = self::sanitize_menu_studio(
+						EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id, $output ),
+						null
+					);
+					$preset_menu_applied      = true;
+					$preset_layout_applied    = true;
 
-				$all_presets = EDMINBOOST_Command_Center::get_all_presets();
-				if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
-					$persona = sanitize_key( $all_presets[ $preset_id ]['persona'] );
-					if ( in_array( $persona, $allowed_personas, true ) ) {
-						$output['persona'] = $persona;
+					$all_presets = EDMINBOOST_Command_Center::get_all_presets();
+					if ( ! empty( $all_presets[ $preset_id ]['persona'] ) ) {
+						$persona = sanitize_key( $all_presets[ $preset_id ]['persona'] );
+						if ( in_array( $persona, $allowed_personas, true ) ) {
+							$output['persona'] = $persona;
+						}
 					}
 				}
 			}
@@ -386,7 +388,9 @@ class EDMINBOOST_Settings {
 
 		if ( isset( $raw['default_preset'] ) ) {
 			$default_preset = sanitize_key( $raw['default_preset'] );
-			if ( 'default' !== $default_preset ) {
+			$all_presets    = array_keys( EDMINBOOST_Command_Center::get_all_presets() );
+
+			if ( 'default' !== $default_preset && in_array( $default_preset, $all_presets, true ) ) {
 				$output['default_preset'] = $default_preset;
 			}
 		}
@@ -412,6 +416,9 @@ class EDMINBOOST_Settings {
 				}
 
 				if ( '' === $preset_id || in_array( $preset_id, $all_presets, true ) ) {
+					if ( '' !== $preset_id && ! EDMINBOOST_Pro::is_layout_preset_available( $preset_id ) ) {
+						continue;
+					}
 					$assignments[ $role_key ] = $preset_id;
 				}
 			}
@@ -450,7 +457,7 @@ class EDMINBOOST_Settings {
 			$output['presets'] = self::sanitize_custom_presets( $raw['presets'] );
 		}
 
-		if ( ! empty( $raw['_save_custom_preset'] ) && is_array( $raw['_save_custom_preset'] ) ) {
+		if ( ! empty( $raw['_save_custom_preset'] ) && is_array( $raw['_save_custom_preset'] ) && EDMINBOOST_Pro::can_save_custom_preset( $output ) ) {
 			$output['presets'] = self::sanitize_custom_presets(
 				array_merge(
 					isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array(),
@@ -468,10 +475,12 @@ class EDMINBOOST_Settings {
 
 		if ( ! empty( $raw['_duplicate_preset'] ) ) {
 			$source_id = sanitize_key( $raw['_duplicate_preset'] );
-			$duplicate = self::duplicate_custom_preset( $source_id, $output );
-			if ( ! empty( $duplicate ) ) {
-				$existing = isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array();
-				$output['presets'] = self::sanitize_custom_presets( array_merge( $existing, $duplicate ) );
+			if ( EDMINBOOST_Pro::can_save_custom_preset( $output ) ) {
+				$duplicate = self::duplicate_custom_preset( $source_id, $output );
+				if ( ! empty( $duplicate ) ) {
+					$existing = isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array();
+					$output['presets'] = self::sanitize_custom_presets( array_merge( $existing, $duplicate ) );
+				}
 			}
 		}
 
@@ -644,9 +653,16 @@ class EDMINBOOST_Settings {
 	 * @return array
 	 */
 	private static function sanitize_menu_studio_custom_items( $items ) {
-		$sanitized     = array();
-		$allowed_icons = EDMINBOOST_Command_Center::get_dashicon_options();
-		$seen_ids      = array();
+		$sanitized        = array();
+		$allowed_icons    = EDMINBOOST_Command_Center::get_dashicon_options();
+		$allowed_parents  = array();
+		$seen_ids         = array();
+
+		foreach ( EDMINBOOST_Command_Center::get_discovered_menu_tree() as $menu_item ) {
+			if ( ! empty( $menu_item['slug'] ) ) {
+				$allowed_parents[] = $menu_item['slug'];
+			}
+		}
 
 		foreach ( $items as $item ) {
 			if ( ! is_array( $item ) ) {
@@ -683,6 +699,9 @@ class EDMINBOOST_Settings {
 			}
 
 			$parent = isset( $item['parent'] ) ? sanitize_text_field( wp_unslash( $item['parent'] ) ) : '';
+			if ( '' !== $parent && ! in_array( $parent, $allowed_parents, true ) ) {
+				$parent = '';
+			}
 
 			$sanitized[] = array(
 				'id'     => $id,

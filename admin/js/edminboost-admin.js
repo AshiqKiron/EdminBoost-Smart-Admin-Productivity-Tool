@@ -183,6 +183,42 @@
 		initSettingsForm( root );
 		initFormResetButtons( root );
 		initBackupSettings( root );
+		initProLocks( root );
+	}
+
+	function initProLocks( root ) {
+		if ( edminboostData.isPro ) {
+			return;
+		}
+
+		root.querySelectorAll( '.is-pro-locked' ).forEach( function ( section ) {
+			syncDependentSection( section, false );
+
+			section.querySelectorAll( '.edminboost-pro-upgrade a' ).forEach( function ( link ) {
+				link.removeAttribute( 'tabindex' );
+				link.removeAttribute( 'aria-disabled' );
+			} );
+		} );
+	}
+
+	function isLayoutPresetProLocked( presetId, catalog ) {
+		if ( edminboostData.isPro ) {
+			return false;
+		}
+
+		var config = ( catalog || edminboostData.presets || {} )[ presetId ] || {};
+
+		return !! config.requiresPro;
+	}
+
+	function isThemePresetProLocked( presetId, catalog ) {
+		if ( edminboostData.isPro ) {
+			return false;
+		}
+
+		var config = ( catalog || edminboostData.themePresets || {} )[ presetId ] || {};
+
+		return !! config.requiresPro;
 	}
 
 	function primeCommandCenterHistory() {
@@ -396,6 +432,18 @@
 							'',
 							url
 						);
+					}
+
+					if ( data.ccNavNonce && edminboostData.ccNav ) {
+						edminboostData.ccNav.nonce = data.ccNavNonce;
+					}
+
+					if ( data.drawerNonce && edminboostData.drawerPreview ) {
+						edminboostData.drawerPreview.nonce = data.drawerNonce;
+					}
+
+					if ( data.drawerContextNonce && edminboostData.drawerPreview ) {
+						edminboostData.drawerPreview.contextNonce = data.drawerContextNonce;
 					}
 
 					reinitEdminboostPage( newWrap );
@@ -1088,6 +1136,7 @@
 				formData.append( 'slug', selectedItem.dataset.slug || '' );
 				formData.append( 'anchor', selectedItem.dataset.anchor || '' );
 				formData.append( 'label', selectedItem.dataset.label || '' );
+				formData.append( 'mapper_context_nonce', preview.contextNonce || '' );
 
 				previewBtn.disabled = true;
 
@@ -2933,6 +2982,11 @@
 		}
 
 		function setSelectedPreset( preset ) {
+			if ( isThemePresetProLocked( preset, themePresets ) ) {
+				window.alert( edminboostData.strings.proThemeLocked || 'This theme skin requires Pro.' );
+				return;
+			}
+
 			if ( ! presetSelect || ! themePresets[ preset ] ) {
 				return;
 			}
@@ -3965,6 +4019,11 @@
 		}
 
 		function setSelectedPreset( preset ) {
+			if ( isLayoutPresetProLocked( preset, presetCatalog ) ) {
+				window.alert( edminboostData.strings.proPresetLocked || 'This layout preset requires Pro.' );
+				return;
+			}
+
 			if ( ! presetSelect || ! presetCatalog[ preset ] ) {
 				return;
 			}
@@ -4019,13 +4078,15 @@
 			var presetNameText = preset.name || presetId;
 			var presetDescText = preset.description || '';
 			var badgeLabel = isVirtual ? badgeVirtual : ( isSystem ? badgeBuiltIn : badgeSaved );
+			var requiresPro = !! preset.requiresPro;
 			var li = document.createElement( 'li' );
 
-			li.className = 'edminboost-layout-preset-picker__option' + ( isSelected ? ' is-selected' : '' );
+			li.className = 'edminboost-layout-preset-picker__option' + ( isSelected ? ' is-selected' : '' ) + ( requiresPro ? ' is-pro-locked' : '' );
 			li.setAttribute( 'role', 'option' );
 			li.setAttribute( 'tabindex', '-1' );
 			li.setAttribute( 'data-value', presetId );
 			li.setAttribute( 'data-system', isSystem ? '1' : '0' );
+			li.setAttribute( 'data-requires-pro', requiresPro ? '1' : '0' );
 			li.setAttribute( 'aria-selected', isSelected ? 'true' : 'false' );
 
 			var main = document.createElement( 'span' );
@@ -5430,7 +5491,11 @@
 					.then( function ( response ) { return response.json(); } )
 					.then( function ( payload ) {
 						if ( ! payload.success || ! payload.data || ! payload.data.json ) {
-							return;
+							var exportMessage = payload.data && payload.data.message
+								? payload.data.message
+								: ( strings.exportFailed || 'Could not export settings. Please try again.' );
+
+							throw new Error( exportMessage );
 						}
 
 						var blob     = new Blob( [ payload.data.json ], { type: 'application/json' } );
@@ -5444,6 +5509,9 @@
 						link.download = 'export-' + dateStamp + '.json';
 						link.click();
 						URL.revokeObjectURL( url );
+					} )
+					.catch( function ( error ) {
+						window.alert( error.message || strings.exportFailed || 'Could not export settings. Please try again.' );
 					} );
 			} );
 		}

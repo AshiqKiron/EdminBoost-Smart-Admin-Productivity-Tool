@@ -65,7 +65,7 @@ class EDMINBOOST_Login_Redirects extends EDMINBOOST_Feature_Base {
 			$url = $settings['default_login'];
 		}
 
-		return '' !== $url ? $url : $redirect_to;
+		return $this->validate_redirect_url( $url, $redirect_to );
 	}
 
 	/**
@@ -88,7 +88,24 @@ class EDMINBOOST_Login_Redirects extends EDMINBOOST_Feature_Base {
 			$url = $settings['default_logout'];
 		}
 
-		return '' !== $url ? $url : $redirect_to;
+		return $this->validate_redirect_url( $url, $redirect_to );
+	}
+
+	/**
+	 * Validate a stored redirect URL before sending the user there.
+	 *
+	 * @param string $url       Candidate redirect URL.
+	 * @param string $fallback  Fallback when validation fails.
+	 * @return string
+	 */
+	private function validate_redirect_url( $url, $fallback ) {
+		if ( '' === $url ) {
+			return $fallback;
+		}
+
+		$validated = wp_validate_redirect( $url, $fallback );
+
+		return $validated ? $validated : $fallback;
 	}
 
 	/**

@@ -4,27 +4,27 @@
  *
  * @package EdminBoost
  *
- * @var array  $features Feature settings.
- * @var string $preview  Preview key: notices|screen_help|dashboard_widgets.
+ * @var array  $edminboost_features Feature settings.
+ * @var string $edminboost_preview  Preview key: notices|screen_help|dashboard_widgets.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$preview = isset( $preview ) ? sanitize_key( $preview ) : '';
+$edminboost_preview = isset( $edminboost_preview ) ? sanitize_key( $edminboost_preview ) : '';
 
-if ( ! in_array( $preview, array( 'notices', 'screen_help', 'dashboard_widgets' ), true ) ) {
+if ( ! in_array( $edminboost_preview, array( 'notices', 'screen_help', 'dashboard_widgets' ), true ) ) {
 	return;
 }
 
-$theme_settings = EDMINBOOST_Theme::get_settings();
-$preview_colors = EDMINBOOST_Theme::resolve_preview_colors(
-	isset( $theme_settings['preset'] ) ? $theme_settings['preset'] : 'default',
-	isset( $theme_settings['mode'] ) ? $theme_settings['mode'] : 'light',
-	$theme_settings
+$edminboost_theme_settings = EDMINBOOST_Theme::get_settings();
+$edminboost_preview_colors = EDMINBOOST_Theme::resolve_preview_colors(
+	isset( $edminboost_theme_settings['preset'] ) ? $edminboost_theme_settings['preset'] : 'default',
+	isset( $edminboost_theme_settings['mode'] ) ? $edminboost_theme_settings['mode'] : 'light',
+	$edminboost_theme_settings
 );
-$color_defaults = array(
+$edminboost_color_defaults = array(
 	'accent'  => '#2271b1',
 	'surface' => '#ffffff',
 	'text'    => '#1d2327',
@@ -32,22 +32,22 @@ $color_defaults = array(
 	'sidebar' => '#1d2327',
 	'content' => '#f0f0f1',
 );
-$preview_colors     = wp_parse_args( $preview_colors, $color_defaults );
-$preview_style_vars = sprintf(
+$edminboost_preview_colors = wp_parse_args( $edminboost_preview_colors, $edminboost_color_defaults );
+$edminboost_preview_style_vars        = sprintf(
 	'--eb-op-accent:%1$s;--eb-op-surface:%2$s;--eb-op-text:%3$s;--eb-op-top:%4$s;--eb-op-sidebar:%5$s;--eb-op-content:%6$s;',
-	esc_attr( $preview_colors['accent'] ),
-	esc_attr( $preview_colors['surface'] ),
-	esc_attr( $preview_colors['text'] ),
-	esc_attr( $preview_colors['topbar'] ),
-	esc_attr( $preview_colors['sidebar'] ),
-	esc_attr( $preview_colors['content'] )
+	esc_attr( $edminboost_preview_colors['accent'] ),
+	esc_attr( $edminboost_preview_colors['surface'] ),
+	esc_attr( $edminboost_preview_colors['text'] ),
+	esc_attr( $edminboost_preview_colors['topbar'] ),
+	esc_attr( $edminboost_preview_colors['sidebar'] ),
+	esc_attr( $edminboost_preview_colors['content'] )
 );
 
-$hide_notices_enabled      = ! empty( $features['hide_admin_notices'] );
-$hide_screen_enabled       = ! empty( $features['hide_screen_help'] );
-$dashboard_widgets_enabled = ! empty( $features['dashboard_widgets']['enabled'] );
+$edminboost_hide_notices_enabled      = ! empty( $edminboost_features['hide_admin_notices'] );
+$edminboost_hide_screen_enabled       = ! empty( $edminboost_features['hide_screen_help'] );
+$edminboost_dashboard_widgets_enabled = ! empty( $edminboost_features['dashboard_widgets']['enabled'] );
 
-$preview_meta = array(
+$edminboost_preview_meta = array(
 	'notices'           => array(
 		'id'          => 'edminboost-productivity-notices-preview',
 		'aria_label'  => __( 'Admin notices live preview', EDMINBOOST_TEXT_DOMAIN ),
@@ -65,7 +65,7 @@ $preview_meta = array(
 	),
 );
 
-$notice_items = array(
+$edminboost_notice_items = array(
 	array(
 		'removable' => true,
 		'class'     => 'notice-success is-dismissible',
@@ -88,7 +88,7 @@ $notice_items = array(
 	),
 );
 
-$screen_tabs = array(
+$edminboost_screen_tabs = array(
 	array(
 		'label' => __( 'Screen Options', EDMINBOOST_TEXT_DOMAIN ),
 	),
@@ -97,133 +97,133 @@ $screen_tabs = array(
 	),
 );
 
-$dashboard_widget_labels = EDMINBOOST_Dashboard::get_widget_labels();
-$dashboard_widget_layout = array(
+$edminboost_dashboard_widget_labels = EDMINBOOST_Dashboard::get_widget_labels();
+$edminboost_dashboard_widget_layout = array(
 	'welcome' => array( 'remove_welcome_panel' ),
 	'main'    => array( 'remove_at_a_glance', 'remove_activity', 'remove_site_health' ),
 	'side'    => array( 'remove_quick_press', 'remove_wp_news' ),
 );
 
-$current_preview = $preview_meta[ $preview ];
+$edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 ?>
 <div
-	id="<?php echo esc_attr( $current_preview['id'] ); ?>"
+	id="<?php echo esc_attr( $edminboost_current_preview['id'] ); ?>"
 	class="edminboost-productivity-preview"
-	style="<?php echo esc_attr( $preview_style_vars ); ?>"
+	style="<?php echo esc_attr( $edminboost_preview_style_vars ); ?>"
 	role="region"
-	aria-label="<?php echo esc_attr( $current_preview['aria_label'] ); ?>"
+	aria-label="<?php echo esc_attr( $edminboost_current_preview['aria_label'] ); ?>"
 	aria-live="polite"
-	<?php if ( ! empty( $current_preview['preview_key'] ) ) : ?>
-		data-preview-toggle="<?php echo esc_attr( $current_preview['preview_key'] ); ?>"
+	<?php if ( ! empty( $edminboost_current_preview['preview_key'] ) ) : ?>
+		data-preview-toggle="<?php echo esc_attr( $edminboost_current_preview['preview_key'] ); ?>"
 	<?php endif; ?>
 >
 	<p class="edminboost-productivity-preview__lead"><?php esc_html_e( 'Live preview', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 
-	<div class="edminboost-productivity-preview__canvas edminboost-productivity-preview__canvas--<?php echo esc_attr( $preview ); ?>">
-		<?php if ( 'notices' === $preview ) : ?>
+	<div class="edminboost-productivity-preview__canvas edminboost-productivity-preview__canvas--<?php echo esc_attr( $edminboost_preview ); ?>">
+		<?php if ( 'notices' === $edminboost_preview ) : ?>
 			<div class="edminboost-productivity-preview__viewport" aria-hidden="true">
 				<div class="edminboost-productivity-preview__topbar"></div>
 				<div class="edminboost-productivity-preview__main">
 					<div class="edminboost-productivity-preview__notices">
-				<?php foreach ( $notice_items as $notice_item ) : ?>
+				<?php foreach ( $edminboost_notice_items as $edminboost_notice_item ) : ?>
 					<?php
-					$is_removed   = ! empty( $notice_item['removable'] ) && $hide_notices_enabled;
-					$notice_class = 'edminboost-productivity-preview__notice ' . $notice_item['class'];
-					if ( $is_removed ) {
-						$notice_class .= ' is-removed';
+					$edminboost_is_removed   = ! empty( $edminboost_notice_item['removable'] ) && $edminboost_hide_notices_enabled;
+					$edminboost_notice_class = 'edminboost-productivity-preview__notice ' . $edminboost_notice_item['class'];
+					if ( $edminboost_is_removed ) {
+						$edminboost_notice_class .= ' is-removed';
 					}
 
-					if ( ! empty( $notice_item['removable'] ) ) {
-						$tooltip_loaded = sprintf(
+					if ( ! empty( $edminboost_notice_item['removable'] ) ) {
+						$edminboost_tooltip_loaded = sprintf(
 							/* translators: %s: notice message */
 							__( '%s — Visible', EDMINBOOST_TEXT_DOMAIN ),
-							$notice_item['message']
+							$edminboost_notice_item['message']
 						);
-						$tooltip_removed = sprintf(
+						$edminboost_tooltip_removed = sprintf(
 							/* translators: %s: notice message */
 							__( '%s — Hidden', EDMINBOOST_TEXT_DOMAIN ),
-							$notice_item['message']
+							$edminboost_notice_item['message']
 						);
 					} else {
-						$tooltip_loaded = sprintf(
+						$edminboost_tooltip_loaded = sprintf(
 							/* translators: %s: notice message */
 							__( '%s — Always visible', EDMINBOOST_TEXT_DOMAIN ),
-							$notice_item['message']
+							$edminboost_notice_item['message']
 						);
-						$tooltip_removed = $tooltip_loaded;
+						$edminboost_tooltip_removed = $edminboost_tooltip_loaded;
 					}
 
-					$tooltip_text = $is_removed ? $tooltip_removed : $tooltip_loaded;
+					$edminboost_tooltip_text = $edminboost_is_removed ? $edminboost_tooltip_removed : $edminboost_tooltip_loaded;
 					?>
 					<div
-						class="<?php echo esc_attr( $notice_class ); ?>"
-						<?php if ( ! empty( $notice_item['removable'] ) ) : ?>
-							data-preview="<?php echo esc_attr( $current_preview['preview_key'] ); ?>"
+						class="<?php echo esc_attr( $edminboost_notice_class ); ?>"
+						<?php if ( ! empty( $edminboost_notice_item['removable'] ) ) : ?>
+							data-preview="<?php echo esc_attr( $edminboost_current_preview['preview_key'] ); ?>"
 						<?php endif; ?>
-						data-tooltip-loaded="<?php echo esc_attr( $tooltip_loaded ); ?>"
-						data-tooltip-removed="<?php echo esc_attr( $tooltip_removed ); ?>"
+						data-tooltip-loaded="<?php echo esc_attr( $edminboost_tooltip_loaded ); ?>"
+						data-tooltip-removed="<?php echo esc_attr( $edminboost_tooltip_removed ); ?>"
 						tabindex="0"
-						aria-label="<?php echo esc_attr( $tooltip_text ); ?>"
+						aria-label="<?php echo esc_attr( $edminboost_tooltip_text ); ?>"
 					>
-						<p><?php echo esc_html( $notice_item['message'] ); ?></p>
-						<?php if ( false !== strpos( $notice_item['class'], 'is-dismissible' ) ) : ?>
+						<p><?php echo esc_html( $edminboost_notice_item['message'] ); ?></p>
+						<?php if ( false !== strpos( $edminboost_notice_item['class'], 'is-dismissible' ) ) : ?>
 							<button type="button" class="notice-dismiss" tabindex="-1" aria-hidden="true">
 								<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 							</button>
 						<?php endif; ?>
-						<span class="edminboost-productivity-preview__tooltip" role="tooltip"><?php echo esc_html( $tooltip_text ); ?></span>
+						<span class="edminboost-productivity-preview__tooltip" role="tooltip"><?php echo esc_html( $edminboost_tooltip_text ); ?></span>
 					</div>
 				<?php endforeach; ?>
 					</div>
 				</div>
 			</div>
-		<?php elseif ( 'dashboard_widgets' === $preview ) : ?>
+		<?php elseif ( 'dashboard_widgets' === $edminboost_preview ) : ?>
 			<div class="edminboost-productivity-preview__viewport" aria-hidden="true">
 				<div class="edminboost-productivity-preview__topbar"></div>
 				<div class="edminboost-productivity-preview__main">
 					<div class="edminboost-productivity-preview__dashboard">
 						<p class="edminboost-productivity-preview__dashboard-heading"><?php esc_html_e( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ); ?></p>
-						<?php foreach ( $dashboard_widget_layout as $area => $widget_keys ) : ?>
-							<div class="edminboost-productivity-preview__dashboard-area edminboost-productivity-preview__dashboard-area--<?php echo esc_attr( $area ); ?>">
-								<?php foreach ( $widget_keys as $widget_key ) : ?>
+						<?php foreach ( $edminboost_dashboard_widget_layout as $edminboost_area => $edminboost_widget_keys ) : ?>
+							<div class="edminboost-productivity-preview__dashboard-area edminboost-productivity-preview__dashboard-area--<?php echo esc_attr( $edminboost_area ); ?>">
+								<?php foreach ( $edminboost_widget_keys as $edminboost_widget_key ) : ?>
 									<?php
-									if ( ! isset( $dashboard_widget_labels[ $widget_key ] ) ) {
+									if ( ! isset( $edminboost_dashboard_widget_labels[ $edminboost_widget_key ] ) ) {
 										continue;
 									}
 
-									$widget_label = $dashboard_widget_labels[ $widget_key ];
-									$is_removed   = $dashboard_widgets_enabled && ! empty( $features['dashboard_widgets'][ $widget_key ] );
-									$widget_class = 'edminboost-productivity-preview__widget';
-									if ( $is_removed ) {
-										$widget_class .= ' is-removed';
+									$edminboost_widget_label = $edminboost_dashboard_widget_labels[ $edminboost_widget_key ];
+									$edminboost_is_removed   = $edminboost_dashboard_widgets_enabled && ! empty( $edminboost_features['dashboard_widgets'][ $edminboost_widget_key ] );
+									$edminboost_widget_class = 'edminboost-productivity-preview__widget';
+									if ( $edminboost_is_removed ) {
+										$edminboost_widget_class .= ' is-removed';
 									}
 
-									$tooltip_loaded = sprintf(
+									$edminboost_tooltip_loaded = sprintf(
 										/* translators: %s: dashboard widget label */
 										__( '%s — Visible', EDMINBOOST_TEXT_DOMAIN ),
-										$widget_label
+										$edminboost_widget_label
 									);
-									$tooltip_removed = sprintf(
+									$edminboost_tooltip_removed = sprintf(
 										/* translators: %s: dashboard widget label */
 										__( '%s — Removed', EDMINBOOST_TEXT_DOMAIN ),
-										$widget_label
+										$edminboost_widget_label
 									);
-									$tooltip_text = $is_removed ? $tooltip_removed : $tooltip_loaded;
+									$edminboost_tooltip_text = $edminboost_is_removed ? $edminboost_tooltip_removed : $edminboost_tooltip_loaded;
 									?>
 									<div
-										class="<?php echo esc_attr( $widget_class ); ?>"
-										data-widget-key="<?php echo esc_attr( $widget_key ); ?>"
-										data-tooltip-loaded="<?php echo esc_attr( $tooltip_loaded ); ?>"
-										data-tooltip-removed="<?php echo esc_attr( $tooltip_removed ); ?>"
+										class="<?php echo esc_attr( $edminboost_widget_class ); ?>"
+										data-widget-key="<?php echo esc_attr( $edminboost_widget_key ); ?>"
+										data-tooltip-loaded="<?php echo esc_attr( $edminboost_tooltip_loaded ); ?>"
+										data-tooltip-removed="<?php echo esc_attr( $edminboost_tooltip_removed ); ?>"
 										tabindex="0"
-										aria-label="<?php echo esc_attr( $tooltip_text ); ?>"
+										aria-label="<?php echo esc_attr( $edminboost_tooltip_text ); ?>"
 									>
 										<div class="edminboost-productivity-preview__widget-head">
-											<span class="edminboost-productivity-preview__widget-title"><?php echo esc_html( $widget_label ); ?></span>
+											<span class="edminboost-productivity-preview__widget-title"><?php echo esc_html( $edminboost_widget_label ); ?></span>
 										</div>
 										<div class="edminboost-productivity-preview__widget-body" aria-hidden="true">
 											<?php
-											switch ( $widget_key ) {
+											switch ( $edminboost_widget_key ) {
 												case 'remove_welcome_panel':
 													?>
 													<div class="edminboost-productivity-preview__welcome">
@@ -298,7 +298,7 @@ $current_preview = $preview_meta[ $preview ];
 											}
 											?>
 										</div>
-										<span class="edminboost-productivity-preview__tooltip" role="tooltip"><?php echo esc_html( $tooltip_text ); ?></span>
+										<span class="edminboost-productivity-preview__tooltip" role="tooltip"><?php echo esc_html( $edminboost_tooltip_text ); ?></span>
 									</div>
 								<?php endforeach; ?>
 							</div>
@@ -309,38 +309,38 @@ $current_preview = $preview_meta[ $preview ];
 		<?php else : ?>
 			<div class="edminboost-productivity-preview__screen-meta">
 				<div class="edminboost-productivity-preview__screen-meta-links">
-					<?php foreach ( $screen_tabs as $screen_tab ) : ?>
+					<?php foreach ( $edminboost_screen_tabs as $edminboost_screen_tab ) : ?>
 						<?php
-						$is_removed = $hide_screen_enabled;
-						$tab_class  = 'edminboost-productivity-preview__screen-tab';
-						if ( $is_removed ) {
-							$tab_class .= ' is-removed';
+						$edminboost_is_removed = $edminboost_hide_screen_enabled;
+						$edminboost_tab_class  = 'edminboost-productivity-preview__screen-tab';
+						if ( $edminboost_is_removed ) {
+							$edminboost_tab_class .= ' is-removed';
 						}
 
-						$tooltip_loaded = sprintf(
+						$edminboost_tooltip_loaded = sprintf(
 							/* translators: %s: screen tab label */
 							__( '%s — Visible', EDMINBOOST_TEXT_DOMAIN ),
-							$screen_tab['label']
+							$edminboost_screen_tab['label']
 						);
-						$tooltip_removed = sprintf(
+						$edminboost_tooltip_removed = sprintf(
 							/* translators: %s: screen tab label */
 							__( '%s — Hidden', EDMINBOOST_TEXT_DOMAIN ),
-							$screen_tab['label']
+							$edminboost_screen_tab['label']
 						);
-						$tooltip_text = $is_removed ? $tooltip_removed : $tooltip_loaded;
+						$edminboost_tooltip_text = $edminboost_is_removed ? $edminboost_tooltip_removed : $edminboost_tooltip_loaded;
 						?>
 						<div
-							class="<?php echo esc_attr( $tab_class ); ?>"
-							data-preview="<?php echo esc_attr( $current_preview['preview_key'] ); ?>"
-							data-tooltip-loaded="<?php echo esc_attr( $tooltip_loaded ); ?>"
-							data-tooltip-removed="<?php echo esc_attr( $tooltip_removed ); ?>"
+							class="<?php echo esc_attr( $edminboost_tab_class ); ?>"
+							data-preview="<?php echo esc_attr( $edminboost_current_preview['preview_key'] ); ?>"
+							data-tooltip-loaded="<?php echo esc_attr( $edminboost_tooltip_loaded ); ?>"
+							data-tooltip-removed="<?php echo esc_attr( $edminboost_tooltip_removed ); ?>"
 							tabindex="0"
-							aria-label="<?php echo esc_attr( $tooltip_text ); ?>"
+							aria-label="<?php echo esc_attr( $edminboost_tooltip_text ); ?>"
 						>
 							<button type="button" class="button show-settings" tabindex="-1" aria-hidden="true">
-								<?php echo esc_html( $screen_tab['label'] ); ?>
+								<?php echo esc_html( $edminboost_screen_tab['label'] ); ?>
 							</button>
-							<span class="edminboost-productivity-preview__tooltip" role="tooltip"><?php echo esc_html( $tooltip_text ); ?></span>
+							<span class="edminboost-productivity-preview__tooltip" role="tooltip"><?php echo esc_html( $edminboost_tooltip_text ); ?></span>
 						</div>
 					<?php endforeach; ?>
 				</div>

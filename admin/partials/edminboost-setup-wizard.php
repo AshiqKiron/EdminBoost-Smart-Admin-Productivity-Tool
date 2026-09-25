@@ -4,31 +4,47 @@
  *
  * @package EdminBoost
  *
- * @var string $option_name Settings option name.
- * @var array  $cc_settings Command Center settings.
- * @var string $theme_key   Form field prefix for theme.
- * @var array  $theme       Current theme settings.
- * @var string $mapper_url  Top Bar editor URL.
+ * @var string $edminboost_option_name Settings option name (prefixed include variable).
+ * @var array  $cc_settings            Command Center settings.
+ * @var string $edminboost_theme_key   Form field prefix for theme.
+ * @var array  $edminboost_theme       Current theme settings.
+ * @var string $edminboost_mapper_url  Top Bar editor URL.
+ * @var string $edminboost_preset_picker_mode Picker mode passed to preset picker (`wizard`).
+ * @var string $edminboost_wizard_preset     Initial layout preset for the wizard.
+ * @var array  $edminboost_preview_items     Top bar items preview for wizard step 3.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$default_preset = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
-$all_presets    = EDMINBOOST_Command_Center::get_all_presets();
-$wizard_preset  = isset( $all_presets[ $default_preset ] ) && ! empty( $all_presets[ $default_preset ]['system'] )
-	? $default_preset
+if ( ! isset( $edminboost_option_name ) ) {
+	$edminboost_option_name = EDMINBOOST_Settings::OPTION_NAME;
+}
+if ( ! isset( $edminboost_theme ) ) {
+	$edminboost_theme = EDMINBOOST_Theme::get_settings( $cc_settings );
+}
+if ( ! isset( $edminboost_theme_key ) ) {
+	$edminboost_theme_key = $edminboost_option_name . '[command_center][theme]';
+}
+if ( ! isset( $edminboost_mapper_url ) ) {
+	$edminboost_mapper_url = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER );
+}
+
+$edminboost_default_preset     = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
+$edminboost_all_presets        = EDMINBOOST_Command_Center::get_all_presets();
+$edminboost_wizard_preset      = isset( $edminboost_all_presets[ $edminboost_default_preset ] ) && ! empty( $edminboost_all_presets[ $edminboost_default_preset ]['system'] )
+	? $edminboost_default_preset
 	: 'system_client';
-$preview_items  = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $wizard_preset );
-$preset_picker_mode = 'wizard';
+$edminboost_preview_items      = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $edminboost_wizard_preset );
+$edminboost_preset_picker_mode = 'wizard';
 ?>
 <form action="options.php" method="post" class="edminboost-cc-form edminboost-setup-wizard" id="edminboost-setup-wizard-form">
 	<?php settings_fields( EDMINBOOST_Settings::SETTINGS_GROUP ); ?>
-	<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
-	<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_setup_wizard_save]" value="1" />
-	<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_apply_preset]" id="edminboost_wizard_apply_preset" value="<?php echo esc_attr( $wizard_preset ); ?>" />
-	<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][default_preset]" id="edminboost_wizard_default_preset" value="<?php echo esc_attr( $wizard_preset ); ?>" />
+	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
+	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_setup_wizard_save]" value="1" />
+	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_apply_preset]" id="edminboost_wizard_apply_preset" value="<?php echo esc_attr( $edminboost_wizard_preset ); ?>" />
+	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][default_preset]" id="edminboost_wizard_default_preset" value="<?php echo esc_attr( $edminboost_wizard_preset ); ?>" />
 
 	<nav class="edminboost-setup-stepper" aria-label="<?php esc_attr_e( 'Setup progress', EDMINBOOST_TEXT_DOMAIN ); ?>">
 		<ol class="edminboost-setup-stepper__list">
@@ -72,8 +88,8 @@ $preset_picker_mode = 'wizard';
 				<?php esc_html_e( 'These links will appear in your Command Center top bar. Open the full editor for fine-tuning.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
 			<?php
-			$top_bar_items = $preview_items;
-			$summary_id    = 'edminboost-wizard-topbar-summary';
+			$edminboost_top_bar_items = $edminboost_preview_items;
+			$edminboost_summary_id    = 'edminboost-wizard-topbar-summary';
 			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-topbar-summary.php';
 			?>
 		</section>

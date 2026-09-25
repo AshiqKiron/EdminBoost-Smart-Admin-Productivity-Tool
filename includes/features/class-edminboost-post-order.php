@@ -159,17 +159,42 @@ class EDMINBOOST_Post_Order extends EDMINBOOST_Feature_Base {
 			return;
 		}
 
+		if ( ! isset( $_POST['menu_order'] ) ) {
+			return;
+		}
+
 		if ( ! current_user_can( 'edit_post', $post_id ) ) {
 			return;
 		}
 
-		if ( isset( $_POST['menu_order'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Missing
-			wp_update_post(
-				array(
-					'ID'         => $post_id,
-					'menu_order' => (int) $_POST['menu_order'], // phpcs:ignore WordPress.Security.NonceVerification.Missing
-				)
+		$post = get_post( $post_id );
+		if ( ! $post || ! in_array( $post->post_type, $this->get_post_types(), true ) ) {
+			return;
+		}
+
+		$nonce_verified = false;
+
+		if ( isset( $_POST['_inline_edit'] ) ) {
+			$nonce_verified = wp_verify_nonce(
+				sanitize_text_field( wp_unslash( $_POST['_inline_edit'] ) ),
+				'inlineeditnonce'
+			);
+		} elseif ( isset( $_POST['_wpnonce'] ) ) {
+			$nonce_verified = wp_verify_nonce(
+				sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ),
+				'update-post_' . $post_id
 			);
 		}
+
+		if ( ! $nonce_verified ) {
+			return;
+		}
+
+		wp_update_post(
+			array(
+				'ID'         => $post_id,
+				'menu_order' => (int) wp_unslash( $_POST['menu_order'] ),
+			)
+		);
 	}
 }

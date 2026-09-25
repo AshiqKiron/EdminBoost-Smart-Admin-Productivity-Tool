@@ -41,40 +41,46 @@ class EDMINBOOST_Menu_Duplicator extends EDMINBOOST_Feature_Base {
 	 * @return void
 	 */
 	public function register_hooks() {
-		add_action( 'admin_footer-nav-menus.php', array( $this, 'render_duplicate_button' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
 		add_action( 'admin_action_edminboost_duplicate_menu', array( $this, 'handle_duplicate' ) );
 	}
 
 	/**
-	 * Render duplicate button on nav menus screen.
+	 * Enqueue duplicate button script on the nav menus screen.
 	 *
+	 * @param string $hook_suffix Current admin page hook.
 	 * @return void
 	 */
-	public function render_duplicate_button() {
+	public function enqueue_scripts( $hook_suffix ) {
+		if ( 'nav-menus.php' !== $hook_suffix ) {
+			return;
+		}
+
 		$menu_id = isset( $_GET['menu'] ) ? absint( $_GET['menu'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		if ( ! $menu_id ) {
 			return;
 		}
 
-		$url = wp_nonce_url(
-			admin_url( 'admin.php?action=edminboost_duplicate_menu&menu_id=' . $menu_id ),
-			'edminboost_duplicate_menu_' . $menu_id
+		wp_enqueue_script(
+			'edminboost-menu-duplicator',
+			EDMINBOOST_PLUGIN_URL . 'admin/js/edminboost-menu-duplicator.js',
+			array(),
+			EDMINBOOST_VERSION,
+			true
 		);
-		?>
-		<script id="edminboost-menu-duplicator">
-		document.addEventListener('DOMContentLoaded', function () {
-			var wrap = document.querySelector('.nav-tab-wrapper');
-			if (!wrap) { return; }
-			var link = document.createElement('a');
-			link.className = 'button';
-			link.style.marginLeft = '8px';
-			link.href = <?php echo wp_json_encode( $url ); ?>;
-			link.textContent = <?php echo wp_json_encode( __( 'Duplicate menu', EDMINBOOST_TEXT_DOMAIN ) ); ?>;
-			wrap.appendChild(link);
-		});
-		</script>
-		<?php
+
+		wp_localize_script(
+			'edminboost-menu-duplicator',
+			'edminboostMenuDuplicator',
+			array(
+				'url'   => wp_nonce_url(
+					admin_url( 'admin.php?action=edminboost_duplicate_menu&menu_id=' . $menu_id ),
+					'edminboost_duplicate_menu_' . $menu_id
+				),
+				'label' => __( 'Duplicate menu', EDMINBOOST_TEXT_DOMAIN ),
+			)
+		);
 	}
 
 	/**

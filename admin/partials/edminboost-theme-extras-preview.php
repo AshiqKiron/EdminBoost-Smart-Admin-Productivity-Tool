@@ -4,24 +4,24 @@
  *
  * @package EdminBoost
  *
- * @var array  $theme          Current theme settings.
- * @var array  $preview_colors Resolved theme color tokens.
- * @var string $preview_id     Root element id.
+ * @var array  $edminboost_theme          Current theme settings.
+ * @var array  $edminboost_preview_colors Resolved theme color tokens.
+ * @var string $edminboost_preview_id     Root element id.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$preview_id     = isset( $preview_id ) ? $preview_id : 'edminboost-theme-extras-preview';
-$theme          = isset( $theme ) && is_array( $theme ) ? $theme : EDMINBOOST_Theme::get_settings();
-$preview_colors = isset( $preview_colors ) && is_array( $preview_colors ) ? $preview_colors : EDMINBOOST_Theme::resolve_preview_colors(
-	isset( $theme['preset'] ) ? $theme['preset'] : 'default',
-	isset( $theme['mode'] ) ? $theme['mode'] : 'light',
-	$theme
+$edminboost_preview_id = isset( $edminboost_preview_id ) ? $edminboost_preview_id : 'edminboost-theme-extras-preview';
+$edminboost_theme      = isset( $edminboost_theme ) && is_array( $edminboost_theme ) ? $edminboost_theme : EDMINBOOST_Theme::get_settings();
+$edminboost_preview_colors = isset( $edminboost_preview_colors ) && is_array( $edminboost_preview_colors ) ? $edminboost_preview_colors : EDMINBOOST_Theme::resolve_preview_colors(
+	isset( $edminboost_theme['preset'] ) ? $edminboost_theme['preset'] : 'default',
+	isset( $edminboost_theme['mode'] ) ? $edminboost_theme['mode'] : 'light',
+	$edminboost_theme
 );
 
-$color_defaults = array(
+$edminboost_color_defaults = array(
 	'accent'  => '#2271b1',
 	'surface' => '#ffffff',
 	'text'    => '#1d2327',
@@ -29,22 +29,22 @@ $color_defaults = array(
 	'sidebar' => '#1d2327',
 	'content' => '#f0f0f1',
 );
-$preview_colors = wp_parse_args( $preview_colors, $color_defaults );
+$edminboost_preview_colors = wp_parse_args( $edminboost_preview_colors, $edminboost_color_defaults );
 
-$font_size        = isset( $theme['font_size'] ) ? max( 12, min( 20, absint( $theme['font_size'] ) ) ) : 14;
-$admin_bg_color   = ! empty( $theme['admin_bg_color'] ) ? $theme['admin_bg_color'] : $preview_colors['content'];
-$favicon_id       = isset( $theme['admin_favicon_id'] ) ? absint( $theme['admin_favicon_id'] ) : 0;
-$bg_image_id      = isset( $theme['admin_bg_image_id'] ) ? absint( $theme['admin_bg_image_id'] ) : 0;
-$favicon_url      = $favicon_id ? wp_get_attachment_image_url( $favicon_id, 'thumbnail' ) : '';
-$bg_image_url     = $bg_image_id ? wp_get_attachment_image_url( $bg_image_id, 'medium' ) : '';
-$schedule_enabled = ! empty( $theme['schedule_dark_mode'] );
-$schedule_start   = isset( $theme['dark_mode_start'] ) ? $theme['dark_mode_start'] : '18:00';
-$schedule_end     = isset( $theme['dark_mode_end'] ) ? $theme['dark_mode_end'] : '06:00';
-$status_colors    = isset( $theme['status_colors'] ) && is_array( $theme['status_colors'] )
-	? $theme['status_colors']
+$edminboost_font_size        = isset( $edminboost_theme['font_size'] ) ? max( 12, min( 20, absint( $edminboost_theme['font_size'] ) ) ) : 14;
+$edminboost_admin_bg_color   = ! empty( $edminboost_theme['admin_bg_color'] ) ? $edminboost_theme['admin_bg_color'] : $edminboost_preview_colors['content'];
+$edminboost_favicon_id       = isset( $edminboost_theme['admin_favicon_id'] ) ? absint( $edminboost_theme['admin_favicon_id'] ) : 0;
+$edminboost_bg_image_id      = isset( $edminboost_theme['admin_bg_image_id'] ) ? absint( $edminboost_theme['admin_bg_image_id'] ) : 0;
+$edminboost_favicon_url      = $edminboost_favicon_id ? wp_get_attachment_image_url( $edminboost_favicon_id, 'thumbnail' ) : '';
+$edminboost_bg_image_url     = $edminboost_bg_image_id ? wp_get_attachment_image_url( $edminboost_bg_image_id, 'medium' ) : '';
+$edminboost_schedule_enabled = ! empty( $edminboost_theme['schedule_dark_mode'] );
+$edminboost_schedule_start   = isset( $edminboost_theme['dark_mode_start'] ) ? $edminboost_theme['dark_mode_start'] : '18:00';
+$edminboost_schedule_end     = isset( $edminboost_theme['dark_mode_end'] ) ? $edminboost_theme['dark_mode_end'] : '06:00';
+$edminboost_status_colors    = isset( $edminboost_theme['status_colors'] ) && is_array( $edminboost_theme['status_colors'] )
+	? $edminboost_theme['status_colors']
 	: EDMINBOOST_Theme::get_defaults()['status_colors'];
 
-$status_labels = array(
+$edminboost_status_labels = array(
 	'publish' => _x( 'Published', 'post status', EDMINBOOST_TEXT_DOMAIN ),
 	'pending' => _x( 'Pending', 'post status', EDMINBOOST_TEXT_DOMAIN ),
 	'future'  => _x( 'Scheduled', 'post status', EDMINBOOST_TEXT_DOMAIN ),
@@ -53,26 +53,26 @@ $status_labels = array(
 	'trash'   => _x( 'Trash', 'post status', EDMINBOOST_TEXT_DOMAIN ),
 );
 
-$preview_style_vars = sprintf(
+$edminboost_preview_style_vars = sprintf(
 	'--eb-te-font-size:%1$spx;--eb-te-bg:%2$s;--eb-op-accent:%3$s;--eb-op-surface:%4$s;--eb-op-text:%5$s;--eb-op-top:%6$s;--eb-op-sidebar:%7$s;--eb-op-content:%8$s;',
-	esc_attr( (string) $font_size ),
-	esc_attr( $admin_bg_color ),
-	esc_attr( $preview_colors['accent'] ),
-	esc_attr( $preview_colors['surface'] ),
-	esc_attr( $preview_colors['text'] ),
-	esc_attr( $preview_colors['topbar'] ),
-	esc_attr( $preview_colors['sidebar'] ),
-	esc_attr( $preview_colors['content'] )
+	esc_attr( (string) $edminboost_font_size ),
+	esc_attr( $edminboost_admin_bg_color ),
+	esc_attr( $edminboost_preview_colors['accent'] ),
+	esc_attr( $edminboost_preview_colors['surface'] ),
+	esc_attr( $edminboost_preview_colors['text'] ),
+	esc_attr( $edminboost_preview_colors['topbar'] ),
+	esc_attr( $edminboost_preview_colors['sidebar'] ),
+	esc_attr( $edminboost_preview_colors['content'] )
 );
 ?>
 <div
 	class="edminboost-theme-extras-preview"
-	id="<?php echo esc_attr( $preview_id ); ?>"
-	style="<?php echo esc_attr( $preview_style_vars ); ?>"
-	data-favicon-id="<?php echo esc_attr( (string) $favicon_id ); ?>"
-	data-favicon-url="<?php echo esc_url( $favicon_url ? $favicon_url : '' ); ?>"
-	data-bg-image-id="<?php echo esc_attr( (string) $bg_image_id ); ?>"
-	data-bg-image-url="<?php echo esc_url( $bg_image_url ? $bg_image_url : '' ); ?>"
+	id="<?php echo esc_attr( $edminboost_preview_id ); ?>"
+	style="<?php echo esc_attr( $edminboost_preview_style_vars ); ?>"
+	data-favicon-id="<?php echo esc_attr( (string) $edminboost_favicon_id ); ?>"
+	data-favicon-url="<?php echo esc_url( $edminboost_favicon_url ? $edminboost_favicon_url : '' ); ?>"
+	data-bg-image-id="<?php echo esc_attr( (string) $edminboost_bg_image_id ); ?>"
+	data-bg-image-url="<?php echo esc_url( $edminboost_bg_image_url ? $edminboost_bg_image_url : '' ); ?>"
 	aria-live="polite"
 >
 	<p class="edminboost-theme-extras-preview__lead description">
@@ -82,8 +82,8 @@ $preview_style_vars = sprintf(
 	<div class="edminboost-theme-extras-preview__browser" aria-hidden="true">
 		<div class="edminboost-theme-extras-preview__tab">
 			<span class="edminboost-theme-extras-preview__favicon" id="edminboost-theme-extras-preview-favicon">
-				<?php if ( $favicon_url ) : ?>
-					<img src="<?php echo esc_url( $favicon_url ); ?>" alt="" width="16" height="16" />
+				<?php if ( $edminboost_favicon_url ) : ?>
+					<img src="<?php echo esc_url( $edminboost_favicon_url ); ?>" alt="" width="16" height="16" />
 				<?php else : ?>
 					<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>
 				<?php endif; ?>
@@ -111,18 +111,18 @@ $preview_style_vars = sprintf(
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( $status_labels as $status_key => $status_label ) : ?>
+							<?php foreach ( $edminboost_status_labels as $edminboost_status_key => $edminboost_status_label ) : ?>
 								<?php
-								$row_color = isset( $status_colors[ $status_key ] ) ? $status_colors[ $status_key ] : '';
-								$row_style = $row_color ? 'background-color:' . esc_attr( $row_color ) . ';' : '';
+								$edminboost_row_color = isset( $edminboost_status_colors[ $edminboost_status_key ] ) ? $edminboost_status_colors[ $edminboost_status_key ] : '';
+								$edminboost_row_style = $edminboost_row_color ? 'background-color:' . esc_attr( $edminboost_row_color ) . ';' : '';
 								?>
 								<tr
-									class="edminboost-theme-extras-preview__status-row status-<?php echo esc_attr( $status_key ); ?>"
-									data-status="<?php echo esc_attr( $status_key ); ?>"
-									<?php echo $row_style ? 'style="' . esc_attr( $row_style ) . '"' : ''; ?>
+									class="edminboost-theme-extras-preview__status-row status-<?php echo esc_attr( $edminboost_status_key ); ?>"
+									data-status="<?php echo esc_attr( $edminboost_status_key ); ?>"
+									<?php echo $edminboost_row_style ? 'style="' . esc_attr( $edminboost_row_style ) . '"' : ''; ?>
 								>
-									<td><?php echo esc_html( sprintf( /* translators: %s: post status slug */ __( 'Sample %s post', EDMINBOOST_TEXT_DOMAIN ), $status_label ) ); ?></td>
-									<td><?php echo esc_html( $status_label ); ?></td>
+									<td><?php echo esc_html( sprintf( /* translators: %s: post status slug */ __( 'Sample %s post', EDMINBOOST_TEXT_DOMAIN ), $edminboost_status_label ) ); ?></td>
+									<td><?php echo esc_html( $edminboost_status_label ); ?></td>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
@@ -133,9 +133,9 @@ $preview_style_vars = sprintf(
 	</div>
 
 	<div
-		class="edminboost-theme-extras-preview__schedule<?php echo $schedule_enabled ? ' is-active' : ''; ?>"
+		class="edminboost-theme-extras-preview__schedule<?php echo $edminboost_schedule_enabled ? ' is-active' : ''; ?>"
 		id="edminboost-theme-extras-preview-schedule"
-		<?php echo $schedule_enabled ? '' : 'hidden'; ?>
+		<?php echo $edminboost_schedule_enabled ? '' : 'hidden'; ?>
 	>
 		<p class="edminboost-theme-extras-preview__schedule-label">
 			<span class="dashicons dashicons-clock" aria-hidden="true"></span>
@@ -143,15 +143,15 @@ $preview_style_vars = sprintf(
 		</p>
 		<div
 			class="edminboost-theme-extras-preview__schedule-track"
-			style="--eb-te-schedule-start: <?php echo esc_attr( $schedule_start ); ?>; --eb-te-schedule-end: <?php echo esc_attr( $schedule_end ); ?>;"
+			style="--eb-te-schedule-start: <?php echo esc_attr( $edminboost_schedule_start ); ?>; --eb-te-schedule-end: <?php echo esc_attr( $edminboost_schedule_end ); ?>;"
 		>
 			<span class="edminboost-theme-extras-preview__schedule-day" aria-hidden="true"></span>
 			<span class="edminboost-theme-extras-preview__schedule-night" aria-hidden="true"></span>
 		</div>
 		<p class="edminboost-theme-extras-preview__schedule-times description">
-			<span id="edminboost-theme-extras-preview-schedule-start"><?php echo esc_html( $schedule_start ); ?></span>
+			<span id="edminboost-theme-extras-preview-schedule-start"><?php echo esc_html( $edminboost_schedule_start ); ?></span>
 			&ndash;
-			<span id="edminboost-theme-extras-preview-schedule-end"><?php echo esc_html( $schedule_end ); ?></span>
+			<span id="edminboost-theme-extras-preview-schedule-end"><?php echo esc_html( $edminboost_schedule_end ); ?></span>
 		</p>
 	</div>
 </div>

@@ -422,6 +422,8 @@ class EDMINBOOST_Admin {
 	/**
 	 * Render the Billing page.
 	 *
+	 * Informational plan catalog only — no in-plugin checkout or license validation.
+	 *
 	 * @return void
 	 */
 	public function render_billing_page() {
@@ -525,8 +527,11 @@ class EDMINBOOST_Admin {
 		$screen_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$localize = array(
-			'version'    => EDMINBOOST_VERSION,
-			'currentPage' => $screen_page,
+			'version'             => EDMINBOOST_VERSION,
+			'isPro'               => EDMINBOOST_Pro::is_active(),
+			'billingUrl'          => EDMINBOOST_Pro::get_billing_url(),
+			'canSaveCustomPreset' => EDMINBOOST_Pro::can_save_custom_preset(),
+			'currentPage'         => $screen_page,
 			'optionName' => EDMINBOOST_Settings::OPTION_NAME,
 			'strings'    => array(
 				'ready'           => __( 'EdminBoost is ready.', EDMINBOOST_TEXT_DOMAIN ),
@@ -534,6 +539,7 @@ class EDMINBOOST_Admin {
 				'removeFromTopBar' => __( 'Remove from top bar', EDMINBOOST_TEXT_DOMAIN ),
 				'emptyCanvas'     => __( 'Toggle items from the left panel or drag them here to build your top bar.', EDMINBOOST_TEXT_DOMAIN ),
 				'exportSuccess'   => __( 'Preset exported.', EDMINBOOST_TEXT_DOMAIN ),
+				'exportFailed'    => __( 'Could not export settings. Please try again.', EDMINBOOST_TEXT_DOMAIN ),
 				'customLinkPathRequired'  => __( 'Enter an admin path.', EDMINBOOST_TEXT_DOMAIN ),
 				'customLinkLabelRequired' => __( 'Enter a label.', EDMINBOOST_TEXT_DOMAIN ),
 				'customLinkPathInvalid'   => __( 'Use a relative admin path such as edit.php?post_type=page.', EDMINBOOST_TEXT_DOMAIN ),
@@ -574,6 +580,10 @@ class EDMINBOOST_Admin {
 				'formResetConfirm'          => __( 'Reset all fields on this page to their default values? Your saved settings are not changed until you click Save.', EDMINBOOST_TEXT_DOMAIN ),
 				'formResetConfirmYes'       => __( 'Yes, reset to defaults', EDMINBOOST_TEXT_DOMAIN ),
 				'formResetCancel'           => __( 'Cancel', EDMINBOOST_TEXT_DOMAIN ),
+				'proRequired'               => __( 'Upgrade to Pro to unlock this feature.', EDMINBOOST_TEXT_DOMAIN ),
+				'proPresetLocked'           => __( 'This layout preset requires Pro.', EDMINBOOST_TEXT_DOMAIN ),
+				'proThemeLocked'            => __( 'This theme skin requires Pro.', EDMINBOOST_TEXT_DOMAIN ),
+				'proCustomPresetLimit'      => __( 'Free includes one saved custom layout. Upgrade for unlimited saves.', EDMINBOOST_TEXT_DOMAIN ),
 			),
 			'presets'          => self::get_presets_for_js(),
 			'roleMatrix'       => array(
@@ -595,9 +605,10 @@ class EDMINBOOST_Admin {
 				'nonce'   => wp_create_nonce( 'edminboost_cc_nav' ),
 			),
 			'drawerPreview' => array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'action'  => 'edminboost_cc_drawer_preview',
-				'nonce'   => wp_create_nonce( 'edminboost_cc_drawer_preview' ),
+				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+				'action'       => 'edminboost_cc_drawer_preview',
+				'nonce'        => wp_create_nonce( 'edminboost_cc_drawer_preview' ),
+				'contextNonce' => wp_create_nonce( 'edminboost_cc_mapper_context' ),
 			),
 		);
 
@@ -632,6 +643,7 @@ class EDMINBOOST_Admin {
 				'menu_studio'        => EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id ),
 				'visible_menu_slugs' => EDMINBOOST_Command_Center::get_preset_visible_menu_slugs( $preset_id ),
 				'visible_top_level_menu_slugs' => EDMINBOOST_Command_Center::get_preset_visible_top_level_menu_slugs( $preset_id ),
+				'requiresPro'                  => ! EDMINBOOST_Pro::is_layout_preset_available( $preset_id ),
 			);
 		}
 
@@ -737,6 +749,26 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
+	 * Verify an AJAX request nonce and send a JSON error when invalid.
+	 *
+	 * @param string $action    Nonce action.
+	 * @param string $query_arg Request parameter that carries the nonce.
+	 * @return void
+	 */
+	private function verify_ajax_request_nonce( $action, $query_arg = 'nonce' ) {
+		$nonce = isset( $_POST[ $query_arg ] ) ? sanitize_text_field( wp_unslash( $_POST[ $query_arg ] ) ) : '';
+
+		if ( ! wp_verify_nonce( $nonce, $action ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Security check failed. Refresh the page and try again.', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				403
+			);
+		}
+	}
+
+	/**
 	 * AJAX: load a Command Center tab without a full page reload.
 	 *
 	 * @return void
@@ -751,7 +783,7 @@ class EDMINBOOST_Admin {
 			);
 		}
 
-		check_ajax_referer( 'edminboost_cc_nav', 'nonce' );
+		$this->verify_ajax_request_nonce( 'edminboost_cc_nav' );
 
 		$page = isset( $_POST['page'] ) ? sanitize_key( wp_unslash( $_POST['page'] ) ) : '';
 		$use_form_defaults = ! empty( $_POST['form_defaults'] );
@@ -789,6 +821,9 @@ class EDMINBOOST_Admin {
 					$page_title,
 					get_bloginfo( 'name' )
 				),
+				'ccNavNonce'         => wp_create_nonce( 'edminboost_cc_nav' ),
+				'drawerNonce'        => wp_create_nonce( 'edminboost_cc_drawer_preview' ),
+				'drawerContextNonce' => wp_create_nonce( 'edminboost_cc_mapper_context' ),
 			)
 		);
 	}
@@ -947,7 +982,7 @@ class EDMINBOOST_Admin {
 		}
 
 		$raw = isset( $_POST[ EDMINBOOST_Settings::OPTION_NAME ] )
-			? wp_unslash( $_POST[ EDMINBOOST_Settings::OPTION_NAME ] )
+			? wp_unslash( $_POST[ EDMINBOOST_Settings::OPTION_NAME ] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Sanitized via EDMINBOOST_Settings::sanitize().
 			: array();
 
 		if ( ! is_array( $raw ) ) {
@@ -1053,7 +1088,16 @@ class EDMINBOOST_Admin {
 			wp_send_json_error( array( 'message' => __( 'Permission denied.', EDMINBOOST_TEXT_DOMAIN ) ), 403 );
 		}
 
-		check_ajax_referer( 'edminboost_export_settings', 'nonce' );
+		$this->verify_ajax_request_nonce( 'edminboost_export_settings' );
+
+		if ( ! EDMINBOOST_Pro::is_active() ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Export requires Pro. Upgrade on the Billing page.', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				403
+			);
+		}
 
 		wp_send_json_success(
 			array(
@@ -1072,9 +1116,18 @@ class EDMINBOOST_Admin {
 			wp_send_json_error( array( 'message' => __( 'Permission denied.', EDMINBOOST_TEXT_DOMAIN ) ), 403 );
 		}
 
-		check_ajax_referer( 'edminboost_import_settings', 'nonce' );
+		$this->verify_ajax_request_nonce( 'edminboost_import_settings' );
 
-		$json = isset( $_POST['json'] ) ? wp_unslash( $_POST['json'] ) : '';
+		if ( ! EDMINBOOST_Pro::is_active() ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Import requires Pro. Upgrade on the Billing page.', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				403
+			);
+		}
+
+		$json = isset( $_POST['json'] ) ? sanitize_textarea_field( wp_unslash( $_POST['json'] ) ) : '';
 		$data = json_decode( $json, true );
 
 		if ( ! is_array( $data ) ) {

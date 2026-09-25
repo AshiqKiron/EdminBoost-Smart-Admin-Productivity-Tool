@@ -19,8 +19,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 	</header>
 
-	<section class="edminboost-card edminboost-cc-section" id="edminboost-backup-section">
-		<h2><?php esc_html_e( 'Backup & restore', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+	<section class="edminboost-card edminboost-cc-section edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>" id="edminboost-backup-section"<?php echo EDMINBOOST_Pro::feature_attr( 'export_import' ); ?>>
+		<h2><?php esc_html_e( 'Backup & restore', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></h2>
 		<p class="description"><?php esc_html_e( 'Export or import all EdminBoost settings as JSON. Does not include media files referenced by attachment IDs.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 		<p class="edminboost-setting-inline">
 			<?php EDMINBOOST_Setting_Help::echo_icon( 'export_settings' ); ?>
@@ -60,5 +60,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 				<?php esc_html_e( 'Import settings', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</button>
 		</p>
+		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 	</section>
 </div>

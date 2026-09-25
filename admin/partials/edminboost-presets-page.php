@@ -12,22 +12,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$option_name       = EDMINBOOST_Settings::OPTION_NAME;
-$all_presets       = EDMINBOOST_Command_Center::get_all_presets();
-$default_preset    = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
-$role_assignments  = isset( $cc_settings['role_assignments'] ) && is_array( $cc_settings['role_assignments'] )
+$edminboost_option_name       = EDMINBOOST_Settings::OPTION_NAME;
+$edminboost_all_presets       = EDMINBOOST_Command_Center::get_all_presets();
+$edminboost_default_preset    = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
+$edminboost_role_assignments  = isset( $cc_settings['role_assignments'] ) && is_array( $cc_settings['role_assignments'] )
 	? $cc_settings['role_assignments']
 	: array();
-$role_visibility   = isset( $cc_settings['role_visibility'] ) && is_array( $cc_settings['role_visibility'] )
+$edminboost_role_visibility   = isset( $cc_settings['role_visibility'] ) && is_array( $cc_settings['role_visibility'] )
 	? $cc_settings['role_visibility']
 	: array();
-$roles             = EDMINBOOST_Command_Center::get_assignable_roles();
-$matrix_items      = EDMINBOOST_Command_Center::get_role_matrix_menu_items();
-$top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
+$edminboost_roles             = EDMINBOOST_Command_Center::get_assignable_roles();
+$edminboost_matrix_items      = EDMINBOOST_Command_Center::get_role_matrix_menu_items();
+$edminboost_top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
 	? $cc_settings['top_bar_items']
 	: array();
-$has_layout        = ! empty( $top_bar_items );
-$has_matrix        = ! empty( $matrix_items );
+$edminboost_has_layout        = ! empty( $edminboost_top_bar_items );
+$edminboost_has_matrix        = ! empty( $edminboost_matrix_items );
+$edminboost_is_pro            = EDMINBOOST_Pro::is_active();
+$edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_settings );
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap edminboost-cc-wrap--wide">
 	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
@@ -41,9 +43,15 @@ $has_matrix        = ! empty( $matrix_items );
 		</div>
 		<div class="edminboost-cc-hero__actions">
 			<div class="edminboost-save-preset" id="edminboost-save-preset">
-				<button type="button" class="button edminboost-save-preset__trigger" id="edminboost-save-preset-btn" <?php disabled( ! $has_layout ); ?>>
+				<button type="button" class="button edminboost-save-preset__trigger" id="edminboost-save-preset-btn" <?php disabled( ! $edminboost_has_layout || ! $edminboost_can_save_preset ); ?>>
 					<?php esc_html_e( 'Save current layout as preset', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php if ( ! $edminboost_is_pro ) : ?>
+						<?php EDMINBOOST_Pro::render_badge(); ?>
+					<?php endif; ?>
 				</button>
+				<?php if ( ! $edminboost_can_save_preset && $edminboost_has_layout ) : ?>
+					<p class="description edminboost-pro-upgrade"><?php esc_html_e( 'Free includes one saved custom layout. Upgrade for unlimited saves.', EDMINBOOST_TEXT_DOMAIN ); ?> <a href="<?php echo esc_url( EDMINBOOST_Pro::get_billing_url() ); ?>"><?php esc_html_e( 'View plans', EDMINBOOST_TEXT_DOMAIN ); ?></a></p>
+				<?php endif; ?>
 				<div class="edminboost-save-preset__form" id="edminboost-save-preset-form">
 					<label class="edminboost-save-preset__label" for="edminboost_save_preset_name_input">
 						<?php esc_html_e( 'Preset name', EDMINBOOST_TEXT_DOMAIN ); ?>
@@ -68,15 +76,15 @@ $has_matrix        = ! empty( $matrix_items );
 
 	<form action="options.php" method="post" class="edminboost-cc-form" id="edminboost-presets-form">
 		<?php settings_fields( EDMINBOOST_Settings::SETTINGS_GROUP ); ?>
-		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[enabled]" value="1" />
-		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_apply_preset]" id="edminboost_apply_preset" value="" />
-		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_save_custom_preset][name]" id="edminboost_save_custom_preset_name" value="" />
-		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_rename_custom_preset][id]" id="edminboost_rename_custom_preset_id" value="" />
-		<input type="hidden" name="<?php echo esc_attr( $option_name ); ?>[command_center][_rename_custom_preset][name]" id="edminboost_rename_custom_preset_name" value="" />
+		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
+		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_apply_preset]" id="edminboost_apply_preset" value="" />
+		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_save_custom_preset][name]" id="edminboost_save_custom_preset_name" value="" />
+		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_rename_custom_preset][id]" id="edminboost_rename_custom_preset_id" value="" />
+		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_rename_custom_preset][name]" id="edminboost_rename_custom_preset_name" value="" />
 
 		<section class="edminboost-card edminboost-cc-section">
 			<?php
-			$preset_picker_mode = 'full';
+			$edminboost_preset_picker_mode = 'full';
 			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-preset-picker.php';
 			?>
 		</section>
@@ -87,11 +95,14 @@ $has_matrix        = ! empty( $matrix_items );
 				<?php esc_html_e( 'Assign a layout preset per role to customize both the top bar and admin sidebar for that role. Changing a preset updates the menu checkboxes for that role; you can still fine-tune visibility before saving.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
 
-			<?php if ( empty( $roles ) ) : ?>
+			<?php if ( empty( $edminboost_roles ) ) : ?>
 				<p><?php esc_html_e( 'No roles available.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
-			<?php elseif ( ! $has_matrix ) : ?>
+			<?php elseif ( ! $edminboost_has_matrix ) : ?>
 				<p><?php esc_html_e( 'No admin menu items were discovered. Try reloading this page from wp-admin.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 			<?php else : ?>
+				<?php if ( ! $edminboost_is_pro ) : ?>
+					<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
+				<?php endif; ?>
 				<div class="edminboost-role-matrix-wrap">
 					<table class="widefat edminboost-role-matrix">
 						<thead>
@@ -100,31 +111,31 @@ $has_matrix        = ! empty( $matrix_items );
 								<th scope="col" class="edminboost-role-matrix__preset-col">
 									<?php EDMINBOOST_Setting_Help::echo_icon( 'role_assignments' ); ?><?php esc_html_e( 'Assigned preset', EDMINBOOST_TEXT_DOMAIN ); ?>
 								</th>
-								<?php foreach ( $matrix_items as $item ) : ?>
+								<?php foreach ( $edminboost_matrix_items as $edminboost_item ) : ?>
 									<?php
-									$item_slug       = isset( $item['slug'] ) ? $item['slug'] : '';
-									if ( '' === $item_slug ) {
+									$edminboost_item_slug       = isset( $edminboost_item['slug'] ) ? $edminboost_item['slug'] : '';
+									if ( '' === $edminboost_item_slug ) {
 										continue;
 									}
-									$item_label      = isset( $item['label'] ) ? $item['label'] : $item_slug;
-									$item_source     = isset( $item['source'] ) ? $item['source'] : 'top';
-									$is_submenu      = 'submenu' === $item_source;
-									$parent_label    = isset( $item['parent_label'] ) ? $item['parent_label'] : '';
-									$column_classes  = 'edminboost-role-matrix__menu-col';
-									if ( $is_submenu ) {
-										$column_classes .= ' is-submenu';
+									$edminboost_item_label      = isset( $edminboost_item['label'] ) ? $edminboost_item['label'] : $edminboost_item_slug;
+									$edminboost_item_source     = isset( $edminboost_item['source'] ) ? $edminboost_item['source'] : 'top';
+									$edminboost_is_submenu      = 'submenu' === $edminboost_item_source;
+									$edminboost_parent_label    = isset( $edminboost_item['parent_label'] ) ? $edminboost_item['parent_label'] : '';
+									$edminboost_column_classes  = 'edminboost-role-matrix__menu-col';
+									if ( $edminboost_is_submenu ) {
+										$edminboost_column_classes .= ' is-submenu';
 									}
 									?>
-									<th scope="col" class="<?php echo esc_attr( $column_classes ); ?>">
+									<th scope="col" class="<?php echo esc_attr( $edminboost_column_classes ); ?>">
 										<span class="edminboost-role-matrix__menu-heading">
-											<?php if ( ! $is_submenu ) : ?>
-												<span class="dashicons <?php echo esc_attr( isset( $item['icon'] ) ? $item['icon'] : 'dashicons-admin-generic' ); ?>" aria-hidden="true"></span>
+											<?php if ( ! $edminboost_is_submenu ) : ?>
+												<span class="dashicons <?php echo esc_attr( isset( $edminboost_item['icon'] ) ? $edminboost_item['icon'] : 'dashicons-admin-generic' ); ?>" aria-hidden="true"></span>
 											<?php endif; ?>
 											<span class="edminboost-role-matrix__menu-label">
-												<?php if ( $is_submenu && '' !== $parent_label ) : ?>
-													<span class="edminboost-role-matrix__menu-parent"><?php echo esc_html( $parent_label ); ?></span>
+												<?php if ( $edminboost_is_submenu && '' !== $edminboost_parent_label ) : ?>
+													<span class="edminboost-role-matrix__menu-parent"><?php echo esc_html( $edminboost_parent_label ); ?></span>
 												<?php endif; ?>
-												<span class="edminboost-role-matrix__menu-name"><?php echo esc_html( $item_label ); ?></span>
+												<span class="edminboost-role-matrix__menu-name"><?php echo esc_html( $edminboost_item_label ); ?></span>
 											</span>
 										</span>
 									</th>
@@ -132,87 +143,90 @@ $has_matrix        = ! empty( $matrix_items );
 							</tr>
 						</thead>
 						<tbody>
-							<?php foreach ( $roles as $role_key => $role_name ) : ?>
-								<?php $role_label = translate_user_role( $role_name ); ?>
-								<tr class="edminboost-role-matrix__row" data-edminboost-role="<?php echo esc_attr( $role_key ); ?>">
-									<th scope="row" class="edminboost-role-matrix__role-col"><?php echo esc_html( $role_label ); ?></th>
+							<?php foreach ( $edminboost_roles as $edminboost_role_key => $edminboost_role_name ) : ?>
+								<?php $edminboost_role_label = translate_user_role( $edminboost_role_name ); ?>
+								<tr class="edminboost-role-matrix__row" data-edminboost-role="<?php echo esc_attr( $edminboost_role_key ); ?>">
+									<th scope="row" class="edminboost-role-matrix__role-col"><?php echo esc_html( $edminboost_role_label ); ?></th>
 									<td class="edminboost-role-matrix__preset-col">
-										<label class="screen-reader-text" for="edminboost_role_preset_<?php echo esc_attr( $role_key ); ?>">
+										<label class="screen-reader-text" for="edminboost_role_preset_<?php echo esc_attr( $edminboost_role_key ); ?>">
 											<?php
 											/* translators: %s: role name */
-											echo esc_html( sprintf( __( 'Preset for %s', EDMINBOOST_TEXT_DOMAIN ), $role_label ) );
+											echo esc_html( sprintf( __( 'Preset for %s', EDMINBOOST_TEXT_DOMAIN ), $edminboost_role_label ) );
 											?>
 										</label>
 										<select
 											class="edminboost-role-preset-select"
-											name="<?php echo esc_attr( $option_name ); ?>[command_center][role_assignments][<?php echo esc_attr( $role_key ); ?>]"
-											id="edminboost_role_preset_<?php echo esc_attr( $role_key ); ?>"
-											data-edminboost-role="<?php echo esc_attr( $role_key ); ?>"
+											name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][role_assignments][<?php echo esc_attr( $edminboost_role_key ); ?>]"
+											id="edminboost_role_preset_<?php echo esc_attr( $edminboost_role_key ); ?>"
+											data-edminboost-role="<?php echo esc_attr( $edminboost_role_key ); ?>"
 										>
 											<option value=""><?php esc_html_e( '— Use site default —', EDMINBOOST_TEXT_DOMAIN ); ?></option>
-											<?php foreach ( $all_presets as $preset_id => $preset ) : ?>
+											<?php foreach ( $edminboost_all_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
 												<option
-													value="<?php echo esc_attr( $preset_id ); ?>"
-													<?php selected( isset( $role_assignments[ $role_key ] ) ? $role_assignments[ $role_key ] : '', $preset_id ); ?>
+													value="<?php echo esc_attr( $edminboost_preset_id ); ?>"
+													<?php selected( isset( $edminboost_role_assignments[ $edminboost_role_key ] ) ? $edminboost_role_assignments[ $edminboost_role_key ] : '', $edminboost_preset_id ); ?>
 												>
-													<?php echo esc_html( isset( $preset['name'] ) ? $preset['name'] : $preset_id ); ?>
+													<?php echo esc_html( isset( $edminboost_preset['name'] ) ? $edminboost_preset['name'] : $edminboost_preset_id ); ?>
 												</option>
 											<?php endforeach; ?>
 										</select>
 									</td>
-									<?php foreach ( $matrix_items as $item ) : ?>
+									<?php foreach ( $edminboost_matrix_items as $edminboost_item ) : ?>
 										<?php
-										$item_slug       = isset( $item['slug'] ) ? $item['slug'] : '';
-										if ( '' === $item_slug ) {
+										$edminboost_item_slug       = isset( $edminboost_item['slug'] ) ? $edminboost_item['slug'] : '';
+										if ( '' === $edminboost_item_slug ) {
 											continue;
 										}
-										$item_label      = isset( $item['label'] ) ? $item['label'] : $item_slug;
-										$item_source     = isset( $item['source'] ) ? $item['source'] : 'top';
-										$is_submenu      = 'submenu' === $item_source;
-										$parent_label    = isset( $item['parent_label'] ) ? $item['parent_label'] : '';
-										$can_access      = EDMINBOOST_Command_Center::role_can_access_menu_slug( $role_key, $item_slug );
-										$hidden_for_role = isset( $role_visibility[ $role_key ] ) && is_array( $role_visibility[ $role_key ] )
-											? $role_visibility[ $role_key ]
+										$edminboost_item_label      = isset( $edminboost_item['label'] ) ? $edminboost_item['label'] : $edminboost_item_slug;
+										$edminboost_item_source     = isset( $edminboost_item['source'] ) ? $edminboost_item['source'] : 'top';
+										$edminboost_is_submenu      = 'submenu' === $edminboost_item_source;
+										$edminboost_parent_label    = isset( $edminboost_item['parent_label'] ) ? $edminboost_item['parent_label'] : '';
+										$edminboost_can_access      = EDMINBOOST_Command_Center::role_can_access_menu_slug( $edminboost_role_key, $edminboost_item_slug );
+										$edminboost_hidden_for_role = isset( $edminboost_role_visibility[ $edminboost_role_key ] ) && is_array( $edminboost_role_visibility[ $edminboost_role_key ] )
+											? $edminboost_role_visibility[ $edminboost_role_key ]
 											: array();
-										$has_saved_visibility = array_key_exists( $role_key, $role_visibility );
-										$is_hidden            = in_array( $item_slug, $hidden_for_role, true );
-										$protected_slugs      = EDMINBOOST_Command_Center::get_protected_slugs_for_role( $role_key );
-										$is_protected         = ! $is_submenu && in_array( $item_slug, $protected_slugs, true );
-										$field_id             = 'edminboost_vis_' . sanitize_html_class( $role_key . '_' . $item_slug );
+										$edminboost_has_saved_visibility = array_key_exists( $edminboost_role_key, $edminboost_role_visibility );
+										$edminboost_is_hidden            = in_array( $edminboost_item_slug, $edminboost_hidden_for_role, true );
+										$edminboost_protected_slugs      = EDMINBOOST_Command_Center::get_protected_slugs_for_role( $edminboost_role_key );
+										$edminboost_is_protected         = ! $edminboost_is_submenu && in_array( $edminboost_item_slug, $edminboost_protected_slugs, true );
+										$edminboost_field_id             = 'edminboost_vis_' . sanitize_html_class( $edminboost_role_key . '_' . $edminboost_item_slug );
 
-										if ( $is_protected ) {
-											$is_checked = true;
-										} elseif ( ! $can_access && ! $has_saved_visibility ) {
-											$is_checked = false;
+										if ( $edminboost_is_protected ) {
+											$edminboost_is_checked = true;
+										} elseif ( ! $edminboost_can_access && ! $edminboost_has_saved_visibility ) {
+											$edminboost_is_checked = false;
 										} else {
-											$is_checked = ! $is_hidden;
+											$edminboost_is_checked = ! $edminboost_is_hidden;
 										}
 
-										$cell_classes = 'edminboost-role-matrix__check';
-										if ( $is_submenu ) {
-											$cell_classes .= ' is-submenu';
+										$edminboost_cell_classes = 'edminboost-role-matrix__check';
+										if ( $edminboost_is_submenu ) {
+											$edminboost_cell_classes .= ' is-submenu';
 										}
-										if ( $is_protected ) {
-											$cell_classes .= ' is-protected';
-										} elseif ( ! $can_access ) {
-											$cell_classes .= ' is-capability-restricted';
+										if ( $edminboost_is_protected ) {
+											$edminboost_cell_classes .= ' is-protected';
+										} elseif ( ! $edminboost_can_access ) {
+											$edminboost_cell_classes .= ' is-capability-restricted';
+										}
+										if ( ! $edminboost_is_pro ) {
+											$edminboost_cell_classes .= ' is-pro-locked';
 										}
 										?>
 										<td
-											class="<?php echo esc_attr( $cell_classes ); ?>"
-											data-item-slug="<?php echo esc_attr( $item_slug ); ?>"
+											class="<?php echo esc_attr( $edminboost_cell_classes ); ?>"
+											data-item-slug="<?php echo esc_attr( $edminboost_item_slug ); ?>"
 										>
-											<label class="edminboost-role-matrix__check-label" for="<?php echo esc_attr( $field_id ); ?>">
+											<label class="edminboost-role-matrix__check-label" for="<?php echo esc_attr( $edminboost_field_id ); ?>">
 												<span class="screen-reader-text">
 													<?php
-													if ( $is_submenu && '' !== $parent_label ) {
+													if ( $edminboost_is_submenu && '' !== $edminboost_parent_label ) {
 														echo esc_html(
 															sprintf(
 																/* translators: 1: role name, 2: parent menu label, 3: submenu label */
 																__( 'Show %2$s › %3$s for %1$s', EDMINBOOST_TEXT_DOMAIN ),
-																$role_label,
-																$parent_label,
-																$item_label
+																$edminboost_role_label,
+																$edminboost_parent_label,
+																$edminboost_item_label
 															)
 														);
 													} else {
@@ -220,8 +234,8 @@ $has_matrix        = ! empty( $matrix_items );
 															sprintf(
 																/* translators: 1: role name, 2: item label */
 																__( 'Show %2$s for %1$s', EDMINBOOST_TEXT_DOMAIN ),
-																$role_label,
-																$item_label
+																$edminboost_role_label,
+																$edminboost_item_label
 															)
 														);
 													}
@@ -230,12 +244,12 @@ $has_matrix        = ! empty( $matrix_items );
 												<input
 													type="checkbox"
 													class="edminboost-role-visibility-checkbox"
-													id="<?php echo esc_attr( $field_id ); ?>"
-													name="<?php echo esc_attr( $option_name ); ?>[command_center][role_visibility][<?php echo esc_attr( $role_key ); ?>][]"
-													value="<?php echo esc_attr( $item_slug ); ?>"
-													data-item-slug="<?php echo esc_attr( $item_slug ); ?>"
-													<?php checked( $is_checked ); ?>
-													<?php disabled( $is_protected ); ?>
+													id="<?php echo esc_attr( $edminboost_field_id ); ?>"
+													name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][role_visibility][<?php echo esc_attr( $edminboost_role_key ); ?>][]"
+													value="<?php echo esc_attr( $edminboost_item_slug ); ?>"
+													data-item-slug="<?php echo esc_attr( $edminboost_item_slug ); ?>"
+													<?php checked( $edminboost_is_checked ); ?>
+													<?php disabled( $edminboost_is_protected ); ?>
 												/>
 											</label>
 										</td>
@@ -252,7 +266,7 @@ $has_matrix        = ! empty( $matrix_items );
 		</section>
 
 		<?php
-		$save_label = __( 'Save presets', EDMINBOOST_TEXT_DOMAIN );
+		$edminboost_save_label = __( 'Save presets', EDMINBOOST_TEXT_DOMAIN );
 		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
 		?>
 	</form>

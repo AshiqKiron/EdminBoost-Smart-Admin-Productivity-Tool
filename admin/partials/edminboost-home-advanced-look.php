@@ -13,15 +13,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$drawer_width_custom = isset( $behavior['drawer_width_custom'] )
+$edminboost_drawer_width_custom = isset( $behavior['drawer_width_custom'] )
 	? (int) $behavior['drawer_width_custom']
 	: EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_DEFAULT;
-$drawer_width_custom = max(
+$edminboost_drawer_width_custom = max(
 	EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MIN,
-	min( EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MAX, $drawer_width_custom )
+	min( EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MAX, $edminboost_drawer_width_custom )
 );
 ?>
-<div class="edminboost-advanced-look">
+<div class="edminboost-advanced-look edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>"<?php echo EDMINBOOST_Pro::feature_attr( 'top_bar_advanced' ); ?>>
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-drawer-settings-heading">
 			<h2 id="edminboost-drawer-settings-heading"><?php esc_html_e( 'Slide-out panel', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 
@@ -52,7 +52,7 @@ $drawer_width_custom = max(
 						<?php EDMINBOOST_Setting_Help::echo_icon( 'drawer_width_custom' ); ?>
 						<?php esc_html_e( 'Custom width', EDMINBOOST_TEXT_DOMAIN ); ?>
 						<span class="edminboost-drawer-width-custom__value" id="edminboost_drawer_width_custom_value">
-							<?php echo esc_html( (string) $drawer_width_custom ); ?>px
+							<?php echo esc_html( (string) $edminboost_drawer_width_custom ); ?>px
 						</span>
 					</label>
 					<input
@@ -62,7 +62,7 @@ $drawer_width_custom = max(
 						min="<?php echo esc_attr( (string) EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MIN ); ?>"
 						max="<?php echo esc_attr( (string) EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MAX ); ?>"
 						step="10"
-						value="<?php echo esc_attr( (string) $drawer_width_custom ); ?>"
+						value="<?php echo esc_attr( (string) $edminboost_drawer_width_custom ); ?>"
 						aria-describedby="edminboost-drawer-width-preview-caption"
 					/>
 				</div>
@@ -172,4 +172,5 @@ $drawer_width_custom = max(
 				</span>
 			</div>
 		</section>
+	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 </div>

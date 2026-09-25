@@ -48,6 +48,7 @@ class FeaturesTest extends Edminboost_Test_Case {
 	 * Custom sidebar links register on the admin menu when Menu Studio is active.
 	 */
 	public function test_menu_studio_registers_custom_sidebar_links() {
+		$this->enable_pro_plan();
 		global $menu;
 
 		$custom_slug = EDMINBOOST_Menu_Studio::get_custom_menu_slug( 'custom_runtime_link' );

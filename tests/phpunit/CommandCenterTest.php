@@ -662,7 +662,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 				'enabled'        => 1,
 				'command_center' => array(
 					'_setup_wizard_save' => 1,
-					'_apply_preset'      => 'system_client',
+					'_apply_preset'      => 'system_friend',
 					'theme'              => array(
 						'preset' => 'default',
 						'mode'   => 'light',

@@ -1,8 +1,8 @@
-=== EdminBoost - Smart Admin Productivity Tool ===
+=== Edminboost - Admin white label, Menu Editor, theme, topbar shortcuts ===
 Contributors: ashiquzzaman
 Tags: admin, dashboard, productivity, admin-tools, admin-menu
 Requires at least: 6.0
-Tested up to: 6.9
+Tested up to: 7.1
 Requires PHP: 7.4
 Stable tag: 1.4.0
 License: GPLv3 or later
@@ -44,7 +44,11 @@ Only users with the `manage_options` capability (typically Administrators) can a
 
 = Does this plugin send data to external servers? =
 
-No. EdminBoost does not track users or send site data to external servers.
+No. EdminBoost does not track users or send site data to external servers. Optional Pro and Agency purchase links on the Billing page open the Asphalt Themes pricing site in a new tab only when you click them.
+
+= Are features locked behind a paid plan? =
+
+No. The WordPress.org build includes every Command Center and feature tool with no in-plugin license checks or trial limits. The Billing page describes optional commercial licenses for direct support and multi-site licensing — not locked functionality.
 
 = Is the plugin uninstall-safe? =
 
@@ -53,8 +57,16 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
+* Replace inline script and style tags with WordPress enqueue APIs for menu duplication, theme overrides, drawer iframe chrome, and hide Screen Options/Help.
+* Rename plugin to Edminboost - Admin white label, Menu Editor, theme, topbar shortcuts.
+* Fix AJAX security check failures (tab navigation, settings export/import, drawer preview) returning JSON error messages instead of breaking admin JavaScript.
+* Refresh Command Center navigation and drawer preview nonces after tab loads.
+* Restore plugin text domain loading and clear the activation redirect transient on deactivate.
+* Align the text domain with the plugin slug for WordPress.org Plugin Check compliance.
+* Harden post duplicator, login redirect, and white-label footer output handling.
 * Remove in-plugin Free vs Pro feature gating — the free WordPress.org build includes all Command Center and feature tools with no Freemius or license code.
-* Redirect the Billing admin page to the external upgrade URL (`EDMINBOOST_UPGRADE_URL`); CC nav opens the same link in a new tab.
+* Restore the in-plugin Billing page with accurate plan copy: all features are included in the free build; paid tiers cover licensing and support only.
+* Fix misleading Billing comparison rows that previously marked Pro-only features as unavailable on Free.
 * Save the current top bar and sidebar layout as a named custom preset from the Layout Presets page; rename saved presets inline from the preset actions row.
 * Fix visual theme accent colors not applying to core wp-admin UI on the Plugins screen and other admin pages (active plugin rows, buttons, links, and form focus states now follow the selected theme).
 * Fix Menu Studio sidebar colors staying active after Reset to defaults and Save when "Apply custom sidebar colors" is turned off.

@@ -4,85 +4,89 @@
  *
  * @package EdminBoost
  *
- * @var string $option_name       Settings option name.
- * @var array  $cc_settings       Command Center settings.
- * @var string $preset_picker_mode `wizard` or `full`.
+ * @var string $edminboost_preset_picker_mode Picker mode: `wizard`, `full`, or `overview`.
+ * @var string $edminboost_option_name                  Settings option name (legacy include variable).
+ * @var array  $cc_settings                  Command Center settings (legacy include variable).
+ * @var string $preset_picker_mode           Legacy include variable from parent partials.
  */
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$preset_picker_mode = isset( $preset_picker_mode ) ? $preset_picker_mode : 'full';
-$include_virtual    = 'wizard' !== $preset_picker_mode;
-$all_presets        = EDMINBOOST_Command_Center::get_picker_presets( $include_virtual );
-$preset_categories  = EDMINBOOST_Command_Center::get_preset_categories();
-$grouped_presets    = array();
-$default_preset     = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
+if ( ! isset( $edminboost_preset_picker_mode ) ) {
+	$edminboost_preset_picker_mode = isset( $preset_picker_mode ) ? $preset_picker_mode : 'full';
+}
 
-if ( 'wizard' === $preset_picker_mode ) {
-	$wizard_preset = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
-	if ( isset( $all_presets[ $wizard_preset ] ) && ! empty( $all_presets[ $wizard_preset ]['system'] ) ) {
-		$selected_preset = $wizard_preset;
+$edminboost_include_virtual    = 'wizard' !== $edminboost_preset_picker_mode;
+$edminboost_all_presets        = EDMINBOOST_Command_Center::get_picker_presets( $edminboost_include_virtual );
+$edminboost_preset_categories  = EDMINBOOST_Command_Center::get_preset_categories();
+$edminboost_grouped_presets    = array();
+$edminboost_default_preset     = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
+
+if ( 'wizard' === $edminboost_preset_picker_mode ) {
+	$edminboost_wizard_preset = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
+	if ( isset( $edminboost_all_presets[ $edminboost_wizard_preset ] ) && ! empty( $edminboost_all_presets[ $edminboost_wizard_preset ]['system'] ) ) {
+		$edminboost_selected_preset = $edminboost_wizard_preset;
 	} else {
-		$selected_preset = 'system_client';
+		$edminboost_selected_preset = 'system_client';
 	}
 } else {
-	$selected_preset = EDMINBOOST_Command_Center::detect_active_layout_preset( $cc_settings );
-	if ( ! isset( $all_presets[ $selected_preset ] ) ) {
-		$selected_preset = isset( $all_presets[ $default_preset ] ) ? $default_preset : 'default';
+	$edminboost_selected_preset = EDMINBOOST_Command_Center::detect_active_layout_preset( $cc_settings );
+	if ( ! isset( $edminboost_all_presets[ $edminboost_selected_preset ] ) ) {
+		$edminboost_selected_preset = isset( $edminboost_all_presets[ $edminboost_default_preset ] ) ? $edminboost_default_preset : 'default';
 	}
 }
 
-foreach ( $all_presets as $preset_id => $preset ) {
-	if ( ! empty( $preset['virtual'] ) ) {
-		if ( ! isset( $grouped_presets['source'] ) ) {
-			$grouped_presets['source'] = array();
+foreach ( $edminboost_all_presets as $edminboost_preset_id => $edminboost_preset ) {
+	if ( ! empty( $edminboost_preset['virtual'] ) ) {
+		if ( ! isset( $edminboost_grouped_presets['source'] ) ) {
+			$edminboost_grouped_presets['source'] = array();
 		}
-		$grouped_presets['source'][ $preset_id ] = $preset;
+		$edminboost_grouped_presets['source'][ $edminboost_preset_id ] = $edminboost_preset;
 		continue;
 	}
 
-	if ( empty( $preset['system'] ) ) {
-		if ( 'wizard' === $preset_picker_mode ) {
+	if ( empty( $edminboost_preset['system'] ) ) {
+		if ( 'wizard' === $edminboost_preset_picker_mode ) {
 			continue;
 		}
-		if ( ! isset( $grouped_presets['saved'] ) ) {
-			$grouped_presets['saved'] = array();
+		if ( ! isset( $edminboost_grouped_presets['saved'] ) ) {
+			$edminboost_grouped_presets['saved'] = array();
 		}
-		$grouped_presets['saved'][ $preset_id ] = $preset;
+		$edminboost_grouped_presets['saved'][ $edminboost_preset_id ] = $edminboost_preset;
 		continue;
 	}
 
-	$category = isset( $preset['category'] ) ? $preset['category'] : 'workflow';
-	if ( ! isset( $grouped_presets[ $category ] ) ) {
-		$grouped_presets[ $category ] = array();
+	$edminboost_category = isset( $edminboost_preset['category'] ) ? $edminboost_preset['category'] : 'workflow';
+	if ( ! isset( $edminboost_grouped_presets[ $edminboost_category ] ) ) {
+		$edminboost_grouped_presets[ $edminboost_category ] = array();
 	}
-	$grouped_presets[ $category ][ $preset_id ] = $preset;
+	$edminboost_grouped_presets[ $edminboost_category ][ $edminboost_preset_id ] = $edminboost_preset;
 }
 
-$preset_display_order = 'wizard' === $preset_picker_mode
+$edminboost_preset_display_order = 'wizard' === $edminboost_preset_picker_mode
 	? array( 'scenario', 'workflow' )
 	: array( 'source', 'scenario', 'workflow', 'saved' );
 
-$show_preset_preview = 'overview' !== $preset_picker_mode;
+$edminboost_show_preset_preview = 'overview' !== $edminboost_preset_picker_mode;
 
-$selected_config = isset( $all_presets[ $selected_preset ] ) ? $all_presets[ $selected_preset ] : array();
-$selected_name   = isset( $selected_config['name'] ) ? $selected_config['name'] : $selected_preset;
-$selected_desc   = isset( $selected_config['description'] ) ? $selected_config['description'] : '';
-$selected_system = ! empty( $selected_config['system'] );
-$selected_virtual = ! empty( $selected_config['virtual'] );
-$preview_items   = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $selected_preset, $cc_settings );
-$preview_id      = 'wizard' === $preset_picker_mode
+$edminboost_selected_config = isset( $edminboost_all_presets[ $edminboost_selected_preset ] ) ? $edminboost_all_presets[ $edminboost_selected_preset ] : array();
+$edminboost_selected_name     = isset( $edminboost_selected_config['name'] ) ? $edminboost_selected_config['name'] : $edminboost_selected_preset;
+$edminboost_selected_desc     = isset( $edminboost_selected_config['description'] ) ? $edminboost_selected_config['description'] : '';
+$edminboost_selected_system   = ! empty( $edminboost_selected_config['system'] );
+$edminboost_selected_virtual  = ! empty( $edminboost_selected_config['virtual'] );
+$edminboost_preview_items     = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $edminboost_selected_preset, $cc_settings );
+$edminboost_preview_id        = 'wizard' === $edminboost_preset_picker_mode
 	? 'edminboost-wizard-layout-preset-preview'
 	: 'edminboost-layout-preset-preview';
-$preview_aria    = sprintf(
+$edminboost_preview_aria      = sprintf(
 	/* translators: %s: layout preset name */
 	__( 'Top bar preview for the %s layout preset', EDMINBOOST_TEXT_DOMAIN ),
-	$selected_name
+	$edminboost_selected_name
 );
 ?>
-<div class="edminboost-preset-picker edminboost-preset-picker--<?php echo esc_attr( $preset_picker_mode ); ?>">
+<div class="edminboost-preset-picker edminboost-preset-picker--<?php echo esc_attr( $edminboost_preset_picker_mode ); ?>">
 	<fieldset class="edminboost-fieldset edminboost-layout-preset-fieldset">
 		<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'layout_preset' ); ?><?php esc_html_e( 'Layout preset', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 
@@ -92,21 +96,21 @@ $preview_aria    = sprintf(
 			tabindex="-1"
 			aria-hidden="true"
 		>
-			<?php foreach ( $preset_display_order as $category_id ) : ?>
+			<?php foreach ( $edminboost_preset_display_order as $edminboost_category_id ) : ?>
 				<?php
-				if ( empty( $grouped_presets[ $category_id ] ) ) {
+				if ( empty( $edminboost_grouped_presets[ $edminboost_category_id ] ) ) {
 					continue;
 				}
-				$category_label = isset( $preset_categories[ $category_id ] ) ? $preset_categories[ $category_id ] : $category_id;
+				$edminboost_category_label = isset( $edminboost_preset_categories[ $edminboost_category_id ] ) ? $edminboost_preset_categories[ $edminboost_category_id ] : $edminboost_category_id;
 				?>
-				<optgroup label="<?php echo esc_attr( $category_label ); ?>">
-					<?php foreach ( $grouped_presets[ $category_id ] as $preset_id => $preset ) : ?>
+				<optgroup label="<?php echo esc_attr( $edminboost_category_label ); ?>">
+					<?php foreach ( $edminboost_grouped_presets[ $edminboost_category_id ] as $edminboost_preset_id => $edminboost_preset ) : ?>
 						<option
-							value="<?php echo esc_attr( $preset_id ); ?>"
-							data-system="<?php echo ! empty( $preset['system'] ) ? '1' : '0'; ?>"
-							<?php selected( $selected_preset, $preset_id ); ?>
+							value="<?php echo esc_attr( $edminboost_preset_id ); ?>"
+							data-system="<?php echo ! empty( $edminboost_preset['system'] ) ? '1' : '0'; ?>"
+							<?php selected( $edminboost_selected_preset, $edminboost_preset_id ); ?>
 						>
-							<?php echo esc_html( isset( $preset['name'] ) ? $preset['name'] : $preset_id ); ?>
+							<?php echo esc_html( isset( $edminboost_preset['name'] ) ? $edminboost_preset['name'] : $edminboost_preset_id ); ?>
 						</option>
 					<?php endforeach; ?>
 				</optgroup>
@@ -124,13 +128,13 @@ $preview_aria    = sprintf(
 			>
 				<span class="edminboost-layout-preset-picker__label">
 					<span class="edminboost-layout-preset-picker__name" id="edminboost-layout-preset-name">
-						<?php echo esc_html( $selected_name ); ?>
+						<?php echo esc_html( $edminboost_selected_name ); ?>
 					</span>
 					<span class="edminboost-layout-preset-picker__badge" id="edminboost-layout-preset-badge">
 						<?php
-						if ( $selected_virtual ) {
+						if ( $edminboost_selected_virtual ) {
 							esc_html_e( 'Layout', EDMINBOOST_TEXT_DOMAIN );
-						} elseif ( $selected_system ) {
+						} elseif ( $edminboost_selected_system ) {
 							esc_html_e( 'Built-in', EDMINBOOST_TEXT_DOMAIN );
 						} else {
 							esc_html_e( 'Saved', EDMINBOOST_TEXT_DOMAIN );
@@ -148,51 +152,59 @@ $preview_aria    = sprintf(
 				aria-label="<?php esc_attr_e( 'Layout preset', EDMINBOOST_TEXT_DOMAIN ); ?>"
 				hidden
 			>
-				<?php foreach ( $preset_display_order as $category_id ) : ?>
+				<?php foreach ( $edminboost_preset_display_order as $edminboost_category_id ) : ?>
 					<?php
-					if ( empty( $grouped_presets[ $category_id ] ) ) {
+					if ( empty( $edminboost_grouped_presets[ $edminboost_category_id ] ) ) {
 						continue;
 					}
-					$category_label = isset( $preset_categories[ $category_id ] ) ? $preset_categories[ $category_id ] : $category_id;
+					$edminboost_category_label = isset( $edminboost_preset_categories[ $edminboost_category_id ] ) ? $edminboost_preset_categories[ $edminboost_category_id ] : $edminboost_category_id;
 					?>
 					<li class="edminboost-layout-preset-picker__group" role="presentation">
-						<span class="edminboost-layout-preset-picker__group-label" id="edminboost-layout-preset-group-<?php echo esc_attr( sanitize_html_class( $category_id ) ); ?>">
-							<?php echo esc_html( $category_label ); ?>
+						<span class="edminboost-layout-preset-picker__group-label" id="edminboost-layout-preset-group-<?php echo esc_attr( sanitize_html_class( $edminboost_category_id ) ); ?>">
+							<?php echo esc_html( $edminboost_category_label ); ?>
 						</span>
-						<ul class="edminboost-layout-preset-picker__group-list" role="group" aria-labelledby="edminboost-layout-preset-group-<?php echo esc_attr( sanitize_html_class( $category_id ) ); ?>">
-							<?php foreach ( $grouped_presets[ $category_id ] as $preset_id => $preset ) : ?>
+						<ul class="edminboost-layout-preset-picker__group-list" role="group" aria-labelledby="edminboost-layout-preset-group-<?php echo esc_attr( sanitize_html_class( $edminboost_category_id ) ); ?>">
+							<?php foreach ( $edminboost_grouped_presets[ $edminboost_category_id ] as $edminboost_preset_id => $edminboost_preset ) : ?>
 								<?php
-								$is_system   = ! empty( $preset['system'] );
-								$is_virtual  = ! empty( $preset['virtual'] );
-								$is_selected = ( $selected_preset === $preset_id );
-								$preset_name = isset( $preset['name'] ) ? $preset['name'] : $preset_id;
-								$preset_desc = isset( $preset['description'] ) ? $preset['description'] : '';
-								if ( $is_virtual ) {
-									$badge_label = __( 'Layout', EDMINBOOST_TEXT_DOMAIN );
-								} elseif ( $is_system ) {
-									$badge_label = __( 'Built-in', EDMINBOOST_TEXT_DOMAIN );
+								$edminboost_is_system   = ! empty( $edminboost_preset['system'] );
+								$edminboost_is_virtual  = ! empty( $edminboost_preset['virtual'] );
+								$edminboost_is_selected = ( $edminboost_selected_preset === $edminboost_preset_id );
+								$edminboost_preset_name = isset( $edminboost_preset['name'] ) ? $edminboost_preset['name'] : $edminboost_preset_id;
+								$edminboost_preset_desc = isset( $edminboost_preset['description'] ) ? $edminboost_preset['description'] : '';
+								if ( $edminboost_is_virtual ) {
+									$edminboost_badge_label = __( 'Layout', EDMINBOOST_TEXT_DOMAIN );
+								} elseif ( $edminboost_is_system ) {
+									$edminboost_badge_label = __( 'Built-in', EDMINBOOST_TEXT_DOMAIN );
 								} else {
-									$badge_label = __( 'Saved', EDMINBOOST_TEXT_DOMAIN );
+									$edminboost_badge_label = __( 'Saved', EDMINBOOST_TEXT_DOMAIN );
 								}
-								$option_classes  = 'edminboost-layout-preset-picker__option';
-								if ( $is_selected ) {
-									$option_classes .= ' is-selected';
+								$edminboost_is_pro_preset  = ! EDMINBOOST_Pro::is_layout_preset_available( $edminboost_preset_id );
+								$edminboost_option_classes = 'edminboost-layout-preset-picker__option';
+								if ( $edminboost_is_selected ) {
+									$edminboost_option_classes .= ' is-selected';
+								}
+								if ( $edminboost_is_pro_preset ) {
+									$edminboost_option_classes .= ' is-pro-locked';
 								}
 								?>
 								<li
-									class="<?php echo esc_attr( $option_classes ); ?>"
+									class="<?php echo esc_attr( $edminboost_option_classes ); ?>"
 									role="option"
 									tabindex="-1"
-									data-value="<?php echo esc_attr( $preset_id ); ?>"
-									data-system="<?php echo $is_system ? '1' : '0'; ?>"
-									aria-selected="<?php echo $is_selected ? 'true' : 'false'; ?>"
+									data-value="<?php echo esc_attr( $edminboost_preset_id ); ?>"
+									data-system="<?php echo $edminboost_is_system ? '1' : '0'; ?>"
+									data-requires-pro="<?php echo $edminboost_is_pro_preset ? '1' : '0'; ?>"
+									aria-selected="<?php echo $edminboost_is_selected ? 'true' : 'false'; ?>"
 								>
 									<span class="edminboost-layout-preset-picker__option-main">
-										<span class="edminboost-layout-preset-picker__option-name"><?php echo esc_html( $preset_name ); ?></span>
-										<span class="edminboost-layout-preset-picker__option-badge"><?php echo esc_html( $badge_label ); ?></span>
+										<span class="edminboost-layout-preset-picker__option-name"><?php echo esc_html( $edminboost_preset_name ); ?></span>
+										<span class="edminboost-layout-preset-picker__option-badge"><?php echo esc_html( $edminboost_badge_label ); ?></span>
+										<?php if ( $edminboost_is_pro_preset ) : ?>
+											<?php EDMINBOOST_Pro::render_badge(); ?>
+										<?php endif; ?>
 									</span>
-									<?php if ( '' !== $preset_desc ) : ?>
-										<span class="edminboost-layout-preset-picker__option-desc"><?php echo esc_html( $preset_desc ); ?></span>
+									<?php if ( '' !== $edminboost_preset_desc ) : ?>
+										<span class="edminboost-layout-preset-picker__option-desc"><?php echo esc_html( $edminboost_preset_desc ); ?></span>
 									<?php endif; ?>
 								</li>
 							<?php endforeach; ?>
@@ -202,40 +214,42 @@ $preview_aria    = sprintf(
 			</ul>
 		</div>
 
-		<p class="description" id="edminboost-layout-preset-desc"><?php echo esc_html( $selected_desc ); ?></p>
+		<p class="description" id="edminboost-layout-preset-desc"><?php echo esc_html( $edminboost_selected_desc ); ?></p>
 	</fieldset>
 
-	<?php if ( $show_preset_preview ) : ?>
+	<?php if ( $edminboost_show_preset_preview ) : ?>
 		<div class="edminboost-layout-preset-previews">
 			<?php
-			$sidebar_items      = EDMINBOOST_Command_Center::resolve_preset_sidebar_preview_items( $selected_preset, $cc_settings );
-			$preview_limit      = 5;
-			$preview_id         = 'wizard' === $preset_picker_mode
+			$edminboost_sidebar_items      = EDMINBOOST_Command_Center::resolve_preset_sidebar_preview_items( $edminboost_selected_preset, $cc_settings );
+			$edminboost_preview_limit      = 5;
+			$edminboost_preview_id         = 'wizard' === $edminboost_preset_picker_mode
 				? 'edminboost-wizard-layout-sidebar-preview'
 				: 'edminboost-layout-sidebar-preview';
-			$preview_aria_label = sprintf(
+			$edminboost_preview_aria_label = sprintf(
 				/* translators: %s: layout preset name */
 				__( 'Sidebar menu preview for the %s layout preset', EDMINBOOST_TEXT_DOMAIN ),
-				$selected_name
+				$edminboost_selected_name
 			);
+
 			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-sidebar-preview.php';
 
-			$preview_id         = 'wizard' === $preset_picker_mode
+			$edminboost_preview_id         = 'wizard' === $edminboost_preset_picker_mode
 				? 'edminboost-wizard-layout-preset-preview'
 				: 'edminboost-layout-preset-preview';
-			$preview_aria_label = $preview_aria;
-			$show_interaction   = false;
+			$edminboost_preview_aria_label = $edminboost_preview_aria;
+			$edminboost_show_interaction   = false;
+
 			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
 			?>
 		</div>
 	<?php endif; ?>
 
-	<?php if ( 'full' === $preset_picker_mode ) : ?>
+	<?php if ( 'full' === $edminboost_preset_picker_mode ) : ?>
 		<input
 			type="hidden"
-			name="<?php echo esc_attr( $option_name ); ?>[command_center][default_preset]"
+			name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][default_preset]"
 			id="edminboost_layout_default_preset"
-			value="<?php echo esc_attr( $default_preset ); ?>"
+			value="<?php echo esc_attr( $edminboost_default_preset ); ?>"
 		/>
 		<div class="edminboost-layout-preset-actions">
 			<button type="button" class="button button-primary edminboost-preset-apply" id="edminboost-preset-apply-btn">
@@ -245,7 +259,7 @@ $preview_aria    = sprintf(
 				<input
 					type="checkbox"
 					id="edminboost_layout_preset_default_checkbox"
-					<?php checked( $default_preset, $selected_preset ); ?>
+					<?php checked( $edminboost_default_preset, $edminboost_selected_preset ); ?>
 				/>
 				<?php esc_html_e( 'Set as site default', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</label>

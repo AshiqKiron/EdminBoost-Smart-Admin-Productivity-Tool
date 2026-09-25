@@ -59,7 +59,11 @@ class EDMINBOOST_Post_Duplicator extends EDMINBOOST_Feature_Base {
 			? $settings['post_types']
 			: array( 'post', 'page' );
 
-		if ( ! in_array( $post->post_type, $types, true ) || ! current_user_can( 'edit_post', $post->ID ) ) {
+		if (
+			! in_array( $post->post_type, $types, true )
+			|| ! current_user_can( 'edit_post', $post->ID )
+			|| in_array( $post->post_status, array( 'trash', 'auto-draft' ), true )
+		) {
 			return $actions;
 		}
 
@@ -75,7 +79,7 @@ class EDMINBOOST_Post_Duplicator extends EDMINBOOST_Feature_Base {
 				sprintf(
 					/* translators: %s: post title */
 					__( 'Duplicate "%s"', EDMINBOOST_TEXT_DOMAIN ),
-					get_the_title( $post )
+					wp_strip_all_tags( get_the_title( $post ) )
 				)
 			),
 			esc_html__( 'Duplicate', EDMINBOOST_TEXT_DOMAIN )
@@ -101,6 +105,15 @@ class EDMINBOOST_Post_Duplicator extends EDMINBOOST_Feature_Base {
 		$post = get_post( $post_id );
 		if ( ! $post ) {
 			wp_die( esc_html__( 'Post not found.', EDMINBOOST_TEXT_DOMAIN ) );
+		}
+
+		$settings = EDMINBOOST_Settings::get_feature_settings( $this->get_id() );
+		$types    = isset( $settings['post_types'] ) && is_array( $settings['post_types'] )
+			? $settings['post_types']
+			: array( 'post', 'page' );
+
+		if ( ! in_array( $post->post_type, $types, true ) ) {
+			wp_die( esc_html__( 'You cannot duplicate this item.', EDMINBOOST_TEXT_DOMAIN ) );
 		}
 
 		$new_id = wp_insert_post(

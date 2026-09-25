@@ -397,7 +397,19 @@ class EDMINBOOST_Command_Center {
 		 *
 		 * @param string $url Default upgrade URL.
 		 */
-		return (string) apply_filters( 'edminboost_upgrade_url', EDMINBOOST_UPGRADE_URL );
+		$url = (string) apply_filters( 'edminboost_upgrade_url', EDMINBOOST_UPGRADE_URL );
+		$url = esc_url_raw( $url );
+
+		if ( '' === $url ) {
+			return EDMINBOOST_UPGRADE_URL;
+		}
+
+		$scheme = wp_parse_url( $url, PHP_URL_SCHEME );
+		if ( ! in_array( $scheme, array( 'http', 'https' ), true ) ) {
+			return EDMINBOOST_UPGRADE_URL;
+		}
+
+		return $url;
 	}
 
 	/**
@@ -1002,11 +1014,17 @@ class EDMINBOOST_Command_Center {
 			$cc_settings = self::get_settings();
 		}
 
-		$fallback = self::get_defaults()['default_preset'];
-
-		return isset( $cc_settings['default_preset'] ) && '' !== $cc_settings['default_preset']
+		$fallback    = self::get_defaults()['default_preset'];
+		$all_presets = array_keys( self::get_all_presets() );
+		$stored      = isset( $cc_settings['default_preset'] ) && '' !== $cc_settings['default_preset']
 			? sanitize_key( $cc_settings['default_preset'] )
 			: $fallback;
+
+		if ( in_array( $stored, $all_presets, true ) ) {
+			return $stored;
+		}
+
+		return in_array( $fallback, $all_presets, true ) ? $fallback : 'system_client';
 	}
 
 	/**
@@ -1765,7 +1783,7 @@ class EDMINBOOST_Command_Center {
 			return self::$menu_capability_map;
 		}
 
-		$globals = self::get_discovery_menu_globals();
+		$globals = self::get_menu_capability_globals();
 		$menu    = $globals['menu'];
 		$submenu = $globals['submenu'];
 
@@ -1841,7 +1859,46 @@ class EDMINBOOST_Command_Center {
 			return $map[ $top_slug ];
 		}
 
+		$builtin = self::get_builtin_menu_capabilities();
+
+		if ( isset( $builtin[ $slug ] ) ) {
+			return $builtin[ $slug ];
+		}
+
+		if ( '' !== $top_slug && isset( $builtin[ $top_slug ] ) ) {
+			return $builtin[ $top_slug ];
+		}
+
 		return '';
+	}
+
+	/**
+	 * Fallback capability map for common wp-admin slugs.
+	 *
+	 * @return array<string, string>
+	 */
+	private static function get_builtin_menu_capabilities() {
+		return array(
+			'index.php'                  => 'read',
+			'edit.php'                   => 'edit_posts',
+			'post-new.php'               => 'edit_posts',
+			'upload.php'                 => 'upload_files',
+			'edit-comments.php'          => 'edit_posts',
+			'themes.php'                 => 'switch_themes',
+			'plugins.php'                => 'activate_plugins',
+			'users.php'                  => 'list_users',
+			'tools.php'                  => 'manage_options',
+			'options-general.php'        => 'manage_options',
+			'import.php'                 => 'import',
+			'export.php'                 => 'export',
+			'edit-tags.php'              => 'manage_categories',
+			'term.php'                   => 'manage_categories',
+			'media-new.php'              => 'upload_files',
+			'profile.php'                => 'read',
+			'update-core.php'            => 'update_core',
+			'site-health.php'            => 'view_site_health_checks',
+			'privacy.php'                => 'manage_privacy_options',
+		);
 	}
 
 	/**
@@ -1869,7 +1926,7 @@ class EDMINBOOST_Command_Center {
 
 		$capability = self::get_menu_slug_capability( $slug );
 		if ( '' === $capability ) {
-			return true;
+			return false;
 		}
 
 		return self::role_has_capability( $role_key, $capability );
@@ -2863,9 +2920,11 @@ class EDMINBOOST_Command_Center {
 			return;
 		}
 
+		// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- WordPress core hook.
 		if ( ! did_action( 'admin_menu' ) ) {
 			do_action( 'admin_menu' );
 		}
+		// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
 
 		self::cache_admin_menu_snapshot();
 
@@ -2900,6 +2959,47 @@ class EDMINBOOST_Command_Center {
 			'menu'    => is_array( $menu ) ? $menu : array(),
 			'submenu' => is_array( $submenu ) ? $submenu : array(),
 		);
+	}
+
+	/**
+	 * Admin menu globals used to resolve required capabilities for menu slugs.
+	 *
+	 * Builds the map from an administrator context so slugs hidden from the
+	 * current user still resolve to the correct capability checks.
+	 *
+	 * @return array{menu: array, submenu: array}
+	 */
+	private static function get_menu_capability_globals() {
+		$previous_user_id = get_current_user_id();
+		$switched_user    = false;
+
+		if ( ! user_can( $previous_user_id, EDMINBOOST_Settings::CAPABILITY ) ) {
+			$admin_users = get_users(
+				array(
+					'role'   => 'administrator',
+					'number' => 1,
+					'fields' => array( 'ID' ),
+				)
+			);
+
+			if ( ! empty( $admin_users ) ) {
+				wp_set_current_user( (int) $admin_users[0]->ID );
+				$switched_user = true;
+				self::$discovery_snapshot  = null;
+				self::$menu_capability_map = null;
+				self::ensure_discovery_menu_snapshot();
+			}
+		}
+
+		$globals = self::get_discovery_menu_globals();
+
+		if ( $switched_user ) {
+			wp_set_current_user( $previous_user_id );
+			self::$discovery_snapshot  = null;
+			self::$menu_capability_map = null;
+		}
+
+		return $globals;
 	}
 
 	/**

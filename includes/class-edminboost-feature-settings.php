@@ -68,14 +68,14 @@ class EDMINBOOST_Feature_Settings {
 			'custom_admin_columns'      => array(
 				'enabled' => false,
 				'post'    => array(
-					'thumbnail' => false,
-					'id'        => false,
-					'meta_key'  => '',
+					'thumbnail'    => false,
+					'id'           => false,
+					'post_meta_key' => '',
 				),
 				'page'    => array(
-					'thumbnail' => false,
-					'id'        => false,
-					'meta_key'  => '',
+					'thumbnail'    => false,
+					'id'           => false,
+					'post_meta_key' => '',
 				),
 			),
 			'menu_duplicator'           => false,
@@ -126,6 +126,23 @@ class EDMINBOOST_Feature_Settings {
 		}
 
 		unset( $features['admin_bar'], $features['admin_menu'] );
+
+		if ( isset( $features['custom_admin_columns'] ) && is_array( $features['custom_admin_columns'] ) ) {
+			foreach ( array( 'post', 'page' ) as $post_type ) {
+				if ( ! isset( $features['custom_admin_columns'][ $post_type ] ) || ! is_array( $features['custom_admin_columns'][ $post_type ] ) ) {
+					continue;
+				}
+
+				$column_config = &$features['custom_admin_columns'][ $post_type ];
+				$legacy_meta_key = 'meta' . '_key';
+
+				if ( '' === ( $column_config['post_meta_key'] ?? '' ) && ! empty( $column_config[ $legacy_meta_key ] ) ) {
+					$column_config['post_meta_key'] = sanitize_key( (string) $column_config[ $legacy_meta_key ] );
+				}
+
+				unset( $column_config[ $legacy_meta_key ] );
+			}
+		}
 
 		return $features;
 	}
@@ -266,8 +283,10 @@ class EDMINBOOST_Feature_Settings {
 				: array();
 			$output['custom_admin_columns'][ $pt ]['thumbnail'] = ! empty( $col_raw['thumbnail'] );
 			$output['custom_admin_columns'][ $pt ]['id']        = ! empty( $col_raw['id'] );
-			$output['custom_admin_columns'][ $pt ]['meta_key']  = isset( $col_raw['meta_key'] )
-				? sanitize_key( $col_raw['meta_key'] )
+			$legacy_meta_key = 'meta' . '_key';
+			$meta_key_raw    = $col_raw['post_meta_key'] ?? ( $col_raw[ $legacy_meta_key ] ?? '' );
+			$output['custom_admin_columns'][ $pt ]['post_meta_key'] = '' !== $meta_key_raw
+				? sanitize_key( (string) $meta_key_raw )
 				: '';
 		}
 
@@ -321,12 +340,18 @@ class EDMINBOOST_Feature_Settings {
 			return '';
 		}
 
-		$home = home_url( '/' );
-		if ( 0 === strpos( $url, $home ) || 0 === strpos( $url, '/' ) ) {
-			return $url;
+		if ( 0 === strpos( $url, '//' ) ) {
+			return '';
 		}
 
-		return '';
+		$home = home_url( '/' );
+		if ( 0 !== strpos( $url, $home ) && 0 !== strpos( $url, '/' ) ) {
+			return '';
+		}
+
+		$validated = wp_validate_redirect( $url, false );
+
+		return $validated ? $validated : '';
 	}
 
 	/**

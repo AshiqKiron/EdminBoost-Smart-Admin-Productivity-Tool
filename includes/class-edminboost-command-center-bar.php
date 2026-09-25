@@ -96,7 +96,7 @@ class EDMINBOOST_Command_Center_Bar {
 					'href'  => $is_drawer ? '#' : self::get_item_url( $slug, $anchor ),
 					'meta'  => array(
 						'class' => $node_classes,
-						'title' => $label,
+						'title' => esc_attr( $label ),
 					),
 				)
 			);
@@ -203,7 +203,16 @@ class EDMINBOOST_Command_Center_Bar {
 			);
 		}
 
-		check_ajax_referer( 'edminboost_cc_drawer_preview', 'nonce' );
+		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
+
+		if ( ! wp_verify_nonce( $nonce, 'edminboost_cc_drawer_preview' ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Security check failed. Refresh the page and try again.', EDMINBOOST_TEXT_DOMAIN ),
+				),
+				403
+			);
+		}
 
 		if ( ! self::is_mapper_preview_context() ) {
 			wp_send_json_error(
@@ -278,7 +287,7 @@ class EDMINBOOST_Command_Center_Bar {
 		add_filter( 'show_admin_bar', '__return_false' );
 		add_filter( 'wp_auth_check_load', '__return_false' );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'dequeue_drawer_frame_assets' ), 9999 );
-		add_action( 'admin_head', array( __CLASS__, 'print_drawer_frame_styles' ), 9999 );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_drawer_frame_styles' ), 9999 );
 	}
 
 	/**
@@ -292,19 +301,30 @@ class EDMINBOOST_Command_Center_Bar {
 	}
 
 	/**
-	 * Print CSS to hide admin chrome inside the drawer iframe.
+	 * Enqueue CSS to hide admin chrome inside the drawer iframe.
 	 *
 	 * @return void
 	 */
-	public static function print_drawer_frame_styles() {
-		echo '<style id="edminboost-cc-drawer-frame">';
-		echo '#wpadminbar,#adminmenumain,#wpfooter,#screen-meta,#screen-meta-links,.update-nag{display:none!important;}';
-		echo 'html.wp-toolbar{padding-top:0!important;}';
-		echo '#wpcontent,#wpbody{margin-left:0!important;}';
-		echo '#wpcontent{padding:0 20px!important;}';
-		echo '#wpbody-content{padding-bottom:20px;}';
-		echo '.folded #wpcontent{margin-left:0!important;}';
-		echo '</style>';
+	public static function enqueue_drawer_frame_styles() {
+		$handle = 'edminboost-cc-drawer-frame';
+
+		wp_register_style( $handle, false, array(), EDMINBOOST_VERSION );
+		wp_enqueue_style( $handle );
+		wp_add_inline_style( $handle, self::get_drawer_frame_css() );
+	}
+
+	/**
+	 * CSS rules that strip admin chrome inside the drawer iframe.
+	 *
+	 * @return string
+	 */
+	public static function get_drawer_frame_css() {
+		return '#wpadminbar,#adminmenumain,#wpfooter,#screen-meta,#screen-meta-links,.update-nag{display:none!important;}'
+			. 'html.wp-toolbar{padding-top:0!important;}'
+			. '#wpcontent,#wpbody{margin-left:0!important;}'
+			. '#wpcontent{padding:0 20px!important;}'
+			. '#wpbody-content{padding-bottom:20px;}'
+			. '.folded #wpcontent{margin-left:0!important;}';
 	}
 
 	/**
@@ -485,10 +505,15 @@ class EDMINBOOST_Command_Center_Bar {
 			return true;
 		}
 
-		$referer     = wp_get_referer();
-		$mapper_slug = EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER;
+		$context_nonce = isset( $_POST['mapper_context_nonce'] )
+			? sanitize_text_field( wp_unslash( $_POST['mapper_context_nonce'] ) )
+			: '';
 
-		return $referer && false !== strpos( $referer, $mapper_slug );
+		if ( '' === $context_nonce ) {
+			return false;
+		}
+
+		return (bool) wp_verify_nonce( $context_nonce, 'edminboost_cc_mapper_context' );
 	}
 
 	/**
@@ -632,6 +657,10 @@ class EDMINBOOST_Command_Center_Bar {
 	public static function get_items_for_current_user() {
 		$cc_settings = EDMINBOOST_Command_Center::get_settings();
 
+		if ( ! EDMINBOOST_Pro::is_active() ) {
+			$cc_settings = EDMINBOOST_Pro::enforce_command_center_limits( $cc_settings );
+		}
+
 		$items = EDMINBOOST_Command_Center::resolve_top_bar_items_for_user( $cc_settings );
 
 		if ( empty( $items ) ) {
@@ -658,7 +687,9 @@ class EDMINBOOST_Command_Center_Bar {
 			$visible[] = $item;
 		}
 
-		return $visible;
+		EDMINBOOST_Command_Center::ensure_discovery_menu_snapshot();
+
+		return EDMINBOOST_Command_Center::filter_top_bar_items_for_user_capabilities( $visible );
 	}
 
 	/**
@@ -740,8 +771,12 @@ class EDMINBOOST_Command_Center_Bar {
 	private static function build_admin_url_from_slug( $slug ) {
 		$slug = self::resolve_admin_slug( $slug );
 
-		if ( '' === $slug || preg_match( '#^https?://#i', $slug ) ) {
-			return esc_url( $slug );
+		if ( preg_match( '#^https?://#i', $slug ) ) {
+			return admin_url();
+		}
+
+		if ( '' === $slug ) {
+			return admin_url();
 		}
 
 		$path  = $slug;
@@ -882,8 +917,13 @@ class EDMINBOOST_Command_Center_Bar {
 			return 0;
 		}
 
-		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$count = $wpdb->get_var( "SELECT COUNT(*) FROM {$table} WHERE viewed = 0" );
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+		$count = $wpdb->get_var(
+			$wpdb->prepare(
+				'SELECT COUNT(*) FROM `' . esc_sql( $table ) . '` WHERE viewed = %d',
+				0
+			)
+		);
 
 		return $count ? (int) $count : 0;
 	}
