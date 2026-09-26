@@ -21,27 +21,27 @@ $edminboost_drawer_width_custom = max(
 	min( EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MAX, $edminboost_drawer_width_custom )
 );
 ?>
-<div class="edminboost-advanced-look edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>"<?php echo EDMINBOOST_Pro::feature_attr( 'top_bar_advanced' ); ?>>
+<div class="edminboost-advanced-look">
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-drawer-settings-heading">
-			<h2 id="edminboost-drawer-settings-heading"><?php esc_html_e( 'Slide-out panel', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-drawer-settings-heading"><?php esc_html_e( 'Slide-out panel', 'edminboost' ); ?></h2>
 
 			<fieldset class="edminboost-fieldset">
-				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'drawer_width' ); ?><?php esc_html_e( 'Panel width', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'drawer_width' ); ?><?php esc_html_e( 'Panel width', 'edminboost' ); ?></legend>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[drawer_width]" value="compact" <?php checked( $behavior['drawer_width'], 'compact' ); ?> />
-					<?php esc_html_e( 'Compact (400px)', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Compact (400px)', 'edminboost' ); ?>
 				</label>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[drawer_width]" value="standard" <?php checked( $behavior['drawer_width'], 'standard' ); ?> />
-					<?php esc_html_e( 'Standard (600px)', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Standard (600px)', 'edminboost' ); ?>
 				</label>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[drawer_width]" value="fullscreen" <?php checked( $behavior['drawer_width'], 'fullscreen' ); ?> />
-					<?php esc_html_e( 'Full screen', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Full screen', 'edminboost' ); ?>
 				</label>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[drawer_width]" value="custom" <?php checked( $behavior['drawer_width'], 'custom' ); ?> />
-					<?php esc_html_e( 'Custom', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Custom', 'edminboost' ); ?>
 				</label>
 				<div
 					class="edminboost-drawer-width-custom"
@@ -50,7 +50,7 @@ $edminboost_drawer_width_custom = max(
 				>
 					<label for="edminboost_drawer_width_custom">
 						<?php EDMINBOOST_Setting_Help::echo_icon( 'drawer_width_custom' ); ?>
-						<?php esc_html_e( 'Custom width', EDMINBOOST_TEXT_DOMAIN ); ?>
+						<?php esc_html_e( 'Custom width', 'edminboost' ); ?>
 						<span class="edminboost-drawer-width-custom__value" id="edminboost_drawer_width_custom_value">
 							<?php echo esc_html( (string) $edminboost_drawer_width_custom ); ?>px
 						</span>
@@ -68,8 +68,8 @@ $edminboost_drawer_width_custom = max(
 				</div>
 				<div class="edminboost-drawer-width-preview" id="edminboost-drawer-width-preview">
 					<p class="edminboost-drawer-width-preview__heading">
-						<?php esc_html_e( 'Preview', EDMINBOOST_TEXT_DOMAIN ); ?>
-						<span class="screen-reader-text"><?php esc_html_e( 'Drawer width preview on a typical desktop screen.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+						<?php esc_html_e( 'Preview', 'edminboost' ); ?>
+						<span class="screen-reader-text"><?php esc_html_e( 'Drawer width preview on a typical desktop screen.', 'edminboost' ); ?></span>
 					</p>
 					<div
 						class="edminboost-drawer-width-preview__viewport"
@@ -79,14 +79,14 @@ $edminboost_drawer_width_custom = max(
 						<div class="edminboost-drawer-width-preview__adminbar" aria-hidden="true"></div>
 						<div class="edminboost-drawer-width-preview__stage">
 							<div class="edminboost-drawer-width-preview__content" aria-hidden="true">
-								<span class="edminboost-drawer-width-preview__content-label"><?php esc_html_e( 'Page', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+								<span class="edminboost-drawer-width-preview__content-label"><?php esc_html_e( 'Page', 'edminboost' ); ?></span>
 							</div>
 							<div
 								class="edminboost-drawer-width-preview__drawer"
 								id="edminboost_drawer_width_preview_drawer"
 								aria-hidden="true"
 							>
-								<span class="edminboost-drawer-width-preview__drawer-label"><?php esc_html_e( 'Panel', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+								<span class="edminboost-drawer-width-preview__drawer-label"><?php esc_html_e( 'Panel', 'edminboost' ); ?></span>
 							</div>
 						</div>
 					</div>
@@ -105,11 +105,11 @@ $edminboost_drawer_width_custom = max(
 					value="1"
 					<?php checked( ! empty( $behavior['glassmorphism'] ) ); ?>
 				/>
-				<?php esc_html_e( 'Enable backdrop blur', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'Enable backdrop blur', 'edminboost' ); ?>
 			</label>
 
 			<p>
-				<label for="edminboost_autosave_interval"><?php EDMINBOOST_Setting_Help::echo_icon( 'autosave_interval' ); ?><?php esc_html_e( 'Auto-save interval for panel forms (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+				<label for="edminboost_autosave_interval"><?php EDMINBOOST_Setting_Help::echo_icon( 'autosave_interval' ); ?><?php esc_html_e( 'Auto-save interval for panel forms (seconds)', 'edminboost' ); ?></label>
 				<input
 					type="number"
 					class="small-text"
@@ -124,10 +124,10 @@ $edminboost_drawer_width_custom = max(
 		</section>
 
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-badge-settings-heading">
-			<h2 id="edminboost-badge-settings-heading"><?php esc_html_e( 'Notification badges', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-badge-settings-heading"><?php esc_html_e( 'Notification badges', 'edminboost' ); ?></h2>
 
 			<p>
-				<label for="edminboost_badge_refresh"><?php EDMINBOOST_Setting_Help::echo_icon( 'badge_refresh_rate' ); ?><?php esc_html_e( 'Refresh rate (seconds)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+				<label for="edminboost_badge_refresh"><?php EDMINBOOST_Setting_Help::echo_icon( 'badge_refresh_rate' ); ?><?php esc_html_e( 'Refresh rate (seconds)', 'edminboost' ); ?></label>
 				<input
 					type="number"
 					class="small-text"
@@ -141,23 +141,23 @@ $edminboost_drawer_width_custom = max(
 			</p>
 
 			<fieldset class="edminboost-fieldset">
-				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'badge_style' ); ?><?php esc_html_e( 'Badge style', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'badge_style' ); ?><?php esc_html_e( 'Badge style', 'edminboost' ); ?></legend>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[badge_style]" value="dot" <?php checked( $behavior['badge_style'], 'dot' ); ?> />
-					<?php esc_html_e( 'Dot', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Dot', 'edminboost' ); ?>
 				</label>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[badge_style]" value="pill" <?php checked( $behavior['badge_style'], 'pill' ); ?> />
-					<?php esc_html_e( 'Counter pill', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Counter pill', 'edminboost' ); ?>
 				</label>
 				<label class="edminboost-checkbox-row">
 					<input type="radio" name="<?php echo esc_attr( $cc_key ); ?>[badge_style]" value="accent" <?php checked( $behavior['badge_style'], 'accent' ); ?> />
-					<?php esc_html_e( 'Accent color', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Accent color', 'edminboost' ); ?>
 				</label>
 			</fieldset>
 
 			<div class="edminboost-badge-preview" aria-hidden="true">
-				<span class="edminboost-badge-preview__label"><?php esc_html_e( 'Preview', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+				<span class="edminboost-badge-preview__label"><?php esc_html_e( 'Preview', 'edminboost' ); ?></span>
 				<span class="edminboost-badge-preview__item edminboost-badge-preview__item--dot" data-style="dot">
 					<span class="dashicons dashicons-cart"></span>
 					<span class="edminboost-topbar-item__badge edminboost-topbar-item__badge--dot"></span>
@@ -172,5 +172,4 @@ $edminboost_drawer_width_custom = max(
 				</span>
 			</div>
 		</section>
-	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 </div>

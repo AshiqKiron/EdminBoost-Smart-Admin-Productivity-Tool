@@ -39,7 +39,7 @@ $edminboost_style_vars = sprintf(
 	id="<?php echo esc_attr( $edminboost_preview_id ); ?>"
 	style="<?php echo esc_attr( $edminboost_style_vars ); ?>"
 	role="img"
-	aria-label="<?php esc_attr_e( 'Admin color theme preview', EDMINBOOST_TEXT_DOMAIN ); ?>"
+	aria-label="<?php esc_attr_e( 'Admin color theme preview', 'edminboost' ); ?>"
 >
 	<div class="edminboost-overview-theme-preview__bar" aria-hidden="true"></div>
 	<div class="edminboost-overview-theme-preview__layout" aria-hidden="true">

@@ -54,7 +54,8 @@ abstract class EDMINBOOST_Feature_Base {
 	 * @return string
 	 */
 	public function get_name() {
-		return __( $this->name, EDMINBOOST_TEXT_DOMAIN );
+		// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Feature subclasses set a fixed literal in $name.
+		return __( $this->name, 'edminboost' );
 	}
 
 	/**
@@ -63,7 +64,8 @@ abstract class EDMINBOOST_Feature_Base {
 	 * @return string
 	 */
 	public function get_description() {
-		return __( $this->description, EDMINBOOST_TEXT_DOMAIN );
+		// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Feature subclasses set a fixed literal in $description.
+		return __( $this->description, 'edminboost' );
 	}
 
 	/**

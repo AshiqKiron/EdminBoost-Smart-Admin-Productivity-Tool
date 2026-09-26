@@ -40,6 +40,7 @@ edminboost_build_rsync_stage() {
 	local -a rsync_args=(
 		-a
 		--exclude='.git/'
+		--exclude='.gitignore'
 		--exclude='.cursor/'
 		--exclude='node_modules/'
 		--exclude='vendor/'

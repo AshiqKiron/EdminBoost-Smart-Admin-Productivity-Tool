@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $edminboost_sidebar_items      = isset( $edminboost_sidebar_items ) && is_array( $edminboost_sidebar_items ) ? $edminboost_sidebar_items : array();
 $edminboost_preview_id         = isset( $edminboost_preview_id ) ? $edminboost_preview_id : 'edminboost-overview-sidebar-preview';
-$edminboost_preview_aria_label = isset( $edminboost_preview_aria_label ) ? $edminboost_preview_aria_label : __( 'Sidebar menu preview', EDMINBOOST_TEXT_DOMAIN );
+$edminboost_preview_aria_label = isset( $edminboost_preview_aria_label ) ? $edminboost_preview_aria_label : __( 'Sidebar menu preview', 'edminboost' );
 $edminboost_preview_limit      = isset( $edminboost_preview_limit ) ? max( 1, (int) $edminboost_preview_limit ) : 8;
 $edminboost_visible_items      = array();
 $edminboost_overflow_count     = 0;
@@ -43,7 +43,7 @@ foreach ( $edminboost_sidebar_items as $edminboost_sidebar_item ) {
 >
 	<?php if ( empty( $edminboost_visible_items ) ) : ?>
 		<p class="edminboost-overview-sidebar-preview__empty">
-			<?php esc_html_e( 'No sidebar items in this preview yet.', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<?php esc_html_e( 'No sidebar items in this preview yet.', 'edminboost' ); ?>
 		</p>
 	<?php else : ?>
 		<ul class="edminboost-overview-sidebar-preview__list" aria-hidden="true">
@@ -66,7 +66,7 @@ foreach ( $edminboost_sidebar_items as $edminboost_sidebar_item ) {
 					<?php
 					printf(
 						/* translators: %d: number of additional sidebar items not shown in the preview */
-						esc_html__( '+%d more', EDMINBOOST_TEXT_DOMAIN ),
+						esc_html__( '+%d more', 'edminboost' ),
 						(int) $edminboost_overflow_count
 					);
 					?>

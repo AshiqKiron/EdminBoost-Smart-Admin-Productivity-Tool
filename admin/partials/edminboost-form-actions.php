@@ -18,7 +18,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $edminboost_save_label = isset( $edminboost_save_label )
 	? $edminboost_save_label
-	: ( isset( $save_label ) ? $save_label : __( 'Save', EDMINBOOST_TEXT_DOMAIN ) );
+	: ( isset( $save_label ) ? $save_label : __( 'Save', 'edminboost' ) );
 $edminboost_wrapper_tag = isset( $edminboost_wrapper_tag )
 	? sanitize_key( $edminboost_wrapper_tag )
 	: ( isset( $wrapper_tag ) ? sanitize_key( $wrapper_tag ) : 'p' );
@@ -33,6 +33,6 @@ if ( ! in_array( $edminboost_wrapper_tag, array( 'p', 'footer', 'div' ), true ) 
 <<?php echo esc_html( $edminboost_wrapper_tag ); ?> class="<?php echo esc_attr( $edminboost_wrapper_class ); ?>">
 	<?php submit_button( $edminboost_save_label, 'primary', 'submit', false ); ?>
 	<button type="button" class="button edminboost-form-reset">
-		<?php esc_html_e( 'Reset to defaults', EDMINBOOST_TEXT_DOMAIN ); ?>
+		<?php esc_html_e( 'Reset to defaults', 'edminboost' ); ?>
 	</button>
 </<?php echo esc_html( $edminboost_wrapper_tag ); ?>>

@@ -43,34 +43,34 @@ $edminboost_preview_style_vars = sprintf(
 $edminboost_preview_items = array(
 	array(
 		'key'   => 'hide_wp_logo',
-		'label' => __( 'WordPress logo', EDMINBOOST_TEXT_DOMAIN ),
+		'label' => __( 'WordPress logo', 'edminboost' ),
 		'icon'  => 'dashicons-wordpress',
 		'class' => 'edminboost-declutter-preview__item--brand',
 	),
 	array(
 		'key'   => 'hide_update_counters',
-		'label' => __( 'Updates', EDMINBOOST_TEXT_DOMAIN ),
+		'label' => __( 'Updates', 'edminboost' ),
 		'icon'  => 'dashicons-update',
 		'badge' => '3',
 	),
 	array(
 		'key'   => 'hide_comments',
-		'label' => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
+		'label' => __( 'Comments', 'edminboost' ),
 		'icon'  => 'dashicons-admin-comments',
 	),
 	array(
 		'key'   => 'hide_new_content',
-		'label' => _x( 'New', 'admin bar new content menu', EDMINBOOST_TEXT_DOMAIN ),
+		'label' => _x( 'New', 'admin bar new content menu', 'edminboost' ),
 		'icon'  => 'dashicons-plus',
 	),
 	array(
 		'key'   => 'hide_customize',
-		'label' => __( 'Customize', EDMINBOOST_TEXT_DOMAIN ),
+		'label' => __( 'Customize', 'edminboost' ),
 		'icon'  => 'dashicons-admin-appearance',
 	),
 	array(
 		'key'   => 'hide_howdy',
-		'label' => __( 'Howdy, Admin', EDMINBOOST_TEXT_DOMAIN ),
+		'label' => __( 'Howdy, Admin', 'edminboost' ),
 		'icon'  => 'dashicons-admin-users',
 		'class' => 'edminboost-declutter-preview__item--profile',
 	),
@@ -81,11 +81,11 @@ $edminboost_preview_items = array(
 	class="edminboost-declutter-preview"
 	style="<?php echo esc_attr( $edminboost_preview_style_vars ); ?>"
 	role="region"
-	aria-label="<?php esc_attr_e( 'Admin bar cleanup live preview', EDMINBOOST_TEXT_DOMAIN ); ?>"
+	aria-label="<?php esc_attr_e( 'Admin bar cleanup live preview', 'edminboost' ); ?>"
 	aria-live="polite"
 >
-	<p class="edminboost-declutter-preview__lead"><?php esc_html_e( 'Live preview', EDMINBOOST_TEXT_DOMAIN ); ?></p>
-	<p class="edminboost-declutter-preview__desc"><?php esc_html_e( 'Shows native WordPress admin bar items affected by the toggles above.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+	<p class="edminboost-declutter-preview__lead"><?php esc_html_e( 'Live preview', 'edminboost' ); ?></p>
+	<p class="edminboost-declutter-preview__desc"><?php esc_html_e( 'Shows native WordPress admin bar items affected by the toggles above.', 'edminboost' ); ?></p>
 
 	<div class="edminboost-declutter-preview__canvas" aria-hidden="true">
 		<?php foreach ( $edminboost_preview_items as $edminboost_preview_item ) : ?>
@@ -102,12 +102,12 @@ $edminboost_preview_items = array(
 
 			$edminboost_tooltip_visible = sprintf(
 				/* translators: %s: admin bar item label */
-				__( '%s — Visible', EDMINBOOST_TEXT_DOMAIN ),
+				__( '%s — Visible', 'edminboost' ),
 				$edminboost_preview_item['label']
 			);
 			$edminboost_tooltip_hidden = sprintf(
 				/* translators: %s: admin bar item label */
-				__( '%s — Hidden', EDMINBOOST_TEXT_DOMAIN ),
+				__( '%s — Hidden', 'edminboost' ),
 				$edminboost_preview_item['label']
 			);
 			$edminboost_tooltip_text = $edminboost_is_hidden ? $edminboost_tooltip_hidden : $edminboost_tooltip_visible;

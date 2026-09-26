@@ -73,7 +73,6 @@ class EDMINBOOST_White_Label {
 	 */
 	public static function is_active() {
 		return EDMINBOOST_Settings::is_enabled()
-			&& EDMINBOOST_Pro::is_active()
 			&& ! empty( self::get_settings()['enabled'] );
 	}
 
@@ -98,7 +97,7 @@ class EDMINBOOST_White_Label {
 			'plugin_uri'         => isset( $data['PluginURI'] ) && '' !== $data['PluginURI']
 				? (string) $data['PluginURI']
 				: ( isset( $data['AuthorURI'] ) ? (string) $data['AuthorURI'] : '' ),
-			'menu_label'         => __( 'EdminBoost', EDMINBOOST_TEXT_DOMAIN ),
+			'menu_label'         => __( 'EdminBoost', 'edminboost' ),
 		);
 	}
 
@@ -193,26 +192,26 @@ class EDMINBOOST_White_Label {
 		return array(
 			'show_ip'               => sprintf(
 				/* translators: %s: IP address */
-				__( 'IP: %s', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'IP: %s', 'edminboost' ),
 				$ip
 			),
 			'show_php_version'      => 'PHP ' . PHP_VERSION,
 			'show_wp_version'       => 'WP ' . $wp_version,
 			'show_memory_usage'     => sprintf(
 				/* translators: 1: used memory, 2: limit, 3: percent */
-				__( 'Memory: %1$s of %2$s (%3$s%%)', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Memory: %1$s of %2$s (%3$s%%)', 'edminboost' ),
 				$memory['used'],
 				$memory['limit'],
 				$memory['percent']
 			),
 			'show_memory_limit'     => sprintf(
 				/* translators: %s: memory limit */
-				__( 'Limit: %s', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Limit: %s', 'edminboost' ),
 				$memory['limit']
 			),
 			'show_memory_available' => sprintf(
 				/* translators: %s: available memory */
-				__( 'Available: %s', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'Available: %s', 'edminboost' ),
 				$memory['available']
 			),
 		);

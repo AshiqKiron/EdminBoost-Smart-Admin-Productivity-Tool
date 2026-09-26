@@ -73,7 +73,7 @@ class EDMINBOOST_Post_Order extends EDMINBOOST_Feature_Base {
 	 * @return array
 	 */
 	public function add_order_column( $columns ) {
-		$columns['edminboost_order'] = __( 'Order', EDMINBOOST_TEXT_DOMAIN );
+		$columns['edminboost_order'] = __( 'Order', 'edminboost' );
 		return $columns;
 	}
 
@@ -140,7 +140,7 @@ class EDMINBOOST_Post_Order extends EDMINBOOST_Feature_Base {
 		<fieldset class="inline-edit-col-right">
 			<div class="inline-edit-col">
 				<label>
-					<span class="title"><?php esc_html_e( 'Order', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+					<span class="title"><?php esc_html_e( 'Order', 'edminboost' ); ?></span>
 					<span class="input-text-wrap"><input type="number" name="menu_order" class="menu_order" value="0" /></span>
 				</label>
 			</div>

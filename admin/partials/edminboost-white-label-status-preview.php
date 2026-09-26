@@ -17,12 +17,12 @@ $edminboost_wl = isset( $edminboost_wl ) && is_array( $edminboost_wl )
 $edminboost_segment_texts    = EDMINBOOST_White_Label::get_status_footer_segment_texts();
 $edminboost_enabled_parts    = EDMINBOOST_White_Label::get_status_footer_parts( $edminboost_wl );
 $edminboost_segment_labels   = array(
-	'show_ip'               => __( 'IP address', EDMINBOOST_TEXT_DOMAIN ),
-	'show_php_version'      => __( 'PHP version', EDMINBOOST_TEXT_DOMAIN ),
-	'show_wp_version'       => __( 'WordPress version', EDMINBOOST_TEXT_DOMAIN ),
-	'show_memory_usage'     => __( 'Memory usage', EDMINBOOST_TEXT_DOMAIN ),
-	'show_memory_limit'     => __( 'Memory limit', EDMINBOOST_TEXT_DOMAIN ),
-	'show_memory_available' => __( 'Memory available', EDMINBOOST_TEXT_DOMAIN ),
+	'show_ip'               => __( 'IP address', 'edminboost' ),
+	'show_php_version'      => __( 'PHP version', 'edminboost' ),
+	'show_wp_version'       => __( 'WordPress version', 'edminboost' ),
+	'show_memory_usage'     => __( 'Memory usage', 'edminboost' ),
+	'show_memory_limit'     => __( 'Memory limit', 'edminboost' ),
+	'show_memory_available' => __( 'Memory available', 'edminboost' ),
 );
 $edminboost_has_enabled_part = ! empty( $edminboost_enabled_parts );
 ?>
@@ -30,20 +30,20 @@ $edminboost_has_enabled_part = ! empty( $edminboost_enabled_parts );
 	id="edminboost-wl-status-preview"
 	class="edminboost-wl-status-preview<?php echo $edminboost_has_enabled_part ? '' : ' is-empty'; ?>"
 	role="region"
-	aria-label="<?php esc_attr_e( 'System status footer live preview', EDMINBOOST_TEXT_DOMAIN ); ?>"
+	aria-label="<?php esc_attr_e( 'System status footer live preview', 'edminboost' ); ?>"
 	aria-live="polite"
 >
-	<p class="edminboost-wl-status-preview__lead"><?php esc_html_e( 'Live preview', EDMINBOOST_TEXT_DOMAIN ); ?></p>
-	<p class="edminboost-wl-status-preview__desc"><?php esc_html_e( 'Shows the right-hand admin footer line affected by the toggles above.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+	<p class="edminboost-wl-status-preview__lead"><?php esc_html_e( 'Live preview', 'edminboost' ); ?></p>
+	<p class="edminboost-wl-status-preview__desc"><?php esc_html_e( 'Shows the right-hand admin footer line affected by the toggles above.', 'edminboost' ); ?></p>
 
 	<div class="edminboost-wl-status-preview__footer" aria-hidden="true">
-		<span class="edminboost-wl-status-preview__credit"><?php esc_html_e( 'Thank you for creating with WordPress.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+		<span class="edminboost-wl-status-preview__credit"><?php esc_html_e( 'Thank you for creating with WordPress.', 'edminboost' ); ?></span>
 		<span class="edminboost-wl-status-preview__status">
 			<span
 				id="edminboost-wl-status-preview-empty"
 				class="edminboost-wl-status-preview__empty"
 				<?php echo $edminboost_has_enabled_part ? ' hidden' : ''; ?>
-			><?php esc_html_e( 'No status details selected.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+			><?php esc_html_e( 'No status details selected.', 'edminboost' ); ?></span>
 			<span
 				id="edminboost-wl-status-preview-line"
 				class="edminboost-wl-status-preview__line"
@@ -59,12 +59,12 @@ $edminboost_has_enabled_part = ! empty( $edminboost_enabled_parts );
 
 					$edminboost_tooltip_visible = sprintf(
 						/* translators: %s: footer segment label */
-						__( '%s — Visible', EDMINBOOST_TEXT_DOMAIN ),
+						__( '%s — Visible', 'edminboost' ),
 						$edminboost_segment_labels[ $edminboost_segment_key ]
 					);
 					$edminboost_tooltip_hidden = sprintf(
 						/* translators: %s: footer segment label */
-						__( '%s — Hidden', EDMINBOOST_TEXT_DOMAIN ),
+						__( '%s — Hidden', 'edminboost' ),
 						$edminboost_segment_labels[ $edminboost_segment_key ]
 					);
 					$edminboost_tooltip_text   = $edminboost_is_visible ? $edminboost_tooltip_visible : $edminboost_tooltip_hidden;

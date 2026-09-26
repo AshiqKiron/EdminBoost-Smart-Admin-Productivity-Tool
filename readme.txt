@@ -57,7 +57,7 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
-* WordPress.org build: remove Pro-only settings from the admin UI (no Pro badges or locked controls); premium-only features such as White Label, drawer/badges, backup/import, and paid layout/theme presets are omitted instead of upsell prompts.
+* WordPress.org build: ship the full Command Center (White Label, drawer/badges, backup/import, all layout/theme presets, role visibility) with no license checks, Pro badges, or locked controls.
 * Fix Appearance extras live preview on the Dashboard setup wizard and Theme page so font size, admin background, and post status row colors update as you edit the fields.
 * Add setting help info icons with tooltips on all Dashboard setup wizard controls (layout, theme, top bar review, and save summary).
 * Replace inline script and style tags with WordPress enqueue APIs for menu duplication, theme overrides, drawer iframe chrome, and hide Screen Options/Help.
@@ -65,7 +65,7 @@ Yes. When uninstalled, all plugin options are removed from the database.
 * Fix AJAX security check failures (tab navigation, settings export/import, drawer preview) returning JSON error messages instead of breaking admin JavaScript.
 * Refresh Command Center navigation and drawer preview nonces after tab loads.
 * Restore plugin text domain loading and clear the activation redirect transient on deactivate.
-* Align the text domain with the plugin slug for WordPress.org Plugin Check compliance.
+* Keep the translation text domain as edminboost (intentionally shorter than the plugin slug; matches existing language files and load_plugin_textdomain()).
 * Harden post duplicator, login redirect, and white-label footer output handling.
 * Remove in-plugin Free vs Pro feature gating — the free WordPress.org build includes all Command Center and feature tools with no Freemius or license code.
 * Restore the in-plugin Billing page with accurate plan copy: all features are included in the free build; paid tiers cover licensing and support only.

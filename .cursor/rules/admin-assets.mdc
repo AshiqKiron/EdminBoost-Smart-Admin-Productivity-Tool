@@ -24,7 +24,7 @@ alwaysApply: false
 ```javascript
 {
 	version: string,
-	isPremiumBuild: boolean,  // EDMINBOOST_Pro::is_premium_build()
+	isPremiumBuild: boolean,  // EDMINBOOST_Pro::is_direct_build() — packaging only, not upsell UI
 	isPro: boolean,           // EDMINBOOST_Pro::is_active()
 	billingUrl: string,       // EDMINBOOST_Pro::get_billing_url()
 	canSaveCustomPreset: boolean,
@@ -154,7 +154,7 @@ alwaysApply: false
 | `edminboost-overview-topbar-links-picker.php` | Read-only top bar links dropdown |
 | `edminboost-overview-topbar-preview.php` | Top bar mini-preview partial |
 | `edminboost-overview-sidebar-preview.php` | Sidebar mini-preview partial |
-| `edminboost-settings-page.php` | Settings page shell (CC nav; `#edminboost-backup-section` when `shows_pro_settings_ui()`, else per-tab save note) |
+| `edminboost-settings-page.php` | Settings page shell (CC nav; `#edminboost-backup-section` JSON export/import) |
 | `edminboost-appearance-page.php` | Theme, declutter |
 | `edminboost-home-advanced-look.php` | Panel width, badges, animation speed (Top Bar) |
 | `edminboost-declutter-settings.php` | Admin bar cleanup toggles; includes `edminboost-declutter-preview.php` |

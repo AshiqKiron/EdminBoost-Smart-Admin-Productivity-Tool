@@ -794,7 +794,7 @@ class EDMINBOOST_Settings {
 			$id => array(
 				'name'          => sprintf(
 					/* translators: %s: preset name */
-					__( '%s (Copy)', EDMINBOOST_TEXT_DOMAIN ),
+					__( '%s (Copy)', 'edminboost' ),
 					$name
 				),
 				'description'   => isset( $source['description'] ) ? $source['description'] : '',

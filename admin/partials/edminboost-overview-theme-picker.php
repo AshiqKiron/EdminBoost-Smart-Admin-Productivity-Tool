@@ -71,7 +71,7 @@ $edminboost_preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
 			class="edminboost-theme-preset-picker__list"
 			id="edminboost-theme-preset-list"
 			role="listbox"
-			aria-label="<?php esc_attr_e( 'Color theme', EDMINBOOST_TEXT_DOMAIN ); ?>"
+			aria-label="<?php esc_attr_e( 'Color theme', 'edminboost' ); ?>"
 			hidden
 		>
 			<?php foreach ( $edminboost_theme_presets as $edminboost_preset_id => $edminboost_preset ) : ?>

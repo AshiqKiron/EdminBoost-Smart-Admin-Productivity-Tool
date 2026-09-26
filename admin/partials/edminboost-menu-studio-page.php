@@ -32,42 +32,42 @@ $edminboost_protected     = EDMINBOOST_Menu_Studio::get_protected_slugs();
 
 $edminboost_color_fields = array(
 	'parent_bg'         => array(
-		'label'       => __( 'Parent background', EDMINBOOST_TEXT_DOMAIN ),
+		'label'       => __( 'Parent background', 'edminboost' ),
 		'placeholder' => '#1d2327',
 		'default'     => '#1d2327',
 	),
 	'parent_text'       => array(
-		'label'       => __( 'Parent text', EDMINBOOST_TEXT_DOMAIN ),
+		'label'       => __( 'Parent text', 'edminboost' ),
 		'placeholder' => '#f0f0f1',
 		'default'     => '#f0f0f1',
 	),
 	'parent_active'     => array(
-		'label'       => __( 'Parent hover / active', EDMINBOOST_TEXT_DOMAIN ),
+		'label'       => __( 'Parent hover / active', 'edminboost' ),
 		'placeholder' => '#2271b1',
 		'default'     => '#2271b1',
 	),
 	'submenu_bg'        => array(
-		'label'       => __( 'Submenu background', EDMINBOOST_TEXT_DOMAIN ),
+		'label'       => __( 'Submenu background', 'edminboost' ),
 		'placeholder' => '#2c3338',
 		'default'     => '#2c3338',
 	),
 	'submenu_text'      => array(
-		'label'       => __( 'Submenu text', EDMINBOOST_TEXT_DOMAIN ),
+		'label'       => __( 'Submenu text', 'edminboost' ),
 		'placeholder' => '#c3c4c7',
 		'default'     => '#c3c4c7',
 	),
 	'submenu_hover_text' => array(
-		'label'       => __( 'Submenu hover text', EDMINBOOST_TEXT_DOMAIN ),
+		'label'       => __( 'Submenu hover text', 'edminboost' ),
 		'placeholder' => '#ffffff',
 		'default'     => '#ffffff',
 	),
 	'notification_bg'   => array(
-		'label'       => __( 'Notification background', EDMINBOOST_TEXT_DOMAIN ),
+		'label'       => __( 'Notification background', 'edminboost' ),
 		'placeholder' => '#d63638',
 		'default'     => '#d63638',
 	),
 	'notification_text' => array(
-		'label'       => __( 'Notification text', EDMINBOOST_TEXT_DOMAIN ),
+		'label'       => __( 'Notification text', 'edminboost' ),
 		'placeholder' => '#ffffff',
 		'default'     => '#ffffff',
 	),
@@ -79,7 +79,7 @@ $edminboost_color_fields = array(
 	<header class="edminboost-cc-hero">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<p class="edminboost-cc-hero__lead">
-			<?php esc_html_e( 'Reorder the WordPress admin sidebar, add custom links, and style parent menus, submenus, and update badges.', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<?php esc_html_e( 'Reorder the WordPress admin sidebar, add custom links, and style parent menus, submenus, and update badges.', 'edminboost' ); ?>
 		</p>
 	</header>
 
@@ -98,31 +98,31 @@ $edminboost_color_fields = array(
 					<?php checked( ! empty( $edminboost_menu_studio['enabled'] ) ); ?>
 				/>
 				<?php EDMINBOOST_Setting_Help::echo_icon( 'menu_studio_enabled' ); ?>
-				<?php esc_html_e( 'Enable Menu Studio on all admin screens', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php esc_html_e( 'Enable Menu Studio on all admin screens', 'edminboost' ); ?>
 			</label>
 		</p>
 
 		<div class="edminboost-menu-studio-layout">
 			<aside class="edminboost-card edminboost-menu-studio-panel" aria-labelledby="edminboost-menu-discovered-heading">
-				<h2 id="edminboost-menu-discovered-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_discovered' ); ?><?php esc_html_e( 'Admin Menu Items', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Toggle visibility or drag items into the sidebar preview.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+				<h2 id="edminboost-menu-discovered-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_discovered' ); ?><?php esc_html_e( 'Admin Menu Items', 'edminboost' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Toggle visibility or drag items into the sidebar preview.', 'edminboost' ); ?></p>
 
 				<label for="edminboost-menu-search">
 					<?php EDMINBOOST_Setting_Help::echo_icon( 'menu_search' ); ?>
-					<?php esc_html_e( 'Filter menu items', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Filter menu items', 'edminboost' ); ?>
 				</label>
 				<input
 					type="search"
 					id="edminboost-menu-search"
 					class="edminboost-mapper-search"
-					placeholder="<?php esc_attr_e( 'Search menu items…', EDMINBOOST_TEXT_DOMAIN ); ?>"
+					placeholder="<?php esc_attr_e( 'Search menu items…', 'edminboost' ); ?>"
 					autocomplete="off"
 				/>
 
 				<ul class="edminboost-discovered-list edminboost-menu-discovered-list" id="edminboost-menu-discovered-list">
 					<?php if ( empty( $edminboost_menu_tree ) ) : ?>
 						<li class="edminboost-discovered-list__empty">
-							<?php esc_html_e( 'No admin menus detected.', EDMINBOOST_TEXT_DOMAIN ); ?>
+							<?php esc_html_e( 'No admin menus detected.', 'edminboost' ); ?>
 						</li>
 					<?php else : ?>
 						<?php foreach ( $edminboost_menu_tree as $edminboost_index => $edminboost_menu_item ) : ?>
@@ -155,7 +155,7 @@ $edminboost_color_fields = array(
 									<span class="screen-reader-text">
 										<?php
 										/* translators: %s: menu item label */
-										echo esc_html( sprintf( __( 'Show %s on sidebar', EDMINBOOST_TEXT_DOMAIN ), $edminboost_menu_item['label'] ) );
+										echo esc_html( sprintf( __( 'Show %s on sidebar', 'edminboost' ), $edminboost_menu_item['label'] ) );
 										?>
 									</span>
 									<input
@@ -171,26 +171,25 @@ $edminboost_color_fields = array(
 					<?php endif; ?>
 				</ul>
 
-				<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-				<details class="edminboost-custom-link edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>" id="edminboost-menu-custom-link"<?php echo EDMINBOOST_Pro::feature_attr( 'menu_custom_links' ); ?>>
-					<summary class="edminboost-custom-link__heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_menu_path' ); ?><?php esc_html_e( 'Custom sidebar link', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></summary>
+				<details class="edminboost-custom-link" id="edminboost-menu-custom-link">
+					<summary class="edminboost-custom-link__heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_menu_path' ); ?><?php esc_html_e( 'Custom sidebar link', 'edminboost' ); ?></summary>
 					<div class="edminboost-custom-link__body">
-						<p class="description"><?php esc_html_e( 'Add a top-level or submenu link to the admin sidebar.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+						<p class="description"><?php esc_html_e( 'Add a top-level or submenu link to the admin sidebar.', 'edminboost' ); ?></p>
 
 						<p>
-							<label for="edminboost-menu-custom-path"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_menu_path' ); ?><?php esc_html_e( 'Admin path', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<label for="edminboost-menu-custom-path"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_menu_path' ); ?><?php esc_html_e( 'Admin path', 'edminboost' ); ?></label>
 							<input type="text" id="edminboost-menu-custom-path" class="regular-text code" placeholder="<?php echo esc_attr( 'edit.php?post_type=page' ); ?>" autocomplete="off" />
 						</p>
 
 						<p>
-							<label for="edminboost-menu-custom-label"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_menu_label' ); ?><?php esc_html_e( 'Label', EDMINBOOST_TEXT_DOMAIN ); ?></label>
-							<input type="text" id="edminboost-menu-custom-label" class="regular-text" placeholder="<?php esc_attr_e( 'All Pages', EDMINBOOST_TEXT_DOMAIN ); ?>" autocomplete="off" />
+							<label for="edminboost-menu-custom-label"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_menu_label' ); ?><?php esc_html_e( 'Label', 'edminboost' ); ?></label>
+							<input type="text" id="edminboost-menu-custom-label" class="regular-text" placeholder="<?php esc_attr_e( 'All Pages', 'edminboost' ); ?>" autocomplete="off" />
 						</p>
 
 						<p>
-							<label for="edminboost-menu-custom-parent"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_menu_parent' ); ?><?php esc_html_e( 'Parent menu (optional)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<label for="edminboost-menu-custom-parent"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_menu_parent' ); ?><?php esc_html_e( 'Parent menu (optional)', 'edminboost' ); ?></label>
 							<select id="edminboost-menu-custom-parent">
-								<option value=""><?php esc_html_e( 'Top level', EDMINBOOST_TEXT_DOMAIN ); ?></option>
+								<option value=""><?php esc_html_e( 'Top level', 'edminboost' ); ?></option>
 								<?php foreach ( $edminboost_menu_tree as $edminboost_menu_item ) : ?>
 									<option value="<?php echo esc_attr( $edminboost_menu_item['slug'] ); ?>"><?php echo esc_html( $edminboost_menu_item['label'] ); ?></option>
 								<?php endforeach; ?>
@@ -199,23 +198,21 @@ $edminboost_color_fields = array(
 
 						<p class="edminboost-custom-link__actions">
 							<button type="button" class="button button-secondary" id="edminboost-menu-custom-add">
-								<?php esc_html_e( 'Add to sidebar', EDMINBOOST_TEXT_DOMAIN ); ?>
+								<?php esc_html_e( 'Add to sidebar', 'edminboost' ); ?>
 							</button>
 						</p>
 
 						<p class="edminboost-custom-link__error description" id="edminboost-menu-custom-error" hidden role="alert"></p>
-						<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 					</div>
 				</details>
-				<?php endif; ?>
 			</aside>
 
 			<div class="edminboost-menu-studio-main">
 				<section class="edminboost-card edminboost-menu-studio-panel" aria-labelledby="edminboost-menu-canvas-heading">
-					<h2 id="edminboost-menu-canvas-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_canvas' ); ?><?php esc_html_e( 'Sidebar Preview', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
-					<p class="description"><?php esc_html_e( 'Drag to reorder top-level items. Expand a parent to reorder its submenus.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+					<h2 id="edminboost-menu-canvas-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_canvas' ); ?><?php esc_html_e( 'Sidebar Preview', 'edminboost' ); ?></h2>
+					<p class="description"><?php esc_html_e( 'Drag to reorder top-level items. Expand a parent to reorder its submenus.', 'edminboost' ); ?></p>
 
-					<div class="edminboost-sidebar-canvas" id="edminboost-sidebar-canvas" role="list" aria-label="<?php esc_attr_e( 'Sidebar preview', EDMINBOOST_TEXT_DOMAIN ); ?>">
+					<div class="edminboost-sidebar-canvas" id="edminboost-sidebar-canvas" role="list" aria-label="<?php esc_attr_e( 'Sidebar preview', 'edminboost' ); ?>">
 						<ul class="edminboost-sidebar-canvas__items" id="edminboost-sidebar-items">
 							<?php foreach ( $edminboost_canvas_items as $edminboost_item ) : ?>
 								<?php
@@ -255,7 +252,7 @@ $edminboost_color_fields = array(
 										<span class="edminboost-sidebar-item__icon dashicons <?php echo esc_attr( $edminboost_icon ); ?>" aria-hidden="true"></span>
 										<span class="edminboost-sidebar-item__label"><?php echo esc_html( $edminboost_label ); ?></span>
 										<?php if ( ! empty( $edminboost_children ) ) : ?>
-											<button type="button" class="edminboost-sidebar-item__expand" aria-expanded="false" aria-label="<?php esc_attr_e( 'Expand submenu', EDMINBOOST_TEXT_DOMAIN ); ?>">
+											<button type="button" class="edminboost-sidebar-item__expand" aria-expanded="false" aria-label="<?php esc_attr_e( 'Expand submenu', 'edminboost' ); ?>">
 												<span class="dashicons dashicons-arrow-down-alt2" aria-hidden="true"></span>
 											</button>
 										<?php endif; ?>
@@ -283,18 +280,18 @@ $edminboost_color_fields = array(
 					</div>
 
 					<p class="edminboost-sidebar-canvas__hint description" id="edminboost-menu-canvas-empty" <?php echo ! empty( $edminboost_canvas_items ) ? 'hidden' : ''; ?>>
-						<?php esc_html_e( 'Drag menu items here to reorder your admin sidebar.', EDMINBOOST_TEXT_DOMAIN ); ?>
+						<?php esc_html_e( 'Drag menu items here to reorder your admin sidebar.', 'edminboost' ); ?>
 					</p>
 				</section>
 
 				<section class="edminboost-card edminboost-menu-studio-panel edminboost-menu-layout-panel" aria-labelledby="edminboost-menu-styles-heading">
-					<h2 id="edminboost-menu-styles-heading"><?php esc_html_e( 'Sidebar layout & typography', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
-					<p class="description"><?php esc_html_e( 'Adjust sidebar width, typography, and how menu icons and labels appear in wp-admin.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+					<h2 id="edminboost-menu-styles-heading"><?php esc_html_e( 'Sidebar layout & typography', 'edminboost' ); ?></h2>
+					<p class="description"><?php esc_html_e( 'Adjust sidebar width, typography, and how menu icons and labels appear in wp-admin.', 'edminboost' ); ?></p>
 					<div class="edminboost-menu-layout-panel__grid">
 						<div class="edminboost-menu-layout-panel__fields">
 							<div class="edminboost-menu-layout-fields">
 								<div class="edminboost-menu-layout-row">
-									<label for="edminboost_menu_width"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_width' ); ?><?php esc_html_e( 'Menu width (px)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+									<label for="edminboost_menu_width"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_width' ); ?><?php esc_html_e( 'Menu width (px)', 'edminboost' ); ?></label>
 									<div class="edminboost-menu-layout-control">
 										<input
 											type="range"
@@ -312,10 +309,10 @@ $edminboost_color_fields = array(
 								</div>
 
 								<fieldset class="edminboost-menu-layout-typography">
-									<legend><?php esc_html_e( 'Typography', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+									<legend><?php esc_html_e( 'Typography', 'edminboost' ); ?></legend>
 									<div class="edminboost-menu-layout-typography__grid">
 										<div class="edminboost-menu-layout-field">
-											<label for="edminboost_menu_font_size"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_font_size' ); ?><?php esc_html_e( 'Font size (px)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+											<label for="edminboost_menu_font_size"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_font_size' ); ?><?php esc_html_e( 'Font size (px)', 'edminboost' ); ?></label>
 											<div class="edminboost-menu-layout-control">
 												<input
 													type="range"
@@ -332,7 +329,7 @@ $edminboost_color_fields = array(
 											</div>
 										</div>
 										<div class="edminboost-menu-layout-field">
-											<label for="edminboost_menu_line_height"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_line_height' ); ?><?php esc_html_e( 'Line height (px)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+											<label for="edminboost_menu_line_height"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_line_height' ); ?><?php esc_html_e( 'Line height (px)', 'edminboost' ); ?></label>
 											<div class="edminboost-menu-layout-control">
 												<input
 													type="range"
@@ -349,7 +346,7 @@ $edminboost_color_fields = array(
 											</div>
 										</div>
 										<div class="edminboost-menu-layout-field">
-											<label for="edminboost_menu_letter_spacing"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_letter_spacing' ); ?><?php esc_html_e( 'Letter spacing (px)', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+											<label for="edminboost_menu_letter_spacing"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_letter_spacing' ); ?><?php esc_html_e( 'Letter spacing (px)', 'edminboost' ); ?></label>
 											<div class="edminboost-menu-layout-control">
 												<input
 													type="range"
@@ -368,35 +365,32 @@ $edminboost_color_fields = array(
 									</div>
 								</fieldset>
 
-								<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-								<div class="edminboost-menu-layout-row edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>"<?php echo EDMINBOOST_Pro::feature_attr( 'menu_display_mode' ); ?>>
-									<label for="edminboost_menu_display_mode"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_display_mode' ); ?><?php esc_html_e( 'Menu item display', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></label>
+								<div class="edminboost-menu-layout-row">
+									<label for="edminboost_menu_display_mode"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_display_mode' ); ?><?php esc_html_e( 'Menu item display', 'edminboost' ); ?></label>
 									<select id="edminboost_menu_display_mode" class="edminboost-menu-layout-select" name="<?php echo esc_attr( $edminboost_ms_key ); ?>[display_mode]">
-										<option value="both" <?php selected( $edminboost_menu_studio['display_mode'] ?? 'both', 'both' ); ?>><?php esc_html_e( 'Icon and text', EDMINBOOST_TEXT_DOMAIN ); ?></option>
-										<option value="icon" <?php selected( $edminboost_menu_studio['display_mode'] ?? 'both', 'icon' ); ?>><?php esc_html_e( 'Icon only', EDMINBOOST_TEXT_DOMAIN ); ?></option>
-										<option value="text" <?php selected( $edminboost_menu_studio['display_mode'] ?? 'both', 'text' ); ?>><?php esc_html_e( 'Text only', EDMINBOOST_TEXT_DOMAIN ); ?></option>
+										<option value="both" <?php selected( $edminboost_menu_studio['display_mode'] ?? 'both', 'both' ); ?>><?php esc_html_e( 'Icon and text', 'edminboost' ); ?></option>
+										<option value="icon" <?php selected( $edminboost_menu_studio['display_mode'] ?? 'both', 'icon' ); ?>><?php esc_html_e( 'Icon only', 'edminboost' ); ?></option>
+										<option value="text" <?php selected( $edminboost_menu_studio['display_mode'] ?? 'both', 'text' ); ?>><?php esc_html_e( 'Text only', 'edminboost' ); ?></option>
 									</select>
-									<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 								</div>
-								<?php endif; ?>
 							</div>
 						</div>
 
 						<div class="edminboost-menu-layout-preview" id="edminboost-menu-layout-preview" aria-live="polite">
-							<p class="edminboost-menu-layout-preview__lead description"><?php esc_html_e( 'Preview how sidebar width, typography, and icon display will look in wp-admin.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+							<p class="edminboost-menu-layout-preview__lead description"><?php esc_html_e( 'Preview how sidebar width, typography, and icon display will look in wp-admin.', 'edminboost' ); ?></p>
 							<div class="edminboost-menu-layout-preview__sidebar">
 								<div class="edminboost-menu-layout-preview__item is-active">
 									<span class="edminboost-menu-layout-preview__icon dashicons dashicons-admin-post" aria-hidden="true"></span>
-									<span class="edminboost-menu-layout-preview__label"><?php esc_html_e( 'Posts', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+									<span class="edminboost-menu-layout-preview__label"><?php esc_html_e( 'Posts', 'edminboost' ); ?></span>
 									<span class="edminboost-menu-layout-preview__badge" aria-hidden="true">3</span>
 								</div>
 								<div class="edminboost-menu-layout-preview__item">
 									<span class="edminboost-menu-layout-preview__icon dashicons dashicons-admin-media" aria-hidden="true"></span>
-									<span class="edminboost-menu-layout-preview__label"><?php esc_html_e( 'Media', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+									<span class="edminboost-menu-layout-preview__label"><?php esc_html_e( 'Media', 'edminboost' ); ?></span>
 								</div>
 								<div class="edminboost-menu-layout-preview__item">
 									<span class="edminboost-menu-layout-preview__icon dashicons dashicons-admin-page" aria-hidden="true"></span>
-									<span class="edminboost-menu-layout-preview__label"><?php esc_html_e( 'Pages', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+									<span class="edminboost-menu-layout-preview__label"><?php esc_html_e( 'Pages', 'edminboost' ); ?></span>
 								</div>
 							</div>
 						</div>
@@ -404,8 +398,8 @@ $edminboost_color_fields = array(
 				</section>
 
 				<section class="edminboost-card edminboost-menu-studio-panel edminboost-menu-studio-colors" aria-labelledby="edminboost-menu-colors-heading">
-					<h2 id="edminboost-menu-colors-heading"><?php esc_html_e( 'Sidebar Colors', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
-					<p class="description"><?php esc_html_e( 'Customize parent menu, submenu, and notification badge colors across wp-admin.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+					<h2 id="edminboost-menu-colors-heading"><?php esc_html_e( 'Sidebar Colors', 'edminboost' ); ?></h2>
+					<p class="description"><?php esc_html_e( 'Customize parent menu, submenu, and notification badge colors across wp-admin.', 'edminboost' ); ?></p>
 					<input type="hidden" name="<?php echo esc_attr( $edminboost_ms_key ); ?>[use_colors]" value="1" />
 
 					<div class="edminboost-menu-colors-panel__grid" id="edminboost-menu-colors-panel">
@@ -438,20 +432,20 @@ $edminboost_color_fields = array(
 						</div>
 
 						<div class="edminboost-menu-color-preview-panel">
-							<p class="edminboost-menu-color-preview-panel__lead description"><?php esc_html_e( 'Preview how parent menu, submenu, and badge colors will look in wp-admin.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+							<p class="edminboost-menu-color-preview-panel__lead description"><?php esc_html_e( 'Preview how parent menu, submenu, and badge colors will look in wp-admin.', 'edminboost' ); ?></p>
 							<div class="edminboost-menu-color-preview" id="edminboost-menu-color-preview" aria-live="polite">
 								<div class="edminboost-menu-color-preview__parent is-active">
 									<span class="dashicons dashicons-admin-post" aria-hidden="true"></span>
-									<span><?php esc_html_e( 'Posts', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+									<span><?php esc_html_e( 'Posts', 'edminboost' ); ?></span>
 									<span class="edminboost-menu-color-preview__badge">3</span>
 								</div>
 								<ul class="edminboost-menu-color-preview__submenu">
-									<li class="is-active"><?php esc_html_e( 'All Posts', EDMINBOOST_TEXT_DOMAIN ); ?></li>
-									<li><?php esc_html_e( 'Add New', EDMINBOOST_TEXT_DOMAIN ); ?></li>
+									<li class="is-active"><?php esc_html_e( 'All Posts', 'edminboost' ); ?></li>
+									<li><?php esc_html_e( 'Add New', 'edminboost' ); ?></li>
 								</ul>
 								<div class="edminboost-menu-color-preview__parent">
 									<span class="dashicons dashicons-admin-media" aria-hidden="true"></span>
-									<span><?php esc_html_e( 'Media', EDMINBOOST_TEXT_DOMAIN ); ?></span>
+									<span><?php esc_html_e( 'Media', 'edminboost' ); ?></span>
 								</div>
 							</div>
 						</div>
@@ -463,7 +457,7 @@ $edminboost_color_fields = array(
 		<div id="edminboost-menu-hidden-inputs" hidden aria-hidden="true"></div>
 
 		<?php
-		$edminboost_save_label    = __( 'Save Menu Studio', EDMINBOOST_TEXT_DOMAIN );
+		$edminboost_save_label    = __( 'Save Menu Studio', 'edminboost' );
 		$edminboost_wrapper_tag   = 'footer';
 		$edminboost_wrapper_class = 'edminboost-cc-footer edminboost-form-actions';
 		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';

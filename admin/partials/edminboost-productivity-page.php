@@ -22,7 +22,7 @@ $edminboost_section     = 'productivity';
 
 	<header class="edminboost-cc-hero">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-		<p class="edminboost-cc-hero__lead"><?php esc_html_e( 'Workflow tools, dashboard cleanup, and list table enhancements.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+		<p class="edminboost-cc-hero__lead"><?php esc_html_e( 'Workflow tools, dashboard cleanup, and list table enhancements.', 'edminboost' ); ?></p>
 	</header>
 
 	<form action="options.php" method="post" class="edminboost-cc-form edminboost-settings-form">
@@ -30,7 +30,7 @@ $edminboost_section     = 'productivity';
 		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
 		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-feature-fields.php'; ?>
 		<?php
-		$edminboost_save_label = __( 'Save productivity settings', EDMINBOOST_TEXT_DOMAIN );
+		$edminboost_save_label = __( 'Save productivity settings', 'edminboost' );
 		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
 		?>
 	</form>

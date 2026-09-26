@@ -32,7 +32,7 @@ $edminboost_active_label = $edminboost_animation_speeds[ $edminboost_active_spee
 $edminboost_active_ms    = $edminboost_animation_speeds[ $edminboost_active_speed ]['ms'];
 ?>
 <fieldset class="edminboost-fieldset">
-	<legend for="edminboost_animation_speed"><?php EDMINBOOST_Setting_Help::echo_icon( 'animation_speed' ); ?><?php esc_html_e( 'Animation speed', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+	<legend for="edminboost_animation_speed"><?php EDMINBOOST_Setting_Help::echo_icon( 'animation_speed' ); ?><?php esc_html_e( 'Animation speed', 'edminboost' ); ?></legend>
 	<select
 		name="<?php echo esc_attr( $edminboost_cc_key ); ?>[animation_speed]"
 		id="edminboost_animation_speed"
@@ -76,7 +76,7 @@ $edminboost_active_ms    = $edminboost_animation_speeds[ $edminboost_active_spee
 			class="edminboost-animation-speed-picker__list"
 			id="edminboost-animation-speed-list"
 			role="listbox"
-			aria-label="<?php esc_attr_e( 'Animation speed', EDMINBOOST_TEXT_DOMAIN ); ?>"
+			aria-label="<?php esc_attr_e( 'Animation speed', 'edminboost' ); ?>"
 			hidden
 		>
 			<?php foreach ( $edminboost_animation_speeds as $edminboost_speed_id => $edminboost_speed ) : ?>

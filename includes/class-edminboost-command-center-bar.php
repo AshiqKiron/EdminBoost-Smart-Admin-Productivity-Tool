@@ -185,7 +185,7 @@ class EDMINBOOST_Command_Center_Bar {
 			array(
 				'drawerItems'  => self::get_drawer_items_config(),
 				'animationMs'  => self::get_animation_duration_ms(),
-				'iframeTitle'  => __( 'Admin page preview', EDMINBOOST_TEXT_DOMAIN ),
+				'iframeTitle'  => __( 'Admin page preview', 'edminboost' ),
 			)
 		);
 	}
@@ -198,7 +198,7 @@ class EDMINBOOST_Command_Center_Bar {
 	public static function ajax_drawer_preview() {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'You do not have permission to preview drawer items.', EDMINBOOST_TEXT_DOMAIN ) ),
+				array( 'message' => __( 'You do not have permission to preview drawer items.', 'edminboost' ) ),
 				403
 			);
 		}
@@ -208,7 +208,7 @@ class EDMINBOOST_Command_Center_Bar {
 		if ( ! wp_verify_nonce( $nonce, 'edminboost_cc_drawer_preview' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Security check failed. Refresh the page and try again.', EDMINBOOST_TEXT_DOMAIN ),
+					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost' ),
 				),
 				403
 			);
@@ -216,7 +216,7 @@ class EDMINBOOST_Command_Center_Bar {
 
 		if ( ! self::is_mapper_preview_context() ) {
 			wp_send_json_error(
-				array( 'message' => __( 'Drawer preview is only available in Layout Studio.', EDMINBOOST_TEXT_DOMAIN ) ),
+				array( 'message' => __( 'Drawer preview is only available in Layout Studio.', 'edminboost' ) ),
 				400
 			);
 		}
@@ -228,7 +228,7 @@ class EDMINBOOST_Command_Center_Bar {
 
 		if ( ! self::is_valid_drawer_slug( $slug, $anchor ) ) {
 			wp_send_json_error(
-				array( 'message' => __( 'That admin path cannot be previewed in the drawer.', EDMINBOOST_TEXT_DOMAIN ) ),
+				array( 'message' => __( 'That admin path cannot be previewed in the drawer.', 'edminboost' ) ),
 				400
 			);
 		}
@@ -248,29 +248,36 @@ class EDMINBOOST_Command_Center_Bar {
 	 * @return void
 	 */
 	public static function maybe_prepare_drawer_frame() {
-		if ( empty( $_GET['edminboost_drawer'] ) || '1' !== $_GET['edminboost_drawer'] ) {
+		$drawer_flag = isset( $_GET['edminboost_drawer'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			? sanitize_text_field( wp_unslash( $_GET['edminboost_drawer'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			: '';
+
+		if ( '1' !== $drawer_flag ) {
 			return;
 		}
 
 		if ( ! is_user_logged_in() ) {
-			wp_die( esc_html__( 'You must be logged in to view this page.', EDMINBOOST_TEXT_DOMAIN ), 403 );
+			wp_die( esc_html__( 'You must be logged in to view this page.', 'edminboost' ), 403 );
 		}
 
-		$slug   = isset( $_GET['edminboost_slug'] ) ? sanitize_text_field( wp_unslash( $_GET['edminboost_slug'] ) ) : '';
-		$anchor = isset( $_GET['edminboost_anchor'] ) ? sanitize_text_field( wp_unslash( $_GET['edminboost_anchor'] ) ) : '';
+		$slug   = isset( $_GET['edminboost_slug'] ) ? sanitize_text_field( wp_unslash( $_GET['edminboost_slug'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$anchor = isset( $_GET['edminboost_anchor'] ) ? sanitize_text_field( wp_unslash( $_GET['edminboost_anchor'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		$anchor = ltrim( $anchor, '#' );
 
 		if ( '' === $slug ) {
-			wp_die( esc_html__( 'Invalid drawer request.', EDMINBOOST_TEXT_DOMAIN ), 400 );
+			wp_die( esc_html__( 'Invalid drawer request.', 'edminboost' ), 400 );
 		}
 
-		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : '';
+		$nonce = isset( $_GET['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wpnonce'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		if ( ! wp_verify_nonce( $nonce, self::get_drawer_nonce_action( $slug, $anchor ) ) ) {
-			wp_die( esc_html__( 'Invalid drawer request.', EDMINBOOST_TEXT_DOMAIN ), 403 );
+			wp_die( esc_html__( 'Invalid drawer request.', 'edminboost' ), 403 );
 		}
 
-		$is_mapper_preview = ! empty( $_GET['edminboost_mapper_preview'] ) && '1' === $_GET['edminboost_mapper_preview'];
+		$mapper_preview_flag = isset( $_GET['edminboost_mapper_preview'] ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			? sanitize_text_field( wp_unslash( $_GET['edminboost_mapper_preview'] ) ) // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+			: '';
+		$is_mapper_preview   = '1' === $mapper_preview_flag;
 
 		if (
 			! self::is_drawer_slug_allowed( $slug, $anchor )
@@ -280,7 +287,14 @@ class EDMINBOOST_Command_Center_Bar {
 				&& self::is_valid_drawer_slug( $slug, $anchor )
 			)
 		) {
-			wp_die( esc_html__( 'You cannot open this page in the drawer.', EDMINBOOST_TEXT_DOMAIN ), 403 );
+			wp_die( esc_html__( 'You cannot open this page in the drawer.', 'edminboost' ), 403 );
+		}
+
+		if ( ! $is_mapper_preview ) {
+			$user = wp_get_current_user();
+			if ( ! EDMINBOOST_Command_Center::user_roles_can_access_menu_slug( $slug, (array) $user->roles ) ) {
+				wp_die( esc_html__( 'You cannot open this page in the drawer.', 'edminboost' ), 403 );
+			}
 		}
 
 		add_filter( 'admin_body_class', array( __CLASS__, 'filter_drawer_frame_body_class' ) );
@@ -380,17 +394,17 @@ class EDMINBOOST_Command_Center_Bar {
 		echo '<h2 id="edminboost-cc-drawer-title" class="edminboost-cc-drawer__title"></h2>';
 		printf(
 			'<a class="edminboost-cc-drawer__open-full" href="#" target="_blank" rel="noopener noreferrer">%s</a>',
-			esc_html__( 'Open full page', EDMINBOOST_TEXT_DOMAIN )
+			esc_html__( 'Open full page', 'edminboost' )
 		);
 		printf(
 			'<button type="button" class="edminboost-cc-drawer__close" aria-label="%s">&times;</button>',
-			esc_attr__( 'Close drawer', EDMINBOOST_TEXT_DOMAIN )
+			esc_attr__( 'Close drawer', 'edminboost' )
 		);
 		echo '</header>';
 		echo '<div class="edminboost-cc-drawer__body">';
 		printf(
 			'<div class="edminboost-cc-drawer__loading" aria-live="polite">%s</div>',
-			esc_html__( 'Loading…', EDMINBOOST_TEXT_DOMAIN )
+			esc_html__( 'Loading…', 'edminboost' )
 		);
 
 		foreach ( self::get_drawer_items_config() as $item ) {
@@ -401,7 +415,7 @@ class EDMINBOOST_Command_Center_Bar {
 			printf(
 				'<iframe class="edminboost-cc-drawer__iframe" hidden data-edminboost-frame-url="%1$s" title="%2$s" src="about:blank"></iframe>',
 				esc_attr( $item['frameUrl'] ),
-				esc_attr__( 'Admin page preview', EDMINBOOST_TEXT_DOMAIN )
+				esc_attr__( 'Admin page preview', 'edminboost' )
 			);
 		}
 
@@ -656,10 +670,6 @@ class EDMINBOOST_Command_Center_Bar {
 	 */
 	public static function get_items_for_current_user() {
 		$cc_settings = EDMINBOOST_Command_Center::get_settings();
-
-		if ( ! EDMINBOOST_Pro::is_active() ) {
-			$cc_settings = EDMINBOOST_Pro::enforce_command_center_limits( $cc_settings );
-		}
 
 		$items = EDMINBOOST_Command_Center::resolve_top_bar_items_for_user( $cc_settings );
 

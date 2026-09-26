@@ -80,10 +80,10 @@ class EDMINBOOST_Admin_Bar extends EDMINBOOST_Feature_Base {
 	 */
 	public static function get_option_labels() {
 		return array(
-			'hide_wp_logo'     => __( 'WordPress logo', EDMINBOOST_TEXT_DOMAIN ),
-			'hide_comments'    => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
-			'hide_new_content' => __( 'New content menu', EDMINBOOST_TEXT_DOMAIN ),
-			'hide_customize'   => __( 'Customize link', EDMINBOOST_TEXT_DOMAIN ),
+			'hide_wp_logo'     => __( 'WordPress logo', 'edminboost' ),
+			'hide_comments'    => __( 'Comments', 'edminboost' ),
+			'hide_new_content' => __( 'New content menu', 'edminboost' ),
+			'hide_customize'   => __( 'Customize link', 'edminboost' ),
 		);
 	}
 }

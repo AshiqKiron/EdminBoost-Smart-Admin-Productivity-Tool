@@ -14,7 +14,6 @@
  *   - edminboost_version   (string, schema version tracker)
  *
  * Core hooks (this class):
- *   - plugins_loaded              → load text domain
  *   - admin_menu                  → register admin pages
  *   - admin_init                  → register settings + feature hooks
  *   - admin_enqueue_scripts (×2)  → enqueue CSS/JS on plugin screens
@@ -54,13 +53,6 @@ class EDMINBOOST_Plugin {
 	protected $admin;
 
 	/**
-	 * Internationalization handler.
-	 *
-	 * @var EDMINBOOST_I18n
-	 */
-	protected $i18n;
-
-	/**
 	 * Feature manager.
 	 *
 	 * @var EDMINBOOST_Features
@@ -71,7 +63,6 @@ class EDMINBOOST_Plugin {
 	 * Constructor.
 	 */
 	public function __construct() {
-		$this->i18n     = new EDMINBOOST_I18n();
 		$this->features = new EDMINBOOST_Features();
 		$this->admin    = new EDMINBOOST_Admin( $this->features );
 	}
@@ -82,7 +73,6 @@ class EDMINBOOST_Plugin {
 	 * @return void
 	 */
 	public function run() {
-		add_action( 'plugins_loaded', array( $this->i18n, 'load_plugin_textdomain' ) );
 		add_action( 'admin_menu', array( $this->admin, 'register_menu' ) );
 		add_action( 'admin_menu', array( $this->admin, 'normalize_plugin_submenu' ), 999 );
 		add_action( 'admin_init', array( $this->admin, 'register_settings' ) );

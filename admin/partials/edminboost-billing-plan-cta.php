@@ -22,7 +22,7 @@ if ( ! empty( $class ) ) {
 ?>
 <?php if ( $is_active ) : ?>
 	<button type="button" class="<?php echo esc_attr( $cta_class ); ?>" disabled aria-disabled="true">
-		<?php esc_html_e( 'Current plan', EDMINBOOST_TEXT_DOMAIN ); ?>
+		<?php esc_html_e( 'Current plan', 'edminboost' ); ?>
 	</button>
 <?php else : ?>
 	<a
@@ -34,7 +34,7 @@ if ( ! empty( $class ) ) {
 		<?php
 		printf(
 			/* translators: %s: plan name */
-			esc_html__( 'Upgrade to %s', EDMINBOOST_TEXT_DOMAIN ),
+			esc_html__( 'Upgrade to %s', 'edminboost' ),
 			esc_html( $plan['name'] )
 		);
 		?>

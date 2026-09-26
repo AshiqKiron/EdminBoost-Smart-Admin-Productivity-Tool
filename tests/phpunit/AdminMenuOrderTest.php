@@ -27,7 +27,7 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$first = reset( $submenu[ $slug ] );
 
 		$this->assertSame( $slug, $first[2] );
-		$this->assertSame( __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ), wp_strip_all_tags( $first[0] ) );
+		$this->assertSame( __( 'Dashboard', 'edminboost' ), wp_strip_all_tags( $first[0] ) );
 
 		$labels = array();
 		foreach ( $submenu[ $slug ] as $item ) {
@@ -36,13 +36,13 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 
 		$this->assertSame(
 			array(
-				__( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . ')',
-				__( 'Layouts', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_PRESETS . ')',
-				__( 'Theme', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
-				__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MAPPER . ')',
-				__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
-				__( 'Billing', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')',
-				__( 'Settings', EDMINBOOST_TEXT_DOMAIN ) . ' (' . $slug . '-settings)',
+				__( 'Dashboard', 'edminboost' ) . ' (' . $slug . ')',
+				__( 'Layouts', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_PRESETS . ')',
+				__( 'Theme', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
+				__( 'Top Bar', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MAPPER . ')',
+				__( 'Menu Studio', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
+				__( 'Billing', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')',
+				__( 'Settings', 'edminboost' ) . ' (' . $slug . '-settings)',
 			),
 			$labels
 		);
@@ -79,7 +79,7 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$first = reset( $submenu[ $slug ] );
 
 		$this->assertSame( $slug, $first[2] );
-		$this->assertSame( __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ), wp_strip_all_tags( $first[0] ) );
+		$this->assertSame( __( 'Dashboard', 'edminboost' ), wp_strip_all_tags( $first[0] ) );
 	}
 
 	/**
@@ -97,6 +97,6 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$title = null;
 		do_action( "load-{$hook}" );
 
-		$this->assertSame( __( 'Productivity', EDMINBOOST_TEXT_DOMAIN ), $title );
+		$this->assertSame( __( 'Productivity', 'edminboost' ), $title );
 	}
 }

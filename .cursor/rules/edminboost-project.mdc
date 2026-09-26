@@ -24,10 +24,10 @@ includes/
   class-edminboost-features.php               # feature registry
   class-edminboost-feature-settings.php       # feature defaults, sanitize, enable checks
   class-edminboost-white-label.php            # agency branding + system status footer
-  class-edminboost-pro.php                    # Build detection, billing/plan helpers, premium-only admin UI; see Builds below
+  class-edminboost-pro.php                    # Build detection and Billing helpers (no feature gating); see Builds below
   pro/edminboost-premium.php                  # Premium zip only — Freemius bootstrap (omitted from WordPress.org zip)
   class-edminboost-setting-help.php           # setting field info tooltips (CC/feature pages + setup wizard)
-  class-edminboost-{activator,deactivator,i18n}.php
+  class-edminboost-{activator,deactivator}.php
   features/
     class-edminboost-feature-base.php
     class-edminboost-{feature}.php
@@ -49,7 +49,7 @@ readme.txt
 - Bootstrap defines constants, requires core classes, registers activation/deactivation hooks, and calls `edminboost_run_plugin()`.
 - Bootstrap filename equals `EDMINBOOST_PLUGIN_SLUG . '.php'` (`edminboost-smart-admin-productivity-tool.php`).
 - `EDMINBOOST_PLUGIN_SLUG` is the canonical plugin slug (folder + bootstrap filename). `EDMINBOOST_TEXT_DOMAIN` is `edminboost` (plugin header / WordPress.org Plugin Check).
-- `EDMINBOOST_Plugin::run()` wires i18n, admin menu/settings/assets, and `EDMINBOOST_Features::register_hooks()` on `admin_init`.
+- `EDMINBOOST_Plugin::run()` wires admin menu/settings/assets, and `EDMINBOOST_Features::register_hooks()` on `admin_init`.
 - Settings: `edminboost_settings` via `EDMINBOOST_Settings` (group `edminboost_settings_group`). Global kill switch: `enabled`.
 - Command Center config lives under `settings['command_center']`; helpers in `EDMINBOOST_Command_Center`.
 - Live admin bar: `EDMINBOOST_Command_Center_Bar` (not a feature module) — registered in `EDMINBOOST_Plugin::run()`, renders saved `top_bar_items` on `#wpadminbar` and applies behavior declutter toggles. Panel/badge behavior fields (`command_center.behavior` drawer width, badge style, animation speed) edit on Top Bar (`#edminboost-mapper-look`, gated until a link uses drawer interaction); declutter toggles edit on Theme (Appearance).
@@ -60,7 +60,7 @@ readme.txt
 - White label: `EDMINBOOST_White_Label` — plugin row/menu rebranding, admin favicon, system status footer; config under `white_label`; registered in `EDMINBOOST_Plugin::run()`. White Label page includes live system status footer preview (`edminboost-white-label-status-preview.php`) and plugin rebranding preview (`edminboost-white-label-plugin-preview.php`); dependent sections disable until master toggle is on.
 - **Builds:** Dev repo ships both free and premium artifacts. `bin/build-wporg-zip.sh` stages a WordPress.org package **without** `includes/pro/` (verified by `bin/verify-wporg-zip.sh` — no Freemius SDK). `bin/build-premium-zip.sh` includes `includes/pro/edminboost-premium.php` + bundled Freemius SDK for direct download/licensing. Bootstrap conditionally requires premium bootstrap when present.
 - **Billing (in-plugin):** Billing page is informational — plan cards + comparison table from `EDMINBOOST_Command_Center::get_billing_plans()` / `get_billing_comparison_rows()`; CTAs link to `get_upgrade_url()` (`EDMINBOOST_UPGRADE_URL`, filter `edminboost_upgrade_url`) in a new tab. No in-plugin checkout or license API on the WordPress.org build. Paid tiers describe support and multi-site licensing, not locked functionality (see `readme.txt` FAQ v1.4.0+).
-- **`EDMINBOOST_Pro`:** Build helpers `is_premium_build()` (`EDMINBOOST_PREMIUM_BUILD`), `shows_pro_settings_ui()` (Pro badges, locked sections, upgrade prompts — premium zip only), and `include_preset_in_ui( $preset_id, $context )` (omits paid layout/theme presets from pickers on WordPress.org instead of showing locks). Billing plan ID (`get_active_billing_plan()` + filters), upgrade URL helpers, and `.edminboost-pro-*` markup when `shows_pro_settings_ui()`. Premium build wires plan detection via `includes/pro/edminboost-premium.php`. WordPress.org build omits premium-only admin surfaces (White Label tab, backup/import, drawer/badges UI, etc.) — no Freemius or in-plugin license gates; see `edminboost-compliance.mdc`.
+- **`EDMINBOOST_Pro`:** Build detection (`is_direct_build()` / alias `is_premium_build()` when `EDMINBOOST_PREMIUM_BUILD`), Billing helpers (`is_active()`, `get_billing_url()`, `get_upgrade_url()` via Command Center), and legacy no-op stubs (`shows_pro_settings_ui()` always false — no Pro badges, locks, or upsell UI; `include_preset_in_ui()` always true; plan-limit `enforce_*` / `strip_pro_*` pass-through). Direct-download zip may bundle Freemius via `includes/pro/edminboost-premium.php`; WordPress.org zip omits `includes/pro/`. All Command Center and feature tools ship in both builds with no license gating; see `edminboost-compliance.mdc`.
 - Feature settings: `EDMINBOOST_Feature_Settings` — centralized `features` defaults, `normalize()`, `is_enabled()`, and `sanitize()`; legacy `admin_bar` / `admin_menu` keys are stripped on read.
 - Version tracker: `edminboost_version` (`EDMINBOOST_Settings::VERSION_OPTION`), seeded on activation.
 - Features extend `EDMINBOOST_Feature_Base` in `includes/features/`, loaded by `EDMINBOOST_Features`.
@@ -77,7 +77,7 @@ Use `EDMINBOOST_Admin::PAGE_SLUG` (equals `EDMINBOOST_PLUGIN_SLUG`) — never ha
 
 **Sidebar** (`get_page_links()` + `normalize_plugin_submenu()`): Dashboard, Layout Presets, Theme (Appearance slug), Top Bar, Menu Studio, Billing, Settings.
 
-**Tab-only** (registered with `add_submenu_page( null, … )`, reachable via CC sub-nav / `get_nav_items()`): Productivity, Security, Performance; White Label (premium build only — omitted from `get_nav_items()` and submenu registration when `! EDMINBOOST_Pro::shows_pro_settings_ui()`).
+**Tab-only** (registered with `add_submenu_page( null, … )`, reachable via CC sub-nav / `get_nav_items()`): Productivity, Security, Performance, White Label.
 
 | Page | Slug | Renderer | Sidebar |
 |------|------|----------|---------|
@@ -90,8 +90,8 @@ Use `EDMINBOOST_Admin::PAGE_SLUG` (equals `EDMINBOOST_PLUGIN_SLUG`) — never ha
 | Productivity | `PAGE_SLUG . PAGE_PRODUCTIVITY` | `render_productivity_page()` | tab-only |
 | Security | `PAGE_SLUG . PAGE_SECURITY` | `render_security_page()` | tab-only |
 | Performance | `PAGE_SLUG . PAGE_PERFORMANCE` | `render_performance_page()` | tab-only |
-| White Label | `PAGE_SLUG . PAGE_WHITE_LABEL` | `render_white_label_page()` | tab-only (premium build) |
-| Settings | `PAGE_SLUG . '-settings'` | `render_settings_page()` (backup/import on premium build; org build shows per-tab save note only) | yes |
+| White Label | `PAGE_SLUG . PAGE_WHITE_LABEL` | `render_white_label_page()` | tab-only |
+| Settings | `PAGE_SLUG . '-settings'` | `render_settings_page()` (JSON backup/import via `#edminboost-backup-section`) | yes |
 
 Legacy slugs: `-onboarding` redirects to Dashboard; `-behavior` redirects to Appearance (hidden submenu entries, not in sidebar).
 

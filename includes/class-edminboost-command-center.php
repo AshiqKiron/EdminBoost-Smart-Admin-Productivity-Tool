@@ -217,15 +217,15 @@ class EDMINBOOST_Command_Center {
 	public static function get_animation_speed_options() {
 		return array(
 			'fast'   => array(
-				'label' => __( 'Fast (150ms)', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Fast (150ms)', 'edminboost' ),
 				'ms'    => 150,
 			),
 			'normal' => array(
-				'label' => __( 'Normal (300ms)', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Normal (300ms)', 'edminboost' ),
 				'ms'    => 300,
 			),
 			'slow'   => array(
-				'label' => __( 'Slow (500ms)', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Slow (500ms)', 'edminboost' ),
 				'ms'    => 500,
 			),
 		);
@@ -301,31 +301,31 @@ class EDMINBOOST_Command_Center {
 		return array(
 			array(
 				'slug'  => $base,
-				'label' => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Dashboard', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_PRESETS,
-				'label' => __( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Layouts', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_APPEARANCE,
-				'label' => __( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Theme', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_MAPPER,
-				'label' => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Top Bar', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_MENU_STUDIO,
-				'label' => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Menu Studio', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_BILLING,
-				'label' => __( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Billing', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . '-settings',
-				'label' => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Settings', 'edminboost' ),
 			),
 		);
 	}
@@ -341,61 +341,49 @@ class EDMINBOOST_Command_Center {
 		$items = array(
 			array(
 				'slug'  => $base,
-				'label' => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Dashboard', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_PRESETS,
-				'label' => __( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Layouts', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_APPEARANCE,
-				'label' => __( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Theme', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_MAPPER,
-				'label' => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Top Bar', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_MENU_STUDIO,
-				'label' => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Menu Studio', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_PRODUCTIVITY,
-				'label' => __( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Productivity', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_SECURITY,
-				'label' => __( 'Security', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Security', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_PERFORMANCE,
-				'label' => __( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Performance', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_WHITE_LABEL,
-				'label' => __( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'White Label', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_BILLING,
-				'label' => __( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Billing', 'edminboost' ),
 			),
 			array(
 				'slug'  => $base . '-settings',
-				'label' => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Settings', 'edminboost' ),
 			),
 		);
-
-		if ( ! EDMINBOOST_Pro::shows_pro_settings_ui() ) {
-			$white_label_slug = $base . self::PAGE_WHITE_LABEL;
-			$items            = array_values(
-				array_filter(
-					$items,
-					function ( $item ) use ( $white_label_slug ) {
-						return ! isset( $item['slug'] ) || $white_label_slug !== $item['slug'];
-					}
-				)
-			);
-		}
 
 		return $items;
 	}
@@ -472,67 +460,67 @@ class EDMINBOOST_Command_Center {
 		return array(
 			'free'   => array(
 				'id'          => 'free',
-				'name'        => __( 'Free', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Free', 'edminboost' ),
 				'price'       => 0,
-				'price_label' => __( '$0', EDMINBOOST_TEXT_DOMAIN ),
+				'price_label' => __( '$0', 'edminboost' ),
 				'sites'       => 0,
-				'sites_label' => __( 'Unlimited sites', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Core Command Center tools on unlimited WordPress sites.', EDMINBOOST_TEXT_DOMAIN ),
+				'sites_label' => __( 'Unlimited sites', 'edminboost' ),
+				'description' => __( 'Core Command Center tools on unlimited WordPress sites.', 'edminboost' ),
 				'features'    => array(
-					__( 'Dashboard setup wizard', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Top bar builder (redirect links)', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Friend\'s Website and Family Member\'s Site layout presets', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'By-role layout presets', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'One saved custom layout preset', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Default, Midnight, and Terminal theme presets', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Menu Studio sidebar reorder and hide', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Productivity, security, and performance tools', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Dashboard setup wizard', 'edminboost' ),
+					__( 'Top bar builder (redirect links)', 'edminboost' ),
+					__( 'Friend\'s Website and Family Member\'s Site layout presets', 'edminboost' ),
+					__( 'By-role layout presets', 'edminboost' ),
+					__( 'One saved custom layout preset', 'edminboost' ),
+					__( 'Default, Midnight, and Terminal theme presets', 'edminboost' ),
+					__( 'Menu Studio sidebar reorder and hide', 'edminboost' ),
+					__( 'Productivity, security, and performance tools', 'edminboost' ),
 				),
 				'featured'    => false,
 			),
 			'pro'    => array(
 				'id'          => 'pro',
-				'name'        => __( 'Pro', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Pro', 'edminboost' ),
 				'price'       => 49,
-				'price_label' => __( '$49', EDMINBOOST_TEXT_DOMAIN ),
+				'price_label' => __( '$49', 'edminboost' ),
 				'sites'       => 1,
-				'sites_label' => __( '1 site', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Premium admin customization for one production site.', EDMINBOOST_TEXT_DOMAIN ),
+				'sites_label' => __( '1 site', 'edminboost' ),
+				'description' => __( 'Premium admin customization for one production site.', 'edminboost' ),
 				'features'    => array(
-					__( 'Everything in Free', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Everything in Free', 'edminboost' ),
 					sprintf(
 						/* translators: %d: number of by use case layout presets beyond Friend and Family */
-						__( '%d additional by use case layout presets', EDMINBOOST_TEXT_DOMAIN ),
+						__( '%d additional by use case layout presets', 'edminboost' ),
 						max( 0, $counts['scenario_presets'] - 2 )
 					),
-					__( 'Unlimited saved custom layouts', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Role-based menu visibility matrix', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Unlimited saved custom layouts', 'edminboost' ),
+					__( 'Role-based menu visibility matrix', 'edminboost' ),
 					sprintf(
 						/* translators: %d: number of visual theme skins beyond the free set */
-						__( '%d additional visual theme skins', EDMINBOOST_TEXT_DOMAIN ),
+						__( '%d additional visual theme skins', 'edminboost' ),
 						max( 0, $counts['theme_skins'] - 3 )
 					),
-					__( 'Scheduled dark mode', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Slide-out drawer panels and live badge counters', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Full-screen and custom drawer widths, badge style, animation speed, glassmorphism', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Role-based login and logout redirects', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Custom sidebar links and icon/text display modes', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'White-label branding', EDMINBOOST_TEXT_DOMAIN ),
-					__( 'Settings export and import', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Scheduled dark mode', 'edminboost' ),
+					__( 'Slide-out drawer panels and live badge counters', 'edminboost' ),
+					__( 'Full-screen and custom drawer widths, badge style, animation speed, glassmorphism', 'edminboost' ),
+					__( 'Role-based login and logout redirects', 'edminboost' ),
+					__( 'Custom sidebar links and icon/text display modes', 'edminboost' ),
+					__( 'White-label branding', 'edminboost' ),
+					__( 'Settings export and import', 'edminboost' ),
 				),
 				'featured'    => true,
 			),
 			'agency' => array(
 				'id'          => 'agency',
-				'name'        => __( 'Agency', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Agency', 'edminboost' ),
 				'price'       => 99,
-				'price_label' => __( '$99', EDMINBOOST_TEXT_DOMAIN ),
+				'price_label' => __( '$99', 'edminboost' ),
 				'sites'       => 10,
-				'sites_label' => __( '10 sites', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Deploy EdminBoost across a client portfolio.', EDMINBOOST_TEXT_DOMAIN ),
+				'sites_label' => __( '10 sites', 'edminboost' ),
+				'description' => __( 'Deploy EdminBoost across a client portfolio.', 'edminboost' ),
 				'features'    => array(
-					__( 'Everything in Pro', EDMINBOOST_TEXT_DOMAIN ),
-					__( '10 site license pack', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Everything in Pro', 'edminboost' ),
+					__( '10 site license pack', 'edminboost' ),
 				),
 				'featured'    => false,
 			),
@@ -557,47 +545,47 @@ class EDMINBOOST_Command_Center {
 		return array(
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Plan basics', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Plan basics', 'edminboost' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Annual price', EDMINBOOST_TEXT_DOMAIN ),
-				'free'   => __( '$0', EDMINBOOST_TEXT_DOMAIN ),
-				'pro'    => __( '$49', EDMINBOOST_TEXT_DOMAIN ),
-				'agency' => __( '$99', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Annual price', 'edminboost' ),
+				'free'   => __( '$0', 'edminboost' ),
+				'pro'    => __( '$49', 'edminboost' ),
+				'agency' => __( '$99', 'edminboost' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Site license', EDMINBOOST_TEXT_DOMAIN ),
-				'free'   => __( 'Unlimited', EDMINBOOST_TEXT_DOMAIN ),
-				'pro'    => __( '1 site', EDMINBOOST_TEXT_DOMAIN ),
-				'agency' => __( '10 sites', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Site license', 'edminboost' ),
+				'free'   => __( 'Unlimited', 'edminboost' ),
+				'pro'    => __( '1 site', 'edminboost' ),
+				'agency' => __( '10 sites', 'edminboost' ),
 			),
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Layout presets', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Layout presets', 'edminboost' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Friend & Family presets', EDMINBOOST_TEXT_DOMAIN ),
-				'detail' => __( 'Friend\'s Website and Family Member\'s Site layouts', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Friend & Family presets', 'edminboost' ),
+				'detail' => __( 'Friend\'s Website and Family Member\'s Site layouts', 'edminboost' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'By-role layout presets', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'By-role layout presets', 'edminboost' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Use-case layout presets', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Use-case layout presets', 'edminboost' ),
 				'detail' => sprintf(
 					/* translators: %d: number of additional by use case layout presets */
-					__( '%d scenario presets beyond Friend & Family', EDMINBOOST_TEXT_DOMAIN ),
+					__( '%d scenario presets beyond Friend & Family', 'edminboost' ),
 					$additional_scenario_presets
 				),
 				'free'   => false,
@@ -606,42 +594,42 @@ class EDMINBOOST_Command_Center {
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Saved custom layouts', EDMINBOOST_TEXT_DOMAIN ),
-				'free'   => __( '1', EDMINBOOST_TEXT_DOMAIN ),
-				'pro'    => __( 'Unlimited', EDMINBOOST_TEXT_DOMAIN ),
-				'agency' => __( 'Unlimited', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Saved custom layouts', 'edminboost' ),
+				'free'   => __( '1', 'edminboost' ),
+				'pro'    => __( 'Unlimited', 'edminboost' ),
+				'agency' => __( 'Unlimited', 'edminboost' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Role visibility matrix', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Role visibility matrix', 'edminboost' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Top Bar', 'edminboost' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Top bar (redirect links)', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Top bar (redirect links)', 'edminboost' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Slide-out drawer panels', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Slide-out drawer panels', 'edminboost' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Live badge counters', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Live badge counters', 'edminboost' ),
 				'detail' => sprintf(
 					/* translators: %d: number of live badge counter sources */
-					__( '%d local counter sources', EDMINBOOST_TEXT_DOMAIN ),
+					__( '%d local counter sources', 'edminboost' ),
 					$counts['badge_sources']
 				),
 				'free'   => false,
@@ -650,63 +638,63 @@ class EDMINBOOST_Command_Center {
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Custom drawer widths', EDMINBOOST_TEXT_DOMAIN ),
-				'detail' => __( 'Full-screen and custom panel sizes', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Custom drawer widths', 'edminboost' ),
+				'detail' => __( 'Full-screen and custom panel sizes', 'edminboost' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Badge style & effects', EDMINBOOST_TEXT_DOMAIN ),
-				'detail' => __( 'Badge style, animation speed, glassmorphism', EDMINBOOST_TEXT_DOMAIN ),
-				'free'   => false,
-				'pro'    => true,
-				'agency' => true,
-			),
-			array(
-				'type'  => 'heading',
-				'label' => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
-			),
-			array(
-				'type'   => 'row',
-				'label'  => __( 'Sidebar reorder and hide', EDMINBOOST_TEXT_DOMAIN ),
-				'free'   => true,
-				'pro'    => true,
-				'agency' => true,
-			),
-			array(
-				'type'   => 'row',
-				'label'  => __( 'Custom sidebar links', EDMINBOOST_TEXT_DOMAIN ),
-				'free'   => false,
-				'pro'    => true,
-				'agency' => true,
-			),
-			array(
-				'type'   => 'row',
-				'label'  => __( 'Icon and text display modes', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Badge style & effects', 'edminboost' ),
+				'detail' => __( 'Badge style, animation speed, glassmorphism', 'edminboost' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Theme (Appearance)', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Menu Studio', 'edminboost' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Core theme presets', EDMINBOOST_TEXT_DOMAIN ),
-				'detail' => __( 'Default, Midnight, and Terminal', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Sidebar reorder and hide', 'edminboost' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Premium theme skins', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Custom sidebar links', 'edminboost' ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Icon and text display modes', 'edminboost' ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'  => 'heading',
+				'label' => __( 'Theme (Appearance)', 'edminboost' ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Core theme presets', 'edminboost' ),
+				'detail' => __( 'Default, Midnight, and Terminal', 'edminboost' ),
+				'free'   => true,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Premium theme skins', 'edminboost' ),
 				'detail' => sprintf(
 					/* translators: %d: number of additional visual theme skins */
-					__( '%d additional skins beyond the free set', EDMINBOOST_TEXT_DOMAIN ),
+					__( '%d additional skins beyond the free set', 'edminboost' ),
 					$additional_theme_skins
 				),
 				'free'   => false,
@@ -715,41 +703,41 @@ class EDMINBOOST_Command_Center {
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Scheduled dark mode', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Scheduled dark mode', 'edminboost' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Tools and branding', EDMINBOOST_TEXT_DOMAIN ),
+				'label' => __( 'Tools and branding', 'edminboost' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Utility tool modules', EDMINBOOST_TEXT_DOMAIN ),
-				'detail' => __( 'Productivity, security, and performance tools', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Utility tool modules', 'edminboost' ),
+				'detail' => __( 'Productivity, security, and performance tools', 'edminboost' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Login redirects', EDMINBOOST_TEXT_DOMAIN ),
-				'detail' => __( 'Role-based login and logout redirects', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Login redirects', 'edminboost' ),
+				'detail' => __( 'Role-based login and logout redirects', 'edminboost' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'White-label branding', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'White-label branding', 'edminboost' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Settings export and import', EDMINBOOST_TEXT_DOMAIN ),
+				'label'  => __( 'Settings export and import', 'edminboost' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
@@ -796,8 +784,8 @@ class EDMINBOOST_Command_Center {
 
 		return array(
 			'clean' => array(
-				'name'        => __( 'Clean', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Standard panel, subtle badges, hides logo and profile text.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Clean', 'edminboost' ),
+				'description' => __( 'Standard panel, subtle badges, hides logo and profile text.', 'edminboost' ),
 				'icon'        => 'dashicons-art',
 				'behavior'    => array_merge(
 					$defaults,
@@ -813,8 +801,8 @@ class EDMINBOOST_Command_Center {
 				),
 			),
 			'focused' => array(
-				'name'        => __( 'Focused', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Compact panel, counter badges, minimal admin bar clutter.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Focused', 'edminboost' ),
+				'description' => __( 'Compact panel, counter badges, minimal admin bar clutter.', 'edminboost' ),
 				'icon'        => 'dashicons-visibility',
 				'behavior'    => array_merge(
 					$defaults,
@@ -830,8 +818,8 @@ class EDMINBOOST_Command_Center {
 				),
 			),
 			'full' => array(
-				'name'        => __( 'Full', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Standard panel with accent badges and the full native admin bar.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Full', 'edminboost' ),
+				'description' => __( 'Standard panel with accent badges and the full native admin bar.', 'edminboost' ),
 				'icon'        => 'dashicons-admin-site-alt3',
 				'behavior'    => array_merge(
 					$defaults,
@@ -896,62 +884,62 @@ class EDMINBOOST_Command_Center {
 	public static function get_personas() {
 		return array(
 			'friend' => array(
-				'title'       => __( 'Friend\'s Website', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'You help a friend keep their blog or portfolio updated — content-first shortcuts without technical clutter.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'Friend\'s Website', 'edminboost' ),
+				'description' => __( 'You help a friend keep their blog or portfolio updated — content-first shortcuts without technical clutter.', 'edminboost' ),
 				'icon'        => 'dashicons-groups',
 				'preset'      => 'system_friend',
 			),
 			'family' => array(
-				'title'       => __( 'Family Member\'s Site', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'A gentle setup for parents or relatives who only need pages, photos, and the basics.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'Family Member\'s Site', 'edminboost' ),
+				'description' => __( 'A gentle setup for parents or relatives who only need pages, photos, and the basics.', 'edminboost' ),
 				'icon'        => 'dashicons-heart',
 				'preset'      => 'system_family',
 			),
 			'client_site' => array(
-				'title'       => __( 'Client\'s Website', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Professional handoff when you build or maintain sites for paying clients — polished and distraction-free.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'Client\'s Website', 'edminboost' ),
+				'description' => __( 'Professional handoff when you build or maintain sites for paying clients — polished and distraction-free.', 'edminboost' ),
 				'icon'        => 'dashicons-businessperson',
 				'preset'      => 'system_client_site',
 			),
 			'personal' => array(
-				'title'       => __( 'Your Own Website', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Your personal blog, portfolio, or hobby site — write, publish, and manage media in one place.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'Your Own Website', 'edminboost' ),
+				'description' => __( 'Your personal blog, portfolio, or hobby site — write, publish, and manage media in one place.', 'edminboost' ),
 				'icon'        => 'dashicons-admin-home',
 				'preset'      => 'system_personal',
 			),
 			'small_business' => array(
-				'title'       => __( 'Small Business Site', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Local shop or service business — pages, customer messages, and WooCommerce shortcuts when installed.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'Small Business Site', 'edminboost' ),
+				'description' => __( 'Local shop or service business — pages, customer messages, and WooCommerce shortcuts when installed.', 'edminboost' ),
 				'icon'        => 'dashicons-store',
 				'preset'      => 'system_small_business',
 			),
 			'nonprofit' => array(
-				'title'       => __( 'Nonprofit / Community', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Volunteer-run organizations — news, pages, and community comments without the technical noise.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'Nonprofit / Community', 'edminboost' ),
+				'description' => __( 'Volunteer-run organizations — news, pages, and community comments without the technical noise.', 'edminboost' ),
 				'icon'        => 'dashicons-megaphone',
 				'preset'      => 'system_nonprofit',
 			),
 			'agency' => array(
-				'title'       => __( 'Freelancer / Agency', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'You juggle multiple client sites — plugins, themes, users, and settings in slide-out panels.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'Freelancer / Agency', 'edminboost' ),
+				'description' => __( 'You juggle multiple client sites — plugins, themes, users, and settings in slide-out panels.', 'edminboost' ),
 				'icon'        => 'dashicons-building',
 				'preset'      => 'system_agency',
 			),
 			'client' => array(
-				'title'       => __( 'Content Editor', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Minimalist setup for writers and editors — posts, pages, media, and comment moderation only.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'Content Editor', 'edminboost' ),
+				'description' => __( 'Minimalist setup for writers and editors — posts, pages, media, and comment moderation only.', 'edminboost' ),
 				'icon'        => 'dashicons-edit',
 				'preset'      => 'system_client',
 			),
 			'ecommerce' => array(
-				'title'       => __( 'E-Commerce Manager', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'WooCommerce dashboards, live order counters, products, and analytics shortcuts.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'E-Commerce Manager', 'edminboost' ),
+				'description' => __( 'WooCommerce dashboards, live order counters, products, and analytics shortcuts.', 'edminboost' ),
 				'icon'        => 'dashicons-cart',
 				'preset'      => 'system_ecommerce',
 			),
 			'developer' => array(
-				'title'       => __( 'Power User', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Full admin mapping with slide-out panels for plugins, themes, tools, and settings.', EDMINBOOST_TEXT_DOMAIN ),
+				'title'       => __( 'Power User', 'edminboost' ),
+				'description' => __( 'Full admin mapping with slide-out panels for plugins, themes, tools, and settings.', 'edminboost' ),
 				'icon'        => 'dashicons-admin-tools',
 				'preset'      => 'system_developer',
 			),
@@ -965,10 +953,10 @@ class EDMINBOOST_Command_Center {
 	 */
 	public static function get_preset_categories() {
 		return array(
-			'source'   => __( 'Current layout', EDMINBOOST_TEXT_DOMAIN ),
-			'scenario' => __( 'By use case', EDMINBOOST_TEXT_DOMAIN ),
-			'workflow' => __( 'By role', EDMINBOOST_TEXT_DOMAIN ),
-			'saved'    => __( 'Your saved layouts', EDMINBOOST_TEXT_DOMAIN ),
+			'source'   => __( 'Current layout', 'edminboost' ),
+			'scenario' => __( 'By use case', 'edminboost' ),
+			'workflow' => __( 'By role', 'edminboost' ),
+			'saved'    => __( 'Your saved layouts', 'edminboost' ),
 		);
 	}
 
@@ -980,14 +968,14 @@ class EDMINBOOST_Command_Center {
 	public static function get_virtual_layout_presets() {
 		return array(
 			'default' => array(
-				'name'        => __( 'Default', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Your site\'s default layout preset.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Default', 'edminboost' ),
+				'description' => __( 'Your site\'s default layout preset.', 'edminboost' ),
 				'virtual'     => true,
 				'category'    => 'source',
 			),
 			'custom'  => array(
-				'name'        => __( 'Custom', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Fine-tune the top bar and sidebar in Top Bar and Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Custom', 'edminboost' ),
+				'description' => __( 'Fine-tune the top bar and sidebar in Top Bar and Menu Studio', 'edminboost' ),
 				'virtual'     => true,
 				'category'    => 'source',
 			),
@@ -1195,71 +1183,71 @@ class EDMINBOOST_Command_Center {
 	public static function get_system_presets() {
 		$presets = array(
 			'system_friend' => array(
-				'name'        => __( 'Friend\'s Website', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Help a friend publish posts, update pages, and moderate comments — no dev tools.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Friend\'s Website', 'edminboost' ),
+				'description' => __( 'Help a friend publish posts, update pages, and moderate comments — no dev tools.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'friend',
 			),
 			'system_family' => array(
-				'name'        => __( 'Family Member\'s Site', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Ultra-simple bar with dashboard, pages, and media for non-technical relatives.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Family Member\'s Site', 'edminboost' ),
+				'description' => __( 'Ultra-simple bar with dashboard, pages, and media for non-technical relatives.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'family',
 			),
 			'system_client_site' => array(
-				'name'        => __( 'Client\'s Website', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Polished client handoff — content tools plus appearance in a slide-out panel.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Client\'s Website', 'edminboost' ),
+				'description' => __( 'Polished client handoff — content tools plus appearance in a slide-out panel.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'client_site',
 			),
 			'system_personal' => array(
-				'name'        => __( 'Your Own Website', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Personal site workflow — write posts, upload media, and check comments.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Your Own Website', 'edminboost' ),
+				'description' => __( 'Personal site workflow — write posts, upload media, and check comments.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'personal',
 			),
 			'system_small_business' => array(
-				'name'        => __( 'Small Business Site', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Business pages, customer messages, and shop shortcuts when WooCommerce is active.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Small Business Site', 'edminboost' ),
+				'description' => __( 'Business pages, customer messages, and shop shortcuts when WooCommerce is active.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'small_business',
 			),
 			'system_nonprofit' => array(
-				'name'        => __( 'Nonprofit / Community', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Share updates, manage pages, and respond to community comments.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Nonprofit / Community', 'edminboost' ),
+				'description' => __( 'Share updates, manage pages, and respond to community comments.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'nonprofit',
 			),
 			'system_agency' => array(
-				'name'        => __( 'Freelancer / Agency', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Manage client sites with plugins, themes, users, and settings in drawers.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Freelancer / Agency', 'edminboost' ),
+				'description' => __( 'Manage client sites with plugins, themes, users, and settings in drawers.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'agency',
 			),
 			'system_client' => array(
-				'name'        => __( 'Content Editor', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Clean top bar focused on content creation and media.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Content Editor', 'edminboost' ),
+				'description' => __( 'Clean top bar focused on content creation and media.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'client',
 			),
 			'system_ecommerce' => array(
-				'name'        => __( 'Shop Manager', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'WooCommerce dashboards, orders, and product shortcuts.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Shop Manager', 'edminboost' ),
+				'description' => __( 'WooCommerce dashboards, orders, and product shortcuts.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'ecommerce',
 			),
 			'system_developer' => array(
-				'name'        => __( 'Power User', EDMINBOOST_TEXT_DOMAIN ),
-				'description' => __( 'Full admin mapping with slide-out panels for deep screens.', EDMINBOOST_TEXT_DOMAIN ),
+				'name'        => __( 'Power User', 'edminboost' ),
+				'description' => __( 'Full admin mapping with slide-out panels for deep screens.', 'edminboost' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'developer',
@@ -1279,35 +1267,35 @@ class EDMINBOOST_Command_Center {
 			'system_friend' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Posts', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Pages', 'edminboost' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Media', 'edminboost' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Comments', 'edminboost' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -1316,21 +1304,21 @@ class EDMINBOOST_Command_Center {
 			'system_family' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Pages', 'edminboost' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Media', 'edminboost' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
@@ -1339,35 +1327,35 @@ class EDMINBOOST_Command_Center {
 			'system_client_site' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Posts', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Pages', 'edminboost' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Media', 'edminboost' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'themes.php',
-					'label'        => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Appearance', 'edminboost' ),
 					'icon'         => 'dashicons-admin-appearance',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -1376,28 +1364,28 @@ class EDMINBOOST_Command_Center {
 			'system_personal' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Posts', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Media', 'edminboost' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Comments', 'edminboost' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -1406,35 +1394,35 @@ class EDMINBOOST_Command_Center {
 			'system_small_business' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Pages', 'edminboost' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Messages', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Messages', 'edminboost' ),
 					'icon'         => 'dashicons-email',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=product',
-					'label'        => __( 'Products', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Products', 'edminboost' ),
 					'icon'         => 'dashicons-products',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=shop_order',
-					'label'        => __( 'Orders', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Orders', 'edminboost' ),
 					'icon'         => 'dashicons-list-view',
 					'interaction'  => 'redirect',
 					'badge_source' => 'wc_orders',
@@ -1443,28 +1431,28 @@ class EDMINBOOST_Command_Center {
 			'system_nonprofit' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'News', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'News', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Pages', 'edminboost' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Comments', 'edminboost' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -1473,42 +1461,42 @@ class EDMINBOOST_Command_Center {
 			'system_agency' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'plugins.php',
-					'label'        => __( 'Plugins', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Plugins', 'edminboost' ),
 					'icon'         => 'dashicons-admin-plugins',
 					'interaction'  => 'drawer',
 					'badge_source' => 'updates',
 				),
 				array(
 					'slug'         => 'themes.php',
-					'label'        => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Appearance', 'edminboost' ),
 					'icon'         => 'dashicons-admin-appearance',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'users.php',
-					'label'        => __( 'Users', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Users', 'edminboost' ),
 					'icon'         => 'dashicons-admin-users',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'tools.php',
-					'label'        => __( 'Tools', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Tools', 'edminboost' ),
 					'icon'         => 'dashicons-admin-tools',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'options-general.php',
-					'label'        => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Settings', 'edminboost' ),
 					'icon'         => 'dashicons-admin-settings',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -1517,35 +1505,35 @@ class EDMINBOOST_Command_Center {
 			'system_client' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Posts', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Media', 'edminboost' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Pages', 'edminboost' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Comments', 'edminboost' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -1554,35 +1542,35 @@ class EDMINBOOST_Command_Center {
 			'system_ecommerce' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'woocommerce',
-					'label'        => __( 'WooCommerce', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'WooCommerce', 'edminboost' ),
 					'icon'         => 'dashicons-cart',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=shop_order',
-					'label'        => __( 'Orders', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Orders', 'edminboost' ),
 					'icon'         => 'dashicons-list-view',
 					'interaction'  => 'redirect',
 					'badge_source' => 'wc_orders',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=product',
-					'label'        => __( 'Products', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Products', 'edminboost' ),
 					'icon'         => 'dashicons-products',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'wc-admin',
-					'label'        => __( 'Analytics', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Analytics', 'edminboost' ),
 					'icon'         => 'dashicons-chart-bar',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -1591,42 +1579,42 @@ class EDMINBOOST_Command_Center {
 			'system_developer' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Posts', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'plugins.php',
-					'label'        => __( 'Plugins', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Plugins', 'edminboost' ),
 					'icon'         => 'dashicons-admin-plugins',
 					'interaction'  => 'drawer',
 					'badge_source' => 'updates',
 				),
 				array(
 					'slug'         => 'themes.php',
-					'label'        => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Appearance', 'edminboost' ),
 					'icon'         => 'dashicons-admin-appearance',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'tools.php',
-					'label'        => __( 'Tools', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Tools', 'edminboost' ),
 					'icon'         => 'dashicons-admin-tools',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'options-general.php',
-					'label'        => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Settings', 'edminboost' ),
 					'icon'         => 'dashicons-admin-settings',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -2871,7 +2859,7 @@ class EDMINBOOST_Command_Center {
 			return $picker[ $active ]['name'];
 		}
 
-		return __( 'Custom layout', EDMINBOOST_TEXT_DOMAIN );
+		return __( 'Custom layout', 'edminboost' );
 	}
 
 	/**
@@ -3237,7 +3225,7 @@ class EDMINBOOST_Command_Center {
 						'slug'     => $slug,
 						'label'    => sprintf(
 							/* translators: 1: parent menu label, 2: submenu label */
-							__( '%1$s → %2$s', EDMINBOOST_TEXT_DOMAIN ),
+							__( '%1$s → %2$s', 'edminboost' ),
 							$parent_label,
 							$sub_label
 						),
@@ -3534,7 +3522,7 @@ class EDMINBOOST_Command_Center {
 				'name'        => $label,
 				'description' => sprintf(
 					/* translators: %s: WordPress user role name */
-					__( 'Top bar layout tuned for the %s role.', EDMINBOOST_TEXT_DOMAIN ),
+					__( 'Top bar layout tuned for the %s role.', 'edminboost' ),
 					$label
 				),
 				'system'      => true,
@@ -3601,42 +3589,42 @@ class EDMINBOOST_Command_Center {
 			'administrator' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Posts', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'plugins.php',
-					'label'        => __( 'Plugins', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Plugins', 'edminboost' ),
 					'icon'         => 'dashicons-admin-plugins',
 					'interaction'  => 'drawer',
 					'badge_source' => 'updates',
 				),
 				array(
 					'slug'         => 'themes.php',
-					'label'        => __( 'Appearance', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Appearance', 'edminboost' ),
 					'icon'         => 'dashicons-admin-appearance',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'tools.php',
-					'label'        => __( 'Tools', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Tools', 'edminboost' ),
 					'icon'         => 'dashicons-admin-tools',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'options-general.php',
-					'label'        => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Settings', 'edminboost' ),
 					'icon'         => 'dashicons-admin-settings',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -3645,35 +3633,35 @@ class EDMINBOOST_Command_Center {
 			'editor' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Posts', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Media', 'edminboost' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Pages', 'edminboost' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Comments', 'edminboost' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -3682,28 +3670,28 @@ class EDMINBOOST_Command_Center {
 			'author' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Posts', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Media', 'edminboost' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Comments', 'edminboost' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -3712,14 +3700,14 @@ class EDMINBOOST_Command_Center {
 			'contributor' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Posts', 'edminboost' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
@@ -3728,7 +3716,7 @@ class EDMINBOOST_Command_Center {
 			'subscriber' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
@@ -3737,35 +3725,35 @@ class EDMINBOOST_Command_Center {
 			'shop_manager' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'woocommerce',
-					'label'        => __( 'WooCommerce', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'WooCommerce', 'edminboost' ),
 					'icon'         => 'dashicons-cart',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=shop_order',
-					'label'        => __( 'Orders', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Orders', 'edminboost' ),
 					'icon'         => 'dashicons-list-view',
 					'interaction'  => 'redirect',
 					'badge_source' => 'wc_orders',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=product',
-					'label'        => __( 'Products', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Products', 'edminboost' ),
 					'icon'         => 'dashicons-products',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'wc-admin',
-					'label'        => __( 'Analytics', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Analytics', 'edminboost' ),
 					'icon'         => 'dashicons-chart-bar',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -3774,7 +3762,7 @@ class EDMINBOOST_Command_Center {
 			'customer' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
+					'label'        => __( 'Dashboard', 'edminboost' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
@@ -3830,12 +3818,12 @@ class EDMINBOOST_Command_Center {
 	 */
 	public static function get_badge_sources() {
 		return array(
-			''              => __( 'None', EDMINBOOST_TEXT_DOMAIN ),
-			'wc_orders'     => __( 'WooCommerce — unread orders', EDMINBOOST_TEXT_DOMAIN ),
-			'wc_reviews'    => __( 'WooCommerce — pending reviews', EDMINBOOST_TEXT_DOMAIN ),
-			'comments'      => __( 'WordPress — pending comments', EDMINBOOST_TEXT_DOMAIN ),
-			'updates'       => __( 'WordPress — available updates', EDMINBOOST_TEXT_DOMAIN ),
-			'forms_entries' => __( 'WPForms — unread entries', EDMINBOOST_TEXT_DOMAIN ),
+			''              => __( 'None', 'edminboost' ),
+			'wc_orders'     => __( 'WooCommerce — unread orders', 'edminboost' ),
+			'wc_reviews'    => __( 'WooCommerce — pending reviews', 'edminboost' ),
+			'comments'      => __( 'WordPress — pending comments', 'edminboost' ),
+			'updates'       => __( 'WordPress — available updates', 'edminboost' ),
+			'forms_entries' => __( 'WPForms — unread entries', 'edminboost' ),
 		);
 	}
 

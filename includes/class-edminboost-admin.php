@@ -46,12 +46,12 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function register_menu() {
-		$dashboard_title = __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN );
+		$dashboard_title = __( 'Dashboard', 'edminboost' );
 
 		$this->bind_admin_page_title(
 			add_menu_page(
 				$dashboard_title,
-				__( 'EdminBoost', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'EdminBoost', 'edminboost' ),
 				EDMINBOOST_Settings::CAPABILITY,
 				self::PAGE_SLUG,
 				array( $this, 'render_admin_page' ),
@@ -71,48 +71,48 @@ class EDMINBOOST_Admin {
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Layouts', 'edminboost' ),
+			__( 'Layouts', 'edminboost' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS,
 			array( $this, 'render_presets_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Theme', 'edminboost' ),
+			__( 'Theme', 'edminboost' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
 			array( $this, 'render_appearance_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Top Bar', 'edminboost' ),
+			__( 'Top Bar', 'edminboost' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER,
 			array( $this, 'render_mapper_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Menu Studio', 'edminboost' ),
+			__( 'Menu Studio', 'edminboost' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
 			array( $this, 'render_menu_studio_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Billing', 'edminboost' ),
+			__( 'Billing', 'edminboost' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING,
 			array( $this, 'render_billing_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Settings', 'edminboost' ),
+			__( 'Settings', 'edminboost' ),
 			self::PAGE_SLUG . '-settings',
 			array( $this, 'render_settings_page' )
 		);
@@ -120,37 +120,35 @@ class EDMINBOOST_Admin {
 		// Tab-only pages — registered but not shown in the sidebar.
 		$this->register_plugin_submenu_page(
 			null,
-			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Productivity', 'edminboost' ),
+			__( 'Productivity', 'edminboost' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY,
 			array( $this, 'render_productivity_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			null,
-			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Security', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Security', 'edminboost' ),
+			__( 'Security', 'edminboost' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY,
 			array( $this, 'render_security_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			null,
-			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Performance', 'edminboost' ),
+			__( 'Performance', 'edminboost' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
 			array( $this, 'render_performance_page' )
 		);
 
-		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
-			$this->register_plugin_submenu_page(
-				null,
-				__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
-				__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
-				self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
-				array( $this, 'render_white_label_page' )
-			);
-		}
+		$this->register_plugin_submenu_page(
+			null,
+			__( 'White Label', 'edminboost' ),
+			__( 'White Label', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
+			array( $this, 'render_white_label_page' )
+		);
 
 		// Legacy slugs — redirect to Dashboard (not shown in sidebar).
 		$this->register_plugin_submenu_page(
@@ -163,8 +161,8 @@ class EDMINBOOST_Admin {
 
 		$this->register_plugin_submenu_page(
 			null,
-			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
+			__( 'Theme', 'edminboost' ),
+			__( 'Theme', 'edminboost' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BEHAVIOR,
 			array( $this, 'render_behavior_page' )
 		);
@@ -229,7 +227,7 @@ class EDMINBOOST_Admin {
 			return;
 		}
 
-		$dashboard_label = __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN );
+		$dashboard_label = __( 'Dashboard', 'edminboost' );
 		$items_by_slug   = array();
 
 		foreach ( $submenu[ self::PAGE_SLUG ] as $item ) {
@@ -530,63 +528,64 @@ class EDMINBOOST_Admin {
 
 		$localize = array(
 			'version'             => EDMINBOOST_VERSION,
-			'isPremiumBuild'      => EDMINBOOST_Pro::is_premium_build(),
+			'isPremiumBuild'      => EDMINBOOST_Pro::is_direct_build(),
 			'isPro'               => EDMINBOOST_Pro::is_active(),
 			'billingUrl'          => EDMINBOOST_Pro::get_billing_url(),
 			'canSaveCustomPreset' => EDMINBOOST_Pro::can_save_custom_preset(),
 			'currentPage'         => $screen_page,
 			'optionName' => EDMINBOOST_Settings::OPTION_NAME,
 			'strings'    => array(
-				'ready'           => __( 'EdminBoost is ready.', EDMINBOOST_TEXT_DOMAIN ),
-				'configureItem'   => __( 'Configure', EDMINBOOST_TEXT_DOMAIN ),
-				'removeFromTopBar' => __( 'Remove from top bar', EDMINBOOST_TEXT_DOMAIN ),
-				'emptyCanvas'     => __( 'Toggle items from the left panel or drag them here to build your top bar.', EDMINBOOST_TEXT_DOMAIN ),
-				'exportSuccess'   => __( 'Preset exported.', EDMINBOOST_TEXT_DOMAIN ),
-				'exportFailed'    => __( 'Could not export settings. Please try again.', EDMINBOOST_TEXT_DOMAIN ),
-				'customLinkPathRequired'  => __( 'Enter an admin path.', EDMINBOOST_TEXT_DOMAIN ),
-				'customLinkLabelRequired' => __( 'Enter a label.', EDMINBOOST_TEXT_DOMAIN ),
-				'customLinkPathInvalid'   => __( 'Use a relative admin path such as edit.php?post_type=page.', EDMINBOOST_TEXT_DOMAIN ),
-				'customLinkAnchorInvalid' => __( 'Use letters, numbers, hyphens, underscores, or dots in the anchor.', EDMINBOOST_TEXT_DOMAIN ),
-				'customLinkDuplicate'     => __( 'That link is already on your top bar.', EDMINBOOST_TEXT_DOMAIN ),
-				'drawerPreviewFailed'     => __( 'Could not open the drawer preview.', EDMINBOOST_TEXT_DOMAIN ),
-				'drawerWidthPreviewCaption'    => __( 'Drawer uses %1$s px — about %2$s%% of a typical desktop screen.', EDMINBOOST_TEXT_DOMAIN ),
-				'drawerWidthPreviewFullscreen' => __( 'Drawer uses the full screen width.', EDMINBOOST_TEXT_DOMAIN ),
-				'drawerWidthPreviewLabel'      => __( 'Drawer width preview on a typical desktop screen.', EDMINBOOST_TEXT_DOMAIN ),
-				'settingsSaved'             => __( 'Settings saved.', EDMINBOOST_TEXT_DOMAIN ),
-				'settingsSaveFailed'        => __( 'Could not save settings. Please try again.', EDMINBOOST_TEXT_DOMAIN ),
-				'presetApplied'             => __( 'Preset applied.', EDMINBOOST_TEXT_DOMAIN ),
-				'presetNameRequired'        => __( 'Enter a name for your preset.', EDMINBOOST_TEXT_DOMAIN ),
-				'presetSaved'               => __( 'Preset saved.', EDMINBOOST_TEXT_DOMAIN ),
-				'presetRenamed'             => __( 'Preset renamed.', EDMINBOOST_TEXT_DOMAIN ),
-				'presetDuplicated'          => __( 'Preset duplicated.', EDMINBOOST_TEXT_DOMAIN ),
-				'emptyMenuCanvas'           => __( 'Drag menu items here to reorder your admin sidebar.', EDMINBOOST_TEXT_DOMAIN ),
-				'removeFromSidebar'         => __( 'Remove from sidebar', EDMINBOOST_TEXT_DOMAIN ),
-				'customMenuPathRequired'    => __( 'Enter an admin path.', EDMINBOOST_TEXT_DOMAIN ),
-				'customMenuLabelRequired'   => __( 'Enter a label.', EDMINBOOST_TEXT_DOMAIN ),
-				'customMenuPathInvalid'     => __( 'Use a relative admin path such as edit.php?post_type=page.', EDMINBOOST_TEXT_DOMAIN ),
-				'customMenuDuplicate'       => __( 'That link is already on your sidebar.', EDMINBOOST_TEXT_DOMAIN ),
-				'selectLayoutPreset'        => __( 'Select a layout preset to continue.', EDMINBOOST_TEXT_DOMAIN ),
-				'saveAndLaunch'             => __( 'Save and launch', EDMINBOOST_TEXT_DOMAIN ),
-				'presetBadgeBuiltIn'        => __( 'Built-in', EDMINBOOST_TEXT_DOMAIN ),
-				'presetBadgeSaved'          => __( 'Saved', EDMINBOOST_TEXT_DOMAIN ),
-				'presetBadgeVirtual'        => __( 'Layout', EDMINBOOST_TEXT_DOMAIN ),
-				'emptyLayoutPreview'        => __( 'No links in this preview yet.', EDMINBOOST_TEXT_DOMAIN ),
-				'emptySidebarPreview'       => __( 'No sidebar items in this preview yet.', EDMINBOOST_TEXT_DOMAIN ),
-				'previewWordPressLogo'      => __( 'WordPress', EDMINBOOST_TEXT_DOMAIN ),
-				'previewProfile'            => __( 'My account', EDMINBOOST_TEXT_DOMAIN ),
-				'pageLoading'               => __( 'Loading…', EDMINBOOST_TEXT_DOMAIN ),
-				'pageLoadFailed'            => __( 'Could not load that page. Please try again.', EDMINBOOST_TEXT_DOMAIN ),
-				'importJsonRequired'        => __( 'Paste exported JSON or choose a file to import.', EDMINBOOST_TEXT_DOMAIN ),
-				'importFileRequired'        => __( 'Choose a JSON file to import.', EDMINBOOST_TEXT_DOMAIN ),
-				'importReadFailed'          => __( 'Could not read the selected file.', EDMINBOOST_TEXT_DOMAIN ),
-				'importFailed'              => __( 'Could not import settings. Check the JSON and try again.', EDMINBOOST_TEXT_DOMAIN ),
-				'formResetConfirm'          => __( 'Reset all fields on this page to their default values? Your saved settings are not changed until you click Save.', EDMINBOOST_TEXT_DOMAIN ),
-				'formResetConfirmYes'       => __( 'Yes, reset to defaults', EDMINBOOST_TEXT_DOMAIN ),
-				'formResetCancel'           => __( 'Cancel', EDMINBOOST_TEXT_DOMAIN ),
-				'proRequired'               => __( 'Upgrade to Pro to unlock this feature.', EDMINBOOST_TEXT_DOMAIN ),
-				'proPresetLocked'           => __( 'This layout preset requires Pro.', EDMINBOOST_TEXT_DOMAIN ),
-				'proThemeLocked'            => __( 'This theme skin requires Pro.', EDMINBOOST_TEXT_DOMAIN ),
-				'proCustomPresetLimit'      => __( 'Free includes one saved custom layout. Upgrade for unlimited saves.', EDMINBOOST_TEXT_DOMAIN ),
+				'ready'           => __( 'EdminBoost is ready.', 'edminboost' ),
+				'configureItem'   => __( 'Configure', 'edminboost' ),
+				'removeFromTopBar' => __( 'Remove from top bar', 'edminboost' ),
+				'emptyCanvas'     => __( 'Toggle items from the left panel or drag them here to build your top bar.', 'edminboost' ),
+				'exportSuccess'   => __( 'Preset exported.', 'edminboost' ),
+				'exportFailed'    => __( 'Could not export settings. Please try again.', 'edminboost' ),
+				'customLinkPathRequired'  => __( 'Enter an admin path.', 'edminboost' ),
+				'customLinkLabelRequired' => __( 'Enter a label.', 'edminboost' ),
+				'customLinkPathInvalid'   => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost' ),
+				'customLinkAnchorInvalid' => __( 'Use letters, numbers, hyphens, underscores, or dots in the anchor.', 'edminboost' ),
+				'customLinkDuplicate'     => __( 'That link is already on your top bar.', 'edminboost' ),
+				'drawerPreviewFailed'     => __( 'Could not open the drawer preview.', 'edminboost' ),
+				/* translators: 1: drawer width in pixels, 2: approximate percentage of a typical desktop screen width. */
+				'drawerWidthPreviewCaption'    => __( 'Drawer uses %1$s px — about %2$s%% of a typical desktop screen.', 'edminboost' ),
+				'drawerWidthPreviewFullscreen' => __( 'Drawer uses the full screen width.', 'edminboost' ),
+				'drawerWidthPreviewLabel'      => __( 'Drawer width preview on a typical desktop screen.', 'edminboost' ),
+				'settingsSaved'             => __( 'Settings saved.', 'edminboost' ),
+				'settingsSaveFailed'        => __( 'Could not save settings. Please try again.', 'edminboost' ),
+				'presetApplied'             => __( 'Preset applied.', 'edminboost' ),
+				'presetNameRequired'        => __( 'Enter a name for your preset.', 'edminboost' ),
+				'presetSaved'               => __( 'Preset saved.', 'edminboost' ),
+				'presetRenamed'             => __( 'Preset renamed.', 'edminboost' ),
+				'presetDuplicated'          => __( 'Preset duplicated.', 'edminboost' ),
+				'emptyMenuCanvas'           => __( 'Drag menu items here to reorder your admin sidebar.', 'edminboost' ),
+				'removeFromSidebar'         => __( 'Remove from sidebar', 'edminboost' ),
+				'customMenuPathRequired'    => __( 'Enter an admin path.', 'edminboost' ),
+				'customMenuLabelRequired'   => __( 'Enter a label.', 'edminboost' ),
+				'customMenuPathInvalid'     => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost' ),
+				'customMenuDuplicate'       => __( 'That link is already on your sidebar.', 'edminboost' ),
+				'selectLayoutPreset'        => __( 'Select a layout preset to continue.', 'edminboost' ),
+				'saveAndLaunch'             => __( 'Save and launch', 'edminboost' ),
+				'presetBadgeBuiltIn'        => __( 'Built-in', 'edminboost' ),
+				'presetBadgeSaved'          => __( 'Saved', 'edminboost' ),
+				'presetBadgeVirtual'        => __( 'Layout', 'edminboost' ),
+				'emptyLayoutPreview'        => __( 'No links in this preview yet.', 'edminboost' ),
+				'emptySidebarPreview'       => __( 'No sidebar items in this preview yet.', 'edminboost' ),
+				'previewWordPressLogo'      => __( 'WordPress', 'edminboost' ),
+				'previewProfile'            => __( 'My account', 'edminboost' ),
+				'pageLoading'               => __( 'Loading…', 'edminboost' ),
+				'pageLoadFailed'            => __( 'Could not load that page. Please try again.', 'edminboost' ),
+				'importJsonRequired'        => __( 'Paste exported JSON or choose a file to import.', 'edminboost' ),
+				'importFileRequired'        => __( 'Choose a JSON file to import.', 'edminboost' ),
+				'importReadFailed'          => __( 'Could not read the selected file.', 'edminboost' ),
+				'importFailed'              => __( 'Could not import settings. Check the JSON and try again.', 'edminboost' ),
+				'formResetConfirm'          => __( 'Reset all fields on this page to their default values? Your saved settings are not changed until you click Save.', 'edminboost' ),
+				'formResetConfirmYes'       => __( 'Yes, reset to defaults', 'edminboost' ),
+				'formResetCancel'           => __( 'Cancel', 'edminboost' ),
+				'proRequired'               => __( 'Upgrade to Pro to unlock this feature.', 'edminboost' ),
+				'proPresetLocked'           => __( 'This layout preset requires Pro.', 'edminboost' ),
+				'proThemeLocked'            => __( 'This theme skin requires Pro.', 'edminboost' ),
+				'proCustomPresetLimit'      => __( 'Free includes one saved custom layout. Upgrade for unlimited saves.', 'edminboost' ),
 			),
 			'presets'          => self::get_presets_for_js(),
 			'roleMatrix'       => array(
@@ -707,7 +706,7 @@ class EDMINBOOST_Admin {
 		$settings_link = sprintf(
 			'<a href="%s">%s</a>',
 			esc_url( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '-settings' ) ),
-			esc_html__( 'Settings', EDMINBOOST_TEXT_DOMAIN )
+			esc_html__( 'Settings', 'edminboost' )
 		);
 
 		array_unshift( $links, $settings_link );
@@ -730,7 +729,7 @@ class EDMINBOOST_Admin {
 		$links[] = sprintf(
 			'<a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
 			esc_url( EDMINBOOST_PLUGIN_DOCS_URL ),
-			esc_html__( 'Docs', EDMINBOOST_TEXT_DOMAIN )
+			esc_html__( 'Docs', 'edminboost' )
 		);
 
 		return $links;
@@ -756,26 +755,6 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
-	 * Verify an AJAX request nonce and send a JSON error when invalid.
-	 *
-	 * @param string $action    Nonce action.
-	 * @param string $query_arg Request parameter that carries the nonce.
-	 * @return void
-	 */
-	private function verify_ajax_request_nonce( $action, $query_arg = 'nonce' ) {
-		$nonce = isset( $_POST[ $query_arg ] ) ? sanitize_text_field( wp_unslash( $_POST[ $query_arg ] ) ) : '';
-
-		if ( ! wp_verify_nonce( $nonce, $action ) ) {
-			wp_send_json_error(
-				array(
-					'message' => __( 'Security check failed. Refresh the page and try again.', EDMINBOOST_TEXT_DOMAIN ),
-				),
-				403
-			);
-		}
-	}
-
-	/**
 	 * AJAX: load a Command Center tab without a full page reload.
 	 *
 	 * @return void
@@ -784,13 +763,20 @@ class EDMINBOOST_Admin {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'You do not have permission to view this page.', EDMINBOOST_TEXT_DOMAIN ),
+					'message' => __( 'You do not have permission to view this page.', 'edminboost' ),
 				),
 				403
 			);
 		}
 
-		$this->verify_ajax_request_nonce( 'edminboost_cc_nav' );
+		if ( ! check_ajax_referer( 'edminboost_cc_nav', 'nonce', false ) ) {
+			wp_send_json_error(
+				array(
+					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost' ),
+				),
+				403
+			);
+		}
 
 		$page = isset( $_POST['page'] ) ? sanitize_key( wp_unslash( $_POST['page'] ) ) : '';
 		$use_form_defaults = ! empty( $_POST['form_defaults'] );
@@ -798,7 +784,7 @@ class EDMINBOOST_Admin {
 		if ( ! $this->is_valid_cc_nav_page( $page ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Unknown Command Center page.', EDMINBOOST_TEXT_DOMAIN ),
+					'message' => __( 'Unknown Command Center page.', 'edminboost' ),
 				),
 				400
 			);
@@ -809,7 +795,7 @@ class EDMINBOOST_Admin {
 		if ( '' === $html ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Could not load that page.', EDMINBOOST_TEXT_DOMAIN ),
+					'message' => __( 'Could not load that page.', 'edminboost' ),
 				),
 				500
 			);
@@ -824,7 +810,7 @@ class EDMINBOOST_Admin {
 				'title'         => $page_title,
 				'documentTitle' => sprintf(
 					/* translators: 1: page title, 2: site name */
-					__( '%1$s ‹ %2$s — WordPress', EDMINBOOST_TEXT_DOMAIN ),
+					__( '%1$s ‹ %2$s — WordPress', 'edminboost' ),
 					$page_title,
 					get_bloginfo( 'name' )
 				),
@@ -946,17 +932,17 @@ class EDMINBOOST_Admin {
 	 */
 	private function get_cc_page_title( $page ) {
 		$titles = array(
-			self::PAGE_SLUG                                              => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE => __( 'Theme', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER     => __( 'Top Bar', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS    => __( 'Layouts', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO => __( 'Menu Studio', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY => __( 'Productivity', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE  => __( 'Performance', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL  => __( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING      => __( 'Billing', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . '-settings'                                => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
+			self::PAGE_SLUG                                              => __( 'Dashboard', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE => __( 'Theme', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER     => __( 'Top Bar', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS    => __( 'Layouts', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO => __( 'Menu Studio', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY => __( 'Productivity', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE  => __( 'Performance', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL  => __( 'White Label', 'edminboost' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING      => __( 'Billing', 'edminboost' ),
+			self::PAGE_SLUG . '-settings'                                => __( 'Settings', 'edminboost' ),
 		);
 
 		return isset( $titles[ $page ] ) ? $titles[ $page ] : '';
@@ -971,7 +957,7 @@ class EDMINBOOST_Admin {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'You do not have permission to save these settings.', EDMINBOOST_TEXT_DOMAIN ),
+					'message' => __( 'You do not have permission to save these settings.', 'edminboost' ),
 				),
 				403
 			);
@@ -982,7 +968,7 @@ class EDMINBOOST_Admin {
 		if ( ! wp_verify_nonce( $nonce, EDMINBOOST_Settings::SETTINGS_GROUP . '-options' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Security check failed. Refresh the page and try again.', EDMINBOOST_TEXT_DOMAIN ),
+					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost' ),
 				),
 				403
 			);
@@ -995,7 +981,7 @@ class EDMINBOOST_Admin {
 		if ( ! is_array( $raw ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Invalid settings payload.', EDMINBOOST_TEXT_DOMAIN ),
+					'message' => __( 'Invalid settings payload.', 'edminboost' ),
 				),
 				400
 			);
@@ -1037,23 +1023,23 @@ class EDMINBOOST_Admin {
 		$new_custom_ids = array_values( array_diff( $after_custom, $before_custom_preset_ids ) );
 
 		$selected_preset = '';
-		$message         = __( 'Settings saved.', EDMINBOOST_TEXT_DOMAIN );
+		$message         = __( 'Settings saved.', 'edminboost' );
 
 		if ( ! empty( $cc_raw['_setup_wizard_save'] ) ) {
-			$message = __( 'Command Center launched.', EDMINBOOST_TEXT_DOMAIN );
+			$message = __( 'Command Center launched.', 'edminboost' );
 		} elseif ( ! empty( $cc_raw['_apply_preset'] ) ) {
 			$selected_preset = sanitize_key( $cc_raw['_apply_preset'] );
-			$message         = __( 'Preset applied.', EDMINBOOST_TEXT_DOMAIN );
+			$message         = __( 'Preset applied.', 'edminboost' );
 		} elseif ( ! empty( $cc_raw['_duplicate_preset'] ) ) {
 			$selected_preset = ! empty( $new_custom_ids ) ? (string) reset( $new_custom_ids ) : '';
-			$message         = __( 'Preset duplicated.', EDMINBOOST_TEXT_DOMAIN );
+			$message         = __( 'Preset duplicated.', 'edminboost' );
 		} elseif (
 			! empty( $cc_raw['_save_custom_preset'] )
 			&& is_array( $cc_raw['_save_custom_preset'] )
 			&& ! empty( $cc_raw['_save_custom_preset']['name'] )
 		) {
 			$selected_preset = ! empty( $new_custom_ids ) ? (string) reset( $new_custom_ids ) : '';
-			$message         = __( 'Preset saved.', EDMINBOOST_TEXT_DOMAIN );
+			$message         = __( 'Preset saved.', 'edminboost' );
 		} elseif (
 			! empty( $cc_raw['_rename_custom_preset'] )
 			&& is_array( $cc_raw['_rename_custom_preset'] )
@@ -1061,7 +1047,7 @@ class EDMINBOOST_Admin {
 			&& ! empty( $cc_raw['_rename_custom_preset']['name'] )
 		) {
 			$selected_preset = sanitize_key( $cc_raw['_rename_custom_preset']['id'] );
-			$message         = __( 'Preset renamed.', EDMINBOOST_TEXT_DOMAIN );
+			$message         = __( 'Preset renamed.', 'edminboost' );
 		}
 
 		return array(
@@ -1092,15 +1078,13 @@ class EDMINBOOST_Admin {
 	 */
 	public function ajax_export_settings() {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', EDMINBOOST_TEXT_DOMAIN ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost' ) ), 403 );
 		}
 
-		$this->verify_ajax_request_nonce( 'edminboost_export_settings' );
-
-		if ( ! EDMINBOOST_Pro::is_active() ) {
+		if ( ! check_ajax_referer( 'edminboost_export_settings', 'nonce', false ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Export requires Pro. Upgrade on the Billing page.', EDMINBOOST_TEXT_DOMAIN ),
+					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost' ),
 				),
 				403
 			);
@@ -1120,15 +1104,13 @@ class EDMINBOOST_Admin {
 	 */
 	public function ajax_import_settings() {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', EDMINBOOST_TEXT_DOMAIN ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost' ) ), 403 );
 		}
 
-		$this->verify_ajax_request_nonce( 'edminboost_import_settings' );
-
-		if ( ! EDMINBOOST_Pro::is_active() ) {
+		if ( ! check_ajax_referer( 'edminboost_import_settings', 'nonce', false ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Import requires Pro. Upgrade on the Billing page.', EDMINBOOST_TEXT_DOMAIN ),
+					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost' ),
 				),
 				403
 			);
@@ -1138,13 +1120,13 @@ class EDMINBOOST_Admin {
 		$data = json_decode( $json, true );
 
 		if ( ! is_array( $data ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid JSON payload.', EDMINBOOST_TEXT_DOMAIN ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid JSON payload.', 'edminboost' ) ), 400 );
 		}
 
 		$sanitized = EDMINBOOST_Settings::sanitize( $data );
 		update_option( EDMINBOOST_Settings::OPTION_NAME, $sanitized, false );
 
-		wp_send_json_success( array( 'message' => __( 'Settings imported.', EDMINBOOST_TEXT_DOMAIN ) ) );
+		wp_send_json_success( array( 'message' => __( 'Settings imported.', 'edminboost' ) ) );
 	}
 
 	/**

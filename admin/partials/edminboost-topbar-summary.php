@@ -29,7 +29,7 @@ $edminboost_item_count = count( $edminboost_top_bar_items );
 		<?php
 		printf(
 			/* translators: %d: number of top bar items */
-			esc_html( _n( '%d link in your top bar', '%d links in your top bar', $edminboost_item_count, EDMINBOOST_TEXT_DOMAIN ) ),
+			esc_html( _n( '%d link in your top bar', '%d links in your top bar', $edminboost_item_count, 'edminboost' ) ),
 			(int) $edminboost_item_count
 		);
 		?>
@@ -37,7 +37,7 @@ $edminboost_item_count = count( $edminboost_top_bar_items );
 
 	<?php if ( empty( $edminboost_top_bar_items ) ) : ?>
 		<p class="edminboost-topbar-summary__empty description">
-			<?php esc_html_e( 'Choose a layout preset in step 1 to populate your top bar.', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<?php esc_html_e( 'Choose a layout preset in step 1 to populate your top bar.', 'edminboost' ); ?>
 		</p>
 	<?php else : ?>
 		<ul class="edminboost-topbar-summary__list" id="<?php echo esc_attr( $edminboost_summary_id ); ?>-list">
@@ -61,7 +61,7 @@ $edminboost_item_count = count( $edminboost_top_bar_items );
 	<p class="edminboost-topbar-summary__actions edminboost-setting-inline">
 		<?php EDMINBOOST_Setting_Help::echo_icon( 'setup_wizard_topbar_editor' ); ?>
 		<a class="button" href="<?php echo esc_url( $edminboost_mapper_url ); ?>">
-			<?php esc_html_e( 'Open full top bar editor', EDMINBOOST_TEXT_DOMAIN ); ?>
+			<?php esc_html_e( 'Open full top bar editor', 'edminboost' ); ?>
 		</a>
 	</p>
 </div>

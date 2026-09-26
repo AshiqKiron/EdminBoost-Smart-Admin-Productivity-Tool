@@ -45,13 +45,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 ## Class Wiring
 
 - Bootstrap requires core classes; instantiate only via `edminboost_run_plugin()`. When present, `includes/pro/edminboost-premium.php` loads before activator (premium/Freemius build only — omitted from WordPress.org zip).
-- `EDMINBOOST_Plugin` constructor: `EDMINBOOST_I18n`, `EDMINBOOST_Features`, `EDMINBOOST_Admin`.
+- `EDMINBOOST_Plugin` constructor: `EDMINBOOST_Features`, `EDMINBOOST_Admin`.
 - Command Center: `EDMINBOOST_Command_Center` (static helpers, no hooks).
 - Command Center Bar: `EDMINBOOST_Command_Center_Bar::register_hooks()` in `EDMINBOOST_Plugin::run()` — not part of the feature registry.
 - Menu Studio: `EDMINBOOST_Menu_Studio::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - Visual theme: `EDMINBOOST_Theme::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - White label: `EDMINBOOST_White_Label::register_hooks()` in `EDMINBOOST_Plugin::run()`.
-- Pro / billing helpers: `EDMINBOOST_Pro` — static helpers only; required in bootstrap; no hooks. Use `is_premium_build()`, `shows_pro_settings_ui()`, and `include_preset_in_ui()` for build-specific admin UI; WordPress.org build omits premium surfaces (see `edminboost-compliance.mdc`).
+- Pro / billing helpers: `EDMINBOOST_Pro` — static helpers only; required in bootstrap; no hooks. Use `is_direct_build()` / `is_premium_build()` for direct-download vs WordPress.org packaging; `shows_pro_settings_ui()` is always false (legacy stubs only). No feature or preset gating (see `edminboost-compliance.mdc`).
 - Setting help: `EDMINBOOST_Setting_Help` — static helpers only; required in bootstrap; no hooks; `should_show()` includes Dashboard setup wizard until `is_setup_complete()`.
 - Admin submenu order: `EDMINBOOST_Admin::normalize_plugin_submenu()` on `admin_menu` priority 999 in `EDMINBOOST_Plugin::run()`.
 - Plugins screen row meta: `plugin_row_meta` → `EDMINBOOST_Admin::add_plugin_row_meta()` adds Docs link (`EDMINBOOST_PLUGIN_DOCS_URL`, `target="_blank"`, `rel="noopener noreferrer"`).
@@ -143,7 +143,7 @@ array(
 - Dashboard: `edminboost-admin-page.php` — expects `$cc_settings`, `$current_page`; includes setup wizard or dashboard overview.
 - Appearance: `edminboost-appearance-page.php` — expects `$cc_settings`, `$current_page`; includes `edminboost-theme-settings.php` (with `edminboost-theme-extras-preview.php`) and `edminboost-declutter-settings.php` (with `edminboost-declutter-preview.php`; panel/badge behavior fields moved to Top Bar).
 - Top Bar: `edminboost-mapper-page.php` — expects `$cc_settings`, `$current_page`; includes `#edminboost-mapper-look` with `edminboost-home-advanced-look.php` for drawer width, badge style, and animation speed (`command_center.behavior`).
-- Settings: `edminboost-settings-page.php` — expects `$cc_settings`, `$current_page`; JSON export/import when `shows_pro_settings_ui()` (paste or file). CC save forms include hidden `edminboost_settings[enabled]=1` so partial saves do not disable the plugin.
+- Settings: `edminboost-settings-page.php` — expects `$cc_settings`, `$current_page`; JSON export/import via `#edminboost-backup-section` (paste or file). CC save forms include hidden `edminboost_settings[enabled]=1` so partial saves do not disable the plugin.
 - Feature pages: `edminboost-{productivity,security,performance}-page.php` — include `edminboost-feature-fields.php` with `$section`. Productivity fieldsets include `edminboost-productivity-preview.php` (`$preview`: `admin_notices`|`screen`|`dashboard_widgets`; `$features`). Performance emoji/assets fieldsets include `edminboost-performance-preview.php` (`$preview`: `emoji`|`assets`; `$features`). Both preview partials use theme colors via `EDMINBOOST_Theme::resolve_preview_colors()`.
 - White Label: `edminboost-white-label-page.php` — expects `$cc_settings`, `$current_page`; fields under `white_label`; includes `edminboost-white-label-status-preview.php` and `edminboost-white-label-plugin-preview.php` (`$wl`, `$defaults` from `EDMINBOOST_White_Label::get_plugin_header_defaults()`).
 - Billing: `edminboost-billing-page.php` — expects `$cc_settings`, `$current_page`; plans from `get_billing_plans()`, comparison rows from `get_billing_comparison_rows()`, upgrade URL from `get_upgrade_url()`; CTAs via `edminboost-billing-plan-cta.php`.

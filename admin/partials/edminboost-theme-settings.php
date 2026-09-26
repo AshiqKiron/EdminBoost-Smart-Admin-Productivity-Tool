@@ -28,13 +28,13 @@ $edminboost_preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
 $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'] ) ? $edminboost_theme_presets['custom']['colors'] : array();
 ?>
 <section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-theme-heading">
-	<h2 id="edminboost-theme-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_preset' ); ?><?php esc_html_e( 'Visual theme', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+	<h2 id="edminboost-theme-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_preset' ); ?><?php esc_html_e( 'Visual theme', 'edminboost' ); ?></h2>
 	<p class="description">
-		<?php esc_html_e( 'Colors and fonts for the admin top bar, sidebar menu, Command Center bar, slide-out drawer, and EdminBoost admin screens. Does not change behavior or top bar layout.', EDMINBOOST_TEXT_DOMAIN ); ?>
+		<?php esc_html_e( 'Colors and fonts for the admin top bar, sidebar menu, Command Center bar, slide-out drawer, and EdminBoost admin screens. Does not change behavior or top bar layout.', 'edminboost' ); ?>
 	</p>
 
 	<fieldset class="edminboost-fieldset">
-		<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_preset' ); ?><?php esc_html_e( 'Theme preset', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+		<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_preset' ); ?><?php esc_html_e( 'Theme preset', 'edminboost' ); ?></legend>
 		<select
 			name="<?php echo esc_attr( $edminboost_theme_key ); ?>[preset]"
 			id="edminboost_theme_preset"
@@ -82,27 +82,20 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 				class="edminboost-theme-preset-picker__list"
 				id="edminboost-theme-preset-list"
 				role="listbox"
-				aria-label="<?php esc_attr_e( 'Theme preset', EDMINBOOST_TEXT_DOMAIN ); ?>"
+				aria-label="<?php esc_attr_e( 'Theme preset', 'edminboost' ); ?>"
 				hidden
 			>
 				<?php foreach ( $edminboost_theme_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
 					<?php
-					if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) {
-						continue;
-					}
 					$edminboost_option_colors = EDMINBOOST_Theme::resolve_preview_colors(
 						$edminboost_preset_id,
 						$edminboost_theme_mode,
 						'custom' === $edminboost_preset_id ? $edminboost_theme : null
 					);
-					$edminboost_is_selected   = ( $edminboost_active_preset === $edminboost_preset_id );
-					$edminboost_is_pro_theme  = EDMINBOOST_Pro::shows_pro_settings_ui() && ! EDMINBOOST_Pro::is_theme_preset_available( $edminboost_preset_id );
-					$edminboost_option_class  = 'edminboost-theme-preset-picker__option';
+					$edminboost_is_selected  = ( $edminboost_active_preset === $edminboost_preset_id );
+					$edminboost_option_class = 'edminboost-theme-preset-picker__option';
 					if ( $edminboost_is_selected ) {
 						$edminboost_option_class .= ' is-selected';
-					}
-					if ( $edminboost_is_pro_theme ) {
-						$edminboost_option_class .= ' is-pro-locked';
 					}
 					?>
 					<li
@@ -110,14 +103,11 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 						role="option"
 						tabindex="-1"
 						data-value="<?php echo esc_attr( $edminboost_preset_id ); ?>"
-						data-requires-pro="<?php echo $edminboost_is_pro_theme ? '1' : '0'; ?>"
+						data-requires-pro="0"
 						aria-selected="<?php echo $edminboost_is_selected ? 'true' : 'false'; ?>"
 					>
 						<span class="edminboost-theme-preset-picker__option-main">
 							<span class="edminboost-theme-preset-picker__option-name"><?php echo esc_html( $edminboost_preset['name'] ); ?></span>
-							<?php if ( $edminboost_is_pro_theme ) : ?>
-								<?php EDMINBOOST_Pro::render_badge(); ?>
-							<?php endif; ?>
 							<span class="edminboost-theme-preset-picker__swatches" aria-hidden="true">
 								<?php foreach ( $edminboost_color_labels as $edminboost_color_key => $edminboost_color_label ) : ?>
 									<?php
@@ -149,7 +139,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 	</fieldset>
 
 	<fieldset class="edminboost-fieldset">
-		<legend for="edminboost_theme_mode"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_mode' ); ?><?php esc_html_e( 'Color mode', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+		<legend for="edminboost_theme_mode"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_mode' ); ?><?php esc_html_e( 'Color mode', 'edminboost' ); ?></legend>
 		<select name="<?php echo esc_attr( $edminboost_theme_key ); ?>[mode]" id="edminboost_theme_mode">
 			<?php foreach ( $edminboost_theme_modes as $edminboost_mode_id => $edminboost_mode_label ) : ?>
 				<option value="<?php echo esc_attr( $edminboost_mode_id ); ?>" <?php selected( $edminboost_theme['mode'], $edminboost_mode_id ); ?>>
@@ -160,7 +150,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 	</fieldset>
 
 	<fieldset class="edminboost-fieldset">
-		<legend for="edminboost_theme_font"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_font' ); ?><?php esc_html_e( 'Font', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+		<legend for="edminboost_theme_font"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_font' ); ?><?php esc_html_e( 'Font', 'edminboost' ); ?></legend>
 		<select name="<?php echo esc_attr( $edminboost_theme_key ); ?>[font]" id="edminboost_theme_font">
 			<?php foreach ( $edminboost_theme_fonts as $edminboost_font_id => $edminboost_font_label ) : ?>
 				<option value="<?php echo esc_attr( $edminboost_font_id ); ?>" <?php selected( $edminboost_theme['font'], $edminboost_font_id ); ?>>
@@ -175,7 +165,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 		id="edminboost-theme-custom-colors"
 		<?php echo $edminboost_is_custom ? '' : 'hidden'; ?>
 	>
-		<p class="description"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_custom_colors' ); ?><?php esc_html_e( 'Custom colors', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+		<p class="description"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_custom_colors' ); ?><?php esc_html_e( 'Custom colors', 'edminboost' ); ?></p>
 		<div class="edminboost-theme-color-row">
 			<label for="edminboost_custom_accent"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_custom_accent' ); ?><?php echo esc_html( $edminboost_color_labels['accent'] ); ?></label>
 			<input type="color" id="edminboost_custom_accent_picker" value="<?php echo esc_attr( $edminboost_theme['custom_accent'] ? $edminboost_theme['custom_accent'] : $edminboost_custom_colors['accent'] ); ?>" />
@@ -258,18 +248,18 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 </section>
 
 <section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-theme-extras-heading">
-	<h2 id="edminboost-theme-extras-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_extras' ); ?><?php esc_html_e( 'Appearance extras', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+	<h2 id="edminboost-theme-extras-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_extras' ); ?><?php esc_html_e( 'Appearance extras', 'edminboost' ); ?></h2>
 	<p class="description">
-		<?php esc_html_e( 'Fine-tune admin typography, background, favicon, post list colors, and optional scheduled dark mode.', EDMINBOOST_TEXT_DOMAIN ); ?>
+		<?php esc_html_e( 'Fine-tune admin typography, background, favicon, post list colors, and optional scheduled dark mode.', 'edminboost' ); ?>
 	</p>
 
 	<div class="edminboost-theme-extras-layout">
 		<div class="edminboost-theme-extras-fields">
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
-				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_font_size' ); ?><?php esc_html_e( 'Typography & background', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_font_size' ); ?><?php esc_html_e( 'Typography & background', 'edminboost' ); ?></legend>
 
 				<div class="edminboost-theme-extras-row">
-					<label for="edminboost_font_size"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_font_size' ); ?><?php esc_html_e( 'Admin font size', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+					<label for="edminboost_font_size"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_font_size' ); ?><?php esc_html_e( 'Admin font size', 'edminboost' ); ?></label>
 					<div class="edminboost-theme-extras-control">
 						<input
 							type="range"
@@ -295,7 +285,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 				</div>
 
 				<div class="edminboost-theme-extras-row edminboost-theme-extras-color-row">
-					<label for="edminboost_admin_bg_color"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_bg_color' ); ?><?php esc_html_e( 'Admin background', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+					<label for="edminboost_admin_bg_color"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_bg_color' ); ?><?php esc_html_e( 'Admin background', 'edminboost' ); ?></label>
 					<div class="edminboost-theme-extras-control edminboost-theme-extras-color-controls">
 						<?php
 						$edminboost_admin_bg_value = $edminboost_theme['admin_bg_color'] ?? '';
@@ -315,7 +305,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 				</div>
 
 				<div class="edminboost-theme-extras-row">
-					<label for="edminboost_admin_bg_image_id"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_bg_image' ); ?><?php esc_html_e( 'Background image ID', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+					<label for="edminboost_admin_bg_image_id"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_bg_image' ); ?><?php esc_html_e( 'Background image ID', 'edminboost' ); ?></label>
 					<div class="edminboost-theme-extras-control">
 						<input
 							type="number"
@@ -330,9 +320,9 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 			</fieldset>
 
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
-				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_favicon' ); ?><?php esc_html_e( 'Browser chrome', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_favicon' ); ?><?php esc_html_e( 'Browser chrome', 'edminboost' ); ?></legend>
 				<div class="edminboost-theme-extras-row">
-					<label for="edminboost_admin_favicon_id"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_favicon' ); ?><?php esc_html_e( 'Admin favicon ID', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+					<label for="edminboost_admin_favicon_id"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_favicon' ); ?><?php esc_html_e( 'Admin favicon ID', 'edminboost' ); ?></label>
 					<input
 						type="number"
 						class="small-text edminboost-theme-extras-number"
@@ -344,12 +334,11 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 				</div>
 			</fieldset>
 
-			<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-			<fieldset class="edminboost-fieldset edminboost-theme-extras-group edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>"<?php echo EDMINBOOST_Pro::feature_attr( 'schedule_dark_mode' ); ?>>
-				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_schedule_dark_mode' ); ?><?php esc_html_e( 'Scheduled dark mode', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></legend>
+			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
+				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_schedule_dark_mode' ); ?><?php esc_html_e( 'Scheduled dark mode', 'edminboost' ); ?></legend>
 				<label class="edminboost-checkbox-row" for="edminboost_schedule_dark_mode">
 					<input type="checkbox" id="edminboost_schedule_dark_mode" name="<?php echo esc_attr( $edminboost_theme_key ); ?>[schedule_dark_mode]" value="1" <?php checked( ! empty( $edminboost_theme['schedule_dark_mode'] ) ); ?> />
-					<?php esc_html_e( 'Enable scheduled dark mode window for Auto color mode.', EDMINBOOST_TEXT_DOMAIN ); ?>
+					<?php esc_html_e( 'Enable scheduled dark mode window for Auto color mode.', 'edminboost' ); ?>
 				</label>
 				<div
 					class="edminboost-dependent-section edminboost-theme-extras-schedule<?php echo empty( $edminboost_theme['schedule_dark_mode'] ) ? ' is-disabled' : ''; ?>"
@@ -358,7 +347,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 				>
 					<div class="edminboost-theme-extras-schedule-grid">
 						<div class="edminboost-theme-extras-row">
-							<label for="edminboost_dark_mode_start"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_dark_mode_start' ); ?><?php esc_html_e( 'Dark mode start', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<label for="edminboost_dark_mode_start"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_dark_mode_start' ); ?><?php esc_html_e( 'Dark mode start', 'edminboost' ); ?></label>
 							<input
 								type="time"
 								class="edminboost-theme-extras-time"
@@ -368,7 +357,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 							/>
 						</div>
 						<div class="edminboost-theme-extras-row">
-							<label for="edminboost_dark_mode_end"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_dark_mode_end' ); ?><?php esc_html_e( 'Dark mode end', EDMINBOOST_TEXT_DOMAIN ); ?></label>
+							<label for="edminboost_dark_mode_end"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_dark_mode_end' ); ?><?php esc_html_e( 'Dark mode end', 'edminboost' ); ?></label>
 							<input
 								type="time"
 								class="edminboost-theme-extras-time"
@@ -379,22 +368,20 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 						</div>
 					</div>
 				</div>
-				<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 			</fieldset>
-			<?php endif; ?>
 
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
-				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_status_colors' ); ?><?php esc_html_e( 'Post status row colors', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
-				<p class="description"><?php esc_html_e( 'Optional hex colors for post list table rows by status. Leave blank to use the default table styling.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_status_colors' ); ?><?php esc_html_e( 'Post status row colors', 'edminboost' ); ?></legend>
+				<p class="description"><?php esc_html_e( 'Optional hex colors for post list table rows by status. Leave blank to use the default table styling.', 'edminboost' ); ?></p>
 				<div class="edminboost-theme-extras-status-grid">
 					<?php
 					$edminboost_status_labels = array(
-						'publish' => _x( 'Published', 'post status', EDMINBOOST_TEXT_DOMAIN ),
-						'pending' => _x( 'Pending', 'post status', EDMINBOOST_TEXT_DOMAIN ),
-						'future'  => _x( 'Scheduled', 'post status', EDMINBOOST_TEXT_DOMAIN ),
-						'private' => _x( 'Private', 'post status', EDMINBOOST_TEXT_DOMAIN ),
-						'draft'   => _x( 'Draft', 'post status', EDMINBOOST_TEXT_DOMAIN ),
-						'trash'   => _x( 'Trash', 'post status', EDMINBOOST_TEXT_DOMAIN ),
+						'publish' => _x( 'Published', 'post status', 'edminboost' ),
+						'pending' => _x( 'Pending', 'post status', 'edminboost' ),
+						'future'  => _x( 'Scheduled', 'post status', 'edminboost' ),
+						'private' => _x( 'Private', 'post status', 'edminboost' ),
+						'draft'   => _x( 'Draft', 'post status', 'edminboost' ),
+						'trash'   => _x( 'Trash', 'post status', 'edminboost' ),
 					);
 					foreach ( ( $edminboost_theme['status_colors'] ?? array() ) as $status => $edminboost_color ) :
 						$edminboost_status_label = isset( $edminboost_status_labels[ $status ] ) ? $edminboost_status_labels[ $status ] : ucfirst( $status );
@@ -410,7 +397,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 									id="edminboost_status_<?php echo esc_attr( $status ); ?>"
 									name="<?php echo esc_attr( $edminboost_theme_key ); ?>[status_colors][<?php echo esc_attr( $status ); ?>]"
 									value="<?php echo esc_attr( $edminboost_color ); ?>"
-									placeholder="<?php esc_attr_e( 'Default', EDMINBOOST_TEXT_DOMAIN ); ?>"
+									placeholder="<?php esc_attr_e( 'Default', 'edminboost' ); ?>"
 									pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$"
 								/>
 							</div>

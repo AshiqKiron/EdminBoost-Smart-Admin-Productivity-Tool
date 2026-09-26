@@ -49,7 +49,6 @@ require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-command-center-b
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-menu-studio.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-white-label.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-features.php';
-require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-i18n.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-admin.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-setting-help.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-plugin.php';

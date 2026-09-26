@@ -71,10 +71,6 @@ class EDMINBOOST_Menu_Studio {
 			$merged['colors'] = wp_parse_args( $merged['colors'], $defaults['colors'] );
 		}
 
-		if ( ! EDMINBOOST_Pro::is_active() ) {
-			$merged = EDMINBOOST_Pro::strip_pro_menu_studio( $merged );
-		}
-
 		return $merged;
 	}
 
