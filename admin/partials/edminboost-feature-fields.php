@@ -210,6 +210,7 @@ $edminboost_admin_footer_options_aria  = $edminboost_admin_footer_enabled ? 'fal
 	<?php endforeach; ?>
 </fieldset>
 
+<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
 <?php
 $edminboost_login_redirects_enabled = ! empty( $edminboost_features['login_redirects']['enabled'] );
 $edminboost_login_redirects_options_class = 'edminboost-dependent-section' . ( $edminboost_login_redirects_enabled ? '' : ' is-disabled' );
@@ -246,6 +247,7 @@ $edminboost_login_redirects_options_aria  = $edminboost_login_redirects_enabled 
 	</div>
 	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 </fieldset>
+<?php endif; ?>
 <?php endif; ?>
 
 <?php if ( 'performance' === $edminboost_section ) : ?>

@@ -10,7 +10,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
- * Renders info icons with accessible tooltips on non-Dashboard settings pages.
+ * Renders info icons with accessible tooltips on Command Center and feature pages,
+ * and on the Dashboard first-run setup wizard.
  */
 class EDMINBOOST_Setting_Help {
 
@@ -35,7 +36,11 @@ class EDMINBOOST_Setting_Help {
 			$page = sanitize_key( wp_unslash( $_GET['page'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 		}
 
-		return EDMINBOOST_Admin::PAGE_SLUG !== $page;
+		if ( EDMINBOOST_Admin::PAGE_SLUG === $page ) {
+			return ! EDMINBOOST_Command_Center::is_setup_complete();
+		}
+
+		return true;
 	}
 
 	/**
@@ -140,6 +145,16 @@ class EDMINBOOST_Setting_Help {
 			'hide_comments'              => __( 'Remove the comments shortcut from the native admin bar.', EDMINBOOST_TEXT_DOMAIN ),
 			'hide_new_content'           => __( 'Remove the “New” content dropdown from the native admin bar.', EDMINBOOST_TEXT_DOMAIN ),
 			'hide_customize'             => __( 'Hide the Customize link when the Customizer is available.', EDMINBOOST_TEXT_DOMAIN ),
+
+			// Dashboard setup wizard.
+			'setup_wizard_topbar'        => __( 'Read-only list of admin shortcuts from your layout preset. Use the full Top Bar editor to reorder links, change icons, set drawer interactions, or bind live badges.', EDMINBOOST_TEXT_DOMAIN ),
+			'setup_wizard_topbar_editor' => __( 'Opens the Top Bar editor where you can drag discovered admin pages, add custom links, and configure each item before or after setup.', EDMINBOOST_TEXT_DOMAIN ),
+			'setup_wizard_review'        => __( 'Summary of your layout, theme, sidebar, and top bar choices before saving. Saving applies the preset and completes Dashboard setup.', EDMINBOOST_TEXT_DOMAIN ),
+			'setup_review_sidebar'       => __( 'Sidebar menu items and visibility included with the selected layout preset. Customize order, colors, and hidden items later in Menu Studio.', EDMINBOOST_TEXT_DOMAIN ),
+			'setup_review_topbar'        => __( 'Top bar shortcuts included with the selected layout preset. Fine-tune labels, icons, and interactions in the Top Bar editor.', EDMINBOOST_TEXT_DOMAIN ),
+			'layout_sidebar_preview'     => __( 'Sample of top-level sidebar menu items included with the selected layout preset (not every submenu is shown).', EDMINBOOST_TEXT_DOMAIN ),
+			'layout_topbar_preview'      => __( 'Sample of Command Center top bar shortcuts included with the selected layout preset.', EDMINBOOST_TEXT_DOMAIN ),
+			'theme_extras'               => __( 'Optional admin typography, background, favicon, post list status colors, and scheduled dark mode window.', EDMINBOOST_TEXT_DOMAIN ),
 
 			// Layout presets.
 			'layout_preset'              => __( 'Apply a built-in or saved template that configures the top bar and left sidebar menu. Use Top Bar and Menu Studio for custom granular control.', EDMINBOOST_TEXT_DOMAIN ),

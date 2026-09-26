@@ -163,6 +163,10 @@
 					control.dispatchEvent( new Event( 'change', { bubbles: true } ) );
 				} );
 			} );
+
+			if ( typeof syncThemeExtrasPreviewFn === 'function' ) {
+				syncThemeExtrasPreviewFn();
+			}
 		}, 0 );
 
 		initMapper( root );
@@ -187,7 +191,7 @@
 	}
 
 	function initProLocks( root ) {
-		if ( edminboostData.isPro ) {
+		if ( ! edminboostData.isPremiumBuild || edminboostData.isPro ) {
 			return;
 		}
 
@@ -202,7 +206,7 @@
 	}
 
 	function isLayoutPresetProLocked( presetId, catalog ) {
-		if ( edminboostData.isPro ) {
+		if ( ! edminboostData.isPremiumBuild || edminboostData.isPro ) {
 			return false;
 		}
 
@@ -212,7 +216,7 @@
 	}
 
 	function isThemePresetProLocked( presetId, catalog ) {
-		if ( edminboostData.isPro ) {
+		if ( ! edminboostData.isPremiumBuild || edminboostData.isPro ) {
 			return false;
 		}
 
@@ -3212,6 +3216,31 @@
 		var modeSelect         = document.getElementById( 'edminboost_theme_mode' );
 		var themePresets       = edminboostData.themePresets || {};
 		var statusInputs       = root.querySelectorAll( '.edminboost-theme-extras-status-input' );
+		var tableWrap          = preview.querySelector( '.edminboost-theme-extras-preview__table-wrap' );
+
+		function setThemeExtraVar( name, value ) {
+			var targets = [ preview, viewport, tableWrap ].filter( Boolean );
+
+			targets.forEach( function ( target ) {
+				if ( value ) {
+					target.style.setProperty( name, value );
+				} else {
+					target.style.removeProperty( name );
+				}
+			} );
+		}
+
+		function readBoundHexColor( textInput, pickerInput ) {
+			if ( textInput && /^#[0-9a-fA-F]{3,6}$/.test( textInput.value ) ) {
+				return textInput.value;
+			}
+
+			if ( pickerInput && /^#[0-9a-fA-F]{3,6}$/.test( pickerInput.value ) ) {
+				return pickerInput.value;
+			}
+
+			return '';
+		}
 
 		function clampFontSize( value ) {
 			var size = parseInt( value, 10 );
@@ -3249,6 +3278,10 @@
 				: getThemePreviewColors( themePresets, preset, mode );
 
 			applyThemePreviewColorVars( preview, colors );
+
+			if ( viewport ) {
+				applyThemePreviewColorVars( viewport, colors );
+			}
 		}
 
 		function timeToMinutes( timeValue ) {
@@ -3360,8 +3393,18 @@
 			target.innerHTML = fallbackMarkup;
 		}
 
+		function getStatusKeyFromInput( input ) {
+			var statusRow = input.closest( '.edminboost-theme-extras-status-row' );
+
+			if ( statusRow && statusRow.dataset.status ) {
+				return statusRow.dataset.status;
+			}
+
+			return input.id.replace( /^edminboost_status_/, '' );
+		}
+
 		function syncStatusRowPreview( input ) {
-			var status = input.id.replace( 'edminboost_status_', '' );
+			var status = getStatusKeyFromInput( input );
 			var row    = preview.querySelector( '.edminboost-theme-extras-preview__status-row[data-status="' + status + '"]' );
 
 			if ( ! row ) {
@@ -3384,16 +3427,12 @@
 
 			fontSizeInput.value = String( size );
 			fontSizeRange.value = String( size );
-			preview.style.setProperty( '--eb-te-font-size', size + 'px' );
+			setThemeExtraVar( '--eb-te-font-size', size + 'px' );
 		}
 
 		function syncBackgroundColorPreview() {
-			if ( bgColorInput && /^#[0-9a-fA-F]{3,6}$/.test( bgColorInput.value ) ) {
-				preview.style.setProperty( '--eb-te-bg', bgColorInput.value );
-				return;
-			}
-
-			preview.style.removeProperty( '--eb-te-bg' );
+			var color = readBoundHexColor( bgColorInput, bgColorPicker );
+			setThemeExtraVar( '--eb-te-bg', color );
 		}
 
 		function bindColorPair( picker, text, onSync ) {
@@ -3401,17 +3440,24 @@
 				return;
 			}
 
-			picker.addEventListener( 'input', function () {
+			function syncFromPicker() {
 				text.value = picker.value;
 				onSync();
-			} );
+			}
 
-			text.addEventListener( 'input', function () {
-				if ( /^#[0-9a-fA-F]{6}$/.test( text.value ) ) {
-					picker.value = text.value;
+			function syncFromText() {
+				if ( /^#[0-9a-fA-F]{3,6}$/.test( text.value ) ) {
+					if ( /^#[0-9a-fA-F]{6}$/.test( text.value ) ) {
+						picker.value = text.value;
+					}
 					onSync();
 				}
-			} );
+			}
+
+			picker.addEventListener( 'input', syncFromPicker );
+			picker.addEventListener( 'change', syncFromPicker );
+			text.addEventListener( 'input', syncFromText );
+			text.addEventListener( 'change', syncFromText );
 		}
 
 		function applyThemeExtrasPreview() {
@@ -3430,10 +3476,16 @@
 			fontSizeRange.addEventListener( 'input', function () {
 				syncFontSizeControls( 'range' );
 			} );
+			fontSizeRange.addEventListener( 'change', function () {
+				syncFontSizeControls( 'range' );
+			} );
 		}
 
 		if ( fontSizeInput ) {
 			fontSizeInput.addEventListener( 'input', function () {
+				syncFontSizeControls( 'input' );
+			} );
+			fontSizeInput.addEventListener( 'change', function () {
 				syncFontSizeControls( 'input' );
 			} );
 		}
@@ -4928,6 +4980,10 @@
 
 			if ( submitBtn ) {
 				submitBtn.style.display = currentStep >= totalSteps ? '' : 'none';
+			}
+
+			if ( currentStep === 2 && typeof syncThemeExtrasPreviewFn === 'function' ) {
+				syncThemeExtrasPreviewFn();
 			}
 
 			if ( currentStep === 4 ) {

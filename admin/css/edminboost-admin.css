@@ -1380,8 +1380,28 @@ summary .edminboost-setting-info,
 }
 
 .edminboost-setup-review__row dt {
+	display: inline-flex;
+	align-items: center;
+	gap: 4px;
 	margin: 0;
 	font-weight: 600;
+}
+
+.edminboost-layout-preset-preview-label {
+	margin: 12px 0 6px;
+	font-size: 13px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.edminboost-layout-preset-preview-label:first-child {
+	margin-top: 0;
+}
+
+.edminboost-layout-preset-preview-block {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
 }
 
 .edminboost-setup-review__row dd {

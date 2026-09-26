@@ -24,6 +24,7 @@ alwaysApply: false
 ```javascript
 {
 	version: string,
+	isPremiumBuild: boolean,  // EDMINBOOST_Pro::is_premium_build()
 	isPro: boolean,           // EDMINBOOST_Pro::is_active()
 	billingUrl: string,       // EDMINBOOST_Pro::get_billing_url()
 	canSaveCustomPreset: boolean,
@@ -153,7 +154,7 @@ alwaysApply: false
 | `edminboost-overview-topbar-links-picker.php` | Read-only top bar links dropdown |
 | `edminboost-overview-topbar-preview.php` | Top bar mini-preview partial |
 | `edminboost-overview-sidebar-preview.php` | Sidebar mini-preview partial |
-| `edminboost-settings-page.php` | Settings page shell (CC nav + JSON backup/import; `#edminboost-backup-section` Pro-gated) |
+| `edminboost-settings-page.php` | Settings page shell (CC nav; `#edminboost-backup-section` when `shows_pro_settings_ui()`, else per-tab save note) |
 | `edminboost-appearance-page.php` | Theme, declutter |
 | `edminboost-home-advanced-look.php` | Panel width, badges, animation speed (Top Bar) |
 | `edminboost-declutter-settings.php` | Admin bar cleanup toggles; includes `edminboost-declutter-preview.php` |
@@ -337,7 +338,7 @@ Key elements: `.edminboost-form-reset` inside `.edminboost-form-actions` (from `
 
 ## Pro locks JS (`initProLocks`)
 
-- No-ops when `edminboostData.isPro`.
+- No-ops when `! edminboostData.isPremiumBuild || edminboostData.isPro`.
 - Finds `.is-pro-locked` inside `root`; calls `syncDependentSection( section, false )` to disable nested controls.
 - Restores keyboard access to `.edminboost-pro-upgrade a` (Billing links stay focusable).
 - Called from `reinitEdminboostPage()` after CC tab AJAX swaps.

@@ -67,7 +67,7 @@ PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from 
 - Page URLs: `fixtures/pages.ts` — built from `PLUGIN_SLUG` env var (`dashboard`, `appearance`, `billing`, `settings`, `mapper`, `presets`, `productivity`, `security`, `performance`, `white-label`; legacy `onboarding` / `behavior` for redirect tests).
 - Assert plugin ready: `.edminboost-wrap[data-edminboost-ready="true"]`.
 - Settings saves: `waitForSettingsSaved()` in `fixtures/helpers.ts` (URL contains `settings-updated=true`).
-- Specs mirror admin pages: `dashboard` (overview pickers + inline save), `home-setup` (setup wizard / overview), `home-look` (Theme/declutter on Appearance — declutter preview at `#edminboost-declutter-preview`; panel/badge/drawer-width tests should target Top Bar / `pages.mapper`), `settings-features` (Productivity feature toggles), `layout-studio`, `presets-roles`, `live-admin-bar`.
+- Specs mirror admin pages: `dashboard` (overview pickers + inline save), `home-setup` (setup wizard / overview), `home-look` (Theme/declutter on Appearance — theme extras live preview `#edminboost-theme-extras-preview-viewport` font size + status row colors; declutter preview at `#edminboost-declutter-preview`; panel/badge/drawer-width tests should target Top Bar / `pages.mapper`), `settings-features` (Productivity feature toggles), `layout-studio`, `presets-roles`, `live-admin-bar`.
 - Config: single worker, 60s timeout, chromium only, `baseURL` from `.env.qa`.
 
 ## Rules

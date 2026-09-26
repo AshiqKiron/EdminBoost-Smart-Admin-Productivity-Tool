@@ -338,7 +338,7 @@ class EDMINBOOST_Command_Center {
 	public static function get_nav_items() {
 		$base = EDMINBOOST_Admin::PAGE_SLUG;
 
-		return array(
+		$items = array(
 			array(
 				'slug'  => $base,
 				'label' => __( 'Dashboard', EDMINBOOST_TEXT_DOMAIN ),
@@ -384,6 +384,20 @@ class EDMINBOOST_Command_Center {
 				'label' => __( 'Settings', EDMINBOOST_TEXT_DOMAIN ),
 			),
 		);
+
+		if ( ! EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+			$white_label_slug = $base . self::PAGE_WHITE_LABEL;
+			$items            = array_values(
+				array_filter(
+					$items,
+					function ( $item ) use ( $white_label_slug ) {
+						return ! isset( $item['slug'] ) || $white_label_slug !== $item['slug'];
+					}
+				)
+			);
+		}
+
+		return $items;
 	}
 
 	/**

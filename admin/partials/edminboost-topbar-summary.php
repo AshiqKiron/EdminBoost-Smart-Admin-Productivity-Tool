@@ -58,7 +58,8 @@ $edminboost_item_count = count( $edminboost_top_bar_items );
 		</ul>
 	<?php endif; ?>
 
-	<p class="edminboost-topbar-summary__actions">
+	<p class="edminboost-topbar-summary__actions edminboost-setting-inline">
+		<?php EDMINBOOST_Setting_Help::echo_icon( 'setup_wizard_topbar_editor' ); ?>
 		<a class="button" href="<?php echo esc_url( $edminboost_mapper_url ); ?>">
 			<?php esc_html_e( 'Open full top bar editor', EDMINBOOST_TEXT_DOMAIN ); ?>
 		</a>

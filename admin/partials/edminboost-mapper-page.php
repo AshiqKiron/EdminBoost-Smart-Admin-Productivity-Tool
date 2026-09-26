@@ -244,6 +244,7 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 						<span class="description"><?php esc_html_e( 'Scroll to a section on the page when the link is opened.', EDMINBOOST_TEXT_DOMAIN ); ?></span>
 					</p>
 
+					<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
 					<div class="edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>"<?php echo EDMINBOOST_Pro::feature_attr( 'top_bar_drawer_items' ); ?>>
 					<fieldset class="edminboost-fieldset">
 						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_interaction' ); ?><?php esc_html_e( 'Interaction', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></legend>
@@ -275,6 +276,7 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 					</p>
 					<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 					</div>
+					<?php endif; ?>
 
 					<p>
 						<button type="button" class="button" id="edminboost-drawer-close">
@@ -287,6 +289,7 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 					</aside>
 				</section>
 
+				<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
 				<section class="edminboost-card edminboost-cc-section edminboost-home-look is-disabled" id="edminboost-mapper-look" aria-labelledby="edminboost-mapper-look-heading" aria-disabled="true">
 					<h2 id="edminboost-mapper-look-heading"><?php esc_html_e( 'Panel & badges', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 					<p class="description">
@@ -301,6 +304,7 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 					include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-home-advanced-look.php';
 					?>
 				</section>
+				<?php endif; ?>
 
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_layout_studio_save]" value="1" />

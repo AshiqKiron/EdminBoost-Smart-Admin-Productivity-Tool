@@ -374,6 +374,10 @@ class EDMINBOOST_Theme {
 		$presets = array();
 
 		foreach ( self::get_presets() as $preset_id => $preset ) {
+			if ( ! EDMINBOOST_Pro::include_preset_in_ui( $preset_id, 'theme' ) ) {
+				continue;
+			}
+
 			$presets[ $preset_id ] = array(
 				'name'         => $preset['name'],
 				'description'  => $preset['description'],

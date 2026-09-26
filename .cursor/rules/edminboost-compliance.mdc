@@ -29,7 +29,7 @@ See `edminboost-project.mdc` (architecture), `edminboost-standards.mdc` (quality
 - No tracking or data transmission to external servers (current plugin behavior). Billing upgrade CTAs are user-initiated links to the external pricing page (`EDMINBOOST_UPGRADE_URL`) — no background requests, checkout API, or license validation.
 - Badge sources (WooCommerce orders, comments, updates, WPForms entries) read local WordPress data only — no remote API calls. WPForms count uses a guarded `$wpdb` read when the plugin and table exist.
 - No public-site credit injection by default (admin footer replacement is opt-in).
-- No spammy readme, deceptive "free" behavior, or fake trial logic. The WordPress.org build (v1.4.0+) includes all Command Center and feature tools with no in-plugin license checks or feature locks. The Billing page describes commercial Pro/Agency tiers for external purchase only — it does not gate functionality.
+- No spammy readme, deceptive "free" behavior, or fake trial logic. The WordPress.org build (v1.4.0+) has no Freemius, no in-plugin license checks, and no Pro badges or `.is-pro-locked` upsell UI — premium-only settings (White Label, JSON backup/import, Top Bar drawer interaction and Panel & badges, Menu Studio custom links and display mode, scheduled dark mode, Security login redirects UI, paid layout/theme presets) are **omitted** from admin pickers/menus rather than shown locked. Core CC and included feature tools remain usable without checkout. The Billing page describes commercial Pro/Agency tiers for external purchase only.
 - Any future remote integration must be documented, justified, and opt-in.
 
 ## Code Quality

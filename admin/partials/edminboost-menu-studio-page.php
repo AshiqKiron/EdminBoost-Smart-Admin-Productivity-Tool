@@ -171,6 +171,7 @@ $edminboost_color_fields = array(
 					<?php endif; ?>
 				</ul>
 
+				<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
 				<details class="edminboost-custom-link edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>" id="edminboost-menu-custom-link"<?php echo EDMINBOOST_Pro::feature_attr( 'menu_custom_links' ); ?>>
 					<summary class="edminboost-custom-link__heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_menu_path' ); ?><?php esc_html_e( 'Custom sidebar link', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></summary>
 					<div class="edminboost-custom-link__body">
@@ -206,6 +207,7 @@ $edminboost_color_fields = array(
 						<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 					</div>
 				</details>
+				<?php endif; ?>
 			</aside>
 
 			<div class="edminboost-menu-studio-main">
@@ -366,6 +368,7 @@ $edminboost_color_fields = array(
 									</div>
 								</fieldset>
 
+								<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
 								<div class="edminboost-menu-layout-row edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>"<?php echo EDMINBOOST_Pro::feature_attr( 'menu_display_mode' ); ?>>
 									<label for="edminboost_menu_display_mode"><?php EDMINBOOST_Setting_Help::echo_icon( 'menu_display_mode' ); ?><?php esc_html_e( 'Menu item display', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></label>
 									<select id="edminboost_menu_display_mode" class="edminboost-menu-layout-select" name="<?php echo esc_attr( $edminboost_ms_key ); ?>[display_mode]">
@@ -375,6 +378,7 @@ $edminboost_color_fields = array(
 									</select>
 									<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 								</div>
+								<?php endif; ?>
 							</div>
 						</div>
 

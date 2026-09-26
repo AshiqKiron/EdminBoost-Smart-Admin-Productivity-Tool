@@ -38,6 +38,43 @@ class EDMINBOOST_Pro {
 	);
 
 	/**
+	 * Whether this install is the premium (direct / Freemius) build.
+	 *
+	 * WordPress.org packages omit includes/pro/ and never define EDMINBOOST_PREMIUM_BUILD.
+	 *
+	 * @return bool
+	 */
+	public static function is_premium_build() {
+		return defined( 'EDMINBOOST_PREMIUM_BUILD' ) && EDMINBOOST_PREMIUM_BUILD;
+	}
+
+	/**
+	 * Whether pro-only settings and upgrade prompts should appear in wp-admin.
+	 *
+	 * @return bool
+	 */
+	public static function shows_pro_settings_ui() {
+		return self::is_premium_build();
+	}
+
+	/**
+	 * Whether a layout or theme preset should appear in admin pickers.
+	 *
+	 * @param string $preset_id Preset key.
+	 * @param string $context   `layout` or `theme`.
+	 * @return bool
+	 */
+	public static function include_preset_in_ui( $preset_id, $context = 'layout' ) {
+		if ( self::is_premium_build() ) {
+			return true;
+		}
+
+		return 'theme' === $context
+			? self::is_theme_preset_available( $preset_id )
+			: self::is_layout_preset_available( $preset_id );
+	}
+
+	/**
 	 * Whether Pro (or Agency) is active on this site.
 	 *
 	 * @return bool
@@ -123,6 +160,10 @@ class EDMINBOOST_Pro {
 	 * @return string
 	 */
 	public static function section_class( $feature = '' ) {
+		if ( ! self::shows_pro_settings_ui() ) {
+			return '';
+		}
+
 		$classes = array( 'edminboost-pro-section' );
 
 		if ( ! self::is_active() ) {
@@ -139,6 +180,10 @@ class EDMINBOOST_Pro {
 	 * @return string
 	 */
 	public static function feature_attr( $feature ) {
+		if ( ! self::shows_pro_settings_ui() ) {
+			return '';
+		}
+
 		return ' data-edminboost-pro-feature="' . esc_attr( sanitize_key( $feature ) ) . '"';
 	}
 
@@ -148,7 +193,7 @@ class EDMINBOOST_Pro {
 	 * @return void
 	 */
 	public static function render_badge() {
-		if ( self::is_active() ) {
+		if ( ! self::shows_pro_settings_ui() || self::is_active() ) {
 			return;
 		}
 
@@ -161,7 +206,7 @@ class EDMINBOOST_Pro {
 	 * @return void
 	 */
 	public static function render_upgrade_prompt() {
-		if ( self::is_active() ) {
+		if ( ! self::shows_pro_settings_ui() || self::is_active() ) {
 			return;
 		}
 

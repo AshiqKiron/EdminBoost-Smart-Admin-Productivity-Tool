@@ -39,6 +39,19 @@ test.describe( 'Appearance settings', () => {
 		await expect( page.locator( '#edminboost-drawer-width-custom' ) ).toBeVisible();
 	} );
 
+	test( 'theme extras preview updates font size and status row colors', async ( { page } ) => {
+		await page.goto( pages.appearance );
+		await expect( page.locator( '#edminboost-theme-extras-preview' ) ).toBeVisible();
+
+		const viewport = page.locator( '#edminboost-theme-extras-preview-viewport' );
+		await page.locator( '#edminboost_font_size_range' ).fill( '20' );
+		await expect( viewport ).toHaveCSS( 'font-size', '20px' );
+
+		const draftRow = page.locator( '.edminboost-theme-extras-preview__status-row[data-status="draft"]' );
+		await page.locator( '#edminboost_status_draft' ).fill( '#ff0000' );
+		await expect( draftRow ).toHaveCSS( 'background-color', 'rgb(255, 0, 0)' );
+	} );
+
 	test( 'declutter toggles are available on appearance page', async ( { page } ) => {
 		await page.goto( pages.appearance );
 		await expect( page.locator( '#edminboost_hide_wp_logo' ) ).toBeVisible();

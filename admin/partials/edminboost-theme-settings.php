@@ -28,7 +28,7 @@ $edminboost_preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
 $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'] ) ? $edminboost_theme_presets['custom']['colors'] : array();
 ?>
 <section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-theme-heading">
-	<h2 id="edminboost-theme-heading"><?php esc_html_e( 'Visual theme', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+	<h2 id="edminboost-theme-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_preset' ); ?><?php esc_html_e( 'Visual theme', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 	<p class="description">
 		<?php esc_html_e( 'Colors and fonts for the admin top bar, sidebar menu, Command Center bar, slide-out drawer, and EdminBoost admin screens. Does not change behavior or top bar layout.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</p>
@@ -87,13 +87,16 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 			>
 				<?php foreach ( $edminboost_theme_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
 					<?php
+					if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) {
+						continue;
+					}
 					$edminboost_option_colors = EDMINBOOST_Theme::resolve_preview_colors(
 						$edminboost_preset_id,
 						$edminboost_theme_mode,
 						'custom' === $edminboost_preset_id ? $edminboost_theme : null
 					);
 					$edminboost_is_selected   = ( $edminboost_active_preset === $edminboost_preset_id );
-					$edminboost_is_pro_theme  = ! EDMINBOOST_Pro::is_theme_preset_available( $edminboost_preset_id );
+					$edminboost_is_pro_theme  = EDMINBOOST_Pro::shows_pro_settings_ui() && ! EDMINBOOST_Pro::is_theme_preset_available( $edminboost_preset_id );
 					$edminboost_option_class  = 'edminboost-theme-preset-picker__option';
 					if ( $edminboost_is_selected ) {
 						$edminboost_option_class .= ' is-selected';
@@ -255,7 +258,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 </section>
 
 <section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-theme-extras-heading">
-	<h2 id="edminboost-theme-extras-heading"><?php esc_html_e( 'Appearance extras', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+	<h2 id="edminboost-theme-extras-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_extras' ); ?><?php esc_html_e( 'Appearance extras', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 	<p class="description">
 		<?php esc_html_e( 'Fine-tune admin typography, background, favicon, post list colors, and optional scheduled dark mode.', EDMINBOOST_TEXT_DOMAIN ); ?>
 	</p>
@@ -263,7 +266,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 	<div class="edminboost-theme-extras-layout">
 		<div class="edminboost-theme-extras-fields">
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
-				<legend><?php esc_html_e( 'Typography & background', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_font_size' ); ?><?php esc_html_e( 'Typography & background', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 
 				<div class="edminboost-theme-extras-row">
 					<label for="edminboost_font_size"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_font_size' ); ?><?php esc_html_e( 'Admin font size', EDMINBOOST_TEXT_DOMAIN ); ?></label>
@@ -327,7 +330,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 			</fieldset>
 
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
-				<legend><?php esc_html_e( 'Browser chrome', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
+				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_favicon' ); ?><?php esc_html_e( 'Browser chrome', EDMINBOOST_TEXT_DOMAIN ); ?></legend>
 				<div class="edminboost-theme-extras-row">
 					<label for="edminboost_admin_favicon_id"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_admin_favicon' ); ?><?php esc_html_e( 'Admin favicon ID', EDMINBOOST_TEXT_DOMAIN ); ?></label>
 					<input
@@ -341,6 +344,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 				</div>
 			</fieldset>
 
+			<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>"<?php echo EDMINBOOST_Pro::feature_attr( 'schedule_dark_mode' ); ?>>
 				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_schedule_dark_mode' ); ?><?php esc_html_e( 'Scheduled dark mode', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></legend>
 				<label class="edminboost-checkbox-row" for="edminboost_schedule_dark_mode">
@@ -377,6 +381,7 @@ $edminboost_custom_colors  = isset( $edminboost_theme_presets['custom']['colors'
 				</div>
 				<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 			</fieldset>
+			<?php endif; ?>
 
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
 				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_status_colors' ); ?><?php esc_html_e( 'Post status row colors', EDMINBOOST_TEXT_DOMAIN ); ?></legend>

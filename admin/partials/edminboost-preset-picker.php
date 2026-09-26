@@ -166,6 +166,9 @@ $edminboost_preview_aria      = sprintf(
 						<ul class="edminboost-layout-preset-picker__group-list" role="group" aria-labelledby="edminboost-layout-preset-group-<?php echo esc_attr( sanitize_html_class( $edminboost_category_id ) ); ?>">
 							<?php foreach ( $edminboost_grouped_presets[ $edminboost_category_id ] as $edminboost_preset_id => $edminboost_preset ) : ?>
 								<?php
+								if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'layout' ) ) {
+									continue;
+								}
 								$edminboost_is_system   = ! empty( $edminboost_preset['system'] );
 								$edminboost_is_virtual  = ! empty( $edminboost_preset['virtual'] );
 								$edminboost_is_selected = ( $edminboost_selected_preset === $edminboost_preset_id );
@@ -178,7 +181,7 @@ $edminboost_preview_aria      = sprintf(
 								} else {
 									$edminboost_badge_label = __( 'Saved', EDMINBOOST_TEXT_DOMAIN );
 								}
-								$edminboost_is_pro_preset  = ! EDMINBOOST_Pro::is_layout_preset_available( $edminboost_preset_id );
+								$edminboost_is_pro_preset  = EDMINBOOST_Pro::shows_pro_settings_ui() && ! EDMINBOOST_Pro::is_layout_preset_available( $edminboost_preset_id );
 								$edminboost_option_classes = 'edminboost-layout-preset-picker__option';
 								if ( $edminboost_is_selected ) {
 									$edminboost_option_classes .= ' is-selected';
@@ -219,6 +222,11 @@ $edminboost_preview_aria      = sprintf(
 
 	<?php if ( $edminboost_show_preset_preview ) : ?>
 		<div class="edminboost-layout-preset-previews">
+			<div class="edminboost-layout-preset-preview-block">
+				<p class="edminboost-layout-preset-preview-label edminboost-setting-inline">
+					<?php EDMINBOOST_Setting_Help::echo_icon( 'layout_sidebar_preview' ); ?>
+					<?php esc_html_e( 'Sidebar preview', EDMINBOOST_TEXT_DOMAIN ); ?>
+				</p>
 			<?php
 			$edminboost_sidebar_items      = EDMINBOOST_Command_Center::resolve_preset_sidebar_preview_items( $edminboost_selected_preset, $cc_settings );
 			$edminboost_preview_limit      = 5;
@@ -232,7 +240,14 @@ $edminboost_preview_aria      = sprintf(
 			);
 
 			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-sidebar-preview.php';
-
+			?>
+			</div>
+			<div class="edminboost-layout-preset-preview-block">
+				<p class="edminboost-layout-preset-preview-label edminboost-setting-inline">
+					<?php EDMINBOOST_Setting_Help::echo_icon( 'layout_topbar_preview' ); ?>
+					<?php esc_html_e( 'Top bar preview', EDMINBOOST_TEXT_DOMAIN ); ?>
+				</p>
+			<?php
 			$edminboost_preview_id         = 'wizard' === $edminboost_preset_picker_mode
 				? 'edminboost-wizard-layout-preset-preview'
 				: 'edminboost-layout-preset-preview';
@@ -241,6 +256,7 @@ $edminboost_preview_aria      = sprintf(
 
 			include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
 			?>
+			</div>
 		</div>
 	<?php endif; ?>
 

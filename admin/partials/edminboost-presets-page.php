@@ -28,8 +28,10 @@ $edminboost_top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_arr
 	: array();
 $edminboost_has_layout        = ! empty( $edminboost_top_bar_items );
 $edminboost_has_matrix        = ! empty( $edminboost_matrix_items );
-$edminboost_is_pro            = EDMINBOOST_Pro::is_active();
-$edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_settings );
+$edminboost_is_pro                  = EDMINBOOST_Pro::is_active();
+$edminboost_can_save_preset         = EDMINBOOST_Pro::can_save_custom_preset( $cc_settings );
+$edminboost_show_role_visibility    = EDMINBOOST_Pro::shows_pro_settings_ui();
+$edminboost_show_pro_monetization   = EDMINBOOST_Pro::shows_pro_settings_ui() && ! $edminboost_is_pro;
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap edminboost-cc-wrap--wide">
 	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
@@ -45,11 +47,11 @@ $edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_sett
 			<div class="edminboost-save-preset" id="edminboost-save-preset">
 				<button type="button" class="button edminboost-save-preset__trigger" id="edminboost-save-preset-btn" <?php disabled( ! $edminboost_has_layout || ! $edminboost_can_save_preset ); ?>>
 					<?php esc_html_e( 'Save current layout as preset', EDMINBOOST_TEXT_DOMAIN ); ?>
-					<?php if ( ! $edminboost_is_pro ) : ?>
+					<?php if ( $edminboost_show_pro_monetization ) : ?>
 						<?php EDMINBOOST_Pro::render_badge(); ?>
 					<?php endif; ?>
 				</button>
-				<?php if ( ! $edminboost_can_save_preset && $edminboost_has_layout ) : ?>
+				<?php if ( $edminboost_show_pro_monetization && ! $edminboost_can_save_preset && $edminboost_has_layout ) : ?>
 					<p class="description edminboost-pro-upgrade"><?php esc_html_e( 'Free includes one saved custom layout. Upgrade for unlimited saves.', EDMINBOOST_TEXT_DOMAIN ); ?> <a href="<?php echo esc_url( EDMINBOOST_Pro::get_billing_url() ); ?>"><?php esc_html_e( 'View plans', EDMINBOOST_TEXT_DOMAIN ); ?></a></p>
 				<?php endif; ?>
 				<div class="edminboost-save-preset__form" id="edminboost-save-preset-form">
@@ -92,7 +94,13 @@ $edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_sett
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-roles-heading">
 			<h2 id="edminboost-roles-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'role_visibility' ); ?><?php esc_html_e( 'Who sees what', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'Assign a layout preset per role to customize both the top bar and admin sidebar for that role. Changing a preset updates the menu checkboxes for that role; you can still fine-tune visibility before saving.', EDMINBOOST_TEXT_DOMAIN ); ?>
+				<?php
+				if ( $edminboost_show_role_visibility ) {
+					esc_html_e( 'Assign a layout preset per role to customize both the top bar and admin sidebar for that role. Changing a preset updates the menu checkboxes for that role; you can still fine-tune visibility before saving.', EDMINBOOST_TEXT_DOMAIN );
+				} else {
+					esc_html_e( 'Assign a layout preset per role to customize both the top bar and admin sidebar for that role.', EDMINBOOST_TEXT_DOMAIN );
+				}
+				?>
 			</p>
 
 			<?php if ( empty( $edminboost_roles ) ) : ?>
@@ -100,7 +108,7 @@ $edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_sett
 			<?php elseif ( ! $edminboost_has_matrix ) : ?>
 				<p><?php esc_html_e( 'No admin menu items were discovered. Try reloading this page from wp-admin.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
 			<?php else : ?>
-				<?php if ( ! $edminboost_is_pro ) : ?>
+				<?php if ( $edminboost_show_pro_monetization ) : ?>
 					<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 				<?php endif; ?>
 				<div class="edminboost-role-matrix-wrap">
@@ -111,6 +119,7 @@ $edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_sett
 								<th scope="col" class="edminboost-role-matrix__preset-col">
 									<?php EDMINBOOST_Setting_Help::echo_icon( 'role_assignments' ); ?><?php esc_html_e( 'Assigned preset', EDMINBOOST_TEXT_DOMAIN ); ?>
 								</th>
+								<?php if ( $edminboost_show_role_visibility ) : ?>
 								<?php foreach ( $edminboost_matrix_items as $edminboost_item ) : ?>
 									<?php
 									$edminboost_item_slug       = isset( $edminboost_item['slug'] ) ? $edminboost_item['slug'] : '';
@@ -140,6 +149,7 @@ $edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_sett
 										</span>
 									</th>
 								<?php endforeach; ?>
+								<?php endif; ?>
 							</tr>
 						</thead>
 						<tbody>
@@ -162,6 +172,11 @@ $edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_sett
 										>
 											<option value=""><?php esc_html_e( '— Use site default —', EDMINBOOST_TEXT_DOMAIN ); ?></option>
 											<?php foreach ( $edminboost_all_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
+												<?php
+												if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'layout' ) ) {
+													continue;
+												}
+												?>
 												<option
 													value="<?php echo esc_attr( $edminboost_preset_id ); ?>"
 													<?php selected( isset( $edminboost_role_assignments[ $edminboost_role_key ] ) ? $edminboost_role_assignments[ $edminboost_role_key ] : '', $edminboost_preset_id ); ?>
@@ -171,6 +186,7 @@ $edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_sett
 											<?php endforeach; ?>
 										</select>
 									</td>
+									<?php if ( $edminboost_show_role_visibility ) : ?>
 									<?php foreach ( $edminboost_matrix_items as $edminboost_item ) : ?>
 										<?php
 										$edminboost_item_slug       = isset( $edminboost_item['slug'] ) ? $edminboost_item['slug'] : '';
@@ -208,7 +224,7 @@ $edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_sett
 										} elseif ( ! $edminboost_can_access ) {
 											$edminboost_cell_classes .= ' is-capability-restricted';
 										}
-										if ( ! $edminboost_is_pro ) {
+										if ( $edminboost_show_pro_monetization ) {
 											$edminboost_cell_classes .= ' is-pro-locked';
 										}
 										?>
@@ -254,14 +270,17 @@ $edminboost_can_save_preset   = EDMINBOOST_Pro::can_save_custom_preset( $cc_sett
 											</label>
 										</td>
 									<?php endforeach; ?>
+									<?php endif; ?>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
 					</table>
 				</div>
+				<?php if ( $edminboost_show_role_visibility ) : ?>
 				<p class="description">
 					<?php esc_html_e( 'Checked menu items stay visible in the top bar and sidebar for that role. Uncheck to hide tools from clients or editors. Submenu columns control individual pages under a parent menu. Items not included in the assigned preset start unchecked; you can still enable them manually. Items this role cannot access by default appear unchecked—you may enable them if needed.', EDMINBOOST_TEXT_DOMAIN ); ?>
 				</p>
+				<?php endif; ?>
 			<?php endif; ?>
 		</section>
 

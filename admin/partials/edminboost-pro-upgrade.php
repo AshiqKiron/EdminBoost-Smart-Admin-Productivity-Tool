@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-if ( EDMINBOOST_Pro::is_active() ) {
+if ( ! EDMINBOOST_Pro::shows_pro_settings_ui() || EDMINBOOST_Pro::is_active() ) {
 	return;
 }
 ?>

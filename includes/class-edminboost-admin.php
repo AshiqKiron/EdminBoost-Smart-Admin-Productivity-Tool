@@ -142,13 +142,15 @@ class EDMINBOOST_Admin {
 			array( $this, 'render_performance_page' )
 		);
 
-		$this->register_plugin_submenu_page(
-			null,
-			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
-			__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
-			array( $this, 'render_white_label_page' )
-		);
+		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+			$this->register_plugin_submenu_page(
+				null,
+				__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
+				__( 'White Label', EDMINBOOST_TEXT_DOMAIN ),
+				self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
+				array( $this, 'render_white_label_page' )
+			);
+		}
 
 		// Legacy slugs — redirect to Dashboard (not shown in sidebar).
 		$this->register_plugin_submenu_page(
@@ -528,6 +530,7 @@ class EDMINBOOST_Admin {
 
 		$localize = array(
 			'version'             => EDMINBOOST_VERSION,
+			'isPremiumBuild'      => EDMINBOOST_Pro::is_premium_build(),
 			'isPro'               => EDMINBOOST_Pro::is_active(),
 			'billingUrl'          => EDMINBOOST_Pro::get_billing_url(),
 			'canSaveCustomPreset' => EDMINBOOST_Pro::can_save_custom_preset(),
@@ -628,6 +631,10 @@ class EDMINBOOST_Admin {
 		$presets = array();
 
 		foreach ( EDMINBOOST_Command_Center::get_picker_presets( true ) as $preset_id => $preset ) {
+			if ( ! EDMINBOOST_Pro::include_preset_in_ui( $preset_id, 'layout' ) ) {
+				continue;
+			}
+
 			$presets[ $preset_id ] = array(
 				'name'           => isset( $preset['name'] ) ? $preset['name'] : $preset_id,
 				'description'    => isset( $preset['description'] ) ? $preset['description'] : '',

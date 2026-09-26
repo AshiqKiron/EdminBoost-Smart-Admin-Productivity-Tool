@@ -19,6 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 	</header>
 
+	<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
 	<section class="edminboost-card edminboost-cc-section edminboost-pro-section<?php echo EDMINBOOST_Pro::is_active() ? '' : ' is-pro-locked'; ?>" id="edminboost-backup-section"<?php echo EDMINBOOST_Pro::feature_attr( 'export_import' ); ?>>
 		<h2><?php esc_html_e( 'Backup & restore', EDMINBOOST_TEXT_DOMAIN ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></h2>
 		<p class="description"><?php esc_html_e( 'Export or import all EdminBoost settings as JSON. Does not include media files referenced by attachment IDs.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
@@ -62,4 +63,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 		</p>
 		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 	</section>
+	<?php else : ?>
+		<p class="description"><?php esc_html_e( 'Save settings on each Command Center tab. Each page has its own Save button.', EDMINBOOST_TEXT_DOMAIN ); ?></p>
+	<?php endif; ?>
 </div>

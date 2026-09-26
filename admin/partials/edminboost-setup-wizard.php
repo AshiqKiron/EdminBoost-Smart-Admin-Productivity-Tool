@@ -69,7 +69,7 @@ $edminboost_preset_picker_mode = 'wizard';
 
 	<div class="edminboost-setup-step is-active" id="edminboost-setup-step-1" data-step="1" role="tabpanel" aria-labelledby="edminboost-setup-step-1-heading">
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-setup-step-1-heading">
-			<h2 id="edminboost-setup-step-1-heading"><?php esc_html_e( 'Choose a layout preset', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-setup-step-1-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'layout_preset' ); ?><?php esc_html_e( 'Choose a layout preset', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
 				<?php esc_html_e( 'Pick a scenario or role-based template for which admin links appear in your top bar.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
@@ -83,7 +83,7 @@ $edminboost_preset_picker_mode = 'wizard';
 
 	<div class="edminboost-setup-step" id="edminboost-setup-step-3" data-step="3" role="tabpanel" aria-labelledby="edminboost-setup-step-3-heading" hidden>
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-setup-step-3-heading">
-			<h2 id="edminboost-setup-step-3-heading"><?php esc_html_e( 'Review your top bar', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-setup-step-3-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'setup_wizard_topbar' ); ?><?php esc_html_e( 'Review your top bar', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
 				<?php esc_html_e( 'These links will appear in your Command Center top bar. Open the full editor for fine-tuning.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
@@ -97,7 +97,7 @@ $edminboost_preset_picker_mode = 'wizard';
 
 	<div class="edminboost-setup-step" id="edminboost-setup-step-4" data-step="4" role="tabpanel" aria-labelledby="edminboost-setup-step-4-heading" hidden>
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-setup-step-4-heading">
-			<h2 id="edminboost-setup-step-4-heading"><?php esc_html_e( 'Review and save', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
+			<h2 id="edminboost-setup-step-4-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'setup_wizard_review' ); ?><?php esc_html_e( 'Review and save', EDMINBOOST_TEXT_DOMAIN ); ?></h2>
 			<p class="description">
 				<?php esc_html_e( 'Confirm your choices, then save to launch your Command Center.', EDMINBOOST_TEXT_DOMAIN ); ?>
 			</p>
