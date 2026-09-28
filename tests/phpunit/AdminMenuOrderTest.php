@@ -11,13 +11,32 @@
 class AdminMenuOrderTest extends Edminboost_Test_Case {
 
 	/**
+	 * Ensure EdminBoost submenu entries exist (Freemius may clear $submenu on admin_menu).
+	 *
+	 * @return void
+	 */
+	private function ensure_edminboost_submenu() {
+		global $submenu;
+
+		$slug = EDMINBOOST_Admin::PAGE_SLUG;
+
+		if ( ! empty( $submenu[ $slug ] ) && is_array( $submenu[ $slug ] ) ) {
+			return;
+		}
+
+		$admin = new EDMINBOOST_Admin( new EDMINBOOST_Features() );
+		$admin->register_menu();
+		$admin->normalize_plugin_submenu();
+	}
+
+	/**
 	 * Dashboard is the first EdminBoost submenu item.
 	 */
 	public function test_dashboard_is_first_plugin_submenu() {
 		global $submenu;
 
 		set_current_screen( 'toplevel_page_' . EDMINBOOST_Admin::PAGE_SLUG );
-		do_action( 'admin_menu' );
+		$this->ensure_edminboost_submenu();
 
 		$slug = EDMINBOOST_Admin::PAGE_SLUG;
 
@@ -27,25 +46,27 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$first = reset( $submenu[ $slug ] );
 
 		$this->assertSame( $slug, $first[2] );
-		$this->assertSame( __( 'Dashboard', 'edminboost' ), wp_strip_all_tags( $first[0] ) );
+		$this->assertSame( __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ), wp_strip_all_tags( $first[0] ) );
 
 		$labels = array();
 		foreach ( $submenu[ $slug ] as $item ) {
 			$labels[] = wp_strip_all_tags( (string) $item[0] ) . ' (' . $item[2] . ')';
 		}
 
-		$this->assertSame(
-			array(
-				__( 'Dashboard', 'edminboost' ) . ' (' . $slug . ')',
-				__( 'Layouts', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_PRESETS . ')',
-				__( 'Theme', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
-				__( 'Top Bar', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MAPPER . ')',
-				__( 'Menu Studio', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
-				__( 'Billing', 'edminboost' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')',
-				__( 'Settings', 'edminboost' ) . ' (' . $slug . '-settings)',
-			),
-			$labels
+		$expected = array(
+			__( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . ')',
+			__( 'Layouts', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_PRESETS . ')',
+			__( 'Theme', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
+			__( 'Top Bar', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MAPPER . ')',
+			__( 'Menu Studio', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
+			__( 'Billing', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')',
 		);
+
+		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+			$expected[] = __( 'Settings', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . '-settings)';
+		}
+
+		$this->assertSame( $expected, $labels );
 	}
 
 	/**
@@ -74,12 +95,16 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		);
 
 		set_current_screen( 'toplevel_page_' . $slug );
-		do_action( 'admin_menu' );
+		$this->ensure_edminboost_submenu();
+		EDMINBOOST_Menu_Studio::apply_menu_changes();
+
+		$admin = new EDMINBOOST_Admin( new EDMINBOOST_Features() );
+		$admin->normalize_plugin_submenu();
 
 		$first = reset( $submenu[ $slug ] );
 
 		$this->assertSame( $slug, $first[2] );
-		$this->assertSame( __( 'Dashboard', 'edminboost' ), wp_strip_all_tags( $first[0] ) );
+		$this->assertSame( __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ), wp_strip_all_tags( $first[0] ) );
 	}
 
 	/**
@@ -89,7 +114,7 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		global $title;
 
 		$title = null;
-		do_action( 'admin_menu' );
+		$this->ensure_edminboost_submenu();
 
 		$slug = EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY;
 		$hook = get_plugin_page_hookname( $slug, null );
@@ -97,6 +122,6 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$title = null;
 		do_action( "load-{$hook}" );
 
-		$this->assertSame( __( 'Productivity', 'edminboost' ), $title );
+		$this->assertSame( __( 'Productivity', 'edminboost-smart-admin-productivity-tool' ), $title );
 	}
 }

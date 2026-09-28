@@ -30,13 +30,13 @@ EdminBoost is a smart admin productivity plugin for WordPress. It helps site adm
 1. Upload the plugin folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Go to **EdminBoost** in the admin sidebar to get started.
-4. Open **Settings** to enable individual productivity features.
+4. Use **Productivity**, **Security**, and **Performance** in the Command Center tabs to enable individual tools (Settings export/import is available on Pro builds).
 
 == Frequently Asked Questions ==
 
 = What does this plugin do? =
 
-EdminBoost provides modular admin productivity tools. Each feature can be enabled or disabled independently from the Settings page.
+EdminBoost provides modular admin productivity tools. Each feature can be enabled or disabled independently from the Productivity, Security, and Performance tabs in the Command Center.
 
 = Who can access the plugin settings? =
 
@@ -48,7 +48,7 @@ No. EdminBoost does not track users or send site data to external servers. Optio
 
 = Are features locked behind a paid plan? =
 
-No. The WordPress.org build includes every Command Center and feature tool with no in-plugin license checks or trial limits. The Billing page describes optional commercial licenses for direct support and multi-site licensing — not locked functionality.
+Yes, on the free WordPress.org build. Core layout, theme, Menu Studio reorder/hide, and productivity tools are included. Pro features (drawer panels, badges, role visibility matrix, extra presets and theme skins, White Label, backup/import, login redirects, custom sidebar links, and related options) require a Pro or Agency license on the direct-download build or are omitted from the free admin UI. The Billing page lists what each plan includes.
 
 = Is the plugin uninstall-safe? =
 
@@ -57,7 +57,11 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
-* WordPress.org build: ship the full Command Center (White Label, drawer/badges, backup/import, all layout/theme presets, role visibility) with no license checks, Pro badges, or locked controls.
+* Fix Dashboard layout sidebar preview overlapping WordPress admin flyout submenus after setup completes.
+* WordPress.org build: omit Appearance extras from the Dashboard setup wizard (step 2 keeps visual theme only); configure extras on the Theme page after setup.
+* Gate scheduled dark mode as a Pro feature: free plans cannot save or apply a dark-mode schedule; premium Free builds show a locked control with upgrade prompt.
+* WordPress.org build: restore Free vs Pro gating aligned with the Billing page — omit Pro-only admin UI on the free package, enforce plan limits on save and at runtime, and show upgrade prompts on the premium build when Pro is inactive.
+* WordPress.org build: hide the Settings tab (JSON export/import) and the Plugins screen Settings shortcut; Pro and direct-download builds keep the Settings page.
 * Fix Appearance extras live preview on the Dashboard setup wizard and Theme page so font size, admin background, and post status row colors update as you edit the fields.
 * Add setting help info icons with tooltips on all Dashboard setup wizard controls (layout, theme, top bar review, and save summary).
 * Replace inline script and style tags with WordPress enqueue APIs for menu duplication, theme overrides, drawer iframe chrome, and hide Screen Options/Help.

@@ -66,13 +66,13 @@ class EDMINBOOST_Custom_Admin_Columns extends EDMINBOOST_Feature_Base {
 
 			if ( 'title' === $key ) {
 				if ( ! empty( $config['thumbnail'] ) ) {
-					$new['edminboost_thumb'] = __( 'Image', 'edminboost' );
+					$new['edminboost_thumb'] = __( 'Image', 'edminboost-smart-admin-productivity-tool' );
 				}
 				if ( ! empty( $config['id'] ) ) {
-					$new['edminboost_id'] = __( 'ID', 'edminboost' );
+					$new['edminboost_id'] = __( 'ID', 'edminboost-smart-admin-productivity-tool' );
 				}
 				if ( ! empty( $config['post_meta_key'] ) ) {
-					$new['edminboost_meta'] = __( 'Meta', 'edminboost' );
+					$new['edminboost_meta'] = __( 'Meta', 'edminboost-smart-admin-productivity-tool' );
 				}
 			}
 		}

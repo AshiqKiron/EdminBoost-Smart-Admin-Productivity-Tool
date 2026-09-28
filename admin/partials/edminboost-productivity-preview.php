@@ -50,17 +50,17 @@ $edminboost_dashboard_widgets_enabled = ! empty( $edminboost_features['dashboard
 $edminboost_preview_meta = array(
 	'notices'           => array(
 		'id'          => 'edminboost-productivity-notices-preview',
-		'aria_label'  => __( 'Admin notices live preview', 'edminboost' ),
+		'aria_label'  => __( 'Admin notices live preview', 'edminboost-smart-admin-productivity-tool' ),
 		'preview_key' => 'hide_admin_notices',
 	),
 	'screen_help'       => array(
 		'id'          => 'edminboost-productivity-screen-preview',
-		'aria_label'  => __( 'Screen tabs live preview', 'edminboost' ),
+		'aria_label'  => __( 'Screen tabs live preview', 'edminboost-smart-admin-productivity-tool' ),
 		'preview_key' => 'hide_screen_help',
 	),
 	'dashboard_widgets' => array(
 		'id'          => 'edminboost-productivity-dashboard-preview',
-		'aria_label'  => __( 'Dashboard widgets live preview', 'edminboost' ),
+		'aria_label'  => __( 'Dashboard widgets live preview', 'edminboost-smart-admin-productivity-tool' ),
 		'preview_key' => '',
 	),
 );
@@ -69,31 +69,31 @@ $edminboost_notice_items = array(
 	array(
 		'removable' => true,
 		'class'     => 'notice-success is-dismissible',
-		'message'   => __( 'Settings saved.', 'edminboost' ),
+		'message'   => __( 'Settings saved.', 'edminboost-smart-admin-productivity-tool' ),
 	),
 	array(
 		'removable' => true,
 		'class'     => 'notice-info',
-		'message'   => __( 'There is a new version available.', 'edminboost' ),
+		'message'   => __( 'There is a new version available.', 'edminboost-smart-admin-productivity-tool' ),
 	),
 	array(
 		'removable' => false,
 		'class'     => 'notice-warning',
-		'message'   => __( 'Your site is running an outdated PHP version.', 'edminboost' ),
+		'message'   => __( 'Your site is running an outdated PHP version.', 'edminboost-smart-admin-productivity-tool' ),
 	),
 	array(
 		'removable' => false,
 		'class'     => 'notice-error',
-		'message'   => __( 'Plugin could not be activated.', 'edminboost' ),
+		'message'   => __( 'Plugin could not be activated.', 'edminboost-smart-admin-productivity-tool' ),
 	),
 );
 
 $edminboost_screen_tabs = array(
 	array(
-		'label' => __( 'Screen Options', 'edminboost' ),
+		'label' => __( 'Screen Options', 'edminboost-smart-admin-productivity-tool' ),
 	),
 	array(
-		'label' => __( 'Help', 'edminboost' ),
+		'label' => __( 'Help', 'edminboost-smart-admin-productivity-tool' ),
 	),
 );
 
@@ -117,7 +117,7 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 		data-preview-toggle="<?php echo esc_attr( $edminboost_current_preview['preview_key'] ); ?>"
 	<?php endif; ?>
 >
-	<p class="edminboost-productivity-preview__lead"><?php esc_html_e( 'Live preview', 'edminboost' ); ?></p>
+	<p class="edminboost-productivity-preview__lead"><?php esc_html_e( 'Live preview', 'edminboost-smart-admin-productivity-tool' ); ?></p>
 
 	<div class="edminboost-productivity-preview__canvas edminboost-productivity-preview__canvas--<?php echo esc_attr( $edminboost_preview ); ?>">
 		<?php if ( 'notices' === $edminboost_preview ) : ?>
@@ -136,18 +136,18 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 					if ( ! empty( $edminboost_notice_item['removable'] ) ) {
 						$edminboost_tooltip_loaded = sprintf(
 							/* translators: %s: notice message */
-							__( '%s — Visible', 'edminboost' ),
+							__( '%s — Visible', 'edminboost-smart-admin-productivity-tool' ),
 							$edminboost_notice_item['message']
 						);
 						$edminboost_tooltip_removed = sprintf(
 							/* translators: %s: notice message */
-							__( '%s — Hidden', 'edminboost' ),
+							__( '%s — Hidden', 'edminboost-smart-admin-productivity-tool' ),
 							$edminboost_notice_item['message']
 						);
 					} else {
 						$edminboost_tooltip_loaded = sprintf(
 							/* translators: %s: notice message */
-							__( '%s — Always visible', 'edminboost' ),
+							__( '%s — Always visible', 'edminboost-smart-admin-productivity-tool' ),
 							$edminboost_notice_item['message']
 						);
 						$edminboost_tooltip_removed = $edminboost_tooltip_loaded;
@@ -168,7 +168,7 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 						<p><?php echo esc_html( $edminboost_notice_item['message'] ); ?></p>
 						<?php if ( false !== strpos( $edminboost_notice_item['class'], 'is-dismissible' ) ) : ?>
 							<button type="button" class="notice-dismiss" tabindex="-1" aria-hidden="true">
-								<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'edminboost' ); ?></span>
+								<span class="screen-reader-text"><?php esc_html_e( 'Dismiss this notice.', 'edminboost-smart-admin-productivity-tool' ); ?></span>
 							</button>
 						<?php endif; ?>
 						<span class="edminboost-productivity-preview__tooltip" role="tooltip"><?php echo esc_html( $edminboost_tooltip_text ); ?></span>
@@ -182,7 +182,7 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 				<div class="edminboost-productivity-preview__topbar"></div>
 				<div class="edminboost-productivity-preview__main">
 					<div class="edminboost-productivity-preview__dashboard">
-						<p class="edminboost-productivity-preview__dashboard-heading"><?php esc_html_e( 'Dashboard', 'edminboost' ); ?></p>
+						<p class="edminboost-productivity-preview__dashboard-heading"><?php esc_html_e( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ); ?></p>
 						<?php foreach ( $edminboost_dashboard_widget_layout as $edminboost_area => $edminboost_widget_keys ) : ?>
 							<div class="edminboost-productivity-preview__dashboard-area edminboost-productivity-preview__dashboard-area--<?php echo esc_attr( $edminboost_area ); ?>">
 								<?php foreach ( $edminboost_widget_keys as $edminboost_widget_key ) : ?>
@@ -200,12 +200,12 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 
 									$edminboost_tooltip_loaded = sprintf(
 										/* translators: %s: dashboard widget label */
-										__( '%s — Visible', 'edminboost' ),
+										__( '%s — Visible', 'edminboost-smart-admin-productivity-tool' ),
 										$edminboost_widget_label
 									);
 									$edminboost_tooltip_removed = sprintf(
 										/* translators: %s: dashboard widget label */
-										__( '%s — Removed', 'edminboost' ),
+										__( '%s — Removed', 'edminboost-smart-admin-productivity-tool' ),
 										$edminboost_widget_label
 									);
 									$edminboost_tooltip_text = $edminboost_is_removed ? $edminboost_tooltip_removed : $edminboost_tooltip_loaded;
@@ -227,11 +227,11 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 												case 'remove_welcome_panel':
 													?>
 													<div class="edminboost-productivity-preview__welcome">
-														<p class="edminboost-productivity-preview__welcome-lead"><?php esc_html_e( 'Welcome to WordPress!', 'edminboost' ); ?></p>
+														<p class="edminboost-productivity-preview__welcome-lead"><?php esc_html_e( 'Welcome to WordPress!', 'edminboost-smart-admin-productivity-tool' ); ?></p>
 														<p class="edminboost-productivity-preview__welcome-links">
-															<span><?php esc_html_e( 'Customize your site', 'edminboost' ); ?></span>
+															<span><?php esc_html_e( 'Customize your site', 'edminboost-smart-admin-productivity-tool' ); ?></span>
 															<span aria-hidden="true">&middot;</span>
-															<span><?php esc_html_e( 'Write your first post', 'edminboost' ); ?></span>
+															<span><?php esc_html_e( 'Write your first post', 'edminboost-smart-admin-productivity-tool' ); ?></span>
 														</p>
 													</div>
 													<?php
@@ -240,9 +240,9 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 												case 'remove_at_a_glance':
 													?>
 													<ul class="edminboost-productivity-preview__glance">
-														<li><?php esc_html_e( '1 Post', 'edminboost' ); ?></li>
-														<li><?php esc_html_e( '1 Page', 'edminboost' ); ?></li>
-														<li><?php esc_html_e( '1 Comment', 'edminboost' ); ?></li>
+														<li><?php esc_html_e( '1 Post', 'edminboost-smart-admin-productivity-tool' ); ?></li>
+														<li><?php esc_html_e( '1 Page', 'edminboost-smart-admin-productivity-tool' ); ?></li>
+														<li><?php esc_html_e( '1 Comment', 'edminboost-smart-admin-productivity-tool' ); ?></li>
 													</ul>
 													<?php
 													break;
@@ -252,11 +252,11 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 													<ul class="edminboost-productivity-preview__activity">
 														<li>
 															<span class="dashicons dashicons-admin-comments" aria-hidden="true"></span>
-															<?php esc_html_e( 'Comment on Hello world!', 'edminboost' ); ?>
+															<?php esc_html_e( 'Comment on Hello world!', 'edminboost-smart-admin-productivity-tool' ); ?>
 														</li>
 														<li>
 															<span class="dashicons dashicons-admin-post" aria-hidden="true"></span>
-															<?php esc_html_e( 'Hello world! published', 'edminboost' ); ?>
+															<?php esc_html_e( 'Hello world! published', 'edminboost-smart-admin-productivity-tool' ); ?>
 														</li>
 													</ul>
 													<?php
@@ -265,8 +265,8 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 												case 'remove_site_health':
 													?>
 													<div class="edminboost-productivity-preview__site-health">
-														<span class="edminboost-productivity-preview__site-health-badge"><?php esc_html_e( 'Good', 'edminboost' ); ?></span>
-														<p><?php esc_html_e( 'Your site\'s health is looking good.', 'edminboost' ); ?></p>
+														<span class="edminboost-productivity-preview__site-health-badge"><?php esc_html_e( 'Good', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+														<p><?php esc_html_e( 'Your site\'s health is looking good.', 'edminboost-smart-admin-productivity-tool' ); ?></p>
 													</div>
 													<?php
 													break;
@@ -275,14 +275,14 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 													?>
 													<div class="edminboost-productivity-preview__quick-draft">
 														<p class="edminboost-productivity-preview__quick-draft-field">
-															<span class="edminboost-productivity-preview__quick-draft-label"><?php esc_html_e( 'Title', 'edminboost' ); ?></span>
+															<span class="edminboost-productivity-preview__quick-draft-label"><?php esc_html_e( 'Title', 'edminboost-smart-admin-productivity-tool' ); ?></span>
 															<span class="edminboost-productivity-preview__quick-draft-input"></span>
 														</p>
 														<p class="edminboost-productivity-preview__quick-draft-field">
-															<span class="edminboost-productivity-preview__quick-draft-label"><?php esc_html_e( 'Content', 'edminboost' ); ?></span>
+															<span class="edminboost-productivity-preview__quick-draft-label"><?php esc_html_e( 'Content', 'edminboost-smart-admin-productivity-tool' ); ?></span>
 															<span class="edminboost-productivity-preview__quick-draft-textarea"></span>
 														</p>
-														<span class="button button-small"><?php esc_html_e( 'Save Draft', 'edminboost' ); ?></span>
+														<span class="button button-small"><?php esc_html_e( 'Save Draft', 'edminboost-smart-admin-productivity-tool' ); ?></span>
 													</div>
 													<?php
 													break;
@@ -290,8 +290,8 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 												case 'remove_wp_news':
 													?>
 													<ul class="edminboost-productivity-preview__news">
-														<li><?php esc_html_e( 'WordCamp US 2026 announced', 'edminboost' ); ?></li>
-														<li><?php esc_html_e( 'WordPress 6.9 release candidate', 'edminboost' ); ?></li>
+														<li><?php esc_html_e( 'WordCamp US 2026 announced', 'edminboost-smart-admin-productivity-tool' ); ?></li>
+														<li><?php esc_html_e( 'WordPress 6.9 release candidate', 'edminboost-smart-admin-productivity-tool' ); ?></li>
 													</ul>
 													<?php
 													break;
@@ -319,12 +319,12 @@ $edminboost_current_preview = $edminboost_preview_meta[ $edminboost_preview ];
 
 						$edminboost_tooltip_loaded = sprintf(
 							/* translators: %s: screen tab label */
-							__( '%s — Visible', 'edminboost' ),
+							__( '%s — Visible', 'edminboost-smart-admin-productivity-tool' ),
 							$edminboost_screen_tab['label']
 						);
 						$edminboost_tooltip_removed = sprintf(
 							/* translators: %s: screen tab label */
-							__( '%s — Hidden', 'edminboost' ),
+							__( '%s — Hidden', 'edminboost-smart-admin-productivity-tool' ),
 							$edminboost_screen_tab['label']
 						);
 						$edminboost_tooltip_text = $edminboost_is_removed ? $edminboost_tooltip_removed : $edminboost_tooltip_loaded;

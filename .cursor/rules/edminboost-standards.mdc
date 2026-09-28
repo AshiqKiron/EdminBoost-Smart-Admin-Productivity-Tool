@@ -19,10 +19,10 @@ Cross-cutting quality standards. See also: `edminboost-project.mdc` (architectur
 ## I18N
 
 - All user-facing strings must be translatable.
-- Use `EDMINBOOST_TEXT_DOMAIN` consistently (`edminboost` — matches the plugin header, distinct from `EDMINBOOST_PLUGIN_SLUG`).
+- Use `EDMINBOOST_TEXT_DOMAIN` consistently (`edminboost-smart-admin-productivity-tool` — matches the plugin slug and header `Text Domain`, same value as `EDMINBOOST_PLUGIN_SLUG`).
 - Use `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, etc. appropriately.
-- Feature `$name` and `$description` on `EDMINBOOST_Feature_Base` are translated via `get_name()` / `get_description()` (literal `'edminboost'` domain with phpcs ignore for dynamic literals).
-- Plugin header declares `Text Domain: edminboost` and `Domain Path: /languages`; bootstrap defines `EDMINBOOST_TEXT_DOMAIN`. No separate i18n loader class — use `'edminboost'` or `EDMINBOOST_TEXT_DOMAIN` in translation calls.
+- Feature `$name` and `$description` on `EDMINBOOST_Feature_Base` are translated via `get_name()` / `get_description()` (literal slug text domain with phpcs ignore for dynamic literals).
+- Plugin header declares `Text Domain: edminboost-smart-admin-productivity-tool` and `Domain Path: /languages`; bootstrap defines `EDMINBOOST_TEXT_DOMAIN`. No `load_plugin_textdomain()` call — WordPress auto-loads from `/languages` when the header domain matches the plugin slug; always pass `EDMINBOOST_TEXT_DOMAIN` (or the same literal) in translation calls.
 
 ## Accessibility
 
@@ -36,7 +36,7 @@ Cross-cutting quality standards. See also: `edminboost-project.mdc` (architectur
 
 - Add notices sparingly and only when relevant.
 - Any notice must be dismissible or disappear when resolved.
-- Do not place ads or upsells outside the plugin's own screens unless absolutely necessary and policy-safe.
+- Do not place ads or upsells outside the plugin's own screens unless absolutely necessary and policy-safe. Pro upgrade prompts belong on EdminBoost admin screens only (premium build when Pro is inactive); WordPress.org omits Pro upsell UI via `shows_pro_settings_ui()`.
 - Avoid cluttering the admin menu.
 - Load plugin-screen assets only on this plugin's pages; exceptions: `edminboost-themes` CSS on all wp-admin when the visual theme is active; `edminboost-command-center-bar` CSS/JS on Layout Studio (mapper drawer preview) and when the CC bar is active (admin bar showing); drawer shell when active or on mapper (admin + front end when admin bar shows).
 - Features must respect the global `enabled` kill switch via `EDMINBOOST_Settings::is_enabled()`.

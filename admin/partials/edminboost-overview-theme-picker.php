@@ -32,6 +32,9 @@ $edminboost_preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
 		aria-hidden="true"
 	>
 		<?php foreach ( $edminboost_theme_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
+			<?php if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) : ?>
+				<?php continue; ?>
+			<?php endif; ?>
 			<option value="<?php echo esc_attr( $edminboost_preset_id ); ?>" <?php selected( $edminboost_active_preset, $edminboost_preset_id ); ?>>
 				<?php echo esc_html( $edminboost_preset['name'] ); ?>
 			</option>
@@ -71,11 +74,14 @@ $edminboost_preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
 			class="edminboost-theme-preset-picker__list"
 			id="edminboost-theme-preset-list"
 			role="listbox"
-			aria-label="<?php esc_attr_e( 'Color theme', 'edminboost' ); ?>"
+			aria-label="<?php esc_attr_e( 'Color theme', 'edminboost-smart-admin-productivity-tool' ); ?>"
 			hidden
 		>
 			<?php foreach ( $edminboost_theme_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
 				<?php
+				if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) {
+					continue;
+				}
 				$edminboost_option_colors = EDMINBOOST_Theme::resolve_preview_colors(
 					$edminboost_preset_id,
 					$edminboost_theme_mode,

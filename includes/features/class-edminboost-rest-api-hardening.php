@@ -67,7 +67,7 @@ class EDMINBOOST_Rest_Api_Hardening extends EDMINBOOST_Feature_Base {
 		if ( ! is_user_logged_in() ) {
 			return new WP_Error(
 				'rest_forbidden',
-				__( 'REST API restricted to authenticated users.', 'edminboost' ),
+				__( 'REST API restricted to authenticated users.', 'edminboost-smart-admin-productivity-tool' ),
 				array( 'status' => 401 )
 			);
 		}

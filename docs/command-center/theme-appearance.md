@@ -45,7 +45,7 @@ Each preset defines six tokens used across the UI:
 
 Optional **schedule** switches to dark mode between a **start** and **end** time (24-hour fields, e.g. 18:00–06:00). Enable the schedule toggle, then set times in the dependent options panel.
 
-Scheduled dark mode may be Pro-gated in premium Free builds; available on WordPress.org.
+Scheduled dark mode is a Pro feature (premium builds show a locked control; free plans cannot save or apply a schedule).
 
 ## Font
 

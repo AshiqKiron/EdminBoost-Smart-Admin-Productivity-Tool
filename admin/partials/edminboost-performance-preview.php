@@ -41,12 +41,12 @@ $edminboost_preview_style_vars        = sprintf(
 
 $edminboost_preview_copy = array(
 	'emoji'  => array(
-		'lead' => __( 'Live preview', 'edminboost' ),
-		'desc' => __( 'Shows emoji scripts and styles that load or are removed in each scope.', 'edminboost' ),
+		'lead' => __( 'Live preview', 'edminboost-smart-admin-productivity-tool' ),
+		'desc' => __( 'Shows emoji scripts and styles that load or are removed in each scope.', 'edminboost-smart-admin-productivity-tool' ),
 	),
 	'assets' => array(
-		'lead' => __( 'Live preview', 'edminboost' ),
-		'desc' => __( 'Shows front-end and script assets affected by the toggles above.', 'edminboost' ),
+		'lead' => __( 'Live preview', 'edminboost-smart-admin-productivity-tool' ),
+		'desc' => __( 'Shows front-end and script assets affected by the toggles above.', 'edminboost-smart-admin-productivity-tool' ),
 	),
 );
 
@@ -58,19 +58,19 @@ if ( 'emoji' === $edminboost_preview ) :
 	}
 
 	$edminboost_emoji_areas = array(
-		'admin'    => __( 'Admin', 'edminboost' ),
-		'frontend' => __( 'Front end', 'edminboost' ),
+		'admin'    => __( 'Admin', 'edminboost-smart-admin-productivity-tool' ),
+		'frontend' => __( 'Front end', 'edminboost-smart-admin-productivity-tool' ),
 	);
 
 	$edminboost_emoji_assets = array(
 		array(
 			'key'  => 'emoji-script',
-			'type' => __( 'Script', 'edminboost' ),
+			'type' => __( 'Script', 'edminboost-smart-admin-productivity-tool' ),
 			'code' => 'wp-emoji-release.min.js',
 		),
 		array(
 			'key'  => 'emoji-style',
-			'type' => __( 'Style', 'edminboost' ),
+			'type' => __( 'Style', 'edminboost-smart-admin-productivity-tool' ),
 			'code' => 'wp-emoji-styles-inline-css',
 		),
 	);
@@ -80,7 +80,7 @@ if ( 'emoji' === $edminboost_preview ) :
 		class="edminboost-performance-preview"
 		style="<?php echo esc_attr( $edminboost_preview_style_vars ); ?>"
 		role="region"
-		aria-label="<?php esc_attr_e( 'Emoji scripts live preview', 'edminboost' ); ?>"
+		aria-label="<?php esc_attr_e( 'Emoji scripts live preview', 'edminboost-smart-admin-productivity-tool' ); ?>"
 		aria-live="polite"
 	>
 		<p class="edminboost-performance-preview__lead"><?php echo esc_html( $edminboost_preview_copy['emoji']['lead'] ); ?></p>
@@ -95,7 +95,7 @@ if ( 'emoji' === $edminboost_preview ) :
 				}
 				$edminboost_panel_tooltip = sprintf(
 					/* translators: %s: admin area label such as Admin or Front end */
-					__( '%s emoji assets preview', 'edminboost' ),
+					__( '%s emoji assets preview', 'edminboost-smart-admin-productivity-tool' ),
 					$edminboost_area_label
 				);
 				?>
@@ -117,13 +117,13 @@ if ( 'emoji' === $edminboost_preview ) :
 
 							$edminboost_tooltip_loaded = sprintf(
 								/* translators: 1: asset type label, 2: asset file name */
-								__( '%1$s: %2$s — Loaded', 'edminboost' ),
+								__( '%1$s: %2$s — Loaded', 'edminboost-smart-admin-productivity-tool' ),
 								$edminboost_asset['type'],
 								$edminboost_asset['code']
 							);
 							$edminboost_tooltip_removed = sprintf(
 								/* translators: 1: asset type label, 2: asset file name */
-								__( '%1$s: %2$s — Removed', 'edminboost' ),
+								__( '%1$s: %2$s — Removed', 'edminboost-smart-admin-productivity-tool' ),
 								$edminboost_asset['type'],
 								$edminboost_asset['code']
 							);
@@ -152,16 +152,16 @@ if ( 'emoji' === $edminboost_preview ) :
 elseif ( 'assets' === $edminboost_preview ) :
 	$edminboost_asset_previews = array(
 		'remove_asset_versions'     => array(
-			'label'  => __( 'Script URL', 'edminboost' ),
+			'label'  => __( 'Script URL', 'edminboost-smart-admin-productivity-tool' ),
 			'code'   => '/wp-includes/js/jquery/jquery.min.js',
 			'suffix' => '?ver=3.7.1',
 		),
 		'remove_dashicons_frontend' => array(
-			'label' => __( 'Stylesheet (visitors)', 'edminboost' ),
+			'label' => __( 'Stylesheet (visitors)', 'edminboost-smart-admin-productivity-tool' ),
 			'code'  => 'dashicons.min.css',
 		),
 		'disable_embeds'            => array(
-			'label' => __( 'Embed assets', 'edminboost' ),
+			'label' => __( 'Embed assets', 'edminboost-smart-admin-productivity-tool' ),
 			'code'  => 'wp-embed.min.js + oEmbed discovery',
 		),
 	);
@@ -171,7 +171,7 @@ elseif ( 'assets' === $edminboost_preview ) :
 		class="edminboost-performance-preview"
 		style="<?php echo esc_attr( $edminboost_preview_style_vars ); ?>"
 		role="region"
-		aria-label="<?php esc_attr_e( 'Assets live preview', 'edminboost' ); ?>"
+		aria-label="<?php esc_attr_e( 'Assets live preview', 'edminboost-smart-admin-productivity-tool' ); ?>"
 		aria-live="polite"
 	>
 		<p class="edminboost-performance-preview__lead"><?php echo esc_html( $edminboost_preview_copy['assets']['lead'] ); ?></p>
@@ -192,13 +192,13 @@ elseif ( 'assets' === $edminboost_preview ) :
 
 				$edminboost_tooltip_loaded = sprintf(
 					/* translators: 1: asset label, 2: asset identifier */
-					__( '%1$s: %2$s — Loaded', 'edminboost' ),
+					__( '%1$s: %2$s — Loaded', 'edminboost-smart-admin-productivity-tool' ),
 					$edminboost_asset_preview['label'],
 					$edminboost_asset_code
 				);
 				$edminboost_tooltip_removed = sprintf(
 					/* translators: 1: asset label, 2: asset identifier */
-					__( '%1$s: %2$s — Removed', 'edminboost' ),
+					__( '%1$s: %2$s — Removed', 'edminboost-smart-admin-productivity-tool' ),
 					$edminboost_asset_preview['label'],
 					$edminboost_asset_code
 				);

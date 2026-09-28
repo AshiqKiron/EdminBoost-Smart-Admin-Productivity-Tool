@@ -78,7 +78,7 @@ class EDMINBOOST_Menu_Duplicator extends EDMINBOOST_Feature_Base {
 					admin_url( 'admin.php?action=edminboost_duplicate_menu&menu_id=' . $menu_id ),
 					'edminboost_duplicate_menu_' . $menu_id
 				),
-				'label' => __( 'Duplicate menu', 'edminboost' ),
+				'label' => __( 'Duplicate menu', 'edminboost-smart-admin-productivity-tool' ),
 			)
 		);
 	}
@@ -92,17 +92,17 @@ class EDMINBOOST_Menu_Duplicator extends EDMINBOOST_Feature_Base {
 		$menu_id = isset( $_GET['menu_id'] ) ? absint( $_GET['menu_id'] ) : 0;
 
 		if ( ! $menu_id || ! current_user_can( 'edit_theme_options' ) ) {
-			wp_die( esc_html__( 'You cannot duplicate this menu.', 'edminboost' ) );
+			wp_die( esc_html__( 'You cannot duplicate this menu.', 'edminboost-smart-admin-productivity-tool' ) );
 		}
 
 		check_admin_referer( 'edminboost_duplicate_menu_' . $menu_id );
 
 		$menu = wp_get_nav_menu_object( $menu_id );
 		if ( ! $menu ) {
-			wp_die( esc_html__( 'Menu not found.', 'edminboost' ) );
+			wp_die( esc_html__( 'Menu not found.', 'edminboost-smart-admin-productivity-tool' ) );
 		}
 
-		$new_id = wp_create_nav_menu( $menu->name . ' ' . __( '(Copy)', 'edminboost' ) );
+		$new_id = wp_create_nav_menu( $menu->name . ' ' . __( '(Copy)', 'edminboost-smart-admin-productivity-tool' ) );
 		if ( is_wp_error( $new_id ) ) {
 			wp_die( esc_html( $new_id->get_error_message() ) );
 		}

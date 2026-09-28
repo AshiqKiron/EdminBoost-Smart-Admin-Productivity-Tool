@@ -147,7 +147,9 @@ class EDMINBOOST_Settings {
 		 *
 		 * @param array $settings Merged settings.
 		 */
-		return apply_filters( 'edminboost_settings', $settings );
+		$settings = apply_filters( 'edminboost_settings', $settings );
+
+		return EDMINBOOST_Pro::enforce_plan_limits( $settings );
 	}
 
 	/**
@@ -794,7 +796,7 @@ class EDMINBOOST_Settings {
 			$id => array(
 				'name'          => sprintf(
 					/* translators: %s: preset name */
-					__( '%s (Copy)', 'edminboost' ),
+					__( '%s (Copy)', 'edminboost-smart-admin-productivity-tool' ),
 					$name
 				),
 				'description'   => isset( $source['description'] ) ? $source['description'] : '',

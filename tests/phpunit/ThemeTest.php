@@ -152,6 +152,7 @@ class ThemeTest extends Edminboost_Test_Case {
 	 * Body classes reflect stored theme.
 	 */
 	public function test_get_body_classes() {
+		$this->enable_pro_plan();
 		$this->seed_settings(
 			array(
 				'command_center' => array(
@@ -217,5 +218,24 @@ class ThemeTest extends Edminboost_Test_Case {
 		$this->assertStringContainsString( '--wp-admin-theme-color:#008f2e;', $rules );
 		$this->assertStringContainsString( '--wp-admin-theme-color--rgb:0, 143, 46;', $rules );
 		$this->assertStringContainsString( '--wp-admin-theme-color-darker-10:#006b23;', $rules );
+	}
+
+	/**
+	 * Scheduled dark mode is cleared on free plan theme enforcement.
+	 */
+	public function test_strip_pro_theme_clears_scheduled_dark_mode() {
+		$defaults = EDMINBOOST_Theme::get_defaults();
+		$stripped = EDMINBOOST_Pro::strip_pro_theme(
+			array(
+				'preset'             => 'default',
+				'schedule_dark_mode' => true,
+				'dark_mode_start'    => '20:00',
+				'dark_mode_end'      => '05:00',
+			)
+		);
+
+		$this->assertFalse( $stripped['schedule_dark_mode'] );
+		$this->assertSame( $defaults['dark_mode_start'], $stripped['dark_mode_start'] );
+		$this->assertSame( $defaults['dark_mode_end'], $stripped['dark_mode_end'] );
 	}
 }

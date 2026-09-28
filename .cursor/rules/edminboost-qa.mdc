@@ -18,7 +18,7 @@ bin/
   build-zip-lib.sh        # shared rsync staging for release zips
   build-wporg-zip.sh      # WordPress.org package (excludes includes/pro/)
   build-premium-zip.sh    # Premium/Freemius package
-  verify-wporg-zip.sh     # fail if Freemius or includes/pro/ in org zip
+  verify-wporg-zip.sh     # fail if Freemius, includes/pro/, wp_org_gatekeeper, or bare is_premium (allows is_premium_build identifiers)
   verify-premium-zip.sh   # premium zip sanity checks
   capture-doc-screenshots.mjs  # optional docs screenshots (Playwright)
 tests/
@@ -56,10 +56,12 @@ PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from 
 
 ## PHPUnit Patterns
 
-- Extend `Edminboost_Test_Case` (resets options, resets CC static caches, seeds admin user, calls `EDMINBOOST_Command_Center::ensure_discovery_menu_snapshot()`).
+- Extend `Edminboost_Test_Case` (resets options, resets CC static caches, seeds admin user, calls `EDMINBOOST_Command_Center::ensure_discovery_menu_snapshot()`; `enable_pro_plan()` sets `edminboost_is_pro_active` for Pro-only behavior tests).
 - Use `seed_settings( $overrides )` — merges with `EDMINBOOST_Settings::get_defaults()`.
 - Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar,Theme,AdminMenuOrder}Test.php`.
 - Name tests `test_{behavior}`; target static helpers on bar/CC classes where hook tests are heavy.
+- `SettingsTest::test_text_domain_is_edminboost()` asserts `EDMINBOOST_TEXT_DOMAIN` matches the plugin header / slug (`edminboost-smart-admin-productivity-tool`).
+- Pro gating tests: `ThemeTest::test_strip_pro_theme_clears_scheduled_dark_mode()`; `CommandCenterTest::test_get_page_links()` / `test_get_nav_items()` and `AdminMenuOrderTest` branch on `EDMINBOOST_Pro::shows_pro_settings_ui()` (Settings nav present on premium build only). Use `enable_pro_plan()` in tests that need drawer/badge or Pro-saved options.
 
 ## Playwright Patterns
 

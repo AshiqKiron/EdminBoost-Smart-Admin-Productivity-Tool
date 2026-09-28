@@ -31,11 +31,11 @@ $edminboost_appearance_url = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PA
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<?php if ( ! $edminboost_is_setup ) : ?>
 			<p class="edminboost-home-hero__lead">
-				<?php esc_html_e( 'Set up your Command Center in four quick steps.', 'edminboost' ); ?>
+				<?php esc_html_e( 'Set up your Command Center in four quick steps.', 'edminboost-smart-admin-productivity-tool' ); ?>
 			</p>
 		<?php else : ?>
 			<p class="edminboost-home-hero__lead">
-				<?php esc_html_e( 'All your major admin tools in one place. Configure layout, appearance, and your top bar to build a workflow that works for you.', 'edminboost' ); ?>
+				<?php esc_html_e( 'All your major admin tools in one place. Configure layout, appearance, and your top bar to build a workflow that works for you.', 'edminboost-smart-admin-productivity-tool' ); ?>
 			</p>
 		<?php endif; ?>
 	</header>

@@ -5,9 +5,9 @@
  */
 
 body.edminboost-menu-studio-colors #adminmenu,
-body.edminboost-menu-studio-colors #adminmenu .wp-submenu,
-body.edminboost-menu-studio-colors #adminmenuwrap {
-	background: var(--eb-ms-parent-bg, transparent);
+body.edminboost-menu-studio-colors #adminmenuwrap,
+body.edminboost-menu-studio-colors #adminmenuback {
+	background-color: var(--eb-ms-parent-bg, #1d2327);
 }
 
 body.edminboost-menu-studio-colors #adminmenu a {
@@ -29,7 +29,7 @@ body.edminboost-menu-studio-colors #adminmenu li.wp-has-current-submenu a.wp-has
 
 body.edminboost-menu-studio-colors #adminmenu .wp-submenu,
 body.edminboost-menu-studio-colors #adminmenu .wp-submenu-wrap {
-	background-color: var(--eb-ms-submenu-bg, inherit);
+	background-color: var(--eb-ms-submenu-bg, var(--eb-ms-parent-bg, #2c3338));
 }
 
 body.edminboost-menu-studio-colors #adminmenu .wp-submenu a {

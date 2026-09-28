@@ -34,12 +34,14 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 
 ## Rules
 
+- Feature `$name` / `$description` strings are translated in `EDMINBOOST_Feature_Base::get_name()` / `get_description()` using the slug text domain (see `edminboost-standards.mdc` I18N).
 - Command Center live admin bar (`EDMINBOOST_Command_Center_Bar`) is **not** a feature module — do not add it to `EDMINBOOST_Features`. See `edminboost-command-center.mdc`.
 - Feature IDs: unique `snake_case` matching the `features` settings key.
 - Read settings via `EDMINBOOST_Settings::get_feature_settings( $this->get_id() )` — not `get_option()`.
 - Register hooks only in `register_hooks()`; no side effects in the constructor.
 - Scope hooks to admin unless explicitly broader (e.g. `disable_emojis` uses admin hooks only).
 - Skip plugin screens when a feature would interfere with its own UI — use `EDMINBOOST_Admin::PAGE_SLUG`.
+- **Login redirects** (`login_redirects` feature): settings UI renders only when `EDMINBOOST_Pro::shows_pro_settings_ui()`; free plan values reset in `EDMINBOOST_Pro::enforce_plan_limits()`.
 - Prefer WordPress APIs over inline CSS/JS; inline styles only when justified (`EDMINBOOST_Hide_Notices`).
 - For settings UI labels, expose static helpers (e.g. `get_widget_labels()`, `get_option_labels()`).
 

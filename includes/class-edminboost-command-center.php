@@ -217,15 +217,15 @@ class EDMINBOOST_Command_Center {
 	public static function get_animation_speed_options() {
 		return array(
 			'fast'   => array(
-				'label' => __( 'Fast (150ms)', 'edminboost' ),
+				'label' => __( 'Fast (150ms)', 'edminboost-smart-admin-productivity-tool' ),
 				'ms'    => 150,
 			),
 			'normal' => array(
-				'label' => __( 'Normal (300ms)', 'edminboost' ),
+				'label' => __( 'Normal (300ms)', 'edminboost-smart-admin-productivity-tool' ),
 				'ms'    => 300,
 			),
 			'slow'   => array(
-				'label' => __( 'Slow (500ms)', 'edminboost' ),
+				'label' => __( 'Slow (500ms)', 'edminboost-smart-admin-productivity-tool' ),
 				'ms'    => 500,
 			),
 		);
@@ -298,36 +298,41 @@ class EDMINBOOST_Command_Center {
 	public static function get_page_links() {
 		$base = EDMINBOOST_Admin::PAGE_SLUG;
 
-		return array(
+		$items = array(
 			array(
 				'slug'  => $base,
-				'label' => __( 'Dashboard', 'edminboost' ),
+				'label' => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_PRESETS,
-				'label' => __( 'Layouts', 'edminboost' ),
+				'label' => __( 'Layouts', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_APPEARANCE,
-				'label' => __( 'Theme', 'edminboost' ),
+				'label' => __( 'Theme', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_MAPPER,
-				'label' => __( 'Top Bar', 'edminboost' ),
+				'label' => __( 'Top Bar', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_MENU_STUDIO,
-				'label' => __( 'Menu Studio', 'edminboost' ),
+				'label' => __( 'Menu Studio', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_BILLING,
-				'label' => __( 'Billing', 'edminboost' ),
-			),
-			array(
-				'slug'  => $base . '-settings',
-				'label' => __( 'Settings', 'edminboost' ),
+				'label' => __( 'Billing', 'edminboost-smart-admin-productivity-tool' ),
 			),
 		);
+
+		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+			$items[] = array(
+				'slug'  => $base . '-settings',
+				'label' => __( 'Settings', 'edminboost-smart-admin-productivity-tool' ),
+			);
+		}
+
+		return $items;
 	}
 
 	/**
@@ -341,49 +346,64 @@ class EDMINBOOST_Command_Center {
 		$items = array(
 			array(
 				'slug'  => $base,
-				'label' => __( 'Dashboard', 'edminboost' ),
+				'label' => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_PRESETS,
-				'label' => __( 'Layouts', 'edminboost' ),
+				'label' => __( 'Layouts', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_APPEARANCE,
-				'label' => __( 'Theme', 'edminboost' ),
+				'label' => __( 'Theme', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_MAPPER,
-				'label' => __( 'Top Bar', 'edminboost' ),
+				'label' => __( 'Top Bar', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_MENU_STUDIO,
-				'label' => __( 'Menu Studio', 'edminboost' ),
+				'label' => __( 'Menu Studio', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_PRODUCTIVITY,
-				'label' => __( 'Productivity', 'edminboost' ),
+				'label' => __( 'Productivity', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_SECURITY,
-				'label' => __( 'Security', 'edminboost' ),
+				'label' => __( 'Security', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_PERFORMANCE,
-				'label' => __( 'Performance', 'edminboost' ),
+				'label' => __( 'Performance', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_WHITE_LABEL,
-				'label' => __( 'White Label', 'edminboost' ),
+				'label' => __( 'White Label', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . self::PAGE_BILLING,
-				'label' => __( 'Billing', 'edminboost' ),
+				'label' => __( 'Billing', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'slug'  => $base . '-settings',
-				'label' => __( 'Settings', 'edminboost' ),
+				'label' => __( 'Settings', 'edminboost-smart-admin-productivity-tool' ),
 			),
 		);
+
+		if ( ! EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+			$hidden_slugs = array(
+				$base . self::PAGE_WHITE_LABEL,
+				$base . '-settings',
+			);
+			$items        = array_values(
+				array_filter(
+					$items,
+					function ( $item ) use ( $hidden_slugs ) {
+						return ! isset( $item['slug'] ) || ! in_array( $item['slug'], $hidden_slugs, true );
+					}
+				)
+			);
+		}
 
 		return $items;
 	}
@@ -460,67 +480,67 @@ class EDMINBOOST_Command_Center {
 		return array(
 			'free'   => array(
 				'id'          => 'free',
-				'name'        => __( 'Free', 'edminboost' ),
+				'name'        => __( 'Free', 'edminboost-smart-admin-productivity-tool' ),
 				'price'       => 0,
-				'price_label' => __( '$0', 'edminboost' ),
+				'price_label' => __( '$0', 'edminboost-smart-admin-productivity-tool' ),
 				'sites'       => 0,
-				'sites_label' => __( 'Unlimited sites', 'edminboost' ),
-				'description' => __( 'Core Command Center tools on unlimited WordPress sites.', 'edminboost' ),
+				'sites_label' => __( 'Unlimited sites', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Core Command Center tools on unlimited WordPress sites.', 'edminboost-smart-admin-productivity-tool' ),
 				'features'    => array(
-					__( 'Dashboard setup wizard', 'edminboost' ),
-					__( 'Top bar builder (redirect links)', 'edminboost' ),
-					__( 'Friend\'s Website and Family Member\'s Site layout presets', 'edminboost' ),
-					__( 'By-role layout presets', 'edminboost' ),
-					__( 'One saved custom layout preset', 'edminboost' ),
-					__( 'Default, Midnight, and Terminal theme presets', 'edminboost' ),
-					__( 'Menu Studio sidebar reorder and hide', 'edminboost' ),
-					__( 'Productivity, security, and performance tools', 'edminboost' ),
+					__( 'Dashboard setup wizard', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Top bar builder (redirect links)', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Friend\'s Website and Family Member\'s Site layout presets', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'By-role layout presets', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'One saved custom layout preset', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Default, Midnight, and Terminal theme presets', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Menu Studio sidebar reorder and hide', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Productivity, security, and performance tools', 'edminboost-smart-admin-productivity-tool' ),
 				),
 				'featured'    => false,
 			),
 			'pro'    => array(
 				'id'          => 'pro',
-				'name'        => __( 'Pro', 'edminboost' ),
+				'name'        => __( 'Pro', 'edminboost-smart-admin-productivity-tool' ),
 				'price'       => 49,
-				'price_label' => __( '$49', 'edminboost' ),
+				'price_label' => __( '$49', 'edminboost-smart-admin-productivity-tool' ),
 				'sites'       => 1,
-				'sites_label' => __( '1 site', 'edminboost' ),
-				'description' => __( 'Premium admin customization for one production site.', 'edminboost' ),
+				'sites_label' => __( '1 site', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Premium admin customization for one production site.', 'edminboost-smart-admin-productivity-tool' ),
 				'features'    => array(
-					__( 'Everything in Free', 'edminboost' ),
+					__( 'Everything in Free', 'edminboost-smart-admin-productivity-tool' ),
 					sprintf(
 						/* translators: %d: number of by use case layout presets beyond Friend and Family */
-						__( '%d additional by use case layout presets', 'edminboost' ),
+						__( '%d additional by use case layout presets', 'edminboost-smart-admin-productivity-tool' ),
 						max( 0, $counts['scenario_presets'] - 2 )
 					),
-					__( 'Unlimited saved custom layouts', 'edminboost' ),
-					__( 'Role-based menu visibility matrix', 'edminboost' ),
+					__( 'Unlimited saved custom layouts', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Role-based menu visibility matrix', 'edminboost-smart-admin-productivity-tool' ),
 					sprintf(
 						/* translators: %d: number of visual theme skins beyond the free set */
-						__( '%d additional visual theme skins', 'edminboost' ),
+						__( '%d additional visual theme skins', 'edminboost-smart-admin-productivity-tool' ),
 						max( 0, $counts['theme_skins'] - 3 )
 					),
-					__( 'Scheduled dark mode', 'edminboost' ),
-					__( 'Slide-out drawer panels and live badge counters', 'edminboost' ),
-					__( 'Full-screen and custom drawer widths, badge style, animation speed, glassmorphism', 'edminboost' ),
-					__( 'Role-based login and logout redirects', 'edminboost' ),
-					__( 'Custom sidebar links and icon/text display modes', 'edminboost' ),
-					__( 'White-label branding', 'edminboost' ),
-					__( 'Settings export and import', 'edminboost' ),
+					__( 'Scheduled dark mode', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Slide-out drawer panels and live badge counters', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Full-screen and custom drawer widths, badge style, animation speed, glassmorphism', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Role-based login and logout redirects', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Custom sidebar links and icon/text display modes', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'White-label branding', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Settings export and import', 'edminboost-smart-admin-productivity-tool' ),
 				),
 				'featured'    => true,
 			),
 			'agency' => array(
 				'id'          => 'agency',
-				'name'        => __( 'Agency', 'edminboost' ),
+				'name'        => __( 'Agency', 'edminboost-smart-admin-productivity-tool' ),
 				'price'       => 99,
-				'price_label' => __( '$99', 'edminboost' ),
+				'price_label' => __( '$99', 'edminboost-smart-admin-productivity-tool' ),
 				'sites'       => 10,
-				'sites_label' => __( '10 sites', 'edminboost' ),
-				'description' => __( 'Deploy EdminBoost across a client portfolio.', 'edminboost' ),
+				'sites_label' => __( '10 sites', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Deploy EdminBoost across a client portfolio.', 'edminboost-smart-admin-productivity-tool' ),
 				'features'    => array(
-					__( 'Everything in Pro', 'edminboost' ),
-					__( '10 site license pack', 'edminboost' ),
+					__( 'Everything in Pro', 'edminboost-smart-admin-productivity-tool' ),
+					__( '10 site license pack', 'edminboost-smart-admin-productivity-tool' ),
 				),
 				'featured'    => false,
 			),
@@ -545,47 +565,47 @@ class EDMINBOOST_Command_Center {
 		return array(
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Plan basics', 'edminboost' ),
+				'label' => __( 'Plan basics', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Annual price', 'edminboost' ),
-				'free'   => __( '$0', 'edminboost' ),
-				'pro'    => __( '$49', 'edminboost' ),
-				'agency' => __( '$99', 'edminboost' ),
+				'label'  => __( 'Annual price', 'edminboost-smart-admin-productivity-tool' ),
+				'free'   => __( '$0', 'edminboost-smart-admin-productivity-tool' ),
+				'pro'    => __( '$49', 'edminboost-smart-admin-productivity-tool' ),
+				'agency' => __( '$99', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Site license', 'edminboost' ),
-				'free'   => __( 'Unlimited', 'edminboost' ),
-				'pro'    => __( '1 site', 'edminboost' ),
-				'agency' => __( '10 sites', 'edminboost' ),
+				'label'  => __( 'Site license', 'edminboost-smart-admin-productivity-tool' ),
+				'free'   => __( 'Unlimited', 'edminboost-smart-admin-productivity-tool' ),
+				'pro'    => __( '1 site', 'edminboost-smart-admin-productivity-tool' ),
+				'agency' => __( '10 sites', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Layout presets', 'edminboost' ),
+				'label' => __( 'Layout presets', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Friend & Family presets', 'edminboost' ),
-				'detail' => __( 'Friend\'s Website and Family Member\'s Site layouts', 'edminboost' ),
+				'label'  => __( 'Friend & Family presets', 'edminboost-smart-admin-productivity-tool' ),
+				'detail' => __( 'Friend\'s Website and Family Member\'s Site layouts', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'By-role layout presets', 'edminboost' ),
+				'label'  => __( 'By-role layout presets', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Use-case layout presets', 'edminboost' ),
+				'label'  => __( 'Use-case layout presets', 'edminboost-smart-admin-productivity-tool' ),
 				'detail' => sprintf(
 					/* translators: %d: number of additional by use case layout presets */
-					__( '%d scenario presets beyond Friend & Family', 'edminboost' ),
+					__( '%d scenario presets beyond Friend & Family', 'edminboost-smart-admin-productivity-tool' ),
 					$additional_scenario_presets
 				),
 				'free'   => false,
@@ -594,42 +614,42 @@ class EDMINBOOST_Command_Center {
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Saved custom layouts', 'edminboost' ),
-				'free'   => __( '1', 'edminboost' ),
-				'pro'    => __( 'Unlimited', 'edminboost' ),
-				'agency' => __( 'Unlimited', 'edminboost' ),
+				'label'  => __( 'Saved custom layouts', 'edminboost-smart-admin-productivity-tool' ),
+				'free'   => __( '1', 'edminboost-smart-admin-productivity-tool' ),
+				'pro'    => __( 'Unlimited', 'edminboost-smart-admin-productivity-tool' ),
+				'agency' => __( 'Unlimited', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Role visibility matrix', 'edminboost' ),
+				'label'  => __( 'Role visibility matrix', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Top Bar', 'edminboost' ),
+				'label' => __( 'Top Bar', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Top bar (redirect links)', 'edminboost' ),
+				'label'  => __( 'Top bar (redirect links)', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Slide-out drawer panels', 'edminboost' ),
+				'label'  => __( 'Slide-out drawer panels', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Live badge counters', 'edminboost' ),
+				'label'  => __( 'Live badge counters', 'edminboost-smart-admin-productivity-tool' ),
 				'detail' => sprintf(
 					/* translators: %d: number of live badge counter sources */
-					__( '%d local counter sources', 'edminboost' ),
+					__( '%d local counter sources', 'edminboost-smart-admin-productivity-tool' ),
 					$counts['badge_sources']
 				),
 				'free'   => false,
@@ -638,63 +658,63 @@ class EDMINBOOST_Command_Center {
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Custom drawer widths', 'edminboost' ),
-				'detail' => __( 'Full-screen and custom panel sizes', 'edminboost' ),
+				'label'  => __( 'Custom drawer widths', 'edminboost-smart-admin-productivity-tool' ),
+				'detail' => __( 'Full-screen and custom panel sizes', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Badge style & effects', 'edminboost' ),
-				'detail' => __( 'Badge style, animation speed, glassmorphism', 'edminboost' ),
-				'free'   => false,
-				'pro'    => true,
-				'agency' => true,
-			),
-			array(
-				'type'  => 'heading',
-				'label' => __( 'Menu Studio', 'edminboost' ),
-			),
-			array(
-				'type'   => 'row',
-				'label'  => __( 'Sidebar reorder and hide', 'edminboost' ),
-				'free'   => true,
-				'pro'    => true,
-				'agency' => true,
-			),
-			array(
-				'type'   => 'row',
-				'label'  => __( 'Custom sidebar links', 'edminboost' ),
-				'free'   => false,
-				'pro'    => true,
-				'agency' => true,
-			),
-			array(
-				'type'   => 'row',
-				'label'  => __( 'Icon and text display modes', 'edminboost' ),
+				'label'  => __( 'Badge style & effects', 'edminboost-smart-admin-productivity-tool' ),
+				'detail' => __( 'Badge style, animation speed, glassmorphism', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Theme (Appearance)', 'edminboost' ),
+				'label' => __( 'Menu Studio', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Core theme presets', 'edminboost' ),
-				'detail' => __( 'Default, Midnight, and Terminal', 'edminboost' ),
+				'label'  => __( 'Sidebar reorder and hide', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Premium theme skins', 'edminboost' ),
+				'label'  => __( 'Custom sidebar links', 'edminboost-smart-admin-productivity-tool' ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Icon and text display modes', 'edminboost-smart-admin-productivity-tool' ),
+				'free'   => false,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'  => 'heading',
+				'label' => __( 'Theme (Appearance)', 'edminboost-smart-admin-productivity-tool' ),
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Core theme presets', 'edminboost-smart-admin-productivity-tool' ),
+				'detail' => __( 'Default, Midnight, and Terminal', 'edminboost-smart-admin-productivity-tool' ),
+				'free'   => true,
+				'pro'    => true,
+				'agency' => true,
+			),
+			array(
+				'type'   => 'row',
+				'label'  => __( 'Premium theme skins', 'edminboost-smart-admin-productivity-tool' ),
 				'detail' => sprintf(
 					/* translators: %d: number of additional visual theme skins */
-					__( '%d additional skins beyond the free set', 'edminboost' ),
+					__( '%d additional skins beyond the free set', 'edminboost-smart-admin-productivity-tool' ),
 					$additional_theme_skins
 				),
 				'free'   => false,
@@ -703,41 +723,41 @@ class EDMINBOOST_Command_Center {
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Scheduled dark mode', 'edminboost' ),
+				'label'  => __( 'Scheduled dark mode', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'  => 'heading',
-				'label' => __( 'Tools and branding', 'edminboost' ),
+				'label' => __( 'Tools and branding', 'edminboost-smart-admin-productivity-tool' ),
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Utility tool modules', 'edminboost' ),
-				'detail' => __( 'Productivity, security, and performance tools', 'edminboost' ),
+				'label'  => __( 'Utility tool modules', 'edminboost-smart-admin-productivity-tool' ),
+				'detail' => __( 'Productivity, security, and performance tools', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => true,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Login redirects', 'edminboost' ),
-				'detail' => __( 'Role-based login and logout redirects', 'edminboost' ),
+				'label'  => __( 'Login redirects', 'edminboost-smart-admin-productivity-tool' ),
+				'detail' => __( 'Role-based login and logout redirects', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'White-label branding', 'edminboost' ),
+				'label'  => __( 'White-label branding', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
 			),
 			array(
 				'type'   => 'row',
-				'label'  => __( 'Settings export and import', 'edminboost' ),
+				'label'  => __( 'Settings export and import', 'edminboost-smart-admin-productivity-tool' ),
 				'free'   => false,
 				'pro'    => true,
 				'agency' => true,
@@ -784,8 +804,8 @@ class EDMINBOOST_Command_Center {
 
 		return array(
 			'clean' => array(
-				'name'        => __( 'Clean', 'edminboost' ),
-				'description' => __( 'Standard panel, subtle badges, hides logo and profile text.', 'edminboost' ),
+				'name'        => __( 'Clean', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Standard panel, subtle badges, hides logo and profile text.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-art',
 				'behavior'    => array_merge(
 					$defaults,
@@ -801,8 +821,8 @@ class EDMINBOOST_Command_Center {
 				),
 			),
 			'focused' => array(
-				'name'        => __( 'Focused', 'edminboost' ),
-				'description' => __( 'Compact panel, counter badges, minimal admin bar clutter.', 'edminboost' ),
+				'name'        => __( 'Focused', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Compact panel, counter badges, minimal admin bar clutter.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-visibility',
 				'behavior'    => array_merge(
 					$defaults,
@@ -818,8 +838,8 @@ class EDMINBOOST_Command_Center {
 				),
 			),
 			'full' => array(
-				'name'        => __( 'Full', 'edminboost' ),
-				'description' => __( 'Standard panel with accent badges and the full native admin bar.', 'edminboost' ),
+				'name'        => __( 'Full', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Standard panel with accent badges and the full native admin bar.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-admin-site-alt3',
 				'behavior'    => array_merge(
 					$defaults,
@@ -884,62 +904,62 @@ class EDMINBOOST_Command_Center {
 	public static function get_personas() {
 		return array(
 			'friend' => array(
-				'title'       => __( 'Friend\'s Website', 'edminboost' ),
-				'description' => __( 'You help a friend keep their blog or portfolio updated — content-first shortcuts without technical clutter.', 'edminboost' ),
+				'title'       => __( 'Friend\'s Website', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'You help a friend keep their blog or portfolio updated — content-first shortcuts without technical clutter.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-groups',
 				'preset'      => 'system_friend',
 			),
 			'family' => array(
-				'title'       => __( 'Family Member\'s Site', 'edminboost' ),
-				'description' => __( 'A gentle setup for parents or relatives who only need pages, photos, and the basics.', 'edminboost' ),
+				'title'       => __( 'Family Member\'s Site', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'A gentle setup for parents or relatives who only need pages, photos, and the basics.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-heart',
 				'preset'      => 'system_family',
 			),
 			'client_site' => array(
-				'title'       => __( 'Client\'s Website', 'edminboost' ),
-				'description' => __( 'Professional handoff when you build or maintain sites for paying clients — polished and distraction-free.', 'edminboost' ),
+				'title'       => __( 'Client\'s Website', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Professional handoff when you build or maintain sites for paying clients — polished and distraction-free.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-businessperson',
 				'preset'      => 'system_client_site',
 			),
 			'personal' => array(
-				'title'       => __( 'Your Own Website', 'edminboost' ),
-				'description' => __( 'Your personal blog, portfolio, or hobby site — write, publish, and manage media in one place.', 'edminboost' ),
+				'title'       => __( 'Your Own Website', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Your personal blog, portfolio, or hobby site — write, publish, and manage media in one place.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-admin-home',
 				'preset'      => 'system_personal',
 			),
 			'small_business' => array(
-				'title'       => __( 'Small Business Site', 'edminboost' ),
-				'description' => __( 'Local shop or service business — pages, customer messages, and WooCommerce shortcuts when installed.', 'edminboost' ),
+				'title'       => __( 'Small Business Site', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Local shop or service business — pages, customer messages, and WooCommerce shortcuts when installed.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-store',
 				'preset'      => 'system_small_business',
 			),
 			'nonprofit' => array(
-				'title'       => __( 'Nonprofit / Community', 'edminboost' ),
-				'description' => __( 'Volunteer-run organizations — news, pages, and community comments without the technical noise.', 'edminboost' ),
+				'title'       => __( 'Nonprofit / Community', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Volunteer-run organizations — news, pages, and community comments without the technical noise.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-megaphone',
 				'preset'      => 'system_nonprofit',
 			),
 			'agency' => array(
-				'title'       => __( 'Freelancer / Agency', 'edminboost' ),
-				'description' => __( 'You juggle multiple client sites — plugins, themes, users, and settings in slide-out panels.', 'edminboost' ),
+				'title'       => __( 'Freelancer / Agency', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'You juggle multiple client sites — plugins, themes, users, and settings in slide-out panels.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-building',
 				'preset'      => 'system_agency',
 			),
 			'client' => array(
-				'title'       => __( 'Content Editor', 'edminboost' ),
-				'description' => __( 'Minimalist setup for writers and editors — posts, pages, media, and comment moderation only.', 'edminboost' ),
+				'title'       => __( 'Content Editor', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Minimalist setup for writers and editors — posts, pages, media, and comment moderation only.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-edit',
 				'preset'      => 'system_client',
 			),
 			'ecommerce' => array(
-				'title'       => __( 'E-Commerce Manager', 'edminboost' ),
-				'description' => __( 'WooCommerce dashboards, live order counters, products, and analytics shortcuts.', 'edminboost' ),
+				'title'       => __( 'E-Commerce Manager', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'WooCommerce dashboards, live order counters, products, and analytics shortcuts.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-cart',
 				'preset'      => 'system_ecommerce',
 			),
 			'developer' => array(
-				'title'       => __( 'Power User', 'edminboost' ),
-				'description' => __( 'Full admin mapping with slide-out panels for plugins, themes, tools, and settings.', 'edminboost' ),
+				'title'       => __( 'Power User', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Full admin mapping with slide-out panels for plugins, themes, tools, and settings.', 'edminboost-smart-admin-productivity-tool' ),
 				'icon'        => 'dashicons-admin-tools',
 				'preset'      => 'system_developer',
 			),
@@ -953,10 +973,10 @@ class EDMINBOOST_Command_Center {
 	 */
 	public static function get_preset_categories() {
 		return array(
-			'source'   => __( 'Current layout', 'edminboost' ),
-			'scenario' => __( 'By use case', 'edminboost' ),
-			'workflow' => __( 'By role', 'edminboost' ),
-			'saved'    => __( 'Your saved layouts', 'edminboost' ),
+			'source'   => __( 'Current layout', 'edminboost-smart-admin-productivity-tool' ),
+			'scenario' => __( 'By use case', 'edminboost-smart-admin-productivity-tool' ),
+			'workflow' => __( 'By role', 'edminboost-smart-admin-productivity-tool' ),
+			'saved'    => __( 'Your saved layouts', 'edminboost-smart-admin-productivity-tool' ),
 		);
 	}
 
@@ -968,14 +988,14 @@ class EDMINBOOST_Command_Center {
 	public static function get_virtual_layout_presets() {
 		return array(
 			'default' => array(
-				'name'        => __( 'Default', 'edminboost' ),
-				'description' => __( 'Your site\'s default layout preset.', 'edminboost' ),
+				'name'        => __( 'Default', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Your site\'s default layout preset.', 'edminboost-smart-admin-productivity-tool' ),
 				'virtual'     => true,
 				'category'    => 'source',
 			),
 			'custom'  => array(
-				'name'        => __( 'Custom', 'edminboost' ),
-				'description' => __( 'Fine-tune the top bar and sidebar in Top Bar and Menu Studio', 'edminboost' ),
+				'name'        => __( 'Custom', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Fine-tune the top bar and sidebar in Top Bar and Menu Studio', 'edminboost-smart-admin-productivity-tool' ),
 				'virtual'     => true,
 				'category'    => 'source',
 			),
@@ -1183,71 +1203,71 @@ class EDMINBOOST_Command_Center {
 	public static function get_system_presets() {
 		$presets = array(
 			'system_friend' => array(
-				'name'        => __( 'Friend\'s Website', 'edminboost' ),
-				'description' => __( 'Help a friend publish posts, update pages, and moderate comments — no dev tools.', 'edminboost' ),
+				'name'        => __( 'Friend\'s Website', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Help a friend publish posts, update pages, and moderate comments — no dev tools.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'friend',
 			),
 			'system_family' => array(
-				'name'        => __( 'Family Member\'s Site', 'edminboost' ),
-				'description' => __( 'Ultra-simple bar with dashboard, pages, and media for non-technical relatives.', 'edminboost' ),
+				'name'        => __( 'Family Member\'s Site', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Ultra-simple bar with dashboard, pages, and media for non-technical relatives.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'family',
 			),
 			'system_client_site' => array(
-				'name'        => __( 'Client\'s Website', 'edminboost' ),
-				'description' => __( 'Polished client handoff — content tools plus appearance in a slide-out panel.', 'edminboost' ),
+				'name'        => __( 'Client\'s Website', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Polished client handoff — content tools plus appearance in a slide-out panel.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'client_site',
 			),
 			'system_personal' => array(
-				'name'        => __( 'Your Own Website', 'edminboost' ),
-				'description' => __( 'Personal site workflow — write posts, upload media, and check comments.', 'edminboost' ),
+				'name'        => __( 'Your Own Website', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Personal site workflow — write posts, upload media, and check comments.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'personal',
 			),
 			'system_small_business' => array(
-				'name'        => __( 'Small Business Site', 'edminboost' ),
-				'description' => __( 'Business pages, customer messages, and shop shortcuts when WooCommerce is active.', 'edminboost' ),
+				'name'        => __( 'Small Business Site', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Business pages, customer messages, and shop shortcuts when WooCommerce is active.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'small_business',
 			),
 			'system_nonprofit' => array(
-				'name'        => __( 'Nonprofit / Community', 'edminboost' ),
-				'description' => __( 'Share updates, manage pages, and respond to community comments.', 'edminboost' ),
+				'name'        => __( 'Nonprofit / Community', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Share updates, manage pages, and respond to community comments.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'nonprofit',
 			),
 			'system_agency' => array(
-				'name'        => __( 'Freelancer / Agency', 'edminboost' ),
-				'description' => __( 'Manage client sites with plugins, themes, users, and settings in drawers.', 'edminboost' ),
+				'name'        => __( 'Freelancer / Agency', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Manage client sites with plugins, themes, users, and settings in drawers.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'agency',
 			),
 			'system_client' => array(
-				'name'        => __( 'Content Editor', 'edminboost' ),
-				'description' => __( 'Clean top bar focused on content creation and media.', 'edminboost' ),
+				'name'        => __( 'Content Editor', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Clean top bar focused on content creation and media.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'client',
 			),
 			'system_ecommerce' => array(
-				'name'        => __( 'Shop Manager', 'edminboost' ),
-				'description' => __( 'WooCommerce dashboards, orders, and product shortcuts.', 'edminboost' ),
+				'name'        => __( 'Shop Manager', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'WooCommerce dashboards, orders, and product shortcuts.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'ecommerce',
 			),
 			'system_developer' => array(
-				'name'        => __( 'Power User', 'edminboost' ),
-				'description' => __( 'Full admin mapping with slide-out panels for deep screens.', 'edminboost' ),
+				'name'        => __( 'Power User', 'edminboost-smart-admin-productivity-tool' ),
+				'description' => __( 'Full admin mapping with slide-out panels for deep screens.', 'edminboost-smart-admin-productivity-tool' ),
 				'system'      => true,
 				'category'    => 'scenario',
 				'persona'     => 'developer',
@@ -1267,35 +1287,35 @@ class EDMINBOOST_Command_Center {
 			'system_friend' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', 'edminboost' ),
+					'label'        => __( 'Posts', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', 'edminboost' ),
+					'label'        => __( 'Pages', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', 'edminboost' ),
+					'label'        => __( 'Media', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', 'edminboost' ),
+					'label'        => __( 'Comments', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -1304,21 +1324,21 @@ class EDMINBOOST_Command_Center {
 			'system_family' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', 'edminboost' ),
+					'label'        => __( 'Pages', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', 'edminboost' ),
+					'label'        => __( 'Media', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
@@ -1327,35 +1347,35 @@ class EDMINBOOST_Command_Center {
 			'system_client_site' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', 'edminboost' ),
+					'label'        => __( 'Posts', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', 'edminboost' ),
+					'label'        => __( 'Pages', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', 'edminboost' ),
+					'label'        => __( 'Media', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'themes.php',
-					'label'        => __( 'Appearance', 'edminboost' ),
+					'label'        => __( 'Appearance', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-appearance',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -1364,28 +1384,28 @@ class EDMINBOOST_Command_Center {
 			'system_personal' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', 'edminboost' ),
+					'label'        => __( 'Posts', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', 'edminboost' ),
+					'label'        => __( 'Media', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', 'edminboost' ),
+					'label'        => __( 'Comments', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -1394,35 +1414,35 @@ class EDMINBOOST_Command_Center {
 			'system_small_business' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', 'edminboost' ),
+					'label'        => __( 'Pages', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Messages', 'edminboost' ),
+					'label'        => __( 'Messages', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-email',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=product',
-					'label'        => __( 'Products', 'edminboost' ),
+					'label'        => __( 'Products', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-products',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=shop_order',
-					'label'        => __( 'Orders', 'edminboost' ),
+					'label'        => __( 'Orders', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-list-view',
 					'interaction'  => 'redirect',
 					'badge_source' => 'wc_orders',
@@ -1431,28 +1451,28 @@ class EDMINBOOST_Command_Center {
 			'system_nonprofit' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'News', 'edminboost' ),
+					'label'        => __( 'News', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', 'edminboost' ),
+					'label'        => __( 'Pages', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', 'edminboost' ),
+					'label'        => __( 'Comments', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -1461,42 +1481,42 @@ class EDMINBOOST_Command_Center {
 			'system_agency' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'plugins.php',
-					'label'        => __( 'Plugins', 'edminboost' ),
+					'label'        => __( 'Plugins', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-plugins',
 					'interaction'  => 'drawer',
 					'badge_source' => 'updates',
 				),
 				array(
 					'slug'         => 'themes.php',
-					'label'        => __( 'Appearance', 'edminboost' ),
+					'label'        => __( 'Appearance', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-appearance',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'users.php',
-					'label'        => __( 'Users', 'edminboost' ),
+					'label'        => __( 'Users', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-users',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'tools.php',
-					'label'        => __( 'Tools', 'edminboost' ),
+					'label'        => __( 'Tools', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-tools',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'options-general.php',
-					'label'        => __( 'Settings', 'edminboost' ),
+					'label'        => __( 'Settings', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-settings',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -1505,35 +1525,35 @@ class EDMINBOOST_Command_Center {
 			'system_client' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', 'edminboost' ),
+					'label'        => __( 'Posts', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', 'edminboost' ),
+					'label'        => __( 'Media', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', 'edminboost' ),
+					'label'        => __( 'Pages', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', 'edminboost' ),
+					'label'        => __( 'Comments', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -1542,35 +1562,35 @@ class EDMINBOOST_Command_Center {
 			'system_ecommerce' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'woocommerce',
-					'label'        => __( 'WooCommerce', 'edminboost' ),
+					'label'        => __( 'WooCommerce', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-cart',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=shop_order',
-					'label'        => __( 'Orders', 'edminboost' ),
+					'label'        => __( 'Orders', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-list-view',
 					'interaction'  => 'redirect',
 					'badge_source' => 'wc_orders',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=product',
-					'label'        => __( 'Products', 'edminboost' ),
+					'label'        => __( 'Products', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-products',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'wc-admin',
-					'label'        => __( 'Analytics', 'edminboost' ),
+					'label'        => __( 'Analytics', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-chart-bar',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -1579,42 +1599,42 @@ class EDMINBOOST_Command_Center {
 			'system_developer' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', 'edminboost' ),
+					'label'        => __( 'Posts', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'plugins.php',
-					'label'        => __( 'Plugins', 'edminboost' ),
+					'label'        => __( 'Plugins', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-plugins',
 					'interaction'  => 'drawer',
 					'badge_source' => 'updates',
 				),
 				array(
 					'slug'         => 'themes.php',
-					'label'        => __( 'Appearance', 'edminboost' ),
+					'label'        => __( 'Appearance', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-appearance',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'tools.php',
-					'label'        => __( 'Tools', 'edminboost' ),
+					'label'        => __( 'Tools', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-tools',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'options-general.php',
-					'label'        => __( 'Settings', 'edminboost' ),
+					'label'        => __( 'Settings', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-settings',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -2859,7 +2879,7 @@ class EDMINBOOST_Command_Center {
 			return $picker[ $active ]['name'];
 		}
 
-		return __( 'Custom layout', 'edminboost' );
+		return __( 'Custom layout', 'edminboost-smart-admin-productivity-tool' );
 	}
 
 	/**
@@ -3225,7 +3245,7 @@ class EDMINBOOST_Command_Center {
 						'slug'     => $slug,
 						'label'    => sprintf(
 							/* translators: 1: parent menu label, 2: submenu label */
-							__( '%1$s → %2$s', 'edminboost' ),
+							__( '%1$s → %2$s', 'edminboost-smart-admin-productivity-tool' ),
 							$parent_label,
 							$sub_label
 						),
@@ -3522,7 +3542,7 @@ class EDMINBOOST_Command_Center {
 				'name'        => $label,
 				'description' => sprintf(
 					/* translators: %s: WordPress user role name */
-					__( 'Top bar layout tuned for the %s role.', 'edminboost' ),
+					__( 'Top bar layout tuned for the %s role.', 'edminboost-smart-admin-productivity-tool' ),
 					$label
 				),
 				'system'      => true,
@@ -3589,42 +3609,42 @@ class EDMINBOOST_Command_Center {
 			'administrator' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', 'edminboost' ),
+					'label'        => __( 'Posts', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'plugins.php',
-					'label'        => __( 'Plugins', 'edminboost' ),
+					'label'        => __( 'Plugins', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-plugins',
 					'interaction'  => 'drawer',
 					'badge_source' => 'updates',
 				),
 				array(
 					'slug'         => 'themes.php',
-					'label'        => __( 'Appearance', 'edminboost' ),
+					'label'        => __( 'Appearance', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-appearance',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'tools.php',
-					'label'        => __( 'Tools', 'edminboost' ),
+					'label'        => __( 'Tools', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-tools',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'options-general.php',
-					'label'        => __( 'Settings', 'edminboost' ),
+					'label'        => __( 'Settings', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-settings',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -3633,35 +3653,35 @@ class EDMINBOOST_Command_Center {
 			'editor' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', 'edminboost' ),
+					'label'        => __( 'Posts', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', 'edminboost' ),
+					'label'        => __( 'Media', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=page',
-					'label'        => __( 'Pages', 'edminboost' ),
+					'label'        => __( 'Pages', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-page',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', 'edminboost' ),
+					'label'        => __( 'Comments', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -3670,28 +3690,28 @@ class EDMINBOOST_Command_Center {
 			'author' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', 'edminboost' ),
+					'label'        => __( 'Posts', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'upload.php',
-					'label'        => __( 'Media', 'edminboost' ),
+					'label'        => __( 'Media', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-media',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit-comments.php',
-					'label'        => __( 'Comments', 'edminboost' ),
+					'label'        => __( 'Comments', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-comments',
 					'interaction'  => 'redirect',
 					'badge_source' => 'comments',
@@ -3700,14 +3720,14 @@ class EDMINBOOST_Command_Center {
 			'contributor' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php',
-					'label'        => __( 'Posts', 'edminboost' ),
+					'label'        => __( 'Posts', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-admin-post',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
@@ -3716,7 +3736,7 @@ class EDMINBOOST_Command_Center {
 			'subscriber' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
@@ -3725,35 +3745,35 @@ class EDMINBOOST_Command_Center {
 			'shop_manager' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'woocommerce',
-					'label'        => __( 'WooCommerce', 'edminboost' ),
+					'label'        => __( 'WooCommerce', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-cart',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=shop_order',
-					'label'        => __( 'Orders', 'edminboost' ),
+					'label'        => __( 'Orders', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-list-view',
 					'interaction'  => 'redirect',
 					'badge_source' => 'wc_orders',
 				),
 				array(
 					'slug'         => 'edit.php?post_type=product',
-					'label'        => __( 'Products', 'edminboost' ),
+					'label'        => __( 'Products', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-products',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
 				),
 				array(
 					'slug'         => 'wc-admin',
-					'label'        => __( 'Analytics', 'edminboost' ),
+					'label'        => __( 'Analytics', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-chart-bar',
 					'interaction'  => 'drawer',
 					'badge_source' => '',
@@ -3762,7 +3782,7 @@ class EDMINBOOST_Command_Center {
 			'customer' => array(
 				array(
 					'slug'         => 'index.php',
-					'label'        => __( 'Dashboard', 'edminboost' ),
+					'label'        => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
 					'icon'         => 'dashicons-dashboard',
 					'interaction'  => 'redirect',
 					'badge_source' => '',
@@ -3818,12 +3838,12 @@ class EDMINBOOST_Command_Center {
 	 */
 	public static function get_badge_sources() {
 		return array(
-			''              => __( 'None', 'edminboost' ),
-			'wc_orders'     => __( 'WooCommerce — unread orders', 'edminboost' ),
-			'wc_reviews'    => __( 'WooCommerce — pending reviews', 'edminboost' ),
-			'comments'      => __( 'WordPress — pending comments', 'edminboost' ),
-			'updates'       => __( 'WordPress — available updates', 'edminboost' ),
-			'forms_entries' => __( 'WPForms — unread entries', 'edminboost' ),
+			''              => __( 'None', 'edminboost-smart-admin-productivity-tool' ),
+			'wc_orders'     => __( 'WooCommerce — unread orders', 'edminboost-smart-admin-productivity-tool' ),
+			'wc_reviews'    => __( 'WooCommerce — pending reviews', 'edminboost-smart-admin-productivity-tool' ),
+			'comments'      => __( 'WordPress — pending comments', 'edminboost-smart-admin-productivity-tool' ),
+			'updates'       => __( 'WordPress — available updates', 'edminboost-smart-admin-productivity-tool' ),
+			'forms_entries' => __( 'WPForms — unread entries', 'edminboost-smart-admin-productivity-tool' ),
 		);
 	}
 

@@ -17,8 +17,27 @@ body.edminboost-plugin-screen #wpbody {
 	padding-bottom: 0;
 }
 
-body.edminboost-plugin-screen #wpwrap {
+body.edminboost-plugin-screen #wpbody-content {
 	overflow-x: clip;
+}
+
+/*
+ * Decorative sidebar previews sit near the left edge of wp-content where core
+ * flyout submenus open; keep those submenus above plugin UI (after onboarding).
+ */
+body.edminboost-plugin-screen #adminmenu .wp-submenu,
+body.edminboost-plugin-screen #adminmenu .wp-has-current-submenu .wp-submenu.sub-open,
+body.edminboost-plugin-screen #adminmenu .wp-has-current-submenu.opensub .wp-submenu {
+	z-index: 100050;
+}
+
+body.edminboost-plugin-screen #adminmenu li.opensub > a.menu-top,
+body.edminboost-plugin-screen #adminmenu li.menu-top:hover,
+body.edminboost-plugin-screen #adminmenu li > a.menu-top:focus,
+body.edminboost-plugin-screen.folded #adminmenu li.menu-top:hover,
+body.edminboost-plugin-screen.folded #adminmenu li.opensub > a.menu-top,
+body.edminboost-plugin-screen.folded #adminmenu li > a.menu-top:focus {
+	z-index: 100051;
 }
 
 body.edminboost-plugin-screen .edminboost-cc-form > .submit,
@@ -1275,6 +1294,9 @@ summary .edminboost-setting-info,
 }
 
 .edminboost-overview-sidebar-preview {
+	position: relative;
+	z-index: 0;
+	isolation: isolate;
 	border: 1px solid #1d2327;
 	border-radius: 8px;
 	background: #1d2327;

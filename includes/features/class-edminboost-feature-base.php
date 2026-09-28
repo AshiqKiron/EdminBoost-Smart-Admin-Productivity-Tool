@@ -55,7 +55,7 @@ abstract class EDMINBOOST_Feature_Base {
 	 */
 	public function get_name() {
 		// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Feature subclasses set a fixed literal in $name.
-		return __( $this->name, 'edminboost' );
+		return __( $this->name, 'edminboost-smart-admin-productivity-tool' );
 	}
 
 	/**
@@ -65,7 +65,7 @@ abstract class EDMINBOOST_Feature_Base {
 	 */
 	public function get_description() {
 		// phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralText -- Feature subclasses set a fixed literal in $description.
-		return __( $this->description, 'edminboost' );
+		return __( $this->description, 'edminboost-smart-admin-productivity-tool' );
 	}
 
 	/**

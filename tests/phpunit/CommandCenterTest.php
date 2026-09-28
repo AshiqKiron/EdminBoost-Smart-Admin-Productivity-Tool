@@ -182,18 +182,20 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$slugs = wp_list_pluck( $items, 'slug' );
 		$base  = EDMINBOOST_Admin::PAGE_SLUG;
 
-		$this->assertSame(
-			array(
-				$base,
-				$base . EDMINBOOST_Command_Center::PAGE_PRESETS,
-				$base . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
-				$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
-				$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
-				$base . EDMINBOOST_Command_Center::PAGE_BILLING,
-				$base . '-settings',
-			),
-			$slugs
+		$expected = array(
+			$base,
+			$base . EDMINBOOST_Command_Center::PAGE_PRESETS,
+			$base . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
+			$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
+			$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
+			$base . EDMINBOOST_Command_Center::PAGE_BILLING,
 		);
+
+		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+			$expected[] = $base . '-settings';
+		}
+
+		$this->assertSame( $expected, $slugs );
 	}
 
 	/**
@@ -204,22 +206,28 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$slugs = wp_list_pluck( $items, 'slug' );
 		$base  = EDMINBOOST_Admin::PAGE_SLUG;
 
-		$this->assertSame(
-			array(
-				$base,
-				$base . EDMINBOOST_Command_Center::PAGE_PRESETS,
-				$base . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
-				$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
-				$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
-				$base . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY,
-				$base . EDMINBOOST_Command_Center::PAGE_SECURITY,
-				$base . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
-				$base . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
-				$base . EDMINBOOST_Command_Center::PAGE_BILLING,
-				$base . '-settings',
-			),
-			$slugs
+		$expected = array(
+			$base,
+			$base . EDMINBOOST_Command_Center::PAGE_PRESETS,
+			$base . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
+			$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
+			$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
+			$base . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY,
+			$base . EDMINBOOST_Command_Center::PAGE_SECURITY,
+			$base . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
 		);
+
+		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+			$expected[] = $base . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL;
+		}
+
+		$expected[] = $base . EDMINBOOST_Command_Center::PAGE_BILLING;
+
+		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+			$expected[] = $base . '-settings';
+		}
+
+		$this->assertSame( $expected, $slugs );
 	}
 
 	/**
@@ -292,12 +300,12 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->seed_settings(
 			array(
 				'command_center' => array(
-					'default_preset' => 'system_developer',
+					'default_preset' => 'system_friend',
 				),
 			)
 		);
 
-		$default_items   = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( 'system_developer' );
+		$default_items   = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( 'system_friend' );
 		$resolved_items  = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( 'default' );
 
 		$this->assertSame( $default_items, $resolved_items );

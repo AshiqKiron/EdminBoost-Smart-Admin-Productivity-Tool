@@ -691,6 +691,6 @@ class SettingsTest extends Edminboost_Test_Case {
 	 * Text domain matches the plugin header Text Domain field.
 	 */
 	public function test_text_domain_is_edminboost() {
-		$this->assertSame( 'edminboost', EDMINBOOST_TEXT_DOMAIN );
+		$this->assertSame( 'edminboost-smart-admin-productivity-tool', EDMINBOOST_TEXT_DOMAIN );
 	}
 }

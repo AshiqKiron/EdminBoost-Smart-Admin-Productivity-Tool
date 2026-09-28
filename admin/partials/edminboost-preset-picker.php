@@ -82,13 +82,13 @@ $edminboost_preview_id        = 'wizard' === $edminboost_preset_picker_mode
 	: 'edminboost-layout-preset-preview';
 $edminboost_preview_aria      = sprintf(
 	/* translators: %s: layout preset name */
-	__( 'Top bar preview for the %s layout preset', 'edminboost' ),
+	__( 'Top bar preview for the %s layout preset', 'edminboost-smart-admin-productivity-tool' ),
 	$edminboost_selected_name
 );
 ?>
 <div class="edminboost-preset-picker edminboost-preset-picker--<?php echo esc_attr( $edminboost_preset_picker_mode ); ?>">
 	<fieldset class="edminboost-fieldset edminboost-layout-preset-fieldset">
-		<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'layout_preset' ); ?><?php esc_html_e( 'Layout preset', 'edminboost' ); ?></legend>
+		<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'layout_preset' ); ?><?php esc_html_e( 'Layout preset', 'edminboost-smart-admin-productivity-tool' ); ?></legend>
 
 		<select
 			id="edminboost_layout_preset"
@@ -133,11 +133,11 @@ $edminboost_preview_aria      = sprintf(
 					<span class="edminboost-layout-preset-picker__badge" id="edminboost-layout-preset-badge">
 						<?php
 						if ( $edminboost_selected_virtual ) {
-							esc_html_e( 'Layout', 'edminboost' );
+							esc_html_e( 'Layout', 'edminboost-smart-admin-productivity-tool' );
 						} elseif ( $edminboost_selected_system ) {
-							esc_html_e( 'Built-in', 'edminboost' );
+							esc_html_e( 'Built-in', 'edminboost-smart-admin-productivity-tool' );
 						} else {
-							esc_html_e( 'Saved', 'edminboost' );
+							esc_html_e( 'Saved', 'edminboost-smart-admin-productivity-tool' );
 						}
 						?>
 					</span>
@@ -149,7 +149,7 @@ $edminboost_preview_aria      = sprintf(
 				class="edminboost-layout-preset-picker__list"
 				id="edminboost-layout-preset-list"
 				role="listbox"
-				aria-label="<?php esc_attr_e( 'Layout preset', 'edminboost' ); ?>"
+				aria-label="<?php esc_attr_e( 'Layout preset', 'edminboost-smart-admin-productivity-tool' ); ?>"
 				hidden
 			>
 				<?php foreach ( $edminboost_preset_display_order as $edminboost_category_id ) : ?>
@@ -166,21 +166,28 @@ $edminboost_preview_aria      = sprintf(
 						<ul class="edminboost-layout-preset-picker__group-list" role="group" aria-labelledby="edminboost-layout-preset-group-<?php echo esc_attr( sanitize_html_class( $edminboost_category_id ) ); ?>">
 							<?php foreach ( $edminboost_grouped_presets[ $edminboost_category_id ] as $edminboost_preset_id => $edminboost_preset ) : ?>
 								<?php
+								if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'layout' ) ) {
+									continue;
+								}
 								$edminboost_is_system   = ! empty( $edminboost_preset['system'] );
 								$edminboost_is_virtual  = ! empty( $edminboost_preset['virtual'] );
 								$edminboost_is_selected = ( $edminboost_selected_preset === $edminboost_preset_id );
 								$edminboost_preset_name = isset( $edminboost_preset['name'] ) ? $edminboost_preset['name'] : $edminboost_preset_id;
 								$edminboost_preset_desc = isset( $edminboost_preset['description'] ) ? $edminboost_preset['description'] : '';
 								if ( $edminboost_is_virtual ) {
-									$edminboost_badge_label = __( 'Layout', 'edminboost' );
+									$edminboost_badge_label = __( 'Layout', 'edminboost-smart-admin-productivity-tool' );
 								} elseif ( $edminboost_is_system ) {
-									$edminboost_badge_label = __( 'Built-in', 'edminboost' );
+									$edminboost_badge_label = __( 'Built-in', 'edminboost-smart-admin-productivity-tool' );
 								} else {
-									$edminboost_badge_label = __( 'Saved', 'edminboost' );
+									$edminboost_badge_label = __( 'Saved', 'edminboost-smart-admin-productivity-tool' );
 								}
+								$edminboost_is_pro_preset = EDMINBOOST_Pro::shows_pro_settings_ui() && ! EDMINBOOST_Pro::is_layout_preset_available( $edminboost_preset_id );
 								$edminboost_option_classes = 'edminboost-layout-preset-picker__option';
 								if ( $edminboost_is_selected ) {
 									$edminboost_option_classes .= ' is-selected';
+								}
+								if ( $edminboost_is_pro_preset ) {
+									$edminboost_option_classes .= ' is-pro-locked';
 								}
 								?>
 								<li
@@ -189,11 +196,11 @@ $edminboost_preview_aria      = sprintf(
 									tabindex="-1"
 									data-value="<?php echo esc_attr( $edminboost_preset_id ); ?>"
 									data-system="<?php echo $edminboost_is_system ? '1' : '0'; ?>"
-									data-requires-pro="0"
+									data-requires-pro="<?php echo $edminboost_is_pro_preset ? '1' : '0'; ?>"
 									aria-selected="<?php echo $edminboost_is_selected ? 'true' : 'false'; ?>"
 								>
 									<span class="edminboost-layout-preset-picker__option-main">
-										<span class="edminboost-layout-preset-picker__option-name"><?php echo esc_html( $edminboost_preset_name ); ?></span>
+										<span class="edminboost-layout-preset-picker__option-name"><?php echo esc_html( $edminboost_preset_name ); ?><?php if ( $edminboost_is_pro_preset ) : ?> <?php EDMINBOOST_Pro::render_badge(); ?><?php endif; ?></span>
 										<span class="edminboost-layout-preset-picker__option-badge"><?php echo esc_html( $edminboost_badge_label ); ?></span>
 									</span>
 									<?php if ( '' !== $edminboost_preset_desc ) : ?>
@@ -215,7 +222,7 @@ $edminboost_preview_aria      = sprintf(
 			<div class="edminboost-layout-preset-preview-block">
 				<p class="edminboost-layout-preset-preview-label edminboost-setting-inline">
 					<?php EDMINBOOST_Setting_Help::echo_icon( 'layout_sidebar_preview' ); ?>
-					<?php esc_html_e( 'Sidebar preview', 'edminboost' ); ?>
+					<?php esc_html_e( 'Sidebar preview', 'edminboost-smart-admin-productivity-tool' ); ?>
 				</p>
 			<?php
 			$edminboost_sidebar_items      = EDMINBOOST_Command_Center::resolve_preset_sidebar_preview_items( $edminboost_selected_preset, $cc_settings );
@@ -225,7 +232,7 @@ $edminboost_preview_aria      = sprintf(
 				: 'edminboost-layout-sidebar-preview';
 			$edminboost_preview_aria_label = sprintf(
 				/* translators: %s: layout preset name */
-				__( 'Sidebar menu preview for the %s layout preset', 'edminboost' ),
+				__( 'Sidebar menu preview for the %s layout preset', 'edminboost-smart-admin-productivity-tool' ),
 				$edminboost_selected_name
 			);
 
@@ -235,7 +242,7 @@ $edminboost_preview_aria      = sprintf(
 			<div class="edminboost-layout-preset-preview-block">
 				<p class="edminboost-layout-preset-preview-label edminboost-setting-inline">
 					<?php EDMINBOOST_Setting_Help::echo_icon( 'layout_topbar_preview' ); ?>
-					<?php esc_html_e( 'Top bar preview', 'edminboost' ); ?>
+					<?php esc_html_e( 'Top bar preview', 'edminboost-smart-admin-productivity-tool' ); ?>
 				</p>
 			<?php
 			$edminboost_preview_id         = 'wizard' === $edminboost_preset_picker_mode
@@ -259,7 +266,7 @@ $edminboost_preview_aria      = sprintf(
 		/>
 		<div class="edminboost-layout-preset-actions">
 			<button type="button" class="button button-primary edminboost-preset-apply" id="edminboost-preset-apply-btn">
-				<?php esc_html_e( 'Apply preset', 'edminboost' ); ?>
+				<?php esc_html_e( 'Apply preset', 'edminboost-smart-admin-productivity-tool' ); ?>
 			</button>
 			<label class="edminboost-checkbox-row">
 				<input
@@ -267,31 +274,31 @@ $edminboost_preview_aria      = sprintf(
 					id="edminboost_layout_preset_default_checkbox"
 					<?php checked( $edminboost_default_preset, $edminboost_selected_preset ); ?>
 				/>
-				<?php esc_html_e( 'Set as site default', 'edminboost' ); ?>
+				<?php esc_html_e( 'Set as site default', 'edminboost-smart-admin-productivity-tool' ); ?>
 			</label>
 			<button type="button" class="button button-small edminboost-preset-export" id="edminboost-preset-export-btn">
-				<?php esc_html_e( 'Export JSON', 'edminboost' ); ?>
+				<?php esc_html_e( 'Export JSON', 'edminboost-smart-admin-productivity-tool' ); ?>
 			</button>
 			<div class="edminboost-rename-preset" id="edminboost-rename-preset" hidden>
 				<label class="edminboost-save-preset__label" for="edminboost_rename_preset_name_input">
-					<?php esc_html_e( 'Preset name', 'edminboost' ); ?>
+					<?php esc_html_e( 'Preset name', 'edminboost-smart-admin-productivity-tool' ); ?>
 				</label>
 				<input
 					type="text"
 					class="regular-text edminboost-save-preset__input"
 					id="edminboost_rename_preset_name_input"
-					placeholder="<?php echo esc_attr__( 'Enter a name for your preset', 'edminboost' ); ?>"
+					placeholder="<?php echo esc_attr__( 'Enter a name for your preset', 'edminboost-smart-admin-productivity-tool' ); ?>"
 					autocomplete="off"
 				/>
 				<button type="button" class="button button-primary" id="edminboost-rename-preset-confirm-btn">
-					<?php esc_html_e( 'Rename preset', 'edminboost' ); ?>
+					<?php esc_html_e( 'Rename preset', 'edminboost-smart-admin-productivity-tool' ); ?>
 				</button>
 				<button type="button" class="button" id="edminboost-rename-preset-cancel-btn">
-					<?php esc_html_e( 'Cancel', 'edminboost' ); ?>
+					<?php esc_html_e( 'Cancel', 'edminboost-smart-admin-productivity-tool' ); ?>
 				</button>
 			</div>
 			<button type="button" class="button button-small edminboost-preset-rename" id="edminboost-preset-rename-btn" hidden>
-				<?php esc_html_e( 'Rename preset', 'edminboost' ); ?>
+				<?php esc_html_e( 'Rename preset', 'edminboost-smart-admin-productivity-tool' ); ?>
 			</button>
 		</div>
 	<?php endif; ?>

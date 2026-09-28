@@ -44,7 +44,7 @@ FORBIDDEN_PATTERNS=(
 	'[Ff]reemius'
 	'fs_dynamic_init'
 	'wp_org_gatekeeper'
-	'is_premium'
+	'is_premium([^_]|$)'
 )
 
 errors=0

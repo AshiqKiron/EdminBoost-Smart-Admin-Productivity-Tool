@@ -13,10 +13,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $edminboost_top_bar_count = count( $edminboost_top_bar_items );
 $edminboost_summary_label = 0 === $edminboost_top_bar_count
-	? __( 'No links configured', 'edminboost' )
+	? __( 'No links configured', 'edminboost-smart-admin-productivity-tool' )
 	: sprintf(
 		/* translators: %d: number of top bar links */
-		_n( '%d link configured', '%d links configured', $edminboost_top_bar_count, 'edminboost' ),
+		_n( '%d link configured', '%d links configured', $edminboost_top_bar_count, 'edminboost-smart-admin-productivity-tool' ),
 		(int) $edminboost_top_bar_count
 	);
 ?>
@@ -39,12 +39,12 @@ $edminboost_summary_label = 0 === $edminboost_top_bar_count
 		class="edminboost-overview-topbar-links-picker__list"
 		id="edminboost-overview-topbar-links-list"
 		role="listbox"
-		aria-label="<?php esc_attr_e( 'Configured top bar links', 'edminboost' ); ?>"
+		aria-label="<?php esc_attr_e( 'Configured top bar links', 'edminboost-smart-admin-productivity-tool' ); ?>"
 		hidden
 	>
 		<?php if ( empty( $edminboost_top_bar_items ) ) : ?>
 			<li class="edminboost-overview-topbar-links-picker__empty" role="presentation">
-				<?php esc_html_e( 'Add links in the Top Bar editor to see them here.', 'edminboost' ); ?>
+				<?php esc_html_e( 'Add links in the Top Bar editor to see them here.', 'edminboost-smart-admin-productivity-tool' ); ?>
 			</li>
 		<?php else : ?>
 			<?php foreach ( $edminboost_top_bar_items as $edminboost_top_bar_item ) : ?>
@@ -54,8 +54,8 @@ $edminboost_summary_label = 0 === $edminboost_top_bar_count
 				$edminboost_item_interaction = isset( $edminboost_top_bar_item['interaction'] ) ? $edminboost_top_bar_item['interaction'] : 'redirect';
 				$edminboost_display_label   = '' !== $edminboost_item_label ? $edminboost_item_label : $edminboost_item_slug;
 				$edminboost_interaction_label = 'drawer' === $edminboost_item_interaction
-					? __( 'Opens in drawer', 'edminboost' )
-					: __( 'Opens directly', 'edminboost' );
+					? __( 'Opens in drawer', 'edminboost-smart-admin-productivity-tool' )
+					: __( 'Opens directly', 'edminboost-smart-admin-productivity-tool' );
 				?>
 				<li
 					class="edminboost-overview-topbar-links-picker__option"

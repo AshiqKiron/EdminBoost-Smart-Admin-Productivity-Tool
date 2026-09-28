@@ -21,7 +21,7 @@ $edminboost_section                  = 'performance';
 
 	<header class="edminboost-cc-hero">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
-		<p class="edminboost-cc-hero__lead"><?php esc_html_e( 'Reduce script overhead, control Heartbeat, and trim front-end assets.', 'edminboost' ); ?></p>
+		<p class="edminboost-cc-hero__lead"><?php esc_html_e( 'Reduce script overhead, control Heartbeat, and trim front-end assets.', 'edminboost-smart-admin-productivity-tool' ); ?></p>
 	</header>
 
 	<form action="options.php" method="post" class="edminboost-cc-form edminboost-settings-form">
@@ -29,7 +29,7 @@ $edminboost_section                  = 'performance';
 		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
 		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-feature-fields.php'; ?>
 		<?php
-		$edminboost_save_label = __( 'Save performance settings', 'edminboost' );
+		$edminboost_save_label = __( 'Save performance settings', 'edminboost-smart-admin-productivity-tool' );
 		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
 		?>
 	</form>

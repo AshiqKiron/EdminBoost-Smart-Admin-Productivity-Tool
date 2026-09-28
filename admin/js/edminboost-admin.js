@@ -10,6 +10,7 @@
 	var syncRolePresetSelectsFn      = null;
 	var syncThemeSettingsFn          = null;
 	var syncThemeExtrasPreviewFn     = null;
+	var syncThemeExtrasFieldsForSaveFn = null;
 	var syncDeclutterPreviewThemeFn  = null;
 	var pendingDashboardOverviewSave = null;
 
@@ -172,8 +173,8 @@
 		initMapper( root );
 		initMenuStudio( root );
 		initBehavior( root );
-		initTheme( root );
 		initThemeExtras( root );
+		initTheme( root );
 		initLayoutPresetPicker( root );
 		initDashboardOverview( root );
 		initPresets( root );
@@ -3192,34 +3193,53 @@
 		var preview = root.querySelector( '#edminboost-theme-extras-preview' );
 
 		if ( ! preview ) {
-			syncThemeExtrasPreviewFn = null;
+			syncThemeExtrasPreviewFn           = null;
+			syncThemeExtrasFieldsForSaveFn     = null;
 			return;
 		}
 
-		var fontSizeInput      = root.querySelector( '#edminboost_font_size' );
-		var fontSizeRange      = root.querySelector( '#edminboost_font_size_range' );
-		var bgColorInput       = root.querySelector( '#edminboost_admin_bg_color' );
-		var bgColorPicker      = root.querySelector( '#edminboost_admin_bg_color_picker' );
-		var bgImageInput       = root.querySelector( '#edminboost_admin_bg_image_id' );
-		var faviconInput       = root.querySelector( '#edminboost_admin_favicon_id' );
-		var scheduleToggle     = root.querySelector( '#edminboost_schedule_dark_mode' );
-		var scheduleSection    = root.querySelector( '#edminboost-theme-schedule-options' );
-		var scheduleStartInput = root.querySelector( '#edminboost_dark_mode_start' );
-		var scheduleEndInput   = root.querySelector( '#edminboost_dark_mode_end' );
-		var schedulePanel      = root.querySelector( '#edminboost-theme-extras-preview-schedule' );
-		var scheduleTrack      = preview.querySelector( '.edminboost-theme-extras-preview__schedule-track' );
-		var scheduleStartLabel = root.querySelector( '#edminboost-theme-extras-preview-schedule-start' );
-		var scheduleEndLabel   = root.querySelector( '#edminboost-theme-extras-preview-schedule-end' );
-		var faviconWrap        = root.querySelector( '#edminboost-theme-extras-preview-favicon' );
-		var viewport           = root.querySelector( '#edminboost-theme-extras-preview-viewport' );
-		var presetSelect       = document.getElementById( 'edminboost_theme_preset' );
-		var modeSelect         = document.getElementById( 'edminboost_theme_mode' );
-		var themePresets       = edminboostData.themePresets || {};
-		var statusInputs       = root.querySelectorAll( '.edminboost-theme-extras-status-input' );
-		var tableWrap          = preview.querySelector( '.edminboost-theme-extras-preview__table-wrap' );
+		var extrasLayout  = root.querySelector( '.edminboost-theme-extras-layout' );
+		var presetSelect  = document.getElementById( 'edminboost_theme_preset' );
+		var modeSelect    = document.getElementById( 'edminboost_theme_mode' );
+		var themePresets  = edminboostData.themePresets || {};
 
-		function setThemeExtraVar( name, value ) {
-			var targets = [ preview, viewport, tableWrap ].filter( Boolean );
+		function getThemeExtrasElements() {
+			var previewRoot = root.querySelector( '#edminboost-theme-extras-preview' );
+
+			if ( ! previewRoot ) {
+				return null;
+			}
+
+			return {
+				preview: previewRoot,
+				fontSizeInput: root.querySelector( '#edminboost_font_size' ),
+				fontSizeRange: root.querySelector( '#edminboost_font_size_range' ),
+				bgColorInput: root.querySelector( '#edminboost_admin_bg_color' ),
+				bgColorPicker: root.querySelector( '#edminboost_admin_bg_color_picker' ),
+				bgImageInput: root.querySelector( '#edminboost_admin_bg_image_id' ),
+				faviconInput: root.querySelector( '#edminboost_admin_favicon_id' ),
+				scheduleToggle: root.querySelector( '#edminboost_schedule_dark_mode' ),
+				scheduleSection: root.querySelector( '#edminboost-theme-schedule-options' ),
+				scheduleStartInput: root.querySelector( '#edminboost_dark_mode_start' ),
+				scheduleEndInput: root.querySelector( '#edminboost_dark_mode_end' ),
+				schedulePanel: root.querySelector( '#edminboost-theme-extras-preview-schedule' ),
+				scheduleTrack: previewRoot.querySelector( '.edminboost-theme-extras-preview__schedule-track' ),
+				scheduleStartLabel: root.querySelector( '#edminboost-theme-extras-preview-schedule-start' ),
+				scheduleEndLabel: root.querySelector( '#edminboost-theme-extras-preview-schedule-end' ),
+				faviconWrap: root.querySelector( '#edminboost-theme-extras-preview-favicon' ),
+				viewport: root.querySelector( '#edminboost-theme-extras-preview-viewport' ),
+				sampleText: root.querySelector( '#edminboost-theme-extras-preview-sample' ),
+				tableWrap: previewRoot.querySelector( '.edminboost-theme-extras-preview__table-wrap' ),
+				statusInputs: root.querySelectorAll( '.edminboost-theme-extras-status-input' )
+			};
+		}
+
+		function setThemeExtraVar( elements, name, value ) {
+			if ( ! elements || ! elements.preview ) {
+				return;
+			}
+
+			var targets = [ elements.preview, elements.viewport, elements.tableWrap, elements.sampleText ].filter( Boolean );
 
 			targets.forEach( function ( target ) {
 				if ( value ) {
@@ -3270,17 +3290,21 @@
 			};
 		}
 
-		function syncPreviewThemeColors() {
+		function syncPreviewThemeColors( elements ) {
+			if ( ! elements || ! elements.preview ) {
+				return;
+			}
+
 			var preset = presetSelect ? presetSelect.value : 'default';
 			var mode   = modeSelect ? modeSelect.value : 'light';
 			var colors = 'custom' === preset
 				? getCustomColorValuesForPreview()
 				: getThemePreviewColors( themePresets, preset, mode );
 
-			applyThemePreviewColorVars( preview, colors );
+			applyThemePreviewColorVars( elements.preview, colors );
 
-			if ( viewport ) {
-				applyThemePreviewColorVars( viewport, colors );
+			if ( elements.viewport ) {
+				applyThemePreviewColorVars( elements.viewport, colors );
 			}
 		}
 
@@ -3319,44 +3343,50 @@
 			return 'linear-gradient(90deg, ' + dark + ' 0%, ' + dark + ' ' + endPct + '%, ' + light + ' ' + endPct + '%, ' + light + ' ' + startPct + '%, ' + dark + ' ' + startPct + '%, ' + dark + ' 100%)';
 		}
 
-		function syncSchedulePreview() {
-			var enabled = scheduleToggle && scheduleToggle.checked;
-			var start   = scheduleStartInput ? scheduleStartInput.value : '18:00';
-			var end     = scheduleEndInput ? scheduleEndInput.value : '06:00';
-
-			if ( scheduleSection ) {
-				syncDependentSection( scheduleSection, enabled );
+		function syncSchedulePreview( elements ) {
+			if ( ! elements ) {
+				return;
 			}
 
-			if ( schedulePanel ) {
-				schedulePanel.hidden = ! enabled;
-				schedulePanel.classList.toggle( 'is-active', enabled );
+			var enabled = elements.scheduleToggle && elements.scheduleToggle.checked;
+			var start   = elements.scheduleStartInput ? elements.scheduleStartInput.value : '18:00';
+			var end     = elements.scheduleEndInput ? elements.scheduleEndInput.value : '06:00';
+
+			if ( elements.scheduleSection ) {
+				syncDependentSection( elements.scheduleSection, enabled );
 			}
 
-			if ( scheduleStartLabel ) {
-				scheduleStartLabel.textContent = formatTimeLabel( start );
+			if ( elements.schedulePanel ) {
+				elements.schedulePanel.hidden = ! enabled;
+				elements.schedulePanel.classList.toggle( 'is-active', enabled );
 			}
 
-			if ( scheduleEndLabel ) {
-				scheduleEndLabel.textContent = formatTimeLabel( end );
+			if ( elements.scheduleStartLabel ) {
+				elements.scheduleStartLabel.textContent = formatTimeLabel( start );
 			}
 
-			if ( scheduleTrack ) {
-				scheduleTrack.style.background = buildScheduleGradient( start, end );
+			if ( elements.scheduleEndLabel ) {
+				elements.scheduleEndLabel.textContent = formatTimeLabel( end );
+			}
+
+			if ( elements.scheduleTrack ) {
+				elements.scheduleTrack.style.background = buildScheduleGradient( start, end );
+				elements.scheduleTrack.style.setProperty( '--eb-te-schedule-start', start );
+				elements.scheduleTrack.style.setProperty( '--eb-te-schedule-end', end );
 			}
 		}
 
-		function syncAttachmentPreview( input, wrapOrViewport, savedIdKey, savedUrlKey, fallbackMarkup ) {
-			if ( ! input ) {
+		function syncAttachmentPreview( elements, input, wrapOrViewport, savedIdKey, savedUrlKey, fallbackMarkup ) {
+			if ( ! elements || ! elements.preview || ! input ) {
 				return;
 			}
 
 			var target = wrapOrViewport;
 			var id     = parseInt( input.value, 10 ) || 0;
-			var savedId = parseInt( preview.getAttribute( savedIdKey ), 10 ) || 0;
-			var savedUrl = preview.getAttribute( savedUrlKey ) || '';
+			var savedId = parseInt( elements.preview.getAttribute( savedIdKey ), 10 ) || 0;
+			var savedUrl = elements.preview.getAttribute( savedUrlKey ) || '';
 
-			if ( target === viewport ) {
+			if ( target === elements.viewport ) {
 				if ( id > 0 && id === savedId && savedUrl ) {
 					target.style.backgroundImage = 'url("' + savedUrl + '")';
 				} else {
@@ -3403,9 +3433,13 @@
 			return input.id.replace( /^edminboost_status_/, '' );
 		}
 
-		function syncStatusRowPreview( input ) {
+		function syncStatusRowPreview( elements, input ) {
+			if ( ! elements || ! elements.preview || ! input ) {
+				return;
+			}
+
 			var status = getStatusKeyFromInput( input );
-			var row    = preview.querySelector( '.edminboost-theme-extras-preview__status-row[data-status="' + status + '"]' );
+			var row    = elements.preview.querySelector( '.edminboost-theme-extras-preview__status-row[data-status="' + status + '"]' );
 
 			if ( ! row ) {
 				return;
@@ -3418,110 +3452,182 @@
 			}
 		}
 
-		function syncFontSizeControls( source ) {
-			if ( ! fontSizeInput || ! fontSizeRange ) {
+		function syncFontSizeControls( elements, source ) {
+			if ( ! elements || ! elements.fontSizeInput || ! elements.fontSizeRange ) {
 				return;
 			}
 
-			var size = clampFontSize( source === 'range' ? fontSizeRange.value : fontSizeInput.value );
+			var size = clampFontSize( source === 'range' ? elements.fontSizeRange.value : elements.fontSizeInput.value );
 
-			fontSizeInput.value = String( size );
-			fontSizeRange.value = String( size );
-			setThemeExtraVar( '--eb-te-font-size', size + 'px' );
+			elements.fontSizeInput.value = String( size );
+			elements.fontSizeRange.value = String( size );
+			setThemeExtraVar( elements, '--eb-te-font-size', size + 'px' );
 		}
 
-		function syncBackgroundColorPreview() {
-			var color = readBoundHexColor( bgColorInput, bgColorPicker );
-			setThemeExtraVar( '--eb-te-bg', color );
+		function resolveAdminBackgroundPreviewColor( elements ) {
+			var color = readBoundHexColor( elements.bgColorInput, elements.bgColorPicker );
+
+			if ( color || ! elements.preview ) {
+				return color;
+			}
+
+			var contentToken = window.getComputedStyle( elements.preview ).getPropertyValue( '--eb-op-content' ).trim();
+
+			return contentToken || '#f0f0f1';
 		}
 
-		function bindColorPair( picker, text, onSync ) {
+		function syncBackgroundColorPreview( elements ) {
+			if ( ! elements ) {
+				return;
+			}
+
+			setThemeExtraVar( elements, '--eb-te-bg', resolveAdminBackgroundPreviewColor( elements ) );
+		}
+
+		function syncThemeExtrasFieldsForSave( elements ) {
+			if ( ! elements || ! elements.bgColorInput || ! elements.bgColorPicker ) {
+				return;
+			}
+
+			var color = readBoundHexColor( elements.bgColorInput, elements.bgColorPicker );
+
+			if ( color && ! elements.bgColorInput.value ) {
+				elements.bgColorInput.value = color;
+			}
+		}
+
+		function syncColorPairFromTarget( elements, target ) {
+			if ( ! target || ! target.id ) {
+				return false;
+			}
+
+			var picker = null;
+			var text   = null;
+
+			if ( 'color' === target.type && target.id.indexOf( '_picker' ) === target.id.length - 7 ) {
+				picker = target;
+				text   = root.querySelector( '#' + target.id.replace( /_picker$/, '' ) );
+			} else if ( target.classList && target.classList.contains( 'edminboost-theme-extras-status-input' ) ) {
+				text   = target;
+				picker = root.querySelector( '#' + target.id + '_picker' );
+			} else if ( 'edminboost_admin_bg_color' === target.id ) {
+				text   = target;
+				picker = elements.bgColorPicker;
+			} else if ( 'edminboost_admin_bg_color_picker' === target.id ) {
+				picker = target;
+				text   = elements.bgColorInput;
+			}
+
 			if ( ! picker || ! text ) {
-				return;
+				return false;
 			}
 
-			function syncFromPicker() {
+			if ( target === picker ) {
 				text.value = picker.value;
-				onSync();
+			} else if ( /^#[0-9a-fA-F]{3,6}$/.test( text.value ) && /^#[0-9a-fA-F]{6}$/.test( text.value ) ) {
+				picker.value = text.value;
 			}
 
-			function syncFromText() {
-				if ( /^#[0-9a-fA-F]{3,6}$/.test( text.value ) ) {
-					if ( /^#[0-9a-fA-F]{6}$/.test( text.value ) ) {
-						picker.value = text.value;
-					}
-					onSync();
-				}
+			if ( text.classList.contains( 'edminboost-theme-extras-status-input' ) ) {
+				syncStatusRowPreview( elements, text );
+				return true;
 			}
 
-			picker.addEventListener( 'input', syncFromPicker );
-			picker.addEventListener( 'change', syncFromPicker );
-			text.addEventListener( 'input', syncFromText );
-			text.addEventListener( 'change', syncFromText );
+			syncBackgroundColorPreview( elements );
+			return true;
 		}
 
 		function applyThemeExtrasPreview() {
-			syncPreviewThemeColors();
-			syncFontSizeControls( 'input' );
-			syncBackgroundColorPreview();
-			syncSchedulePreview();
-			syncAttachmentPreview( faviconInput, faviconWrap, 'data-favicon-id', 'data-favicon-url', '<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>' );
-			syncAttachmentPreview( bgImageInput, viewport, 'data-bg-image-id', 'data-bg-image-url', '' );
-			statusInputs.forEach( syncStatusRowPreview );
-		}
+			var elements = getThemeExtrasElements();
 
-		syncThemeExtrasPreviewFn = applyThemeExtrasPreview;
+			if ( ! elements ) {
+				return;
+			}
 
-		if ( fontSizeRange ) {
-			fontSizeRange.addEventListener( 'input', function () {
-				syncFontSizeControls( 'range' );
-			} );
-			fontSizeRange.addEventListener( 'change', function () {
-				syncFontSizeControls( 'range' );
+			syncPreviewThemeColors( elements );
+			syncFontSizeControls( elements, 'input' );
+			syncBackgroundColorPreview( elements );
+			syncSchedulePreview( elements );
+			syncAttachmentPreview( elements, elements.faviconInput, elements.faviconWrap, 'data-favicon-id', 'data-favicon-url', '<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>' );
+			syncAttachmentPreview( elements, elements.bgImageInput, elements.viewport, 'data-bg-image-id', 'data-bg-image-url', '' );
+			elements.statusInputs.forEach( function ( input ) {
+				syncStatusRowPreview( elements, input );
 			} );
 		}
 
-		if ( fontSizeInput ) {
-			fontSizeInput.addEventListener( 'input', function () {
-				syncFontSizeControls( 'input' );
-			} );
-			fontSizeInput.addEventListener( 'change', function () {
-				syncFontSizeControls( 'input' );
-			} );
+		syncThemeExtrasPreviewFn       = applyThemeExtrasPreview;
+		syncThemeExtrasFieldsForSaveFn = function () {
+			syncThemeExtrasFieldsForSave( getThemeExtrasElements() );
+		};
+
+		function handleThemeExtrasFieldEvent( event ) {
+			var target = event.target;
+
+			if ( ! target || ! target.closest || ! target.closest( '.edminboost-theme-extras-layout' ) ) {
+				return;
+			}
+
+			var elements = getThemeExtrasElements();
+
+			if ( ! elements ) {
+				return;
+			}
+
+			if ( syncColorPairFromTarget( elements, target ) ) {
+				return;
+			}
+
+			if ( 'edminboost_font_size_range' === target.id ) {
+				syncFontSizeControls( elements, 'range' );
+				return;
+			}
+
+			if ( 'edminboost_font_size' === target.id ) {
+				syncFontSizeControls( elements, 'input' );
+				return;
+			}
+
+			if ( 'edminboost_schedule_dark_mode' === target.id ) {
+				syncSchedulePreview( elements );
+				return;
+			}
+
+			if ( 'edminboost_dark_mode_start' === target.id || 'edminboost_dark_mode_end' === target.id ) {
+				syncSchedulePreview( elements );
+				return;
+			}
+
+			if ( 'edminboost_admin_favicon_id' === target.id ) {
+				syncAttachmentPreview( elements, elements.faviconInput, elements.faviconWrap, 'data-favicon-id', 'data-favicon-url', '<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>' );
+				return;
+			}
+
+			if ( 'edminboost_admin_bg_image_id' === target.id ) {
+				syncAttachmentPreview( elements, elements.bgImageInput, elements.viewport, 'data-bg-image-id', 'data-bg-image-url', '' );
+			}
 		}
 
-		bindColorPair( bgColorPicker, bgColorInput, syncBackgroundColorPreview );
+		function handleThemeExtrasFormSubmit( event ) {
+			var form = event.target;
 
-		statusInputs.forEach( function ( input ) {
-			var picker = root.querySelector( '#' + input.id + '_picker' );
-			bindColorPair( picker, input, function () {
-				syncStatusRowPreview( input );
-			} );
-		} );
+			if ( ! form || ! form.querySelector( '.edminboost-theme-extras-layout' ) ) {
+				return;
+			}
 
-		if ( scheduleToggle ) {
-			scheduleToggle.addEventListener( 'change', syncSchedulePreview );
+			syncThemeExtrasFieldsForSave( getThemeExtrasElements() );
 		}
 
-		if ( scheduleStartInput ) {
-			scheduleStartInput.addEventListener( 'input', syncSchedulePreview );
-			scheduleStartInput.addEventListener( 'change', syncSchedulePreview );
-		}
+		if ( extrasLayout && '1' !== root.dataset.edminboostThemeExtrasBound ) {
+			root.dataset.edminboostThemeExtrasBound = '1';
+			root.addEventListener( 'input', handleThemeExtrasFieldEvent );
+			root.addEventListener( 'change', handleThemeExtrasFieldEvent );
+			root.querySelectorAll( 'form.edminboost-cc-form' ).forEach( function ( form ) {
+				if ( '1' === form.dataset.edminboostThemeExtrasSubmitBound ) {
+					return;
+				}
 
-		if ( scheduleEndInput ) {
-			scheduleEndInput.addEventListener( 'input', syncSchedulePreview );
-			scheduleEndInput.addEventListener( 'change', syncSchedulePreview );
-		}
-
-		if ( faviconInput ) {
-			faviconInput.addEventListener( 'input', function () {
-				syncAttachmentPreview( faviconInput, faviconWrap, 'data-favicon-id', 'data-favicon-url', '<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>' );
-			} );
-		}
-
-		if ( bgImageInput ) {
-			bgImageInput.addEventListener( 'input', function () {
-				syncAttachmentPreview( bgImageInput, viewport, 'data-bg-image-id', 'data-bg-image-url', '' );
+				form.dataset.edminboostThemeExtrasSubmitBound = '1';
+				form.addEventListener( 'submit', handleThemeExtrasFormSubmit );
 			} );
 		}
 
@@ -3716,6 +3822,10 @@
 
 		if ( typeof form.edminboostSyncHiddenInputs === 'function' ) {
 			form.edminboostSyncHiddenInputs();
+		}
+
+		if ( typeof syncThemeExtrasFieldsForSaveFn === 'function' && form.querySelector( '.edminboost-theme-extras-layout' ) ) {
+			syncThemeExtrasFieldsForSaveFn();
 		}
 
 		var formData = new FormData( form );

@@ -34,13 +34,13 @@ $edminboost_preview_menu_label  = '' !== ( $edminboost_wl['menu_label'] ?? '' ) 
 	data-default-uri="<?php echo esc_attr( $edminboost_defaults['plugin_uri'] ); ?>"
 	data-default-menu-label="<?php echo esc_attr( $edminboost_defaults['menu_label'] ); ?>"
 	role="region"
-	aria-label="<?php esc_attr_e( 'Plugin rebranding live preview', 'edminboost' ); ?>"
+	aria-label="<?php esc_attr_e( 'Plugin rebranding live preview', 'edminboost-smart-admin-productivity-tool' ); ?>"
 	aria-live="polite"
 >
-	<p class="edminboost-wl-rebrand-preview__lead"><?php esc_html_e( 'Live preview', 'edminboost' ); ?></p>
+	<p class="edminboost-wl-rebrand-preview__lead"><?php esc_html_e( 'Live preview', 'edminboost-smart-admin-productivity-tool' ); ?></p>
 
 	<div class="edminboost-wl-rebrand-preview__panel">
-		<p class="edminboost-wl-rebrand-preview__heading"><?php esc_html_e( 'Plugins screen', 'edminboost' ); ?></p>
+		<p class="edminboost-wl-rebrand-preview__heading"><?php esc_html_e( 'Plugins screen', 'edminboost-smart-admin-productivity-tool' ); ?></p>
 		<div class="edminboost-wl-rebrand-preview__plugin-row" aria-hidden="true">
 			<div class="edminboost-wl-rebrand-preview__plugin-title">
 				<strong id="edminboost-wl-preview-name"><?php echo esc_html( $edminboost_preview_name ); ?></strong>
@@ -48,7 +48,7 @@ $edminboost_preview_menu_label  = '' !== ( $edminboost_wl['menu_label'] ?? '' ) 
 					<?php
 					printf(
 						/* translators: %s: plugin version number */
-						esc_html__( 'Version %s', 'edminboost' ),
+						esc_html__( 'Version %s', 'edminboost-smart-admin-productivity-tool' ),
 						esc_html( EDMINBOOST_VERSION )
 					);
 					?>
@@ -57,7 +57,7 @@ $edminboost_preview_menu_label  = '' !== ( $edminboost_wl['menu_label'] ?? '' ) 
 			<div class="edminboost-wl-rebrand-preview__plugin-meta">
 				<p id="edminboost-wl-preview-description"><?php echo esc_html( $edminboost_preview_description ); ?></p>
 				<p class="edminboost-wl-rebrand-preview__plugin-author">
-					<?php esc_html_e( 'By', 'edminboost' ); ?>
+					<?php esc_html_e( 'By', 'edminboost-smart-admin-productivity-tool' ); ?>
 					<a
 						id="edminboost-wl-preview-author-link"
 						href="<?php echo esc_url( $edminboost_preview_uri ? $edminboost_preview_uri : '#' ); ?>"
@@ -69,11 +69,11 @@ $edminboost_preview_menu_label  = '' !== ( $edminboost_wl['menu_label'] ?? '' ) 
 	</div>
 
 	<div class="edminboost-wl-rebrand-preview__panel">
-		<p class="edminboost-wl-rebrand-preview__heading"><?php esc_html_e( 'Admin menu', 'edminboost' ); ?></p>
+		<p class="edminboost-wl-rebrand-preview__heading"><?php esc_html_e( 'Admin menu', 'edminboost-smart-admin-productivity-tool' ); ?></p>
 		<ul class="edminboost-wl-rebrand-preview__menu" aria-hidden="true">
-			<li class="edminboost-wl-rebrand-preview__menu-item"><?php esc_html_e( 'Dashboard', 'edminboost' ); ?></li>
+			<li class="edminboost-wl-rebrand-preview__menu-item"><?php esc_html_e( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ); ?></li>
 			<li class="edminboost-wl-rebrand-preview__menu-item is-target" id="edminboost-wl-preview-menu-label"><?php echo esc_html( $edminboost_preview_menu_label ); ?></li>
-			<li class="edminboost-wl-rebrand-preview__menu-item"><?php esc_html_e( 'Posts', 'edminboost' ); ?></li>
+			<li class="edminboost-wl-rebrand-preview__menu-item"><?php esc_html_e( 'Posts', 'edminboost-smart-admin-productivity-tool' ); ?></li>
 		</ul>
 	</div>
 </div>

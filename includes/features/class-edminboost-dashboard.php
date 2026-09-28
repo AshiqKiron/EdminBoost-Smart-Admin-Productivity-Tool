@@ -97,12 +97,12 @@ class EDMINBOOST_Dashboard extends EDMINBOOST_Feature_Base {
 	 */
 	public static function get_widget_labels() {
 		return array(
-			'remove_welcome_panel' => __( 'Welcome panel', 'edminboost' ),
-			'remove_quick_press'   => __( 'Quick Draft', 'edminboost' ),
-			'remove_activity'      => __( 'Activity', 'edminboost' ),
-			'remove_at_a_glance'   => __( 'At a Glance', 'edminboost' ),
-			'remove_site_health'   => __( 'Site Health Status', 'edminboost' ),
-			'remove_wp_news'       => __( 'WordPress Events and News', 'edminboost' ),
+			'remove_welcome_panel' => __( 'Welcome panel', 'edminboost-smart-admin-productivity-tool' ),
+			'remove_quick_press'   => __( 'Quick Draft', 'edminboost-smart-admin-productivity-tool' ),
+			'remove_activity'      => __( 'Activity', 'edminboost-smart-admin-productivity-tool' ),
+			'remove_at_a_glance'   => __( 'At a Glance', 'edminboost-smart-admin-productivity-tool' ),
+			'remove_site_health'   => __( 'Site Health Status', 'edminboost-smart-admin-productivity-tool' ),
+			'remove_wp_news'       => __( 'WordPress Events and News', 'edminboost-smart-admin-productivity-tool' ),
 		);
 	}
 }
