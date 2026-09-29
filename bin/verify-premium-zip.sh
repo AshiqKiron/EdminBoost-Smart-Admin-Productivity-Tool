@@ -3,13 +3,13 @@
 # Sanity-check a premium distributable zip (includes premium bootstrap path).
 #
 # Usage:
-#   bash bin/verify-premium-zip.sh [path/to/edminboost-smart-admin-productivity-tool-premium.zip]
+#   bash bin/verify-premium-zip.sh [path/to/edminboost-admin-customization-premium.zip]
 #
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLUGIN_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PLUGIN_SLUG="edminboost-smart-admin-productivity-tool"
+PLUGIN_SLUG="edminboost-admin-customization"
 ZIP_PATH="${1:-$PLUGIN_DIR/dist/${PLUGIN_SLUG}-premium.zip}"
 
 if [[ ! -f "$ZIP_PATH" ]]; then
@@ -36,9 +36,14 @@ fi
 
 echo "Verifying premium build: $ZIP_PATH"
 
-BOOTSTRAP="$STAGE_DIR/edminboost-smart-admin-productivity-tool.php"
+BOOTSTRAP="$STAGE_DIR/edminboost-admin-customization.php"
 if [[ ! -f "$BOOTSTRAP" ]]; then
 	echo "FAIL: plugin bootstrap missing." >&2
+	exit 1
+fi
+
+if ! grep -q "Text Domain: ${PLUGIN_SLUG}" "$BOOTSTRAP"; then
+	echo "FAIL: bootstrap Text Domain header must be ${PLUGIN_SLUG}." >&2
 	exit 1
 fi
 
@@ -48,6 +53,12 @@ else
 	echo "WARN: bootstrap does not reference includes/pro/edminboost-premium.php yet."
 	echo "      Add a conditional require before shipping the premium build to customers."
 fi
+
+if [[ -f "$STAGE_DIR/uninstall.php" ]]; then
+	echo "FAIL: uninstall.php must not ship in the premium zip (use Freemius after_uninstall)." >&2
+	exit 1
+fi
+echo "OK: uninstall.php omitted (Freemius after_uninstall cleanup)."
 
 if [[ -d "$STAGE_DIR/includes/pro" ]]; then
 	echo "OK: includes/pro/ is present in the premium zip."

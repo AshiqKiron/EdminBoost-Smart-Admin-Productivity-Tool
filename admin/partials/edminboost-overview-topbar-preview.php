@@ -30,7 +30,7 @@ $edminboost_preview_id = isset( $edminboost_preview_id )
 	: ( isset( $preview_id ) ? $preview_id : 'edminboost-overview-topbar-preview' );
 $edminboost_preview_aria_label = isset( $edminboost_preview_aria_label )
 	? $edminboost_preview_aria_label
-	: ( isset( $preview_aria_label ) ? $preview_aria_label : __( 'Top bar preview', 'edminboost-smart-admin-productivity-tool' ) );
+	: ( isset( $preview_aria_label ) ? $preview_aria_label : __( 'Top bar preview', 'edminboost-admin-customization' ) );
 $edminboost_show_interaction = isset( $edminboost_show_interaction )
 	? ! empty( $edminboost_show_interaction )
 	: ! empty( $show_interaction );
@@ -65,13 +65,13 @@ foreach ( $edminboost_preview_items as $edminboost_preview_item ) {
 >
 	<?php if ( empty( $edminboost_visible_items ) ) : ?>
 		<p class="edminboost-overview-topbar-preview__empty">
-			<?php esc_html_e( 'No links in this preview yet.', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'No links in this preview yet.', 'edminboost-admin-customization' ); ?>
 		</p>
 	<?php else : ?>
 		<div class="edminboost-overview-topbar-preview__canvas">
 			<span class="edminboost-overview-topbar-preview__tip edminboost-overview-topbar-preview__brand">
 				<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>
-				<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip"><?php esc_html_e( 'WordPress', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+				<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip"><?php esc_html_e( 'WordPress', 'edminboost-admin-customization' ); ?></span>
 			</span>
 			<ul class="edminboost-overview-topbar-preview__items">
 				<?php foreach ( $edminboost_visible_items as $edminboost_preview_item ) : ?>
@@ -99,7 +99,7 @@ foreach ( $edminboost_preview_items as $edminboost_preview_item ) {
 				<?php
 				$edminboost_overflow_label = sprintf(
 					/* translators: %d: number of additional top bar links not shown in the preview */
-					_n( '%d more link', '%d more links', $edminboost_overflow_count, 'edminboost-smart-admin-productivity-tool' ),
+					_n( '%d more link', '%d more links', $edminboost_overflow_count, 'edminboost-admin-customization' ),
 					(int) $edminboost_overflow_count
 				);
 				?>
@@ -107,7 +107,7 @@ foreach ( $edminboost_preview_items as $edminboost_preview_item ) {
 					<?php
 					printf(
 						/* translators: %d: number of additional top bar links not shown in the preview */
-						esc_html__( '+%d', 'edminboost-smart-admin-productivity-tool' ),
+						esc_html__( '+%d', 'edminboost-admin-customization' ),
 						(int) $edminboost_overflow_count
 					);
 					?>
@@ -116,7 +116,7 @@ foreach ( $edminboost_preview_items as $edminboost_preview_item ) {
 			<?php endif; ?>
 			<span class="edminboost-overview-topbar-preview__tip edminboost-overview-topbar-preview__profile">
 				<span class="dashicons dashicons-admin-users" aria-hidden="true"></span>
-				<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip"><?php esc_html_e( 'My account', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+				<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip"><?php esc_html_e( 'My account', 'edminboost-admin-customization' ); ?></span>
 			</span>
 		</div>
 	<?php endif; ?>

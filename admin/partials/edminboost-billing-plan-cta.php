@@ -22,7 +22,7 @@ if ( ! empty( $edminboost_class ) ) {
 ?>
 <?php if ( $edminboost_is_active ) : ?>
 	<button type="button" class="<?php echo esc_attr( $edminboost_cta_class ); ?>" disabled aria-disabled="true">
-		<?php esc_html_e( 'Current plan', 'edminboost-smart-admin-productivity-tool' ); ?>
+		<?php esc_html_e( 'Current plan', 'edminboost-admin-customization' ); ?>
 	</button>
 <?php else : ?>
 	<a
@@ -34,7 +34,7 @@ if ( ! empty( $edminboost_class ) ) {
 		<?php
 		printf(
 			/* translators: %s: plan name */
-			esc_html__( 'Upgrade to %s', 'edminboost-smart-admin-productivity-tool' ),
+			esc_html__( 'Upgrade to %s', 'edminboost-admin-customization' ),
 			esc_html( $edminboost_plan['name'] )
 		);
 		?>

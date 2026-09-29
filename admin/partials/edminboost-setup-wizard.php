@@ -79,7 +79,7 @@ $edminboost_preset_picker_mode = 'wizard';
 
 	<div class="edminboost-setup-step" id="edminboost-setup-step-2" data-step="2" role="tabpanel" aria-labelledby="edminboost-setup-step-2-heading" hidden>
 		<?php
-		$edminboost_show_theme_extras = EDMINBOOST_Pro::is_premium_build();
+		$edminboost_show_theme_extras = EDMINBOOST_Pro::shows_pro_settings_ui();
 		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-theme-settings.php';
 		?>
 	</div>

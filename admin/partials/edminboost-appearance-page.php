@@ -26,7 +26,7 @@ $edminboost_theme_key   = $edminboost_option_name . '[command_center][theme]';
 	<header class="edminboost-cc-hero">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<p class="edminboost-cc-hero__lead">
-			<?php esc_html_e( 'Customize colors, fonts, and admin bar cleanup.', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'Customize colors, fonts, and admin bar cleanup.', 'edminboost-admin-customization' ); ?>
 		</p>
 	</header>
 
@@ -40,7 +40,7 @@ $edminboost_theme_key   = $edminboost_option_name . '[command_center][theme]';
 		?>
 
 		<?php
-		$edminboost_save_label = __( 'Save appearance', 'edminboost-smart-admin-productivity-tool' );
+		$edminboost_save_label = __( 'Save appearance', 'edminboost-admin-customization' );
 		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
 		?>
 	</form>

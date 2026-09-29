@@ -688,9 +688,14 @@ class SettingsTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * Text domain matches the plugin header Text Domain field.
+	 * Slug and text domain match the plugin header and bootstrap filename.
 	 */
-	public function test_text_domain_is_edminboost() {
-		$this->assertSame( 'edminboost-smart-admin-productivity-tool', EDMINBOOST_TEXT_DOMAIN );
+	public function test_plugin_slug_and_text_domain_match_header() {
+		$this->assertSame( 'edminboost-admin-customization', EDMINBOOST_PLUGIN_SLUG );
+		$this->assertSame( EDMINBOOST_PLUGIN_SLUG, EDMINBOOST_TEXT_DOMAIN );
+		$this->assertSame(
+			EDMINBOOST_PLUGIN_SLUG . '.php',
+			basename( EDMINBOOST_PLUGIN_FILE )
+		);
 	}
 }

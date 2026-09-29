@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
 # Build the WordPress.org free plugin zip (no premium / Freemius code).
-# Output: dist/edminboost-smart-admin-productivity-tool.zip
+# Output: dist/edminboost-admin-customization.zip
+#
+# Release checklist: docs/release-wordpress-org.md
 #
 # Usage:
 #   bash bin/build-wporg-zip.sh
@@ -13,7 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/build-zip-lib.sh"
 
 PLUGIN_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PLUGIN_SLUG="edminboost-smart-admin-productivity-tool"
+PLUGIN_SLUG="edminboost-admin-customization"
 BUILD_DIR="$PLUGIN_DIR/dist"
 STAGE_DIR="$BUILD_DIR/$PLUGIN_SLUG"
 ZIP_BASENAME="$PLUGIN_SLUG.zip"

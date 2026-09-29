@@ -32,6 +32,9 @@ bash bin/setup-qa-site.sh
 composer test
 # or: bash bin/run-phpunit.sh
 
+# Translation template (POT)
+composer make-pot
+
 # E2E (Playwright)
 npm run test:e2e
 
@@ -41,6 +44,16 @@ npm run test:e2e:ui
 # E2E HTML report
 npm run test:e2e:report
 ```
+
+## WordPress.org release
+
+Before uploading to WordPress.org SVN, build and verify the **free** package only:
+
+```bash
+bash bin/build-wporg-zip.sh
+```
+
+See [`docs/release-wordpress-org.md`](../docs/release-wordpress-org.md) for the full checklist (SVN deploy, excluded paths, free-tier behavior).
 
 ## Manual regression
 
@@ -53,7 +66,7 @@ Use [`tests/manual/regression-matrix.md`](manual/regression-matrix.md) after aut
 | `BASE_URL` | `http://localhost:8888/wordpress` |
 | `ADMIN_USER` | `qaadmin` |
 | `ADMIN_PASSWORD` | `qaadmin123` |
-| `PLUGIN_SLUG` | `edminboost-smart-admin-productivity-tool` |
+| `PLUGIN_SLUG` | `edminboost-admin-customization` |
 
 Override `WP_PATH` and `QA_URL` in `bin/setup-qa-site.sh` if your install differs.
 

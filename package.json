@@ -1,5 +1,5 @@
 {
-	"name": "edminboost-smart-admin-productivity-tool",
+	"name": "edminboost-admin-customization",
 	"private": true,
 	"description": "EdminBoost QA E2E tests",
 	"scripts": {

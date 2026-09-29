@@ -116,7 +116,10 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 * Preset resolution keeps definition icons when discovered menus use image URLs.
 	 */
 	public function test_resolve_preset_top_bar_items_keeps_definition_icon_for_image_menu_icons() {
-		global $menu;
+		global $menu, $submenu;
+
+		$previous_menu    = $menu;
+		$previous_submenu = $submenu;
 
 		$menu = array(
 			array(
@@ -131,6 +134,9 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		);
 
 		$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( 'system_client' );
+
+		$menu    = $previous_menu;
+		$submenu = $previous_submenu;
 
 		foreach ( $items as $item ) {
 			if ( 'edit.php' === $item['slug'] ) {
@@ -684,13 +690,9 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * Discovered menu items rebuild when admin menu globals are empty (AJAX tab loads).
+	 * Discovered menu items restore from the user snapshot when globals are empty (AJAX tab loads).
 	 */
 	public function test_get_discovered_menu_items_rebuilds_empty_menu() {
-		if ( function_exists( '_add_themes_utility_last' ) ) {
-			$this->markTestSkipped( 'Admin menu bootstrap already loaded in this PHP process.' );
-		}
-
 		EDMINBOOST_Command_Center::reset_static_caches();
 
 		global $menu;

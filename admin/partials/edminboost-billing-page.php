@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $edminboost_plans           = EDMINBOOST_Command_Center::get_billing_plans();
 $edminboost_comparison_rows = EDMINBOOST_Command_Center::get_billing_comparison_rows();
 $edminboost_active_plan     = EDMINBOOST_Command_Center::get_active_billing_plan();
-$edminboost_active_label    = isset( $edminboost_plans[ $edminboost_active_plan ] ) ? $edminboost_plans[ $edminboost_active_plan ]['name'] : __( 'Free', 'edminboost-smart-admin-productivity-tool' );
+$edminboost_active_label    = isset( $edminboost_plans[ $edminboost_active_plan ] ) ? $edminboost_plans[ $edminboost_active_plan ]['name'] : __( 'Free', 'edminboost-admin-customization' );
 $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap">
@@ -24,12 +24,12 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 	<header class="edminboost-cc-hero">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<p class="edminboost-cc-hero__lead">
-			<?php esc_html_e( 'Choose the plan that fits your workflow. Upgrade anytime as your sites grow.', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'Choose the plan that fits your workflow. Upgrade anytime as your sites grow.', 'edminboost-admin-customization' ); ?>
 		</p>
 	</header>
 
 	<section class="edminboost-card edminboost-cc-section edminboost-billing-current">
-		<h2><?php esc_html_e( 'Current plan', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+		<h2><?php esc_html_e( 'Current plan', 'edminboost-admin-customization' ); ?></h2>
 		<p class="edminboost-billing-current__plan">
 			<span class="edminboost-billing-current__label"><?php echo esc_html( $edminboost_active_label ); ?></span>
 			<?php if ( isset( $edminboost_plans[ $edminboost_active_plan ] ) ) : ?>
@@ -37,7 +37,7 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 					<?php
 					printf(
 						/* translators: 1: price label, 2: site count label */
-						esc_html__( '%1$s per year · %2$s', 'edminboost-smart-admin-productivity-tool' ),
+						esc_html__( '%1$s per year · %2$s', 'edminboost-admin-customization' ),
 						esc_html( $edminboost_plans[ $edminboost_active_plan ]['price_label'] ),
 						esc_html( $edminboost_plans[ $edminboost_active_plan ]['sites_label'] )
 					);
@@ -47,7 +47,7 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 		</p>
 	</section>
 
-	<section class="edminboost-billing-plans" aria-label="<?php esc_attr_e( 'Available plans', 'edminboost-smart-admin-productivity-tool' ); ?>">
+	<section class="edminboost-billing-plans" aria-label="<?php esc_attr_e( 'Available plans', 'edminboost-admin-customization' ); ?>">
 		<?php foreach ( $edminboost_plans as $edminboost_plan_id => $edminboost_plan ) : ?>
 			<?php
 			$edminboost_is_active  = $edminboost_plan_id === $edminboost_active_plan;
@@ -57,14 +57,14 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 			?>
 			<article class="<?php echo esc_attr( $edminboost_card_class ); ?>">
 				<?php if ( ! empty( $edminboost_plan['featured'] ) ) : ?>
-					<p class="edminboost-billing-plan__badge"><?php esc_html_e( 'Most popular', 'edminboost-smart-admin-productivity-tool' ); ?></p>
+					<p class="edminboost-billing-plan__badge"><?php esc_html_e( 'Most popular', 'edminboost-admin-customization' ); ?></p>
 				<?php endif; ?>
 
 				<header class="edminboost-billing-plan__header">
 					<h2 class="edminboost-billing-plan__name"><?php echo esc_html( $edminboost_plan['name'] ); ?></h2>
 					<p class="edminboost-billing-plan__price">
 						<span class="edminboost-billing-plan__amount"><?php echo esc_html( $edminboost_plan['price_label'] ); ?></span>
-						<span class="edminboost-billing-plan__period"><?php esc_html_e( '/ year', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+						<span class="edminboost-billing-plan__period"><?php esc_html_e( '/ year', 'edminboost-admin-customization' ); ?></span>
 					</p>
 					<p class="edminboost-billing-plan__sites"><?php echo esc_html( $edminboost_plan['sites_label'] ); ?></p>
 					<p class="edminboost-billing-plan__desc"><?php echo esc_html( $edminboost_plan['description'] ); ?></p>
@@ -87,19 +87,19 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 	</section>
 
 	<section class="edminboost-card edminboost-cc-section edminboost-billing-comparison">
-		<h2><?php esc_html_e( 'Compare plans', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+		<h2><?php esc_html_e( 'Compare plans', 'edminboost-admin-customization' ); ?></h2>
 		<p class="description edminboost-billing-comparison__lead">
-			<?php esc_html_e( 'Scan down a column to see what each plan includes.', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'Scan down a column to see what each plan includes.', 'edminboost-admin-customization' ); ?>
 		</p>
 
 		<ul class="edminboost-billing-comparison__legend" aria-hidden="true">
 			<li>
 				<span class="edminboost-billing-comparison__status is-included"></span>
-				<?php esc_html_e( 'Included', 'edminboost-smart-admin-productivity-tool' ); ?>
+				<?php esc_html_e( 'Included', 'edminboost-admin-customization' ); ?>
 			</li>
 			<li>
 				<span class="edminboost-billing-comparison__status is-excluded"></span>
-				<?php esc_html_e( 'Not included', 'edminboost-smart-admin-productivity-tool' ); ?>
+				<?php esc_html_e( 'Not included', 'edminboost-admin-customization' ); ?>
 			</li>
 		</ul>
 
@@ -108,7 +108,7 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 				<thead>
 					<tr>
 						<th scope="col" class="edminboost-billing-comparison__feature-col">
-							<?php esc_html_e( 'Feature', 'edminboost-smart-admin-productivity-tool' ); ?>
+							<?php esc_html_e( 'Feature', 'edminboost-admin-customization' ); ?>
 						</th>
 						<?php foreach ( array( 'free', 'pro', 'agency' ) as $edminboost_plan_key ) : ?>
 							<?php
@@ -123,14 +123,14 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 									<?php
 									printf(
 										/* translators: 1: price label, 2: site count label */
-										esc_html__( '%1$s/yr · %2$s', 'edminboost-smart-admin-productivity-tool' ),
+										esc_html__( '%1$s/yr · %2$s', 'edminboost-admin-customization' ),
 										esc_html( $edminboost_plan['price_label'] ),
 										esc_html( $edminboost_plan['sites_label'] )
 									);
 									?>
 								</span>
 								<?php if ( $edminboost_plan_key === $edminboost_active_plan ) : ?>
-									<span class="edminboost-billing-comparison__plan-current"><?php esc_html_e( 'Current', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+									<span class="edminboost-billing-comparison__plan-current"><?php esc_html_e( 'Current', 'edminboost-admin-customization' ); ?></span>
 								<?php endif; ?>
 							</th>
 						<?php endforeach; ?>
@@ -161,7 +161,7 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 										<?php if ( is_bool( $edminboost_cell ) ) : ?>
 											<span class="edminboost-billing-comparison__status<?php echo $edminboost_cell ? ' is-included' : ' is-excluded'; ?>"></span>
 											<span class="screen-reader-text">
-												<?php echo $edminboost_cell ? esc_html__( 'Included', 'edminboost-smart-admin-productivity-tool' ) : esc_html__( 'Not included', 'edminboost-smart-admin-productivity-tool' ); ?>
+												<?php echo $edminboost_cell ? esc_html__( 'Included', 'edminboost-admin-customization' ) : esc_html__( 'Not included', 'edminboost-admin-customization' ); ?>
 											</span>
 										<?php else : ?>
 											<span class="edminboost-billing-comparison__value"><?php echo esc_html( (string) $edminboost_cell ); ?></span>
@@ -175,7 +175,7 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 				<tfoot>
 					<tr class="edminboost-billing-comparison__cta-row">
 						<th scope="row" class="edminboost-billing-comparison__feature-col">
-							<span class="screen-reader-text"><?php esc_html_e( 'Plan actions', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+							<span class="screen-reader-text"><?php esc_html_e( 'Plan actions', 'edminboost-admin-customization' ); ?></span>
 						</th>
 						<?php foreach ( array( 'free', 'pro', 'agency' ) as $edminboost_plan_key ) : ?>
 							<?php
@@ -199,6 +199,6 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 	</section>
 
 	<p class="edminboost-billing-note description">
-		<?php esc_html_e( 'Paid plans are billed annually per site license. Upgrade opens the EdminBoost pricing page in a new tab.', 'edminboost-smart-admin-productivity-tool' ); ?>
+		<?php esc_html_e( 'Paid plans are billed annually per site license. Upgrade opens the EdminBoost pricing page in a new tab.', 'edminboost-admin-customization' ); ?>
 	</p>
 </div>

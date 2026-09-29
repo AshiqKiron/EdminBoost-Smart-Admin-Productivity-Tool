@@ -48,7 +48,7 @@ No. EdminBoost does not track users or send site data to external servers. Optio
 
 = Are features locked behind a paid plan? =
 
-Yes, on the free WordPress.org build. Core layout, theme, Menu Studio reorder/hide, and productivity tools are included. Pro features (drawer panels, badges, role visibility matrix, extra presets and theme skins, White Label, backup/import, login redirects, custom sidebar links, and related options) require a Pro or Agency license on the direct-download build or are omitted from the free admin UI. The Billing page lists what each plan includes.
+No locked controls in wp-admin. The free tier includes a fixed set of layout, theme, Menu Studio, and productivity tools — everything shown is fully usable. Pro and Agency add more capabilities (drawer panels, live badges, role visibility, extra presets and theme skins, White Label, backup/import, login redirects, custom sidebar links, and related options). Those Pro-only screens and settings are omitted until you have an active license on the direct-download build; the Billing page describes plans and upgrade options.
 
 = Is the plugin uninstall-safe? =
 
@@ -57,10 +57,11 @@ Yes. When uninstalled, all plugin options are removed from the database.
 == Changelog ==
 
 = 1.4.0 =
+* Free tier: omit Pro-only settings from the admin UI instead of showing locked controls; upgrades are described on the Billing page only.
 * Fix Dashboard layout sidebar preview overlapping WordPress admin flyout submenus after setup completes.
 * WordPress.org build: omit Appearance extras from the Dashboard setup wizard (step 2 keeps visual theme only); configure extras on the Theme page after setup.
-* Gate scheduled dark mode as a Pro feature: free plans cannot save or apply a dark-mode schedule; premium Free builds show a locked control with upgrade prompt.
-* WordPress.org build: restore Free vs Pro gating aligned with the Billing page — omit Pro-only admin UI on the free package, enforce plan limits on save and at runtime, and show upgrade prompts on the premium build when Pro is inactive.
+* Gate scheduled dark mode as a Pro feature: omitted from WordPress.org and unlicensed builds; stripped on save and at runtime on the free tier.
+* WordPress.org build: Free vs Pro gating aligned with the Billing page — omit Pro-only admin UI on the free package and enforce plan limits on save and at runtime.
 * WordPress.org build: hide the Settings tab (JSON export/import) and the Plugins screen Settings shortcut; Pro and direct-download builds keep the Settings page.
 * Fix Appearance extras live preview on the Dashboard setup wizard and Theme page so font size, admin background, and post status row colors update as you edit the fields.
 * Add setting help info icons with tooltips on all Dashboard setup wizard controls (layout, theme, top bar review, and save summary).
@@ -69,11 +70,9 @@ Yes. When uninstalled, all plugin options are removed from the database.
 * Fix AJAX security check failures (tab navigation, settings export/import, drawer preview) returning JSON error messages instead of breaking admin JavaScript.
 * Refresh Command Center navigation and drawer preview nonces after tab loads.
 * Restore plugin text domain loading and clear the activation redirect transient on deactivate.
-* Keep the translation text domain as edminboost (intentionally shorter than the plugin slug; matches existing language files and load_plugin_textdomain()).
+* Align plugin text domain with the WordPress.org slug (`edminboost-admin-customization`) for Plugin Check and translation packages.
 * Harden post duplicator, login redirect, and white-label footer output handling.
-* Remove in-plugin Free vs Pro feature gating — the free WordPress.org build includes all Command Center and feature tools with no Freemius or license code.
-* Restore the in-plugin Billing page with accurate plan copy: all features are included in the free build; paid tiers cover licensing and support only.
-* Fix misleading Billing comparison rows that previously marked Pro-only features as unavailable on Free.
+* Align Billing plan comparison rows with the current Free vs Pro capability split documented in the FAQ.
 * Save the current top bar and sidebar layout as a named custom preset from the Layout Presets page; rename saved presets inline from the preset actions row.
 * Fix visual theme accent colors not applying to core wp-admin UI on the Plugins screen and other admin pages (active plugin rows, buttons, links, and form focus states now follow the selected theme).
 * Fix Menu Studio sidebar colors staying active after Reset to defaults and Save when "Apply custom sidebar colors" is turned off.

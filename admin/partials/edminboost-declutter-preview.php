@@ -43,34 +43,34 @@ $edminboost_preview_style_vars = sprintf(
 $edminboost_preview_items = array(
 	array(
 		'key'   => 'hide_wp_logo',
-		'label' => __( 'WordPress logo', 'edminboost-smart-admin-productivity-tool' ),
+		'label' => __( 'WordPress logo', 'edminboost-admin-customization' ),
 		'icon'  => 'dashicons-wordpress',
 		'class' => 'edminboost-declutter-preview__item--brand',
 	),
 	array(
 		'key'   => 'hide_update_counters',
-		'label' => __( 'Updates', 'edminboost-smart-admin-productivity-tool' ),
+		'label' => __( 'Updates', 'edminboost-admin-customization' ),
 		'icon'  => 'dashicons-update',
 		'badge' => '3',
 	),
 	array(
 		'key'   => 'hide_comments',
-		'label' => __( 'Comments', 'edminboost-smart-admin-productivity-tool' ),
+		'label' => __( 'Comments', 'edminboost-admin-customization' ),
 		'icon'  => 'dashicons-admin-comments',
 	),
 	array(
 		'key'   => 'hide_new_content',
-		'label' => _x( 'New', 'admin bar new content menu', 'edminboost-smart-admin-productivity-tool' ),
+		'label' => _x( 'New', 'admin bar new content menu', 'edminboost-admin-customization' ),
 		'icon'  => 'dashicons-plus',
 	),
 	array(
 		'key'   => 'hide_customize',
-		'label' => __( 'Customize', 'edminboost-smart-admin-productivity-tool' ),
+		'label' => __( 'Customize', 'edminboost-admin-customization' ),
 		'icon'  => 'dashicons-admin-appearance',
 	),
 	array(
 		'key'   => 'hide_howdy',
-		'label' => __( 'Howdy, Admin', 'edminboost-smart-admin-productivity-tool' ),
+		'label' => __( 'Howdy, Admin', 'edminboost-admin-customization' ),
 		'icon'  => 'dashicons-admin-users',
 		'class' => 'edminboost-declutter-preview__item--profile',
 	),
@@ -81,11 +81,11 @@ $edminboost_preview_items = array(
 	class="edminboost-declutter-preview"
 	style="<?php echo esc_attr( $edminboost_preview_style_vars ); ?>"
 	role="region"
-	aria-label="<?php esc_attr_e( 'Admin bar cleanup live preview', 'edminboost-smart-admin-productivity-tool' ); ?>"
+	aria-label="<?php esc_attr_e( 'Admin bar cleanup live preview', 'edminboost-admin-customization' ); ?>"
 	aria-live="polite"
 >
-	<p class="edminboost-declutter-preview__lead"><?php esc_html_e( 'Live preview', 'edminboost-smart-admin-productivity-tool' ); ?></p>
-	<p class="edminboost-declutter-preview__desc"><?php esc_html_e( 'Shows native WordPress admin bar items affected by the toggles above.', 'edminboost-smart-admin-productivity-tool' ); ?></p>
+	<p class="edminboost-declutter-preview__lead"><?php esc_html_e( 'Live preview', 'edminboost-admin-customization' ); ?></p>
+	<p class="edminboost-declutter-preview__desc"><?php esc_html_e( 'Shows native WordPress admin bar items affected by the toggles above.', 'edminboost-admin-customization' ); ?></p>
 
 	<div class="edminboost-declutter-preview__canvas" aria-hidden="true">
 		<?php foreach ( $edminboost_preview_items as $edminboost_preview_item ) : ?>
@@ -102,12 +102,12 @@ $edminboost_preview_items = array(
 
 			$edminboost_tooltip_visible = sprintf(
 				/* translators: %s: admin bar item label */
-				__( '%s — Visible', 'edminboost-smart-admin-productivity-tool' ),
+				__( '%s — Visible', 'edminboost-admin-customization' ),
 				$edminboost_preview_item['label']
 			);
 			$edminboost_tooltip_hidden = sprintf(
 				/* translators: %s: admin bar item label */
-				__( '%s — Hidden', 'edminboost-smart-admin-productivity-tool' ),
+				__( '%s — Hidden', 'edminboost-admin-customization' ),
 				$edminboost_preview_item['label']
 			);
 			$edminboost_tooltip_text = $edminboost_is_hidden ? $edminboost_tooltip_hidden : $edminboost_tooltip_visible;

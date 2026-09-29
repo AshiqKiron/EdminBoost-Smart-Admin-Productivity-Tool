@@ -796,7 +796,7 @@ class EDMINBOOST_Settings {
 			$id => array(
 				'name'          => sprintf(
 					/* translators: %s: preset name */
-					__( '%s (Copy)', 'edminboost-smart-admin-productivity-tool' ),
+					__( '%s (Copy)', 'edminboost-admin-customization' ),
 					$name
 				),
 				'description'   => isset( $source['description'] ) ? $source['description'] : '',
@@ -1036,5 +1036,15 @@ class EDMINBOOST_Settings {
 		$output['hide_customize']       = ! empty( $raw['hide_customize'] );
 
 		return $output;
+	}
+
+	/**
+	 * Remove plugin options when the plugin is deleted (not deactivated).
+	 *
+	 * WordPress.org builds run this via uninstall.php; the direct-download build uses its licensing SDK uninstall hook.
+	 */
+	public static function uninstall() {
+		delete_option( self::OPTION_NAME );
+		delete_option( self::VERSION_OPTION );
 	}
 }

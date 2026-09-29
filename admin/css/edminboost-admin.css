@@ -932,40 +932,6 @@ summary .edminboost-setting-info,
 	color: #135e96;
 }
 
-/* Pro feature gating */
-.edminboost-pro-badge {
-	display: inline-flex;
-	align-items: center;
-	padding: 1px 7px;
-	border-radius: 999px;
-	font-size: 10px;
-	font-weight: 700;
-	line-height: 1.5;
-	text-transform: uppercase;
-	letter-spacing: 0.04em;
-	color: #fff;
-	background: linear-gradient(135deg, #6b46c1, #9333ea);
-	vertical-align: middle;
-}
-
-.edminboost-pro-upgrade {
-	margin: 12px 0 0;
-	font-size: 13px;
-}
-
-.edminboost-pro-upgrade .edminboost-pro-badge {
-	margin-right: 6px;
-}
-
-.edminboost-layout-preset-picker__option.is-pro-locked,
-.edminboost-theme-preset-picker__option.is-pro-locked {
-	opacity: 0.72;
-}
-
-.edminboost-role-matrix__check.is-pro-locked {
-	background: #f6f4fb;
-}
-
 @media ( max-width: 1100px ) {
 	.edminboost-billing-plans {
 		grid-template-columns: 1fr;

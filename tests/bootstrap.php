@@ -20,7 +20,7 @@ require_once $_tests_dir . '/functions.php';
  * Load the plugin before tests run.
  */
 function _edminboost_manually_load_plugin() {
-	require dirname( __DIR__ ) . '/edminboost-smart-admin-productivity-tool.php';
+	require dirname( __DIR__ ) . '/edminboost-admin-customization.php';
 }
 
 tests_add_filter( 'muplugins_loaded', '_edminboost_manually_load_plugin' );

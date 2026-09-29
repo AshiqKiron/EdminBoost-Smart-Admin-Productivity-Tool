@@ -46,7 +46,7 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$first = reset( $submenu[ $slug ] );
 
 		$this->assertSame( $slug, $first[2] );
-		$this->assertSame( __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ), wp_strip_all_tags( $first[0] ) );
+		$this->assertSame( __( 'Dashboard', 'edminboost-admin-customization' ), wp_strip_all_tags( $first[0] ) );
 
 		$labels = array();
 		foreach ( $submenu[ $slug ] as $item ) {
@@ -54,16 +54,16 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		}
 
 		$expected = array(
-			__( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . ')',
-			__( 'Layouts', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_PRESETS . ')',
-			__( 'Theme', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
-			__( 'Top Bar', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MAPPER . ')',
-			__( 'Menu Studio', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
-			__( 'Billing', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')',
+			__( 'Dashboard', 'edminboost-admin-customization' ) . ' (' . $slug . ')',
+			__( 'Layouts', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_PRESETS . ')',
+			__( 'Theme', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
+			__( 'Top Bar', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MAPPER . ')',
+			__( 'Menu Studio', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
+			__( 'Billing', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')',
 		);
 
 		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
-			$expected[] = __( 'Settings', 'edminboost-smart-admin-productivity-tool' ) . ' (' . $slug . '-settings)';
+			$expected[] = __( 'Settings', 'edminboost-admin-customization' ) . ' (' . $slug . '-settings)';
 		}
 
 		$this->assertSame( $expected, $labels );
@@ -104,7 +104,7 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$first = reset( $submenu[ $slug ] );
 
 		$this->assertSame( $slug, $first[2] );
-		$this->assertSame( __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ), wp_strip_all_tags( $first[0] ) );
+		$this->assertSame( __( 'Dashboard', 'edminboost-admin-customization' ), wp_strip_all_tags( $first[0] ) );
 	}
 
 	/**
@@ -122,6 +122,6 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 		$title = null;
 		do_action( "load-{$hook}" );
 
-		$this->assertSame( __( 'Productivity', 'edminboost-smart-admin-productivity-tool' ), $title );
+		$this->assertSame( __( 'Productivity', 'edminboost-admin-customization' ), $title );
 	}
 }

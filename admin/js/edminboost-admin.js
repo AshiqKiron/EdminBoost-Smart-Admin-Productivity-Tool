@@ -188,42 +188,6 @@
 		initSettingsForm( root );
 		initFormResetButtons( root );
 		initBackupSettings( root );
-		initProLocks( root );
-	}
-
-	function initProLocks( root ) {
-		if ( ! edminboostData.isPremiumBuild || edminboostData.isPro ) {
-			return;
-		}
-
-		root.querySelectorAll( '.is-pro-locked' ).forEach( function ( section ) {
-			syncDependentSection( section, false );
-
-			section.querySelectorAll( '.edminboost-pro-upgrade a' ).forEach( function ( link ) {
-				link.removeAttribute( 'tabindex' );
-				link.removeAttribute( 'aria-disabled' );
-			} );
-		} );
-	}
-
-	function isLayoutPresetProLocked( presetId, catalog ) {
-		if ( ! edminboostData.isPremiumBuild || edminboostData.isPro ) {
-			return false;
-		}
-
-		var config = ( catalog || edminboostData.presets || {} )[ presetId ] || {};
-
-		return !! config.requiresPro;
-	}
-
-	function isThemePresetProLocked( presetId, catalog ) {
-		if ( ! edminboostData.isPremiumBuild || edminboostData.isPro ) {
-			return false;
-		}
-
-		var config = ( catalog || edminboostData.themePresets || {} )[ presetId ] || {};
-
-		return !! config.requiresPro;
 	}
 
 	function primeCommandCenterHistory() {
@@ -2987,11 +2951,6 @@
 		}
 
 		function setSelectedPreset( preset ) {
-			if ( isThemePresetProLocked( preset, themePresets ) ) {
-				window.alert( edminboostData.strings.proThemeLocked || 'This theme skin requires Pro.' );
-				return;
-			}
-
 			if ( ! presetSelect || ! themePresets[ preset ] ) {
 				return;
 			}
@@ -4181,11 +4140,6 @@
 		}
 
 		function setSelectedPreset( preset ) {
-			if ( isLayoutPresetProLocked( preset, presetCatalog ) ) {
-				window.alert( edminboostData.strings.proPresetLocked || 'This layout preset requires Pro.' );
-				return;
-			}
-
 			if ( ! presetSelect || ! presetCatalog[ preset ] ) {
 				return;
 			}
@@ -4240,15 +4194,13 @@
 			var presetNameText = preset.name || presetId;
 			var presetDescText = preset.description || '';
 			var badgeLabel = isVirtual ? badgeVirtual : ( isSystem ? badgeBuiltIn : badgeSaved );
-			var requiresPro = !! preset.requiresPro;
 			var li = document.createElement( 'li' );
 
-			li.className = 'edminboost-layout-preset-picker__option' + ( isSelected ? ' is-selected' : '' ) + ( requiresPro ? ' is-pro-locked' : '' );
+			li.className = 'edminboost-layout-preset-picker__option' + ( isSelected ? ' is-selected' : '' );
 			li.setAttribute( 'role', 'option' );
 			li.setAttribute( 'tabindex', '-1' );
 			li.setAttribute( 'data-value', presetId );
 			li.setAttribute( 'data-system', isSystem ? '1' : '0' );
-			li.setAttribute( 'data-requires-pro', requiresPro ? '1' : '0' );
 			li.setAttribute( 'aria-selected', isSelected ? 'true' : 'false' );
 
 			var main = document.createElement( 'span' );

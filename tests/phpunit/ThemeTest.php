@@ -119,6 +119,7 @@ class ThemeTest extends Edminboost_Test_Case {
 	 * JS preset catalog includes mode-specific preview colors.
 	 */
 	public function test_get_presets_for_js_includes_colors_by_mode() {
+		$this->enable_pro_plan();
 		$presets = EDMINBOOST_Theme::get_presets_for_js();
 
 		$this->assertArrayHasKey( 'colorsByMode', $presets['tron'] );

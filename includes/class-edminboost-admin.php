@@ -53,12 +53,12 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function register_menu() {
-		$dashboard_title = __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' );
+		$dashboard_title = __( 'Dashboard', 'edminboost-admin-customization' );
 
 		$this->bind_admin_page_title(
 			add_menu_page(
 				$dashboard_title,
-				__( 'EdminBoost', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'EdminBoost', 'edminboost-admin-customization' ),
 				EDMINBOOST_Settings::CAPABILITY,
 				self::PAGE_SLUG,
 				array( $this, 'render_admin_page' ),
@@ -78,40 +78,40 @@ class EDMINBOOST_Admin {
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Layouts', 'edminboost-smart-admin-productivity-tool' ),
-			__( 'Layouts', 'edminboost-smart-admin-productivity-tool' ),
+			__( 'Layouts', 'edminboost-admin-customization' ),
+			__( 'Layouts', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS,
 			array( $this, 'render_presets_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Theme', 'edminboost-smart-admin-productivity-tool' ),
-			__( 'Theme', 'edminboost-smart-admin-productivity-tool' ),
+			__( 'Theme', 'edminboost-admin-customization' ),
+			__( 'Theme', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
 			array( $this, 'render_appearance_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Top Bar', 'edminboost-smart-admin-productivity-tool' ),
-			__( 'Top Bar', 'edminboost-smart-admin-productivity-tool' ),
+			__( 'Top Bar', 'edminboost-admin-customization' ),
+			__( 'Top Bar', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER,
 			array( $this, 'render_mapper_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Menu Studio', 'edminboost-smart-admin-productivity-tool' ),
-			__( 'Menu Studio', 'edminboost-smart-admin-productivity-tool' ),
+			__( 'Menu Studio', 'edminboost-admin-customization' ),
+			__( 'Menu Studio', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
 			array( $this, 'render_menu_studio_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			self::PAGE_SLUG,
-			__( 'Billing', 'edminboost-smart-admin-productivity-tool' ),
-			__( 'Billing', 'edminboost-smart-admin-productivity-tool' ),
+			__( 'Billing', 'edminboost-admin-customization' ),
+			__( 'Billing', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING,
 			array( $this, 'render_billing_page' )
 		);
@@ -119,8 +119,8 @@ class EDMINBOOST_Admin {
 		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
 			$this->register_plugin_submenu_page(
 				self::PAGE_SLUG,
-				__( 'Settings', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Settings', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Settings', 'edminboost-admin-customization' ),
+				__( 'Settings', 'edminboost-admin-customization' ),
 				self::PAGE_SLUG . '-settings',
 				array( $this, 'render_settings_page' )
 			);
@@ -129,24 +129,24 @@ class EDMINBOOST_Admin {
 		// Tab-only pages — registered but not shown in the sidebar.
 		$this->register_plugin_submenu_page(
 			null,
-			__( 'Productivity', 'edminboost-smart-admin-productivity-tool' ),
-			__( 'Productivity', 'edminboost-smart-admin-productivity-tool' ),
+			__( 'Productivity', 'edminboost-admin-customization' ),
+			__( 'Productivity', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY,
 			array( $this, 'render_productivity_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			null,
-			__( 'Security', 'edminboost-smart-admin-productivity-tool' ),
-			__( 'Security', 'edminboost-smart-admin-productivity-tool' ),
+			__( 'Security', 'edminboost-admin-customization' ),
+			__( 'Security', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY,
 			array( $this, 'render_security_page' )
 		);
 
 		$this->register_plugin_submenu_page(
 			null,
-			__( 'Performance', 'edminboost-smart-admin-productivity-tool' ),
-			__( 'Performance', 'edminboost-smart-admin-productivity-tool' ),
+			__( 'Performance', 'edminboost-admin-customization' ),
+			__( 'Performance', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
 			array( $this, 'render_performance_page' )
 		);
@@ -154,8 +154,8 @@ class EDMINBOOST_Admin {
 		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
 			$this->register_plugin_submenu_page(
 				null,
-				__( 'White Label', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'White Label', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'White Label', 'edminboost-admin-customization' ),
+				__( 'White Label', 'edminboost-admin-customization' ),
 				self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
 				array( $this, 'render_white_label_page' )
 			);
@@ -172,8 +172,8 @@ class EDMINBOOST_Admin {
 
 		$this->register_plugin_submenu_page(
 			null,
-			__( 'Theme', 'edminboost-smart-admin-productivity-tool' ),
-			__( 'Theme', 'edminboost-smart-admin-productivity-tool' ),
+			__( 'Theme', 'edminboost-admin-customization' ),
+			__( 'Theme', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BEHAVIOR,
 			array( $this, 'render_behavior_page' )
 		);
@@ -238,7 +238,7 @@ class EDMINBOOST_Admin {
 			return;
 		}
 
-		$dashboard_label = __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' );
+		$dashboard_label = __( 'Dashboard', 'edminboost-admin-customization' );
 		$items_by_slug   = array();
 
 		foreach ( $submenu[ self::PAGE_SLUG ] as $item ) {
@@ -546,57 +546,53 @@ class EDMINBOOST_Admin {
 			'currentPage'         => $screen_page,
 			'optionName' => EDMINBOOST_Settings::OPTION_NAME,
 			'strings'    => array(
-				'ready'           => __( 'EdminBoost is ready.', 'edminboost-smart-admin-productivity-tool' ),
-				'configureItem'   => __( 'Configure', 'edminboost-smart-admin-productivity-tool' ),
-				'removeFromTopBar' => __( 'Remove from top bar', 'edminboost-smart-admin-productivity-tool' ),
-				'emptyCanvas'     => __( 'Toggle items from the left panel or drag them here to build your top bar.', 'edminboost-smart-admin-productivity-tool' ),
-				'exportSuccess'   => __( 'Preset exported.', 'edminboost-smart-admin-productivity-tool' ),
-				'exportFailed'    => __( 'Could not export settings. Please try again.', 'edminboost-smart-admin-productivity-tool' ),
-				'customLinkPathRequired'  => __( 'Enter an admin path.', 'edminboost-smart-admin-productivity-tool' ),
-				'customLinkLabelRequired' => __( 'Enter a label.', 'edminboost-smart-admin-productivity-tool' ),
-				'customLinkPathInvalid'   => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost-smart-admin-productivity-tool' ),
-				'customLinkAnchorInvalid' => __( 'Use letters, numbers, hyphens, underscores, or dots in the anchor.', 'edminboost-smart-admin-productivity-tool' ),
-				'customLinkDuplicate'     => __( 'That link is already on your top bar.', 'edminboost-smart-admin-productivity-tool' ),
-				'drawerPreviewFailed'     => __( 'Could not open the drawer preview.', 'edminboost-smart-admin-productivity-tool' ),
+				'ready'           => __( 'EdminBoost is ready.', 'edminboost-admin-customization' ),
+				'configureItem'   => __( 'Configure', 'edminboost-admin-customization' ),
+				'removeFromTopBar' => __( 'Remove from top bar', 'edminboost-admin-customization' ),
+				'emptyCanvas'     => __( 'Toggle items from the left panel or drag them here to build your top bar.', 'edminboost-admin-customization' ),
+				'exportSuccess'   => __( 'Preset exported.', 'edminboost-admin-customization' ),
+				'exportFailed'    => __( 'Could not export settings. Please try again.', 'edminboost-admin-customization' ),
+				'customLinkPathRequired'  => __( 'Enter an admin path.', 'edminboost-admin-customization' ),
+				'customLinkLabelRequired' => __( 'Enter a label.', 'edminboost-admin-customization' ),
+				'customLinkPathInvalid'   => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost-admin-customization' ),
+				'customLinkAnchorInvalid' => __( 'Use letters, numbers, hyphens, underscores, or dots in the anchor.', 'edminboost-admin-customization' ),
+				'customLinkDuplicate'     => __( 'That link is already on your top bar.', 'edminboost-admin-customization' ),
+				'drawerPreviewFailed'     => __( 'Could not open the drawer preview.', 'edminboost-admin-customization' ),
 				/* translators: 1: drawer width in pixels, 2: approximate percentage of a typical desktop screen width. */
-				'drawerWidthPreviewCaption'    => __( 'Drawer uses %1$s px — about %2$s%% of a typical desktop screen.', 'edminboost-smart-admin-productivity-tool' ),
-				'drawerWidthPreviewFullscreen' => __( 'Drawer uses the full screen width.', 'edminboost-smart-admin-productivity-tool' ),
-				'drawerWidthPreviewLabel'      => __( 'Drawer width preview on a typical desktop screen.', 'edminboost-smart-admin-productivity-tool' ),
-				'settingsSaved'             => __( 'Settings saved.', 'edminboost-smart-admin-productivity-tool' ),
-				'settingsSaveFailed'        => __( 'Could not save settings. Please try again.', 'edminboost-smart-admin-productivity-tool' ),
-				'presetApplied'             => __( 'Preset applied.', 'edminboost-smart-admin-productivity-tool' ),
-				'presetNameRequired'        => __( 'Enter a name for your preset.', 'edminboost-smart-admin-productivity-tool' ),
-				'presetSaved'               => __( 'Preset saved.', 'edminboost-smart-admin-productivity-tool' ),
-				'presetRenamed'             => __( 'Preset renamed.', 'edminboost-smart-admin-productivity-tool' ),
-				'presetDuplicated'          => __( 'Preset duplicated.', 'edminboost-smart-admin-productivity-tool' ),
-				'emptyMenuCanvas'           => __( 'Drag menu items here to reorder your admin sidebar.', 'edminboost-smart-admin-productivity-tool' ),
-				'removeFromSidebar'         => __( 'Remove from sidebar', 'edminboost-smart-admin-productivity-tool' ),
-				'customMenuPathRequired'    => __( 'Enter an admin path.', 'edminboost-smart-admin-productivity-tool' ),
-				'customMenuLabelRequired'   => __( 'Enter a label.', 'edminboost-smart-admin-productivity-tool' ),
-				'customMenuPathInvalid'     => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost-smart-admin-productivity-tool' ),
-				'customMenuDuplicate'       => __( 'That link is already on your sidebar.', 'edminboost-smart-admin-productivity-tool' ),
-				'selectLayoutPreset'        => __( 'Select a layout preset to continue.', 'edminboost-smart-admin-productivity-tool' ),
-				'saveAndLaunch'             => __( 'Save and launch', 'edminboost-smart-admin-productivity-tool' ),
-				'presetBadgeBuiltIn'        => __( 'Built-in', 'edminboost-smart-admin-productivity-tool' ),
-				'presetBadgeSaved'          => __( 'Saved', 'edminboost-smart-admin-productivity-tool' ),
-				'presetBadgeVirtual'        => __( 'Layout', 'edminboost-smart-admin-productivity-tool' ),
-				'emptyLayoutPreview'        => __( 'No links in this preview yet.', 'edminboost-smart-admin-productivity-tool' ),
-				'emptySidebarPreview'       => __( 'No sidebar items in this preview yet.', 'edminboost-smart-admin-productivity-tool' ),
-				'previewWordPressLogo'      => __( 'WordPress', 'edminboost-smart-admin-productivity-tool' ),
-				'previewProfile'            => __( 'My account', 'edminboost-smart-admin-productivity-tool' ),
-				'pageLoading'               => __( 'Loading…', 'edminboost-smart-admin-productivity-tool' ),
-				'pageLoadFailed'            => __( 'Could not load that page. Please try again.', 'edminboost-smart-admin-productivity-tool' ),
-				'importJsonRequired'        => __( 'Paste exported JSON or choose a file to import.', 'edminboost-smart-admin-productivity-tool' ),
-				'importFileRequired'        => __( 'Choose a JSON file to import.', 'edminboost-smart-admin-productivity-tool' ),
-				'importReadFailed'          => __( 'Could not read the selected file.', 'edminboost-smart-admin-productivity-tool' ),
-				'importFailed'              => __( 'Could not import settings. Check the JSON and try again.', 'edminboost-smart-admin-productivity-tool' ),
-				'formResetConfirm'          => __( 'Reset all fields on this page to their default values? Your saved settings are not changed until you click Save.', 'edminboost-smart-admin-productivity-tool' ),
-				'formResetConfirmYes'       => __( 'Yes, reset to defaults', 'edminboost-smart-admin-productivity-tool' ),
-				'formResetCancel'           => __( 'Cancel', 'edminboost-smart-admin-productivity-tool' ),
-				'proRequired'               => __( 'Upgrade to Pro to unlock this feature.', 'edminboost-smart-admin-productivity-tool' ),
-				'proPresetLocked'           => __( 'This layout preset requires Pro.', 'edminboost-smart-admin-productivity-tool' ),
-				'proThemeLocked'            => __( 'This theme skin requires Pro.', 'edminboost-smart-admin-productivity-tool' ),
-				'proCustomPresetLimit'      => __( 'Free includes one saved custom layout. Upgrade for unlimited saves.', 'edminboost-smart-admin-productivity-tool' ),
+				'drawerWidthPreviewCaption'    => __( 'Drawer uses %1$s px — about %2$s%% of a typical desktop screen.', 'edminboost-admin-customization' ),
+				'drawerWidthPreviewFullscreen' => __( 'Drawer uses the full screen width.', 'edminboost-admin-customization' ),
+				'drawerWidthPreviewLabel'      => __( 'Drawer width preview on a typical desktop screen.', 'edminboost-admin-customization' ),
+				'settingsSaved'             => __( 'Settings saved.', 'edminboost-admin-customization' ),
+				'settingsSaveFailed'        => __( 'Could not save settings. Please try again.', 'edminboost-admin-customization' ),
+				'presetApplied'             => __( 'Preset applied.', 'edminboost-admin-customization' ),
+				'presetNameRequired'        => __( 'Enter a name for your preset.', 'edminboost-admin-customization' ),
+				'presetSaved'               => __( 'Preset saved.', 'edminboost-admin-customization' ),
+				'presetRenamed'             => __( 'Preset renamed.', 'edminboost-admin-customization' ),
+				'presetDuplicated'          => __( 'Preset duplicated.', 'edminboost-admin-customization' ),
+				'emptyMenuCanvas'           => __( 'Drag menu items here to reorder your admin sidebar.', 'edminboost-admin-customization' ),
+				'removeFromSidebar'         => __( 'Remove from sidebar', 'edminboost-admin-customization' ),
+				'customMenuPathRequired'    => __( 'Enter an admin path.', 'edminboost-admin-customization' ),
+				'customMenuLabelRequired'   => __( 'Enter a label.', 'edminboost-admin-customization' ),
+				'customMenuPathInvalid'     => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost-admin-customization' ),
+				'customMenuDuplicate'       => __( 'That link is already on your sidebar.', 'edminboost-admin-customization' ),
+				'selectLayoutPreset'        => __( 'Select a layout preset to continue.', 'edminboost-admin-customization' ),
+				'saveAndLaunch'             => __( 'Save and launch', 'edminboost-admin-customization' ),
+				'presetBadgeBuiltIn'        => __( 'Built-in', 'edminboost-admin-customization' ),
+				'presetBadgeSaved'          => __( 'Saved', 'edminboost-admin-customization' ),
+				'presetBadgeVirtual'        => __( 'Layout', 'edminboost-admin-customization' ),
+				'emptyLayoutPreview'        => __( 'No links in this preview yet.', 'edminboost-admin-customization' ),
+				'emptySidebarPreview'       => __( 'No sidebar items in this preview yet.', 'edminboost-admin-customization' ),
+				'previewWordPressLogo'      => __( 'WordPress', 'edminboost-admin-customization' ),
+				'previewProfile'            => __( 'My account', 'edminboost-admin-customization' ),
+				'pageLoading'               => __( 'Loading…', 'edminboost-admin-customization' ),
+				'pageLoadFailed'            => __( 'Could not load that page. Please try again.', 'edminboost-admin-customization' ),
+				'importJsonRequired'        => __( 'Paste exported JSON or choose a file to import.', 'edminboost-admin-customization' ),
+				'importFileRequired'        => __( 'Choose a JSON file to import.', 'edminboost-admin-customization' ),
+				'importReadFailed'          => __( 'Could not read the selected file.', 'edminboost-admin-customization' ),
+				'importFailed'              => __( 'Could not import settings. Check the JSON and try again.', 'edminboost-admin-customization' ),
+				'formResetConfirm'          => __( 'Reset all fields on this page to their default values? Your saved settings are not changed until you click Save.', 'edminboost-admin-customization' ),
+				'formResetConfirmYes'       => __( 'Yes, reset to defaults', 'edminboost-admin-customization' ),
+				'formResetCancel'           => __( 'Cancel', 'edminboost-admin-customization' ),
 			),
 			'presets'          => self::get_presets_for_js(),
 			'roleMatrix'       => array(
@@ -660,7 +656,6 @@ class EDMINBOOST_Admin {
 				'menu_studio'        => EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id ),
 				'visible_menu_slugs' => EDMINBOOST_Command_Center::get_preset_visible_menu_slugs( $preset_id ),
 				'visible_top_level_menu_slugs' => EDMINBOOST_Command_Center::get_preset_visible_top_level_menu_slugs( $preset_id ),
-				'requiresPro'                  => ! EDMINBOOST_Pro::is_layout_preset_available( $preset_id ),
 			);
 		}
 
@@ -721,7 +716,7 @@ class EDMINBOOST_Admin {
 		$settings_link = sprintf(
 			'<a href="%s">%s</a>',
 			esc_url( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '-settings' ) ),
-			esc_html__( 'Settings', 'edminboost-smart-admin-productivity-tool' )
+			esc_html__( 'Settings', 'edminboost-admin-customization' )
 		);
 
 		array_unshift( $links, $settings_link );
@@ -744,7 +739,7 @@ class EDMINBOOST_Admin {
 		$links[] = sprintf(
 			'<a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
 			esc_url( EDMINBOOST_PLUGIN_DOCS_URL ),
-			esc_html__( 'Docs', 'edminboost-smart-admin-productivity-tool' )
+			esc_html__( 'Docs', 'edminboost-admin-customization' )
 		);
 
 		return $links;
@@ -778,7 +773,7 @@ class EDMINBOOST_Admin {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'You do not have permission to view this page.', 'edminboost-smart-admin-productivity-tool' ),
+					'message' => __( 'You do not have permission to view this page.', 'edminboost-admin-customization' ),
 				),
 				403
 			);
@@ -787,7 +782,7 @@ class EDMINBOOST_Admin {
 		if ( ! check_ajax_referer( 'edminboost_cc_nav', 'nonce', false ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-smart-admin-productivity-tool' ),
+					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-admin-customization' ),
 				),
 				403
 			);
@@ -799,7 +794,7 @@ class EDMINBOOST_Admin {
 		if ( ! $this->is_valid_cc_nav_page( $page ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Unknown Command Center page.', 'edminboost-smart-admin-productivity-tool' ),
+					'message' => __( 'Unknown Command Center page.', 'edminboost-admin-customization' ),
 				),
 				400
 			);
@@ -810,7 +805,7 @@ class EDMINBOOST_Admin {
 		if ( '' === $html ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Could not load that page.', 'edminboost-smart-admin-productivity-tool' ),
+					'message' => __( 'Could not load that page.', 'edminboost-admin-customization' ),
 				),
 				500
 			);
@@ -825,7 +820,7 @@ class EDMINBOOST_Admin {
 				'title'         => $page_title,
 				'documentTitle' => sprintf(
 					/* translators: 1: page title, 2: site name */
-					__( '%1$s ‹ %2$s — WordPress', 'edminboost-smart-admin-productivity-tool' ),
+					__( '%1$s ‹ %2$s — WordPress', 'edminboost-admin-customization' ),
 					$page_title,
 					get_bloginfo( 'name' )
 				),
@@ -947,17 +942,17 @@ class EDMINBOOST_Admin {
 	 */
 	private function get_cc_page_title( $page ) {
 		$titles = array(
-			self::PAGE_SLUG                                              => __( 'Dashboard', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE => __( 'Theme', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER     => __( 'Top Bar', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS    => __( 'Layouts', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO => __( 'Menu Studio', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY => __( 'Productivity', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE  => __( 'Performance', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL  => __( 'White Label', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING      => __( 'Billing', 'edminboost-smart-admin-productivity-tool' ),
-			self::PAGE_SLUG . '-settings'                                => __( 'Settings', 'edminboost-smart-admin-productivity-tool' ),
+			self::PAGE_SLUG                                              => __( 'Dashboard', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE => __( 'Theme', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER     => __( 'Top Bar', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS    => __( 'Layouts', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO => __( 'Menu Studio', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY => __( 'Productivity', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE  => __( 'Performance', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL  => __( 'White Label', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING      => __( 'Billing', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . '-settings'                                => __( 'Settings', 'edminboost-admin-customization' ),
 		);
 
 		return isset( $titles[ $page ] ) ? $titles[ $page ] : '';
@@ -972,7 +967,7 @@ class EDMINBOOST_Admin {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'You do not have permission to save these settings.', 'edminboost-smart-admin-productivity-tool' ),
+					'message' => __( 'You do not have permission to save these settings.', 'edminboost-admin-customization' ),
 				),
 				403
 			);
@@ -983,7 +978,7 @@ class EDMINBOOST_Admin {
 		if ( ! wp_verify_nonce( $nonce, EDMINBOOST_Settings::SETTINGS_GROUP . '-options' ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-smart-admin-productivity-tool' ),
+					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-admin-customization' ),
 				),
 				403
 			);
@@ -996,7 +991,7 @@ class EDMINBOOST_Admin {
 		if ( ! is_array( $raw ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Invalid settings payload.', 'edminboost-smart-admin-productivity-tool' ),
+					'message' => __( 'Invalid settings payload.', 'edminboost-admin-customization' ),
 				),
 				400
 			);
@@ -1038,23 +1033,23 @@ class EDMINBOOST_Admin {
 		$new_custom_ids = array_values( array_diff( $after_custom, $before_custom_preset_ids ) );
 
 		$selected_preset = '';
-		$message         = __( 'Settings saved.', 'edminboost-smart-admin-productivity-tool' );
+		$message         = __( 'Settings saved.', 'edminboost-admin-customization' );
 
 		if ( ! empty( $cc_raw['_setup_wizard_save'] ) ) {
-			$message = __( 'Command Center launched.', 'edminboost-smart-admin-productivity-tool' );
+			$message = __( 'Command Center launched.', 'edminboost-admin-customization' );
 		} elseif ( ! empty( $cc_raw['_apply_preset'] ) ) {
 			$selected_preset = sanitize_key( $cc_raw['_apply_preset'] );
-			$message         = __( 'Preset applied.', 'edminboost-smart-admin-productivity-tool' );
+			$message         = __( 'Preset applied.', 'edminboost-admin-customization' );
 		} elseif ( ! empty( $cc_raw['_duplicate_preset'] ) ) {
 			$selected_preset = ! empty( $new_custom_ids ) ? (string) reset( $new_custom_ids ) : '';
-			$message         = __( 'Preset duplicated.', 'edminboost-smart-admin-productivity-tool' );
+			$message         = __( 'Preset duplicated.', 'edminboost-admin-customization' );
 		} elseif (
 			! empty( $cc_raw['_save_custom_preset'] )
 			&& is_array( $cc_raw['_save_custom_preset'] )
 			&& ! empty( $cc_raw['_save_custom_preset']['name'] )
 		) {
 			$selected_preset = ! empty( $new_custom_ids ) ? (string) reset( $new_custom_ids ) : '';
-			$message         = __( 'Preset saved.', 'edminboost-smart-admin-productivity-tool' );
+			$message         = __( 'Preset saved.', 'edminboost-admin-customization' );
 		} elseif (
 			! empty( $cc_raw['_rename_custom_preset'] )
 			&& is_array( $cc_raw['_rename_custom_preset'] )
@@ -1062,7 +1057,7 @@ class EDMINBOOST_Admin {
 			&& ! empty( $cc_raw['_rename_custom_preset']['name'] )
 		) {
 			$selected_preset = sanitize_key( $cc_raw['_rename_custom_preset']['id'] );
-			$message         = __( 'Preset renamed.', 'edminboost-smart-admin-productivity-tool' );
+			$message         = __( 'Preset renamed.', 'edminboost-admin-customization' );
 		}
 
 		return array(
@@ -1093,17 +1088,17 @@ class EDMINBOOST_Admin {
 	 */
 	public function ajax_export_settings() {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-smart-admin-productivity-tool' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
 		}
 
 		if ( ! EDMINBOOST_Pro::shows_pro_settings_ui() ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-smart-admin-productivity-tool' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
 		}
 
 		if ( ! check_ajax_referer( 'edminboost_export_settings', 'nonce', false ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-smart-admin-productivity-tool' ),
+					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-admin-customization' ),
 				),
 				403
 			);
@@ -1123,17 +1118,17 @@ class EDMINBOOST_Admin {
 	 */
 	public function ajax_import_settings() {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-smart-admin-productivity-tool' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
 		}
 
 		if ( ! EDMINBOOST_Pro::shows_pro_settings_ui() ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-smart-admin-productivity-tool' ) ), 403 );
+			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
 		}
 
 		if ( ! check_ajax_referer( 'edminboost_import_settings', 'nonce', false ) ) {
 			wp_send_json_error(
 				array(
-					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-smart-admin-productivity-tool' ),
+					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-admin-customization' ),
 				),
 				403
 			);
@@ -1143,13 +1138,13 @@ class EDMINBOOST_Admin {
 		$data = json_decode( $json, true );
 
 		if ( ! is_array( $data ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid JSON payload.', 'edminboost-smart-admin-productivity-tool' ) ), 400 );
+			wp_send_json_error( array( 'message' => __( 'Invalid JSON payload.', 'edminboost-admin-customization' ) ), 400 );
 		}
 
 		$sanitized = EDMINBOOST_Settings::sanitize( $data );
 		update_option( EDMINBOOST_Settings::OPTION_NAME, $sanitized, false );
 
-		wp_send_json_success( array( 'message' => __( 'Settings imported.', 'edminboost-smart-admin-productivity-tool' ) ) );
+		wp_send_json_success( array( 'message' => __( 'Settings imported.', 'edminboost-admin-customization' ) ) );
 	}
 
 	/**

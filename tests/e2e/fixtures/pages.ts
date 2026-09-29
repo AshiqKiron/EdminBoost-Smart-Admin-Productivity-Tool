@@ -3,7 +3,7 @@ import path from 'path';
 
 dotenv.config( { path: path.resolve( __dirname, '../../../.env.qa' ) } );
 
-const pluginSlug = process.env.PLUGIN_SLUG || 'edminboost-smart-admin-productivity-tool';
+const pluginSlug = process.env.PLUGIN_SLUG || 'edminboost-admin-customization';
 
 export const pages = {
 	dashboard: `wp-admin/admin.php?page=${ pluginSlug }`,

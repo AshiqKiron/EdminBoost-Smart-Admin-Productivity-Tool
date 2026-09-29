@@ -20,6 +20,8 @@ bin/
   build-premium-zip.sh    # Premium/Freemius package
   verify-wporg-zip.sh     # fail if Freemius, includes/pro/, wp_org_gatekeeper, or bare is_premium (allows is_premium_build identifiers)
   verify-premium-zip.sh   # premium zip sanity checks
+  make-pot.sh             # regenerate languages/edminboost-admin-customization.pot (composer make-pot)
+  generate-plugin-banners.py / generate-plugin-icons.py / generate-website-heroes.py  # marketing assets
   capture-doc-screenshots.mjs  # optional docs screenshots (Playwright)
 tests/
   bootstrap.php           # PHPUnit bootstrap
@@ -52,16 +54,16 @@ npm run test:e2e:ui         # debug UI
 npm run test:e2e:report     # open HTML report
 ```
 
-PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from live tables). E2E reads `.env.qa` (`BASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`, `EDITOR_USER`, `EDITOR_PASSWORD`, `PLUGIN_SLUG`). `PLUGIN_SLUG` must match `EDMINBOOST_PLUGIN_SLUG` / bootstrap filename (`edminboost-smart-admin-productivity-tool`).
+PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from live tables). E2E reads `.env.qa` (`BASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`, `EDITOR_USER`, `EDITOR_PASSWORD`, `PLUGIN_SLUG`). `PLUGIN_SLUG` must match `EDMINBOOST_PLUGIN_SLUG` / bootstrap filename (`edminboost-admin-customization`).
 
 ## PHPUnit Patterns
 
 - Extend `Edminboost_Test_Case` (resets options, resets CC static caches, seeds admin user, calls `EDMINBOOST_Command_Center::ensure_discovery_menu_snapshot()`; `enable_pro_plan()` sets `edminboost_is_pro_active` for Pro-only behavior tests).
 - Use `seed_settings( $overrides )` — merges with `EDMINBOOST_Settings::get_defaults()`.
-- Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar,Theme,AdminMenuOrder}Test.php`.
+- Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar,Theme,AdminMenuOrder,Pro}Test.php`.
 - Name tests `test_{behavior}`; target static helpers on bar/CC classes where hook tests are heavy.
-- `SettingsTest::test_text_domain_is_edminboost()` asserts `EDMINBOOST_TEXT_DOMAIN` matches the plugin header / slug (`edminboost-smart-admin-productivity-tool`).
-- Pro gating tests: `ThemeTest::test_strip_pro_theme_clears_scheduled_dark_mode()`; `CommandCenterTest::test_get_page_links()` / `test_get_nav_items()` and `AdminMenuOrderTest` branch on `EDMINBOOST_Pro::shows_pro_settings_ui()` (Settings nav present on premium build only). Use `enable_pro_plan()` in tests that need drawer/badge or Pro-saved options.
+- `SettingsTest::test_plugin_slug_and_text_domain_match_header()` asserts `EDMINBOOST_PLUGIN_SLUG`, `EDMINBOOST_TEXT_DOMAIN`, and bootstrap filename match the plugin header / slug (`edminboost-admin-customization`).
+- Pro gating tests: `ProTest` (`include_preset_in_ui`, `shows_pro_settings_ui`); `ThemeTest::test_strip_pro_theme_clears_scheduled_dark_mode()`; `CommandCenterTest::test_get_page_links()` / `test_get_nav_items()` and `AdminMenuOrderTest` branch on `EDMINBOOST_Pro::shows_pro_settings_ui()` (Settings nav when premium build + active Pro). Use `enable_pro_plan()` in tests that need drawer/badge or Pro-saved options.
 
 ## Playwright Patterns
 

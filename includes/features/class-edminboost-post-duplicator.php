@@ -78,11 +78,11 @@ class EDMINBOOST_Post_Duplicator extends EDMINBOOST_Feature_Base {
 			esc_attr(
 				sprintf(
 					/* translators: %s: post title */
-					__( 'Duplicate "%s"', 'edminboost-smart-admin-productivity-tool' ),
+					__( 'Duplicate "%s"', 'edminboost-admin-customization' ),
 					wp_strip_all_tags( get_the_title( $post ) )
 				)
 			),
-			esc_html__( 'Duplicate', 'edminboost-smart-admin-productivity-tool' )
+			esc_html__( 'Duplicate', 'edminboost-admin-customization' )
 		);
 
 		return $actions;
@@ -97,14 +97,14 @@ class EDMINBOOST_Post_Duplicator extends EDMINBOOST_Feature_Base {
 		$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
 
 		if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
-			wp_die( esc_html__( 'You cannot duplicate this item.', 'edminboost-smart-admin-productivity-tool' ) );
+			wp_die( esc_html__( 'You cannot duplicate this item.', 'edminboost-admin-customization' ) );
 		}
 
 		check_admin_referer( 'edminboost_duplicate_post_' . $post_id );
 
 		$post = get_post( $post_id );
 		if ( ! $post ) {
-			wp_die( esc_html__( 'Post not found.', 'edminboost-smart-admin-productivity-tool' ) );
+			wp_die( esc_html__( 'Post not found.', 'edminboost-admin-customization' ) );
 		}
 
 		$settings = EDMINBOOST_Settings::get_feature_settings( $this->get_id() );
@@ -113,12 +113,12 @@ class EDMINBOOST_Post_Duplicator extends EDMINBOOST_Feature_Base {
 			: array( 'post', 'page' );
 
 		if ( ! in_array( $post->post_type, $types, true ) ) {
-			wp_die( esc_html__( 'You cannot duplicate this item.', 'edminboost-smart-admin-productivity-tool' ) );
+			wp_die( esc_html__( 'You cannot duplicate this item.', 'edminboost-admin-customization' ) );
 		}
 
 		$new_id = wp_insert_post(
 			array(
-				'post_title'   => $post->post_title . ' ' . __( '(Copy)', 'edminboost-smart-admin-productivity-tool' ),
+				'post_title'   => $post->post_title . ' ' . __( '(Copy)', 'edminboost-admin-customization' ),
 				'post_content' => $post->post_content,
 				'post_excerpt' => $post->post_excerpt,
 				'post_status'  => 'draft',

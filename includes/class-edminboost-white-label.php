@@ -97,7 +97,7 @@ class EDMINBOOST_White_Label {
 			'plugin_uri'         => isset( $data['PluginURI'] ) && '' !== $data['PluginURI']
 				? (string) $data['PluginURI']
 				: ( isset( $data['AuthorURI'] ) ? (string) $data['AuthorURI'] : '' ),
-			'menu_label'         => __( 'EdminBoost', 'edminboost-smart-admin-productivity-tool' ),
+			'menu_label'         => __( 'EdminBoost', 'edminboost-admin-customization' ),
 		);
 	}
 
@@ -192,26 +192,26 @@ class EDMINBOOST_White_Label {
 		return array(
 			'show_ip'               => sprintf(
 				/* translators: %s: IP address */
-				__( 'IP: %s', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'IP: %s', 'edminboost-admin-customization' ),
 				$ip
 			),
 			'show_php_version'      => 'PHP ' . PHP_VERSION,
 			'show_wp_version'       => 'WP ' . $wp_version,
 			'show_memory_usage'     => sprintf(
 				/* translators: 1: used memory, 2: limit, 3: percent */
-				__( 'Memory: %1$s of %2$s (%3$s%%)', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Memory: %1$s of %2$s (%3$s%%)', 'edminboost-admin-customization' ),
 				$memory['used'],
 				$memory['limit'],
 				$memory['percent']
 			),
 			'show_memory_limit'     => sprintf(
 				/* translators: %s: memory limit */
-				__( 'Limit: %s', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Limit: %s', 'edminboost-admin-customization' ),
 				$memory['limit']
 			),
 			'show_memory_available' => sprintf(
 				/* translators: %s: available memory */
-				__( 'Available: %s', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Available: %s', 'edminboost-admin-customization' ),
 				$memory['available']
 			),
 		);

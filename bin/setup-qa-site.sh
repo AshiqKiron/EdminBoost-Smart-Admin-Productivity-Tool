@@ -10,7 +10,7 @@ WP_PATH="${WP_PATH:-/Applications/MAMP/htdocs/wordpress}"
 QA_URL="${QA_URL:-http://localhost:8888/wordpress}"
 WP_CLI="$SCRIPT_DIR/wp-cli.phar"
 MAMP_PHP="${MAMP_PHP:-/Applications/MAMP/bin/php/php8.3.28/bin/php}"
-PLUGIN_SLUG="edminboost-smart-admin-productivity-tool"
+PLUGIN_SLUG="edminboost-admin-customization"
 PLUGIN_BASENAME="$(basename "$PLUGIN_DIR")"
 PLUGINS_DIR="$WP_PATH/wp-content/plugins"
 

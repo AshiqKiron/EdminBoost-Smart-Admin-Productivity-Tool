@@ -11,6 +11,13 @@
 abstract class Edminboost_Test_Case extends WP_UnitTestCase {
 
 	/**
+	 * Whether the PHPUnit admin menu helper was loaded.
+	 *
+	 * @var bool
+	 */
+	private static $admin_menu_helper_loaded = false;
+
+	/**
 	 * Whether the current test enabled the Pro plan filter.
 	 *
 	 * @var bool
@@ -22,10 +29,17 @@ abstract class Edminboost_Test_Case extends WP_UnitTestCase {
 	 */
 	public function setUp(): void {
 		parent::setUp();
+
+		if ( ! self::$admin_menu_helper_loaded ) {
+			require_once __DIR__ . '/edminboost-test-admin-menu.php';
+			self::$admin_menu_helper_loaded = true;
+		}
+
 		delete_option( EDMINBOOST_Settings::OPTION_NAME );
 		delete_option( EDMINBOOST_Settings::VERSION_OPTION );
 		EDMINBOOST_Command_Center::reset_static_caches();
 		wp_set_current_user( $this->factory->user->create( array( 'role' => 'administrator' ) ) );
+		edminboost_test_bootstrap_admin_menu_globals();
 		EDMINBOOST_Command_Center::ensure_discovery_menu_snapshot();
 	}
 

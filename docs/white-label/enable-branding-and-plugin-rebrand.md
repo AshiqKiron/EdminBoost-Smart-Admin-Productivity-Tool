@@ -46,7 +46,7 @@ The **Plugin rebranding** section (`#edminboost-wl-rebrand-section`) includes te
 
 ### Empty fields = defaults
 
-If a field is left blank, EdminBoost keeps the **original plugin header** values from `edminboost-smart-admin-productivity-tool.php` (name, description, author, URI) and the default menu label **EdminBoost**.
+If a field is left blank, EdminBoost keeps the **original plugin header** values from `edminboost-admin-customization.php` (name, description, author, URI) and the default menu label **EdminBoost**.
 
 The preview partial uses `data-default-*` attributes so you can see fallbacks before saving.
 

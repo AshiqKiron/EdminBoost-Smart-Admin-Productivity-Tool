@@ -58,14 +58,15 @@ class EDMINBOOST_Pro {
 	}
 
 	/**
-	 * Whether pro-only settings and upgrade prompts should appear in wp-admin.
+	 * Whether pro-only settings screens and controls appear in wp-admin.
 	 *
-	 * On WordPress.org (no premium bootstrap) pro controls are omitted entirely.
+	 * True only on the direct-download build when Pro or Agency is active.
+	 * Free tier (WordPress.org and unlicensed premium) omits Pro controls entirely.
 	 *
 	 * @return bool
 	 */
 	public static function shows_pro_settings_ui() {
-		return self::is_premium_build();
+		return self::is_premium_build() && self::is_active();
 	}
 
 	/**
@@ -76,7 +77,7 @@ class EDMINBOOST_Pro {
 	 * @return bool
 	 */
 	public static function include_preset_in_ui( $preset_id, $context = 'layout' ) {
-		if ( self::is_premium_build() ) {
+		if ( self::is_active() ) {
 			return true;
 		}
 
@@ -173,17 +174,7 @@ class EDMINBOOST_Pro {
 	public static function section_class( $feature = '' ) {
 		unset( $feature );
 
-		if ( ! self::shows_pro_settings_ui() ) {
-			return '';
-		}
-
-		$classes = array( 'edminboost-pro-section' );
-
-		if ( ! self::is_active() ) {
-			$classes[] = 'is-pro-locked';
-		}
-
-		return implode( ' ', $classes );
+		return self::shows_pro_settings_ui() ? 'edminboost-pro-section' : '';
 	}
 
 	/**
@@ -212,33 +203,19 @@ class EDMINBOOST_Pro {
 	}
 
 	/**
-	 * Render a compact Pro badge for locked controls.
+	 * Render a compact Pro badge (legacy no-op; upgrades live on Billing only).
 	 *
 	 * @return void
 	 */
 	public static function render_badge() {
-		if ( ! self::shows_pro_settings_ui() || self::is_active() ) {
-			return;
-		}
-
-		echo '<span class="edminboost-pro-badge">' . esc_html__( 'Pro', 'edminboost-smart-admin-productivity-tool' ) . '</span>';
 	}
 
 	/**
-	 * Render an upgrade prompt for a locked section.
+	 * Render an upgrade prompt (legacy no-op; upgrades live on Billing only).
 	 *
 	 * @return void
 	 */
 	public static function render_upgrade_prompt() {
-		if ( ! self::shows_pro_settings_ui() || self::is_active() ) {
-			return;
-		}
-
-		printf(
-			'<p class="edminboost-pro-upgrade"><a href="%1$s">%2$s</a></p>',
-			esc_url( self::get_billing_url() ),
-			esc_html__( 'Upgrade to Pro to unlock this feature.', 'edminboost-smart-admin-productivity-tool' )
-		);
 	}
 
 	/**

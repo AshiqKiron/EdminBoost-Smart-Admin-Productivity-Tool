@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ## I18N
 
-- User-facing strings: `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, etc. with `EDMINBOOST_TEXT_DOMAIN` (equals `EDMINBOOST_PLUGIN_SLUG` / header `Text Domain`: `edminboost-smart-admin-productivity-tool`).
+- User-facing strings: `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, etc. with `EDMINBOOST_TEXT_DOMAIN` (equals `EDMINBOOST_PLUGIN_SLUG` / header `Text Domain`: `edminboost-admin-customization`).
 - Do not use the short `edminboost` hook prefix as the text domain — Plugin Check expects the header domain to match the plugin slug.
 - `EDMINBOOST_Feature_Base::get_name()` / `get_description()` use a literal domain string with a phpcs ignore (same value as the constant).
 
@@ -57,7 +57,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Menu Studio: `EDMINBOOST_Menu_Studio::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - Visual theme: `EDMINBOOST_Theme::register_hooks()` in `EDMINBOOST_Plugin::run()`.
 - White label: `EDMINBOOST_White_Label::register_hooks()` in `EDMINBOOST_Plugin::run()`.
-- Pro / billing helpers: `EDMINBOOST_Pro` — static helpers only; required in bootstrap; no hooks. Use `is_direct_build()` / `is_premium_build()` for packaging; `shows_pro_settings_ui()` for Pro-only admin markup (true on premium build only); `is_active()` + `enforce_plan_limits()` for Free vs Pro capability (applied in `EDMINBOOST_Settings::get()` / `sanitize()`). Wrap Pro-only partials/fields with `shows_pro_settings_ui()`; use `section_class()` / `render_badge()` for locked sections on premium build (see `edminboost-compliance.mdc`).
+- Pro / billing helpers: `EDMINBOOST_Pro` — static helpers only; required in bootstrap; no hooks. Use `is_direct_build()` / `is_premium_build()` for packaging; `shows_pro_settings_ui()` for Pro-only admin markup (true only when `is_premium_build() && is_active()`); `is_active()` + `enforce_plan_limits()` for Free vs Pro capability (applied in `EDMINBOOST_Settings::get()` / `sanitize()`). Wrap Pro-only partials/fields with `shows_pro_settings_ui()` — omit markup on free/unlicensed builds (no locked upsell UI). `section_class()` / `feature_attr()` may still tag sections when Pro UI is shown (see `edminboost-compliance.mdc`).
 - Setting help: `EDMINBOOST_Setting_Help` — static helpers only; required in bootstrap; no hooks; `should_show()` includes Dashboard setup wizard until `is_setup_complete()`.
 - Admin submenu order: `EDMINBOOST_Admin::normalize_plugin_submenu()` on `admin_menu` priority 999 in `EDMINBOOST_Plugin::run()`.
 - Plugins screen row meta: `plugin_row_meta` → `EDMINBOOST_Admin::add_plugin_row_meta()` adds Docs link (`EDMINBOOST_PLUGIN_DOCS_URL`, `target="_blank"`, `rel="noopener noreferrer"`).

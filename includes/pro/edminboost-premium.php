@@ -65,8 +65,8 @@ function edminboost_fs() {
 
 	require_once $sdk_path;
 
-	$plugin_slug = defined( 'EDMINBOOST_PLUGIN_SLUG' ) ? EDMINBOOST_PLUGIN_SLUG : 'edminboost-smart-admin-productivity-tool';
-	$main_file   = defined( 'EDMINBOOST_PLUGIN_FILE' ) ? EDMINBOOST_PLUGIN_FILE : dirname( __DIR__, 2 ) . '/edminboost-smart-admin-productivity-tool.php';
+	$plugin_slug = defined( 'EDMINBOOST_PLUGIN_SLUG' ) ? EDMINBOOST_PLUGIN_SLUG : 'edminboost-admin-customization';
+	$main_file   = defined( 'EDMINBOOST_PLUGIN_FILE' ) ? EDMINBOOST_PLUGIN_FILE : dirname( __DIR__, 2 ) . '/edminboost-admin-customization.php';
 
 	$edminboost_fs = fs_dynamic_init(
 		array(
@@ -144,9 +144,26 @@ function edminboost_premium_upgrade_url( $url ) {
 	return $url;
 }
 
+/**
+ * Remove plugin data on delete (premium build — Freemius after_uninstall; no uninstall.php).
+ */
+function edminboost_premium_uninstall_cleanup() {
+	$settings_file = dirname( __DIR__ ) . '/class-edminboost-settings.php';
+	if ( ! is_readable( $settings_file ) ) {
+		return;
+	}
+
+	require_once $settings_file;
+
+	EDMINBOOST_Settings::uninstall();
+}
+
 add_filter( 'edminboost_active_billing_plan', 'edminboost_premium_active_billing_plan' );
 add_filter( 'edminboost_upgrade_url', 'edminboost_premium_upgrade_url' );
 
 if ( '' !== edminboost_premium_freemius_sdk_path() ) {
-	edminboost_fs();
+	$fs = edminboost_fs();
+	if ( is_object( $fs ) ) {
+		$fs->add_action( 'after_uninstall', 'edminboost_premium_uninstall_cleanup' );
+	}
 }

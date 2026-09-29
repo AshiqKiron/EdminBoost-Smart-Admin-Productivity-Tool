@@ -59,9 +59,9 @@ class EDMINBOOST_Theme {
 	 */
 	public static function get_modes() {
 		return array(
-			'light' => __( 'Light', 'edminboost-smart-admin-productivity-tool' ),
-			'dark'  => __( 'Dark', 'edminboost-smart-admin-productivity-tool' ),
-			'auto'  => __( 'Auto (system)', 'edminboost-smart-admin-productivity-tool' ),
+			'light' => __( 'Light', 'edminboost-admin-customization' ),
+			'dark'  => __( 'Dark', 'edminboost-admin-customization' ),
+			'auto'  => __( 'Auto (system)', 'edminboost-admin-customization' ),
 		);
 	}
 
@@ -72,18 +72,18 @@ class EDMINBOOST_Theme {
 	 */
 	public static function get_fonts() {
 		return array(
-			'inherit'   => __( 'WordPress default', 'edminboost-smart-admin-productivity-tool' ),
-			'system'    => __( 'System UI', 'edminboost-smart-admin-productivity-tool' ),
-			'arial'     => __( 'Arial / Helvetica', 'edminboost-smart-admin-productivity-tool' ),
-			'verdana'   => __( 'Verdana', 'edminboost-smart-admin-productivity-tool' ),
-			'tahoma'    => __( 'Tahoma', 'edminboost-smart-admin-productivity-tool' ),
-			'trebuchet' => __( 'Trebuchet MS', 'edminboost-smart-admin-productivity-tool' ),
-			'lucida'    => __( 'Lucida Sans', 'edminboost-smart-admin-productivity-tool' ),
-			'palatino'  => __( 'Palatino', 'edminboost-smart-admin-productivity-tool' ),
-			'humanist'  => __( 'Humanist sans', 'edminboost-smart-admin-productivity-tool' ),
-			'mono'      => __( 'Monospace', 'edminboost-smart-admin-productivity-tool' ),
-			'serif'     => __( 'Serif', 'edminboost-smart-admin-productivity-tool' ),
-			'rounded'   => __( 'Rounded UI', 'edminboost-smart-admin-productivity-tool' ),
+			'inherit'   => __( 'WordPress default', 'edminboost-admin-customization' ),
+			'system'    => __( 'System UI', 'edminboost-admin-customization' ),
+			'arial'     => __( 'Arial / Helvetica', 'edminboost-admin-customization' ),
+			'verdana'   => __( 'Verdana', 'edminboost-admin-customization' ),
+			'tahoma'    => __( 'Tahoma', 'edminboost-admin-customization' ),
+			'trebuchet' => __( 'Trebuchet MS', 'edminboost-admin-customization' ),
+			'lucida'    => __( 'Lucida Sans', 'edminboost-admin-customization' ),
+			'palatino'  => __( 'Palatino', 'edminboost-admin-customization' ),
+			'humanist'  => __( 'Humanist sans', 'edminboost-admin-customization' ),
+			'mono'      => __( 'Monospace', 'edminboost-admin-customization' ),
+			'serif'     => __( 'Serif', 'edminboost-admin-customization' ),
+			'rounded'   => __( 'Rounded UI', 'edminboost-admin-customization' ),
 		);
 	}
 
@@ -94,12 +94,12 @@ class EDMINBOOST_Theme {
 	 */
 	public static function get_color_labels() {
 		return array(
-			'accent'  => __( 'Accent', 'edminboost-smart-admin-productivity-tool' ),
-			'surface' => __( 'Surface', 'edminboost-smart-admin-productivity-tool' ),
-			'text'    => __( 'Text', 'edminboost-smart-admin-productivity-tool' ),
-			'topbar'   => __( 'Top bar', 'edminboost-smart-admin-productivity-tool' ),
-			'sidebar'  => __( 'Sidebar', 'edminboost-smart-admin-productivity-tool' ),
-			'content'  => __( 'Content area', 'edminboost-smart-admin-productivity-tool' ),
+			'accent'  => __( 'Accent', 'edminboost-admin-customization' ),
+			'surface' => __( 'Surface', 'edminboost-admin-customization' ),
+			'text'    => __( 'Text', 'edminboost-admin-customization' ),
+			'topbar'   => __( 'Top bar', 'edminboost-admin-customization' ),
+			'sidebar'  => __( 'Sidebar', 'edminboost-admin-customization' ),
+			'content'  => __( 'Content area', 'edminboost-admin-customization' ),
 		);
 	}
 
@@ -111,8 +111,8 @@ class EDMINBOOST_Theme {
 	public static function get_presets() {
 		return array(
 			'default'     => self::build_preset(
-				__( 'Default', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'WordPress-aligned blues and neutrals.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Default', 'edminboost-admin-customization' ),
+				__( 'WordPress-aligned blues and neutrals.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#2271b1',
 					'surface' => '#ffffff',
@@ -123,8 +123,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'midnight'    => self::build_preset(
-				__( 'Midnight', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Dark neutral surfaces with soft violet accents.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Midnight', 'edminboost-admin-customization' ),
+				__( 'Dark neutral surfaces with soft violet accents.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#8b9cff',
 					'surface' => '#1a1d24',
@@ -135,8 +135,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'terminal'    => self::build_preset(
-				__( 'Terminal', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Matrix-inspired green on deep black.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Terminal', 'edminboost-admin-customization' ),
+				__( 'Matrix-inspired green on deep black.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#00ff41',
 					'surface' => '#0a0f0a',
@@ -147,8 +147,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'neon-outrun' => self::build_preset(
-				__( 'Neon Outrun', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Synthwave magenta and cyan on dark purple.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Neon Outrun', 'edminboost-admin-customization' ),
+				__( 'Synthwave magenta and cyan on dark purple.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#ff2bd6',
 					'surface' => '#1a0b2e',
@@ -159,8 +159,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'vapor'       => self::build_preset(
-				__( 'Vapor', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Vaporwave pastels with readable contrast.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Vapor', 'edminboost-admin-customization' ),
+				__( 'Vaporwave pastels with readable contrast.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#ff6ad5',
 					'surface' => '#e8e0ff',
@@ -171,8 +171,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'desert'      => self::build_preset(
-				__( 'Desert', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Warm sand tones with copper accents.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Desert', 'edminboost-admin-customization' ),
+				__( 'Warm sand tones with copper accents.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#c87941',
 					'surface' => '#f5ebe0',
@@ -183,8 +183,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'dracula'     => self::build_preset(
-				__( 'Dracula', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Dracula-inspired purple accents on inky charcoal.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Dracula', 'edminboost-admin-customization' ),
+				__( 'Dracula-inspired purple accents on inky charcoal.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#bd93f9',
 					'surface' => '#282a36',
@@ -195,8 +195,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'nord'        => self::build_preset(
-				__( 'Nord', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Arctic frost blues on polar night surfaces.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Nord', 'edminboost-admin-customization' ),
+				__( 'Arctic frost blues on polar night surfaces.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#88c0d0',
 					'surface' => '#2e3440',
@@ -207,8 +207,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'solarized'   => self::build_preset(
-				__( 'Solarized', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Solarized-inspired cream base with teal accents.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Solarized', 'edminboost-admin-customization' ),
+				__( 'Solarized-inspired cream base with teal accents.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#268bd2',
 					'surface' => '#fdf6e3',
@@ -219,8 +219,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'sakura'      => self::build_preset(
-				__( 'Sakura', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Cherry blossom pinks on soft blush surfaces.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Sakura', 'edminboost-admin-customization' ),
+				__( 'Cherry blossom pinks on soft blush surfaces.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#e8879a',
 					'surface' => '#fff5f7',
@@ -231,8 +231,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'ocean'       => self::build_preset(
-				__( 'Ocean', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Deep-sea navy with luminous aqua highlights.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Ocean', 'edminboost-admin-customization' ),
+				__( 'Deep-sea navy with luminous aqua highlights.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#3dd6d0',
 					'surface' => '#0a1628',
@@ -243,8 +243,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'forest'      => self::build_preset(
-				__( 'Forest', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Moss greens and woodland tones for a calm admin.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Forest', 'edminboost-admin-customization' ),
+				__( 'Moss greens and woodland tones for a calm admin.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#6dbf6d',
 					'surface' => '#1a2e1f',
@@ -255,8 +255,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'tron'        => self::build_preset(
-				__( 'Tron', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Tron-inspired electric cyan glowing on deep black grid.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Tron', 'edminboost-admin-customization' ),
+				__( 'Tron-inspired electric cyan glowing on deep black grid.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#00d4ff',
 					'surface' => '#0a0a12',
@@ -267,8 +267,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'night-city'  => self::build_preset(
-				__( 'Night City', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Cyberpunk-inspired neon yellow and cyan on rain-soaked dark.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Night City', 'edminboost-admin-customization' ),
+				__( 'Cyberpunk-inspired neon yellow and cyan on rain-soaked dark.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#fcee0a',
 					'surface' => '#0d0d0d',
@@ -279,8 +279,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'pip-boy'     => self::build_preset(
-				__( 'Pip-Boy', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Fallout-inspired amber CRT phosphor on wasteland green-black.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Pip-Boy', 'edminboost-admin-customization' ),
+				__( 'Fallout-inspired amber CRT phosphor on wasteland green-black.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#ffb000',
 					'surface' => '#1a2e1a',
@@ -291,8 +291,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'portal'      => self::build_preset(
-				__( 'Portal', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Portal-inspired Aperture orange with companion-core blue accents.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Portal', 'edminboost-admin-customization' ),
+				__( 'Portal-inspired Aperture orange with companion-core blue accents.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#ff7b00',
 					'surface' => '#f5f5f5',
@@ -303,8 +303,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'gotham'      => self::build_preset(
-				__( 'Gotham', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Batman-inspired charcoal shadows with striking gold highlights.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Gotham', 'edminboost-admin-customization' ),
+				__( 'Batman-inspired charcoal shadows with striking gold highlights.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#f0c040',
 					'surface' => '#1a1a1a',
@@ -315,8 +315,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'citadel'     => self::build_preset(
-				__( 'Citadel', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Mass Effect-inspired cerulean blues on deep space navy.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Citadel', 'edminboost-admin-customization' ),
+				__( 'Mass Effect-inspired cerulean blues on deep space navy.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#4fc3f7',
 					'surface' => '#0d1b2a',
@@ -327,8 +327,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'blade-noir'  => self::build_preset(
-				__( 'Blade Noir', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Blade Runner-inspired neon orange and teal in a rainy future city.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Blade Noir', 'edminboost-admin-customization' ),
+				__( 'Blade Runner-inspired neon orange and teal in a rainy future city.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#ff6b35',
 					'surface' => '#1a1a2e',
@@ -339,8 +339,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'hyrule'      => self::build_preset(
-				__( 'Hyrule', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Zelda-inspired hero green and Triforce gold on parchment stone.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Hyrule', 'edminboost-admin-customization' ),
+				__( 'Zelda-inspired hero green and Triforce gold on parchment stone.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#2d6a4f',
 					'surface' => '#f5f0e0',
@@ -351,8 +351,8 @@ class EDMINBOOST_Theme {
 				)
 			),
 			'custom'      => self::build_preset(
-				__( 'Custom', 'edminboost-smart-admin-productivity-tool' ),
-				__( 'Define your own accent, surface, text, top bar, sidebar, and content area colors.', 'edminboost-smart-admin-productivity-tool' ),
+				__( 'Custom', 'edminboost-admin-customization' ),
+				__( 'Define your own accent, surface, text, top bar, sidebar, and content area colors.', 'edminboost-admin-customization' ),
 				array(
 					'accent'  => '#2271b1',
 					'surface' => '#ffffff',
@@ -382,7 +382,6 @@ class EDMINBOOST_Theme {
 				'name'         => $preset['name'],
 				'description'  => $preset['description'],
 				'colors'       => $preset['colors'],
-				'requiresPro'  => ! EDMINBOOST_Pro::is_theme_preset_available( $preset_id ),
 				'colorsByMode' => array(
 					'light' => self::resolve_preview_colors( $preset_id, 'light' ),
 					'dark'  => self::resolve_preview_colors( $preset_id, 'dark' ),

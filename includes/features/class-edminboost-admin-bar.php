@@ -80,10 +80,10 @@ class EDMINBOOST_Admin_Bar extends EDMINBOOST_Feature_Base {
 	 */
 	public static function get_option_labels() {
 		return array(
-			'hide_wp_logo'     => __( 'WordPress logo', 'edminboost-smart-admin-productivity-tool' ),
-			'hide_comments'    => __( 'Comments', 'edminboost-smart-admin-productivity-tool' ),
-			'hide_new_content' => __( 'New content menu', 'edminboost-smart-admin-productivity-tool' ),
-			'hide_customize'   => __( 'Customize link', 'edminboost-smart-admin-productivity-tool' ),
+			'hide_wp_logo'     => __( 'WordPress logo', 'edminboost-admin-customization' ),
+			'hide_comments'    => __( 'Comments', 'edminboost-admin-customization' ),
+			'hide_new_content' => __( 'New content menu', 'edminboost-admin-customization' ),
+			'hide_customize'   => __( 'Customize link', 'edminboost-admin-customization' ),
 		);
 	}
 }

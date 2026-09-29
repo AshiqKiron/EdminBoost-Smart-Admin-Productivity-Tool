@@ -38,7 +38,7 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 	<header class="edminboost-cc-hero">
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 		<p class="edminboost-cc-hero__lead">
-			<?php esc_html_e( 'Choose which admin links appear in your top bar and how they open.', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'Choose which admin links appear in your top bar and how they open.', 'edminboost-admin-customization' ); ?>
 		</p>
 	</header>
 
@@ -47,25 +47,25 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 
 		<div class="edminboost-mapper-layout">
 			<aside class="edminboost-card edminboost-mapper-panel" aria-labelledby="edminboost-discovered-heading">
-				<h2 id="edminboost-discovered-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'discovered_pages' ); ?><?php esc_html_e( 'Discovered Admin Pages', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
-				<p class="description"><?php esc_html_e( 'Auto-scanned from your sidebar menus, including submenu pages.', 'edminboost-smart-admin-productivity-tool' ); ?></p>
+				<h2 id="edminboost-discovered-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'discovered_pages' ); ?><?php esc_html_e( 'Discovered Admin Pages', 'edminboost-admin-customization' ); ?></h2>
+				<p class="description"><?php esc_html_e( 'Auto-scanned from your sidebar menus, including submenu pages.', 'edminboost-admin-customization' ); ?></p>
 
 				<label for="edminboost-plugin-search">
 					<?php EDMINBOOST_Setting_Help::echo_icon( 'mapper_search' ); ?>
-					<?php esc_html_e( 'Filter plugins', 'edminboost-smart-admin-productivity-tool' ); ?>
+					<?php esc_html_e( 'Filter plugins', 'edminboost-admin-customization' ); ?>
 				</label>
 				<input
 					type="search"
 					id="edminboost-plugin-search"
 					class="edminboost-mapper-search"
-					placeholder="<?php esc_attr_e( 'Search installed plugins…', 'edminboost-smart-admin-productivity-tool' ); ?>"
+					placeholder="<?php esc_attr_e( 'Search installed plugins…', 'edminboost-admin-customization' ); ?>"
 					autocomplete="off"
 				/>
 
 				<ul class="edminboost-discovered-list" id="edminboost-discovered-list">
 					<?php if ( empty( $edminboost_discovered ) ) : ?>
 						<li class="edminboost-discovered-list__empty">
-							<?php esc_html_e( 'No admin menus detected.', 'edminboost-smart-admin-productivity-tool' ); ?>
+							<?php esc_html_e( 'No admin menus detected.', 'edminboost-admin-customization' ); ?>
 						</li>
 					<?php else : ?>
 						<?php foreach ( $edminboost_discovered as $edminboost_index => $edminboost_menu_item ) : ?>
@@ -87,7 +87,7 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 									<span class="screen-reader-text">
 										<?php
 										/* translators: %s: menu item label */
-										echo esc_html( sprintf( __( 'Add %s to top bar', 'edminboost-smart-admin-productivity-tool' ), $edminboost_menu_item['label'] ) );
+										echo esc_html( sprintf( __( 'Add %s to top bar', 'edminboost-admin-customization' ), $edminboost_menu_item['label'] ) );
 										?>
 									</span>
 									<input
@@ -103,12 +103,12 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 				</ul>
 
 				<details class="edminboost-custom-link" id="edminboost-custom-link">
-					<summary class="edminboost-custom-link__heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_path' ); ?><?php esc_html_e( 'Custom admin link', 'edminboost-smart-admin-productivity-tool' ); ?></summary>
+					<summary class="edminboost-custom-link__heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_path' ); ?><?php esc_html_e( 'Custom admin link', 'edminboost-admin-customization' ); ?></summary>
 					<div class="edminboost-custom-link__body">
-						<p class="description"><?php esc_html_e( 'Add any admin page path that does not appear in the list above.', 'edminboost-smart-admin-productivity-tool' ); ?></p>
+						<p class="description"><?php esc_html_e( 'Add any admin page path that does not appear in the list above.', 'edminboost-admin-customization' ); ?></p>
 
 						<p>
-							<label for="edminboost-custom-link-path"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_path' ); ?><?php esc_html_e( 'Admin path', 'edminboost-smart-admin-productivity-tool' ); ?></label>
+							<label for="edminboost-custom-link-path"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_path' ); ?><?php esc_html_e( 'Admin path', 'edminboost-admin-customization' ); ?></label>
 							<input
 								type="text"
 								id="edminboost-custom-link-path"
@@ -119,18 +119,18 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 						</p>
 
 						<p>
-							<label for="edminboost-custom-link-label"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_label' ); ?><?php esc_html_e( 'Label', 'edminboost-smart-admin-productivity-tool' ); ?></label>
+							<label for="edminboost-custom-link-label"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_label' ); ?><?php esc_html_e( 'Label', 'edminboost-admin-customization' ); ?></label>
 							<input
 								type="text"
 								id="edminboost-custom-link-label"
 								class="regular-text"
-								placeholder="<?php esc_attr_e( 'Product Tags', 'edminboost-smart-admin-productivity-tool' ); ?>"
+								placeholder="<?php esc_attr_e( 'Product Tags', 'edminboost-admin-customization' ); ?>"
 								autocomplete="off"
 							/>
 						</p>
 
 						<p>
-							<label for="edminboost-custom-link-anchor"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_anchor' ); ?><?php esc_html_e( 'Anchor (optional)', 'edminboost-smart-admin-productivity-tool' ); ?></label>
+							<label for="edminboost-custom-link-anchor"><?php EDMINBOOST_Setting_Help::echo_icon( 'custom_topbar_anchor' ); ?><?php esc_html_e( 'Anchor (optional)', 'edminboost-admin-customization' ); ?></label>
 							<input
 								type="text"
 								id="edminboost-custom-link-anchor"
@@ -138,12 +138,12 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 								placeholder="<?php echo esc_attr( 'woocommerce_permalink_structure' ); ?>"
 								autocomplete="off"
 							/>
-							<span class="description"><?php esc_html_e( 'Scroll to a section on the page. You can also include #fragment in the path above.', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+							<span class="description"><?php esc_html_e( 'Scroll to a section on the page. You can also include #fragment in the path above.', 'edminboost-admin-customization' ); ?></span>
 						</p>
 
 						<p class="edminboost-custom-link__actions">
 							<button type="button" class="button button-secondary" id="edminboost-custom-link-add">
-								<?php esc_html_e( 'Add to top bar', 'edminboost-smart-admin-productivity-tool' ); ?>
+								<?php esc_html_e( 'Add to top bar', 'edminboost-admin-customization' ); ?>
 							</button>
 						</p>
 
@@ -154,10 +154,10 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 
 			<div class="edminboost-mapper-main">
 				<section class="edminboost-card edminboost-mapper-panel" aria-labelledby="edminboost-canvas-heading">
-					<h2 id="edminboost-canvas-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'topbar_canvas' ); ?><?php esc_html_e( 'Top Bar Live Canvas', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
-					<p class="description"><?php esc_html_e( 'Drag items to reorder. Click an icon to configure it.', 'edminboost-smart-admin-productivity-tool' ); ?></p>
+					<h2 id="edminboost-canvas-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'topbar_canvas' ); ?><?php esc_html_e( 'Top Bar Live Canvas', 'edminboost-admin-customization' ); ?></h2>
+					<p class="description"><?php esc_html_e( 'Drag items to reorder. Click an icon to configure it.', 'edminboost-admin-customization' ); ?></p>
 
-					<div class="edminboost-topbar-canvas" id="edminboost-topbar-canvas" role="list" aria-label="<?php esc_attr_e( 'Top bar preview', 'edminboost-smart-admin-productivity-tool' ); ?>">
+					<div class="edminboost-topbar-canvas" id="edminboost-topbar-canvas" role="list" aria-label="<?php esc_attr_e( 'Top bar preview', 'edminboost-admin-customization' ); ?>">
 						<span class="edminboost-topbar-canvas__brand" aria-hidden="true">
 							<span class="dashicons dashicons-wordpress"></span>
 						</span>
@@ -204,7 +204,7 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 					</div>
 
 					<p class="edminboost-topbar-canvas__hint description" id="edminboost-canvas-empty" <?php echo ! empty( $edminboost_top_bar_items ) ? 'hidden' : ''; ?>>
-						<?php esc_html_e( 'Toggle items from the left panel or drag them here to build your top bar.', 'edminboost-smart-admin-productivity-tool' ); ?>
+						<?php esc_html_e( 'Toggle items from the left panel or drag them here to build your top bar.', 'edminboost-admin-customization' ); ?>
 					</p>
 
 					<aside
@@ -213,12 +213,12 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 						aria-labelledby="edminboost-drawer-heading"
 						hidden
 					>
-					<h2 id="edminboost-drawer-heading"><?php esc_html_e( 'Item Configuration', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+					<h2 id="edminboost-drawer-heading"><?php esc_html_e( 'Item Configuration', 'edminboost-admin-customization' ); ?></h2>
 					<p class="description" id="edminboost-drawer-subtitle"></p>
 
 					<fieldset class="edminboost-fieldset">
-						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_icon' ); ?><?php esc_html_e( 'Icon', 'edminboost-smart-admin-productivity-tool' ); ?></legend>
-						<div class="edminboost-icon-picker" id="edminboost-icon-picker" role="listbox" aria-label="<?php esc_attr_e( 'Choose dashicon', 'edminboost-smart-admin-productivity-tool' ); ?>">
+						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_icon' ); ?><?php esc_html_e( 'Icon', 'edminboost-admin-customization' ); ?></legend>
+						<div class="edminboost-icon-picker" id="edminboost-icon-picker" role="listbox" aria-label="<?php esc_attr_e( 'Choose dashicon', 'edminboost-admin-customization' ); ?>">
 							<?php foreach ( $edminboost_dashicon_options as $edminboost_dashicon ) : ?>
 								<button
 									type="button"
@@ -234,38 +234,38 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 					</fieldset>
 
 					<p>
-						<label for="edminboost-item-label"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_label' ); ?><?php esc_html_e( 'Label override', 'edminboost-smart-admin-productivity-tool' ); ?></label>
+						<label for="edminboost-item-label"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_label' ); ?><?php esc_html_e( 'Label override', 'edminboost-admin-customization' ); ?></label>
 						<input type="text" id="edminboost-item-label" class="regular-text" />
 					</p>
 
 					<p>
-						<label for="edminboost-item-anchor"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_anchor' ); ?><?php esc_html_e( 'Anchor (optional)', 'edminboost-smart-admin-productivity-tool' ); ?></label>
+						<label for="edminboost-item-anchor"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_anchor' ); ?><?php esc_html_e( 'Anchor (optional)', 'edminboost-admin-customization' ); ?></label>
 						<input type="text" id="edminboost-item-anchor" class="regular-text code" placeholder="<?php echo esc_attr( 'woocommerce_permalink_structure' ); ?>" />
-						<span class="description"><?php esc_html_e( 'Scroll to a section on the page when the link is opened.', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+						<span class="description"><?php esc_html_e( 'Scroll to a section on the page when the link is opened.', 'edminboost-admin-customization' ); ?></span>
 					</p>
 
 					<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
 					<div class="<?php echo esc_attr( EDMINBOOST_Pro::section_class() ); ?>"<?php EDMINBOOST_Pro::echo_feature_attr( 'top_bar_drawer_items' ); ?>>
 					<fieldset class="edminboost-fieldset">
-						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_interaction' ); ?><?php esc_html_e( 'Interaction', 'edminboost-smart-admin-productivity-tool' ); ?> <?php EDMINBOOST_Pro::render_badge(); ?></legend>
+						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_interaction' ); ?><?php esc_html_e( 'Interaction', 'edminboost-admin-customization' ); ?></legend>
 						<label class="edminboost-checkbox-row">
 							<input type="radio" name="edminboost_item_interaction" value="redirect" checked />
-							<?php esc_html_e( 'Direct redirect', 'edminboost-smart-admin-productivity-tool' ); ?>
+							<?php esc_html_e( 'Direct redirect', 'edminboost-admin-customization' ); ?>
 						</label>
 						<label class="edminboost-checkbox-row">
 							<input type="radio" name="edminboost_item_interaction" value="drawer" />
-							<?php esc_html_e( 'AJAX slide-out drawer', 'edminboost-smart-admin-productivity-tool' ); ?>
+							<?php esc_html_e( 'AJAX slide-out drawer', 'edminboost-admin-customization' ); ?>
 						</label>
 					</fieldset>
 
 					<p class="edminboost-item-drawer__preview" id="edminboost-drawer-preview-wrap" hidden>
 						<button type="button" class="button button-secondary" id="edminboost-drawer-preview">
-							<?php esc_html_e( 'Preview AJAX drawer', 'edminboost-smart-admin-productivity-tool' ); ?>
+							<?php esc_html_e( 'Preview AJAX drawer', 'edminboost-admin-customization' ); ?>
 						</button>
 					</p>
 
 					<p>
-						<label for="edminboost-item-badge"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_badge_source' ); ?><?php esc_html_e( 'Live badge binding', 'edminboost-smart-admin-productivity-tool' ); ?></label>
+						<label for="edminboost-item-badge"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_badge_source' ); ?><?php esc_html_e( 'Live badge binding', 'edminboost-admin-customization' ); ?></label>
 						<select id="edminboost-item-badge" class="regular-text">
 							<?php foreach ( $edminboost_badge_sources as $edminboost_source_key => $edminboost_source_label ) : ?>
 								<option value="<?php echo esc_attr( $edminboost_source_key ); ?>">
@@ -274,16 +274,15 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 							<?php endforeach; ?>
 						</select>
 					</p>
-					<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-pro-upgrade.php'; ?>
 					</div>
 					<?php endif; ?>
 
 					<p>
 						<button type="button" class="button" id="edminboost-drawer-close">
-							<?php esc_html_e( 'Close', 'edminboost-smart-admin-productivity-tool' ); ?>
+							<?php esc_html_e( 'Close', 'edminboost-admin-customization' ); ?>
 						</button>
 						<button type="button" class="button button-link-delete" id="edminboost-drawer-remove">
-							<?php esc_html_e( 'Remove from top bar', 'edminboost-smart-admin-productivity-tool' ); ?>
+							<?php esc_html_e( 'Remove from top bar', 'edminboost-admin-customization' ); ?>
 						</button>
 					</p>
 					</aside>
@@ -291,9 +290,9 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 
 				<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
 				<section class="edminboost-card edminboost-cc-section edminboost-home-look is-disabled" id="edminboost-mapper-look" aria-labelledby="edminboost-mapper-look-heading" aria-disabled="true">
-					<h2 id="edminboost-mapper-look-heading"><?php esc_html_e( 'Panel & badges', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+					<h2 id="edminboost-mapper-look-heading"><?php esc_html_e( 'Panel & badges', 'edminboost-admin-customization' ); ?></h2>
 					<p class="description">
-						<?php esc_html_e( 'Adjust slide-out panel style and notification badges. Set a top bar link to AJAX slide-out drawer to configure these settings.', 'edminboost-smart-admin-productivity-tool' ); ?>
+						<?php esc_html_e( 'Adjust slide-out panel style and notification badges. Set a top bar link to AJAX slide-out drawer to configure these settings.', 'edminboost-admin-customization' ); ?>
 					</p>
 					<?php
 					// Included partial expects `$behavior` and `$cc_key` in parent scope.
@@ -312,7 +311,7 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 				<div id="edminboost-topbar-hidden-inputs"></div>
 
 				<?php
-				$edminboost_save_label    = __( 'Save top bar', 'edminboost-smart-admin-productivity-tool' );
+				$edminboost_save_label    = __( 'Save top bar', 'edminboost-admin-customization' );
 				$edminboost_wrapper_class = 'submit edminboost-mapper-submit edminboost-form-actions';
 				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-form-actions.php';
 				?>

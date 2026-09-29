@@ -40,6 +40,12 @@ Product documentation for [EdminBoost](https://asphaltthemes.com/edminboost). Co
 | How to upgrade | [plans-and-billing/upgrading.md](plans-and-billing/upgrading.md) | `/plans-and-billing/upgrading/` |
 | Agency plan | [plans-and-billing/agency-plan.md](plans-and-billing/agency-plan.md) | `/plans-and-billing/agency-plan/` |
 
+## Release engineering
+
+| Page | File |
+|------|------|
+| WordPress.org free build | [release-wordpress-org.md](release-wordpress-org.md) |
+
 ## Related links
 
 - **Pricing / checkout:** https://asphaltthemes.com/edminboost

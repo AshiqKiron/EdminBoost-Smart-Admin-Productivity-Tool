@@ -14,7 +14,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 $edminboost_nav_items    = EDMINBOOST_Command_Center::get_nav_items();
 $edminboost_current_page = isset( $current_page ) ? $current_page : '';
 ?>
-<nav class="edminboost-cc-nav" aria-label="<?php esc_attr_e( 'EdminBoost Command Center', 'edminboost-smart-admin-productivity-tool' ); ?>">
+<nav class="edminboost-cc-nav" aria-label="<?php esc_attr_e( 'EdminBoost Command Center', 'edminboost-admin-customization' ); ?>">
 	<ul class="edminboost-cc-nav__list">
 		<?php foreach ( $edminboost_nav_items as $edminboost_item ) : ?>
 			<?php

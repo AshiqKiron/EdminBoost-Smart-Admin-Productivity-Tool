@@ -19,7 +19,7 @@ dotenv.config( { path: path.join( root, '.env.qa' ) } );
 const baseUrl = ( process.env.BASE_URL || 'http://localhost:8888/wordpress' ).replace( /\/$/, '' );
 const adminUser = process.env.ADMIN_USER || 'qaadmin';
 const adminPassword = process.env.ADMIN_PASSWORD || 'qaadmin123';
-const pluginSlug = process.env.PLUGIN_SLUG || 'edminboost-smart-admin-productivity-tool';
+const pluginSlug = process.env.PLUGIN_SLUG || 'edminboost-admin-customization';
 
 const shots = [
 	{ file: 'command-center/dashboard.png', path: `wp-admin/admin.php?page=${ pluginSlug }` },

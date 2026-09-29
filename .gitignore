@@ -1,5 +1,7 @@
-# WordPress
-languages/
+# WordPress (track POT template; ignore compiled/local PO/MO)
+languages/*
+!languages/index.php
+!languages/edminboost-admin-customization.pot
 
 # OS
 .DS_Store

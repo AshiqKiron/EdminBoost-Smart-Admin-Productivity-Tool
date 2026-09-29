@@ -45,12 +45,12 @@ $edminboost_status_colors    = isset( $edminboost_theme['status_colors'] ) && is
 	: EDMINBOOST_Theme::get_defaults()['status_colors'];
 
 $edminboost_status_labels = array(
-	'publish' => _x( 'Published', 'post status', 'edminboost-smart-admin-productivity-tool' ),
-	'pending' => _x( 'Pending', 'post status', 'edminboost-smart-admin-productivity-tool' ),
-	'future'  => _x( 'Scheduled', 'post status', 'edminboost-smart-admin-productivity-tool' ),
-	'private' => _x( 'Private', 'post status', 'edminboost-smart-admin-productivity-tool' ),
-	'draft'   => _x( 'Draft', 'post status', 'edminboost-smart-admin-productivity-tool' ),
-	'trash'   => _x( 'Trash', 'post status', 'edminboost-smart-admin-productivity-tool' ),
+	'publish' => _x( 'Published', 'post status', 'edminboost-admin-customization' ),
+	'pending' => _x( 'Pending', 'post status', 'edminboost-admin-customization' ),
+	'future'  => _x( 'Scheduled', 'post status', 'edminboost-admin-customization' ),
+	'private' => _x( 'Private', 'post status', 'edminboost-admin-customization' ),
+	'draft'   => _x( 'Draft', 'post status', 'edminboost-admin-customization' ),
+	'trash'   => _x( 'Trash', 'post status', 'edminboost-admin-customization' ),
 );
 
 $edminboost_preview_style_vars = sprintf(
@@ -77,9 +77,9 @@ $edminboost_preview_style_vars = sprintf(
 >
 	<p class="edminboost-theme-extras-preview__lead description">
 		<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-			<?php esc_html_e( 'Preview font size, admin background, favicon, post status colors, and scheduled dark mode.', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'Preview font size, admin background, favicon, post status colors, and scheduled dark mode.', 'edminboost-admin-customization' ); ?>
 		<?php else : ?>
-			<?php esc_html_e( 'Preview font size, admin background, favicon, and post status colors.', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'Preview font size, admin background, favicon, and post status colors.', 'edminboost-admin-customization' ); ?>
 		<?php endif; ?>
 	</p>
 
@@ -92,7 +92,7 @@ $edminboost_preview_style_vars = sprintf(
 					<span class="dashicons dashicons-wordpress" aria-hidden="true"></span>
 				<?php endif; ?>
 			</span>
-			<span class="edminboost-theme-extras-preview__tab-title"><?php esc_html_e( 'wp-admin', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+			<span class="edminboost-theme-extras-preview__tab-title"><?php esc_html_e( 'wp-admin', 'edminboost-admin-customization' ); ?></span>
 		</div>
 	</div>
 
@@ -102,16 +102,16 @@ $edminboost_preview_style_vars = sprintf(
 			<div class="edminboost-theme-extras-preview__sidebar"></div>
 			<div class="edminboost-theme-extras-preview__main">
 				<p class="edminboost-theme-extras-preview__sample" id="edminboost-theme-extras-preview-sample">
-					<?php esc_html_e( 'Sample admin text at the selected font size.', 'edminboost-smart-admin-productivity-tool' ); ?>
+					<?php esc_html_e( 'Sample admin text at the selected font size.', 'edminboost-admin-customization' ); ?>
 				</p>
 
 				<div class="edminboost-theme-extras-preview__table-wrap">
 					<table class="edminboost-theme-extras-preview__table">
-						<caption class="screen-reader-text"><?php esc_html_e( 'Post status row colors preview', 'edminboost-smart-admin-productivity-tool' ); ?></caption>
+						<caption class="screen-reader-text"><?php esc_html_e( 'Post status row colors preview', 'edminboost-admin-customization' ); ?></caption>
 						<thead>
 							<tr>
-								<th scope="col"><?php esc_html_e( 'Title', 'edminboost-smart-admin-productivity-tool' ); ?></th>
-								<th scope="col"><?php esc_html_e( 'Status', 'edminboost-smart-admin-productivity-tool' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Title', 'edminboost-admin-customization' ); ?></th>
+								<th scope="col"><?php esc_html_e( 'Status', 'edminboost-admin-customization' ); ?></th>
 							</tr>
 						</thead>
 						<tbody>
@@ -125,7 +125,7 @@ $edminboost_preview_style_vars = sprintf(
 									data-status="<?php echo esc_attr( $edminboost_status_key ); ?>"
 									<?php echo $edminboost_row_style ? 'style="' . esc_attr( $edminboost_row_style ) . '"' : ''; ?>
 								>
-									<td><?php echo esc_html( sprintf( /* translators: %s: post status slug */ __( 'Sample %s post', 'edminboost-smart-admin-productivity-tool' ), $edminboost_status_label ) ); ?></td>
+									<td><?php echo esc_html( sprintf( /* translators: %s: post status slug */ __( 'Sample %s post', 'edminboost-admin-customization' ), $edminboost_status_label ) ); ?></td>
 									<td><?php echo esc_html( $edminboost_status_label ); ?></td>
 								</tr>
 							<?php endforeach; ?>
@@ -144,7 +144,7 @@ $edminboost_preview_style_vars = sprintf(
 	>
 		<p class="edminboost-theme-extras-preview__schedule-label">
 			<span class="dashicons dashicons-clock" aria-hidden="true"></span>
-			<?php esc_html_e( 'Scheduled dark mode (Auto color mode)', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'Scheduled dark mode (Auto color mode)', 'edminboost-admin-customization' ); ?>
 		</p>
 		<div
 			class="edminboost-theme-extras-preview__schedule-track"

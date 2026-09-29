@@ -19,10 +19,10 @@ Cross-cutting quality standards. See also: `edminboost-project.mdc` (architectur
 ## I18N
 
 - All user-facing strings must be translatable.
-- Use `EDMINBOOST_TEXT_DOMAIN` consistently (`edminboost-smart-admin-productivity-tool` — matches the plugin slug and header `Text Domain`, same value as `EDMINBOOST_PLUGIN_SLUG`).
+- Use `EDMINBOOST_TEXT_DOMAIN` consistently (`edminboost-admin-customization` — matches the plugin slug and header `Text Domain`, same value as `EDMINBOOST_PLUGIN_SLUG`).
 - Use `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, etc. appropriately.
 - Feature `$name` and `$description` on `EDMINBOOST_Feature_Base` are translated via `get_name()` / `get_description()` (literal slug text domain with phpcs ignore for dynamic literals).
-- Plugin header declares `Text Domain: edminboost-smart-admin-productivity-tool` and `Domain Path: /languages`; bootstrap defines `EDMINBOOST_TEXT_DOMAIN`. No `load_plugin_textdomain()` call — WordPress auto-loads from `/languages` when the header domain matches the plugin slug; always pass `EDMINBOOST_TEXT_DOMAIN` (or the same literal) in translation calls.
+- Plugin header declares `Text Domain: edminboost-admin-customization` and `Domain Path: /languages`; bootstrap defines `EDMINBOOST_TEXT_DOMAIN`. `EDMINBOOST_Plugin::load_textdomain()` calls `load_plugin_textdomain()` on `init` (works when the install folder name differs from the slug). POT template: `languages/edminboost-admin-customization.pot` (`composer make-pot` / `bin/make-pot.sh`). Always pass `EDMINBOOST_TEXT_DOMAIN` (or the same literal) in translation calls.
 
 ## Accessibility
 

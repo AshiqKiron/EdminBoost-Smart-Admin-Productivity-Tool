@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # Build the direct-download / Freemius premium plugin zip (includes includes/pro/).
-# Output: dist/edminboost-smart-admin-productivity-tool-premium.zip
+# Output: dist/edminboost-admin-customization-premium.zip
 #
 # Usage:
 #   bash bin/build-premium-zip.sh
@@ -13,14 +13,15 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/build-zip-lib.sh"
 
 PLUGIN_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-PLUGIN_SLUG="edminboost-smart-admin-productivity-tool"
+PLUGIN_SLUG="edminboost-admin-customization"
 BUILD_DIR="$PLUGIN_DIR/dist"
 STAGE_DIR="$BUILD_DIR/$PLUGIN_SLUG"
 ZIP_BASENAME="${PLUGIN_SLUG}-premium.zip"
 
 edminboost_build_require_tools
 
-edminboost_build_rsync_stage "$PLUGIN_DIR" "$STAGE_DIR"
+edminboost_build_rsync_stage "$PLUGIN_DIR" "$STAGE_DIR" \
+	--exclude='uninstall.php'
 
 ZIP_PATH="$(edminboost_build_create_zip "$BUILD_DIR" "$PLUGIN_SLUG" "$ZIP_BASENAME")"
 

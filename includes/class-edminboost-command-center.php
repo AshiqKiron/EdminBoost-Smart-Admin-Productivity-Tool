@@ -17,6 +17,13 @@ if ( ! defined( 'ABSPATH' ) ) {
 class EDMINBOOST_Command_Center {
 
 	/**
+	 * User meta key for the last captured admin menu (AJAX / admin-ajax discovery).
+	 *
+	 * @var string
+	 */
+	const MENU_DISCOVERY_USER_META_KEY = 'edminboost_menu_discovery';
+
+	/**
 	 * Snapshot of the admin menu captured before Menu Studio filters it.
 	 *
 	 * @var array|null
@@ -2918,7 +2925,7 @@ class EDMINBOOST_Command_Center {
 
 		global $menu, $submenu;
 
-		if ( ! is_array( $menu ) || empty( $menu ) ) {
+		if ( ! is_array( $menu ) || empty( $menu ) || ! self::admin_menu_has_dashboard( $menu ) ) {
 			return;
 		}
 
@@ -2930,6 +2937,8 @@ class EDMINBOOST_Command_Center {
 			'submenu' => $submenu_copy,
 			'tree'    => self::build_discovered_menu_tree_from_globals( $menu_copy, $submenu_copy ),
 		);
+
+		self::persist_discovery_snapshot_for_user( $menu_copy, $submenu_copy );
 	}
 
 	/**
@@ -2954,8 +2963,71 @@ class EDMINBOOST_Command_Center {
 			return;
 		}
 
-		self::ensure_admin_menu_globals();
-		self::cache_admin_menu_snapshot();
+		self::restore_discovery_snapshot_for_user();
+	}
+
+	/**
+	 * Store the captured menu snapshot for the current user (AJAX discovery fallback).
+	 *
+	 * @param array $menu    Top-level admin menu copy.
+	 * @param array $submenu Admin submenu copy.
+	 * @return void
+	 */
+	private static function persist_discovery_snapshot_for_user( $menu, $submenu ) {
+		$user_id = get_current_user_id();
+		if ( ! $user_id ) {
+			return;
+		}
+
+		update_user_meta(
+			$user_id,
+			self::MENU_DISCOVERY_USER_META_KEY,
+			array(
+				'blog_id' => get_current_blog_id(),
+				'menu'    => $menu,
+				'submenu' => $submenu,
+			)
+		);
+	}
+
+	/**
+	 * Restore a previously captured menu snapshot for a user.
+	 *
+	 * @param int $user_id User ID (defaults to current user).
+	 * @return bool True when a snapshot was restored.
+	 */
+	private static function restore_discovery_snapshot_for_user( $user_id = 0 ) {
+		if ( ! $user_id ) {
+			$user_id = get_current_user_id();
+		}
+
+		if ( ! $user_id ) {
+			return false;
+		}
+
+		$stored = get_user_meta( $user_id, self::MENU_DISCOVERY_USER_META_KEY, true );
+		if ( ! is_array( $stored ) || empty( $stored['menu'] ) || ! is_array( $stored['menu'] ) ) {
+			return false;
+		}
+
+		if ( isset( $stored['blog_id'] ) && (int) $stored['blog_id'] !== get_current_blog_id() ) {
+			return false;
+		}
+
+		$menu_copy    = array_values( $stored['menu'] );
+		$submenu_copy = isset( $stored['submenu'] ) && is_array( $stored['submenu'] ) ? $stored['submenu'] : array();
+
+		if ( ! self::admin_menu_has_dashboard( $menu_copy ) ) {
+			return false;
+		}
+
+		self::$discovery_snapshot = array(
+			'menu'    => $menu_copy,
+			'submenu' => $submenu_copy,
+			'tree'    => self::build_discovered_menu_tree_from_globals( $menu_copy, $submenu_copy ),
+		);
+
+		return true;
 	}
 
 	/**
@@ -2973,13 +3045,9 @@ class EDMINBOOST_Command_Center {
 			);
 		}
 
-		self::ensure_admin_menu_globals();
-
-		global $menu, $submenu;
-
 		return array(
-			'menu'    => is_array( $menu ) ? $menu : array(),
-			'submenu' => is_array( $submenu ) ? $submenu : array(),
+			'menu'    => array(),
+			'submenu' => array(),
 		);
 	}
 
@@ -3088,55 +3156,6 @@ class EDMINBOOST_Command_Center {
 		}
 
 		return $tree;
-	}
-
-	/**
-	 * Ensure global admin menu arrays are populated for discovery.
-	 *
-	 * Command Center tab AJAX loads run through admin-ajax.php without wp-admin/menu.php,
-	 * so $menu and $submenu are empty unless built explicitly.
-	 *
-	 * @return void
-	 */
-	private static function ensure_admin_menu_globals() {
-		global $menu, $pagenow, $_wp_submenu_nopriv, $_wp_menu_nopriv;
-
-		if ( is_array( $menu ) && ! empty( $menu ) && self::admin_menu_has_dashboard( $menu ) ) {
-			return;
-		}
-
-		if ( ! is_user_logged_in() ) {
-			return;
-		}
-
-		// wp-admin/menu.php defines helpers at load time; including it twice is fatal.
-		if ( function_exists( '_add_themes_utility_last' ) ) {
-			return;
-		}
-
-		if ( empty( $pagenow ) ) {
-			$pagenow = 'admin.php';
-		}
-
-		if ( ! is_array( $_wp_submenu_nopriv ) ) {
-			$_wp_submenu_nopriv = array();
-		}
-
-		if ( ! is_array( $_wp_menu_nopriv ) ) {
-			$_wp_menu_nopriv = array();
-		}
-
-		if ( defined( 'WP_NETWORK_ADMIN' ) && WP_NETWORK_ADMIN ) {
-			require ABSPATH . 'wp-admin/network/menu.php';
-			return;
-		}
-
-		if ( defined( 'WP_USER_ADMIN' ) && WP_USER_ADMIN ) {
-			require ABSPATH . 'wp-admin/user/menu.php';
-			return;
-		}
-
-		require ABSPATH . 'wp-admin/menu.php';
 	}
 
 	/**

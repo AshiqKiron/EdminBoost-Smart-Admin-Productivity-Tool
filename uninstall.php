@@ -13,5 +13,4 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
 
 require_once plugin_dir_path( __FILE__ ) . 'includes/class-edminboost-settings.php';
 
-delete_option( EDMINBOOST_Settings::OPTION_NAME );
-delete_option( EDMINBOOST_Settings::VERSION_OPTION );
+EDMINBOOST_Settings::uninstall();

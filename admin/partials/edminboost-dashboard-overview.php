@@ -52,15 +52,15 @@ foreach ( $edminboost_top_bar_items as $edminboost_top_bar_item ) {
 }
 
 if ( 0 === $edminboost_top_bar_count ) {
-	$edminboost_top_bar_desc = __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer.', 'edminboost-smart-admin-productivity-tool' );
+	$edminboost_top_bar_desc = __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer.', 'edminboost-admin-customization' );
 } else {
-	$edminboost_top_bar_desc  = __( 'Admin link shortcuts appear in your WordPress top bar.', 'edminboost-smart-admin-productivity-tool' );
+	$edminboost_top_bar_desc  = __( 'Admin link shortcuts appear in your WordPress top bar.', 'edminboost-admin-customization' );
 	$edminboost_opening_parts = array();
 
 	if ( $edminboost_redirect_count > 0 ) {
 		$edminboost_opening_parts[] = sprintf(
 			/* translators: %d: number of links that open directly */
-			_n( '%d opens directly', '%d open directly', $edminboost_redirect_count, 'edminboost-smart-admin-productivity-tool' ),
+			_n( '%d opens directly', '%d open directly', $edminboost_redirect_count, 'edminboost-admin-customization' ),
 			$edminboost_redirect_count
 		);
 	}
@@ -68,7 +68,7 @@ if ( 0 === $edminboost_top_bar_count ) {
 	if ( $edminboost_drawer_count > 0 ) {
 		$edminboost_opening_parts[] = sprintf(
 			/* translators: %d: number of links that open in a slide-out drawer */
-			_n( '%d opens in a slide-out drawer', '%d open in a slide-out drawer', $edminboost_drawer_count, 'edminboost-smart-admin-productivity-tool' ),
+			_n( '%d opens in a slide-out drawer', '%d open in a slide-out drawer', $edminboost_drawer_count, 'edminboost-admin-customization' ),
 			$edminboost_drawer_count
 		);
 	}
@@ -125,7 +125,7 @@ $edminboost_theme_key = $edminboost_option_name . '[command_center][theme]';
 	<div class="edminboost-dashboard-overview">
 		<div class="edminboost-overview-grid">
 			<article class="edminboost-card edminboost-overview-card edminboost-overview-card--layout">
-				<h2><?php esc_html_e( 'Layout preset', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+				<h2><?php esc_html_e( 'Layout preset', 'edminboost-admin-customization' ); ?></h2>
 				<?php
 				$edminboost_preset_picker_mode = 'overview';
 				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-preset-picker.php';
@@ -137,18 +137,18 @@ $edminboost_theme_key = $edminboost_option_name . '[command_center][theme]';
 					$edminboost_preview_id         = 'edminboost-overview-layout-sidebar-preview';
 					$edminboost_preview_aria_label = sprintf(
 						/* translators: %s: layout preset name */
-						__( 'Sidebar menu preview for the %s layout preset', 'edminboost-smart-admin-productivity-tool' ),
+						__( 'Sidebar menu preview for the %s layout preset', 'edminboost-admin-customization' ),
 						$edminboost_layout_name
 					);
 					include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-sidebar-preview.php';
 					?>
 				</div>
 				<a class="button button-secondary" href="<?php echo esc_url( $edminboost_presets_url ); ?>">
-					<?php esc_html_e( 'Manage layout presets', 'edminboost-smart-admin-productivity-tool' ); ?>
+					<?php esc_html_e( 'Manage layout presets', 'edminboost-admin-customization' ); ?>
 				</a>
 			</article>
 			<article class="edminboost-card edminboost-overview-card edminboost-overview-card--theme">
-				<h2><?php esc_html_e( 'Color theme', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+				<h2><?php esc_html_e( 'Color theme', 'edminboost-admin-customization' ); ?></h2>
 				<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-theme-picker.php'; ?>
 				<?php
 				$edminboost_preview_colors = $edminboost_theme_preview_colors;
@@ -156,23 +156,23 @@ $edminboost_theme_key = $edminboost_option_name . '[command_center][theme]';
 				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-theme-preview.php';
 				?>
 				<a class="button button-secondary" href="<?php echo esc_url( $edminboost_appearance_url ); ?>">
-					<?php esc_html_e( 'Customize appearance', 'edminboost-smart-admin-productivity-tool' ); ?>
+					<?php esc_html_e( 'Customize appearance', 'edminboost-admin-customization' ); ?>
 				</a>
 			</article>
 			<article class="edminboost-card edminboost-overview-card edminboost-overview-card--topbar">
-				<h2><?php esc_html_e( 'Top bar', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+				<h2><?php esc_html_e( 'Top bar', 'edminboost-admin-customization' ); ?></h2>
 				<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-links-picker.php'; ?>
 				<p class="edminboost-overview-card__desc" id="edminboost-overview-topbar-desc"><?php echo esc_html( $edminboost_top_bar_desc ); ?></p>
 				<?php
 				$edminboost_preview_items      = $edminboost_top_bar_items;
 				$edminboost_preview_id         = 'edminboost-overview-topbar-preview';
-				$edminboost_preview_aria_label = __( 'Preview of your configured top bar links', 'edminboost-smart-admin-productivity-tool' );
+				$edminboost_preview_aria_label = __( 'Preview of your configured top bar links', 'edminboost-admin-customization' );
 				$edminboost_show_interaction   = true;
 				$edminboost_compact_preview    = true;
 				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
 				?>
 				<a class="button button-secondary" href="<?php echo esc_url( $edminboost_mapper_url ); ?>">
-					<?php esc_html_e( 'Edit top bar', 'edminboost-smart-admin-productivity-tool' ); ?>
+					<?php esc_html_e( 'Edit top bar', 'edminboost-admin-customization' ); ?>
 				</a>
 			</article>
 		</div>

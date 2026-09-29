@@ -178,11 +178,7 @@ class FeaturesTest extends Edminboost_Test_Case {
 		update_option( EDMINBOOST_Settings::OPTION_NAME, EDMINBOOST_Settings::get_defaults() );
 		update_option( EDMINBOOST_Settings::VERSION_OPTION, EDMINBOOST_VERSION );
 
-		if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) {
-			define( 'WP_UNINSTALL_PLUGIN', true );
-		}
-
-		require dirname( __DIR__, 2 ) . '/uninstall.php';
+		EDMINBOOST_Settings::uninstall();
 
 		$this->assertFalse( get_option( EDMINBOOST_Settings::OPTION_NAME ) );
 		$this->assertFalse( get_option( EDMINBOOST_Settings::VERSION_OPTION ) );

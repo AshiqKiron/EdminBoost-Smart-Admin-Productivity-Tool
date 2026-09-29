@@ -14,7 +14,7 @@
  * Author URI: https://asphaltthemes.com
  * License: GPL-3.0-or-later
  * License URI: https://www.gnu.org/licenses/gpl-3.0.html
- * Text Domain: edminboost-smart-admin-productivity-tool
+ * Text Domain: edminboost-admin-customization
  * Domain Path: /languages
  *
  * @package EdminBoost
@@ -29,8 +29,8 @@ define( 'EDMINBOOST_PLUGIN_FILE', __FILE__ );
 define( 'EDMINBOOST_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
-define( 'EDMINBOOST_PLUGIN_SLUG', 'edminboost-smart-admin-productivity-tool' );
-define( 'EDMINBOOST_TEXT_DOMAIN', 'edminboost-smart-admin-productivity-tool' );
+define( 'EDMINBOOST_PLUGIN_SLUG', 'edminboost-admin-customization' );
+define( 'EDMINBOOST_TEXT_DOMAIN', 'edminboost-admin-customization' );
 define( 'EDMINBOOST_PLUGIN_DOCS_URL', 'https://asphaltthemes.com/edminboost/docs' );
 define( 'EDMINBOOST_UPGRADE_URL', 'https://asphaltthemes.com/edminboost' );
 
