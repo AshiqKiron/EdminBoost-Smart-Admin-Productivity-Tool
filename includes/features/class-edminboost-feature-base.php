@@ -56,45 +56,45 @@ abstract class EDMINBOOST_Feature_Base {
 	public function get_name() {
 		switch ( $this->id ) {
 			case 'hide_admin_notices':
-				return __( 'Hide Admin Notices', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Hide Admin Notices', 'edminboost-admin-customization' );
 			case 'hide_screen_help':
-				return __( 'Hide Screen Options & Help', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Hide Screen Options & Help', 'edminboost-admin-customization' );
 			case 'dashboard_widgets':
-				return __( 'Dashboard Widgets', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Dashboard Widgets', 'edminboost-admin-customization' );
 			case 'admin_footer':
-				return __( 'Admin Footer', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Admin Footer', 'edminboost-admin-customization' );
 			case 'disable_emojis':
-				return __( 'Disable Emojis', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Disable Emojis', 'edminboost-admin-customization' );
 			case 'post_duplicator':
-				return __( 'Post Duplicator', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Post Duplicator', 'edminboost-admin-customization' );
 			case 'classic_widgets':
-				return __( 'Classic Widgets', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Classic Widgets', 'edminboost-admin-customization' );
 			case 'disable_xmlrpc':
-				return __( 'Disable XML-RPC', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Disable XML-RPC', 'edminboost-admin-customization' );
 			case 'rest_api_hardening':
-				return __( 'REST API Hardening', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'REST API Hardening', 'edminboost-admin-customization' );
 			case 'disable_feeds':
-				return __( 'Disable Feeds', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Disable Feeds', 'edminboost-admin-customization' );
 			case 'login_redirects':
-				return __( 'Login Redirects', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Login Redirects', 'edminboost-admin-customization' );
 			case 'remove_asset_versions':
-				return __( 'Remove Asset Versions', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Remove Asset Versions', 'edminboost-admin-customization' );
 			case 'remove_dashicons_frontend':
-				return __( 'Remove Front-end Dashicons', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Remove Front-end Dashicons', 'edminboost-admin-customization' );
 			case 'heartbeat_control':
-				return __( 'Heartbeat Control', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Heartbeat Control', 'edminboost-admin-customization' );
 			case 'custom_admin_columns':
-				return __( 'Custom Admin Columns', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Custom Admin Columns', 'edminboost-admin-customization' );
 			case 'menu_duplicator':
-				return __( 'Menu Duplicator', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Menu Duplicator', 'edminboost-admin-customization' );
 			case 'disable_comments':
-				return __( 'Disable Comments', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Disable Comments', 'edminboost-admin-customization' );
 			case 'disable_embeds':
-				return __( 'Disable Embeds', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Disable Embeds', 'edminboost-admin-customization' );
 			case 'post_order':
-				return __( 'Post Order', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Post Order', 'edminboost-admin-customization' );
 			case 'admin_bar':
-				return __( 'Admin Bar', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Admin Bar', 'edminboost-admin-customization' );
 			default:
 				return '';
 		}
@@ -108,45 +108,45 @@ abstract class EDMINBOOST_Feature_Base {
 	public function get_description() {
 		switch ( $this->id ) {
 			case 'hide_admin_notices':
-				return __( 'Hide routine admin notices on non-EdminBoost screens while keeping errors and warnings visible.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Hide routine admin notices on non-EdminBoost screens while keeping errors and warnings visible.', 'edminboost-admin-customization' );
 			case 'hide_screen_help':
-				return __( 'Hide the Screen Options and Help tabs on admin pages.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Hide the Screen Options and Help tabs on admin pages.', 'edminboost-admin-customization' );
 			case 'dashboard_widgets':
-				return __( 'Remove selected default dashboard widgets for a cleaner overview.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Remove selected default dashboard widgets for a cleaner overview.', 'edminboost-admin-customization' );
 			case 'admin_footer':
-				return __( 'Replace the default WordPress admin footer text.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Replace the default WordPress admin footer text.', 'edminboost-admin-customization' );
 			case 'disable_emojis':
-				return __( 'Remove emoji detection scripts from the admin area for a lighter page load.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Remove emoji detection scripts from the admin area for a lighter page load.', 'edminboost-admin-customization' );
 			case 'post_duplicator':
-				return __( 'Add a duplicate action to post and page list tables.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Add a duplicate action to post and page list tables.', 'edminboost-admin-customization' );
 			case 'classic_widgets':
-				return __( 'Use the classic widgets screen instead of the block editor.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Use the classic widgets screen instead of the block editor.', 'edminboost-admin-customization' );
 			case 'disable_xmlrpc':
-				return __( 'Disable the XML-RPC interface to reduce attack surface.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Disable the XML-RPC interface to reduce attack surface.', 'edminboost-admin-customization' );
 			case 'rest_api_hardening':
-				return __( 'Hide REST API discovery links and restrict guest access.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Hide REST API discovery links and restrict guest access.', 'edminboost-admin-customization' );
 			case 'disable_feeds':
-				return __( 'Disable RSS, Atom, and RDF feeds and redirect feed URLs.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Disable RSS, Atom, and RDF feeds and redirect feed URLs.', 'edminboost-admin-customization' );
 			case 'login_redirects':
-				return __( 'Set custom login and logout redirect URLs per user role.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Set custom login and logout redirect URLs per user role.', 'edminboost-admin-customization' );
 			case 'remove_asset_versions':
-				return __( 'Remove version query strings from script and style URLs.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Remove version query strings from script and style URLs.', 'edminboost-admin-customization' );
 			case 'remove_dashicons_frontend':
-				return __( 'Stop loading Dashicons for visitors who do not need the admin bar.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Stop loading Dashicons for visitors who do not need the admin bar.', 'edminboost-admin-customization' );
 			case 'heartbeat_control':
-				return __( 'Modify or disable the WordPress Heartbeat API by context.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Modify or disable the WordPress Heartbeat API by context.', 'edminboost-admin-customization' );
 			case 'custom_admin_columns':
-				return __( 'Show featured image, post ID, or a custom meta field in list tables.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Show featured image, post ID, or a custom meta field in list tables.', 'edminboost-admin-customization' );
 			case 'menu_duplicator':
-				return __( 'Duplicate an existing navigation menu with one click.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Duplicate an existing navigation menu with one click.', 'edminboost-admin-customization' );
 			case 'disable_comments':
-				return __( 'Disable comments and hide comment UI for selected post types.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Disable comments and hide comment UI for selected post types.', 'edminboost-admin-customization' );
 			case 'disable_embeds':
-				return __( 'Disable WordPress embeds and oEmbed discovery.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Disable WordPress embeds and oEmbed discovery.', 'edminboost-admin-customization' );
 			case 'post_order':
-				return __( 'Enable manual ordering via the Order column in list tables.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Enable manual ordering via the Order column in list tables.', 'edminboost-admin-customization' );
 			case 'admin_bar':
-				return __( 'Hide selected items from the WordPress admin bar.', EDMINBOOST_TEXT_DOMAIN );
+				return __( 'Hide selected items from the WordPress admin bar.', 'edminboost-admin-customization' );
 			default:
 				return '';
 		}

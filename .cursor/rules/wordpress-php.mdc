@@ -37,7 +37,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 - User-facing strings: `__()`, `_e()`, `esc_html__()`, `esc_attr__()`, etc. with `EDMINBOOST_TEXT_DOMAIN` (equals `EDMINBOOST_PLUGIN_SLUG` / header `Text Domain`: `edminboost-admin-customization`).
 - Do not use the short `edminboost` hook prefix as the text domain — Plugin Check expects the header domain to match the plugin slug.
-- `EDMINBOOST_Feature_Base::get_name()` / `get_description()` use a literal domain string with a phpcs ignore (same value as the constant).
+- Do not call `load_plugin_textdomain()` from plugin code — header `Text Domain` + `Domain Path: /languages` is enough (WordPress 4.6+; required for Plugin Check). `EDMINBOOST_Plugin::run()` does not register a textdomain loader.
+- `EDMINBOOST_Feature_Base::get_name()` / `get_description()` use the literal slug `'edminboost-admin-customization'` in each `__()` call (not the constant).
 
 ## WordPress APIs
 

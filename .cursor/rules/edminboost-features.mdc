@@ -12,10 +12,11 @@ alwaysApply: false
 2. Set `$id`, `$name`, `$description` on the class.
 3. Implement `register_hooks()` — caller only invokes when `is_enabled()` is true.
 4. Register in `EDMINBOOST_Features::load_features()` (`require_once` + `$feature_classes` array).
-5. Add defaults in `EDMINBOOST_Feature_Settings::get_defaults()`.
-6. Add enable logic in `EDMINBOOST_Feature_Settings::is_enabled()` (delegated by `EDMINBOOST_Settings::is_feature_enabled()`; `edminboost_is_feature_enabled` filter).
-7. Add sanitization in `EDMINBOOST_Feature_Settings::sanitize()` (delegated by `EDMINBOOST_Settings::sanitize()`).
-8. Add settings UI in `admin/partials/edminboost-feature-fields.php` under the correct `$section` (`productivity`, `security`, or `performance`).
+5. Add translated name/description `case` branches for the new `$id` in `EDMINBOOST_Feature_Base::get_name()` and `::get_description()` (literal text domain `'edminboost-admin-customization'`).
+6. Add defaults in `EDMINBOOST_Feature_Settings::get_defaults()`.
+7. Add enable logic in `EDMINBOOST_Feature_Settings::is_enabled()` (delegated by `EDMINBOOST_Settings::is_feature_enabled()`; `edminboost_is_feature_enabled` filter).
+8. Add sanitization in `EDMINBOOST_Feature_Settings::sanitize()` (delegated by `EDMINBOOST_Settings::sanitize()`).
+9. Add settings UI in `admin/partials/edminboost-feature-fields.php` under the correct `$section` (`productivity`, `security`, or `performance`).
 
 ## Feature Class Pattern
 
@@ -34,7 +35,7 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 
 ## Rules
 
-- Feature `$name` / `$description` strings are translated in `EDMINBOOST_Feature_Base::get_name()` / `get_description()` using the slug text domain (see `edminboost-standards.mdc` I18N).
+- Feature `$name` / `$description` class properties are fallbacks only; user-facing copy comes from `EDMINBOOST_Feature_Base::get_name()` / `get_description()` switch cases with literal `'edminboost-admin-customization'` (see `edminboost-standards.mdc` I18N).
 - Command Center live admin bar (`EDMINBOOST_Command_Center_Bar`) is **not** a feature module — do not add it to `EDMINBOOST_Features`. See `edminboost-command-center.mdc`.
 - Feature IDs: unique `snake_case` matching the `features` settings key.
 - Read settings via `EDMINBOOST_Settings::get_feature_settings( $this->get_id() )` — not `get_option()`.

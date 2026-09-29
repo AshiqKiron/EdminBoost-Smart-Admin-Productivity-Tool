@@ -51,7 +51,7 @@ readme.txt
 - Bootstrap defines constants, requires core classes, registers activation/deactivation hooks, and calls `edminboost_run_plugin()`.
 - Bootstrap filename equals `EDMINBOOST_PLUGIN_SLUG . '.php'` (`edminboost-admin-customization.php`).
 - `EDMINBOOST_PLUGIN_SLUG` is the canonical plugin slug (folder + bootstrap filename). `EDMINBOOST_TEXT_DOMAIN` matches the slug (plugin header / WordPress.org Plugin Check).
-- `EDMINBOOST_Plugin::run()` wires admin menu/settings/assets, and `EDMINBOOST_Features::register_hooks()` on `admin_init`.
+- `EDMINBOOST_Plugin::run()` wires admin menu/settings/assets, and `EDMINBOOST_Features::register_hooks()` on `admin_init`. Translations load from `/languages` via the plugin header (`Text Domain` + `Domain Path`) — no `load_plugin_textdomain()` in `EDMINBOOST_Plugin`.
 - Settings: `edminboost_settings` via `EDMINBOOST_Settings` (group `edminboost_settings_group`). Global kill switch: `enabled`.
 - Command Center config lives under `settings['command_center']`; helpers in `EDMINBOOST_Command_Center`.
 - Live admin bar: `EDMINBOOST_Command_Center_Bar` (not a feature module) — registered in `EDMINBOOST_Plugin::run()`, renders saved `top_bar_items` on `#wpadminbar` and applies behavior declutter toggles. Panel/badge behavior fields (`command_center.behavior` drawer width, badge style, animation speed) edit on Top Bar (`#edminboost-mapper-look`, gated until a link uses drawer interaction); declutter toggles edit on Theme (Appearance).

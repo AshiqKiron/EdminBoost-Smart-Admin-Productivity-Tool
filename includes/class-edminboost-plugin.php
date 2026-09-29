@@ -73,7 +73,6 @@ class EDMINBOOST_Plugin {
 	 * @return void
 	 */
 	public function run() {
-		add_action( 'init', array( $this, 'load_textdomain' ) );
 		add_action( 'admin_menu', array( $this->admin, 'register_menu' ) );
 		add_action( 'admin_menu', array( $this->admin, 'normalize_plugin_submenu' ), 999 );
 		add_action( 'admin_init', array( $this->admin, 'register_settings' ) );
@@ -93,21 +92,5 @@ class EDMINBOOST_Plugin {
 		EDMINBOOST_Menu_Studio::register_hooks();
 		EDMINBOOST_Theme::register_hooks();
 		EDMINBOOST_White_Label::register_hooks();
-	}
-
-	/**
-	 * Load plugin translations from Domain Path (/languages).
-	 *
-	 * Ensures MO files load when the plugin folder name differs from the slug
-	 * and registers the canonical text domain for Plugin Check / WordPress.org.
-	 *
-	 * @return void
-	 */
-	public function load_textdomain() {
-		load_plugin_textdomain(
-			EDMINBOOST_TEXT_DOMAIN,
-			false,
-			dirname( plugin_basename( EDMINBOOST_PLUGIN_FILE ) ) . '/languages'
-		);
 	}
 }

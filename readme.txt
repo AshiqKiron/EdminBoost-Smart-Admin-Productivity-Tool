@@ -4,7 +4,7 @@ Tags: admin, dashboard, productivity, admin-tools, admin-menu
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.0
+Stable tag: 1.4.1
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -55,6 +55,9 @@ No locked controls in wp-admin. The free tier includes a fixed set of layout, th
 Yes. When uninstalled, all plugin options are removed from the database.
 
 == Changelog ==
+
+= 1.4.1 =
+* Align i18n with WordPress.org Plugin Check: rely on header Domain Path for translations and use literal text domain strings in feature labels.
 
 = 1.4.0 =
 * Free tier: omit Pro-only settings from the admin UI instead of showing locked controls; upgrades are described on the Billing page only.

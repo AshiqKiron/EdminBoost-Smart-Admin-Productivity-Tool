@@ -7,7 +7,7 @@
  * Plugin Name: Edminboost - Admin white label, Menu Editor, theme, topbar shortcuts
  * Plugin URI: https://asphaltthemes.com/edminboost
  * Description: Boost WordPress admin productivity with smart tools to simplify workflows, customize the dashboard, and streamline daily admin tasks.
- * Version: 1.4.0
+ * Version: 1.4.1
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: ashiquzzaman
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'EDMINBOOST_VERSION', '1.4.0' );
+define( 'EDMINBOOST_VERSION', '1.4.1' );
 define( 'EDMINBOOST_PLUGIN_FILE', __FILE__ );
 define( 'EDMINBOOST_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
