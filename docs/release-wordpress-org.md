@@ -24,6 +24,7 @@ Expected result: `OK: no Freemius SDK, premium bootstrap, or wp_org_gatekeeper d
 
 - `includes/pro/` (Freemius bootstrap and SDK)
 - `vendor/freemius/`
+- `assets/` (plugin directory banners, icons, and other marketing art — upload those via SVN **assets/** after approval, not inside the plugin zip)
 - Dev-only paths already excluded by [`bin/build-zip-lib.sh`](../bin/build-zip-lib.sh) (tests, bin, node_modules, etc.)
 
 The **git development repo** may contain `includes/pro/` for the direct-download premium zip; **do not** copy the full monorepo into SVN trunk.

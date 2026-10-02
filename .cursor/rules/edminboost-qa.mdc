@@ -16,10 +16,10 @@ bin/
   install-wp-tests.sh     # WP test suite bootstrap
   setup-qa-site.sh        # QA users + plugin symlink
   build-zip-lib.sh        # shared rsync staging for release zips
-  build-wporg-zip.sh      # WordPress.org package (excludes includes/pro/ + admin/{partials,js,css}/pro/)
+  build-wporg-zip.sh      # WordPress.org package (excludes includes/pro/, admin/{partials,js,css}/pro/, assets/)
   build-plugin-zip.sh     # alias → build-wporg-zip.sh (back-compat)
   build-premium-zip.sh    # Premium/Freemius package
-  verify-wporg-zip.sh     # fail if Freemius, includes/pro/, admin/{partials,js,css}/pro/, wp_org_gatekeeper, or bare is_premium (allows is_premium_build identifiers)
+  verify-wporg-zip.sh     # fail if Freemius, includes/pro/, admin/{partials,js,css}/pro/, assets/, wp_org_gatekeeper, or bare is_premium (allows is_premium_build identifiers)
   verify-premium-zip.sh   # premium zip sanity checks
   make-pot.sh             # regenerate languages/edminboost-admin-customization.pot (composer make-pot)
   generate-plugin-banners.py / generate-plugin-icons.py / generate-website-heroes.py  # marketing assets

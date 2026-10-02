@@ -58,17 +58,12 @@ FORBIDDEN_PATHS=(
 	"admin/partials/pro"
 	"admin/js/pro"
 	"admin/css/pro"
+	"assets"
 )
 
 FORBIDDEN_FILES=(
 	"includes/class-edminboost-pro.php"
 	"includes/class-edminboost-white-label.php"
-)
-
-# WordPress.org plugin directory banners/icons ship via SVN assets/, not the plugin zip.
-WPORG_PLUGIN_ZIP_ASSET_GLOBS=(
-	'assets/banner-*.png'
-	'assets/icon-*.png'
 )
 
 FORBIDDEN_PATTERNS=(
@@ -107,17 +102,6 @@ if grep -R -n -E 'class[[:space:]]+EDMINBOOST_Pro' --include='*.php' "$STAGE_DIR
 	grep -R -n -E 'class[[:space:]]+EDMINBOOST_Pro' --include='*.php' "$STAGE_DIR" | grep -v '/includes/pro/' | head -10 >&2
 	errors=$(( errors + 1 ))
 fi
-
-shopt -s nullglob
-for pattern in "${WPORG_PLUGIN_ZIP_ASSET_GLOBS[@]}"; do
-	for found in "$STAGE_DIR/$pattern"; do
-		if [[ -f "$found" ]]; then
-			echo "FAIL: WordPress.org banner/icon must not ship in plugin zip: ${found#$STAGE_DIR/}" >&2
-			errors=$(( errors + 1 ))
-		fi
-	done
-done
-shopt -u nullglob
 
 for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
 	if grep -R -n -E --include='*.php' --include='*.js' --include='*.css' "$pattern" "$STAGE_DIR" >/dev/null 2>&1; then

@@ -44,7 +44,7 @@ When you change architecture, admin pages, Pro gating, i18n, or QA scripts:
 1. Update the relevant `.mdc` file(s) in the same PR/commit as the code when possible.
 2. After slug or text-domain work, grep the tree for wrong domains (see `edminboost-standards.mdc` I18N).
 3. After adding partials or JS entry points, extend `edminboost-command-center.mdc` and/or `admin-assets.mdc` globs if new files fall outside existing patterns.
-4. Premium-only UI belongs under `admin/partials/pro/`, `admin/js/pro/`, or `admin/css/pro/` and PHP under `includes/pro/` — WordPress.org zip excludes those paths (see `bin/build-wporg-zip.sh`).
+4. Premium-only UI belongs under `admin/partials/pro/`, `admin/js/pro/`, or `admin/css/pro/` and PHP under `includes/pro/` — WordPress.org zip excludes those paths plus repo-root `assets/` (see `bin/build-wporg-zip.sh` / `bin/verify-wporg-zip.sh`).
 5. Shared gating: prefer `EDMINBOOST_Plan::*` in core partials; implement licensed behavior in `includes/pro/` and extension slots on `edminboost_admin_extension` (`EDMINBOOST_Pro::ADMIN_EXTENSION_PARTIALS`: `settings_backup`, `mapper_look_section`, `security_login_redirects`, `menu_custom_link`, `menu_display_mode`, `presets_role_matrix_head`, `presets_role_matrix_cells`, `presets_role_visibility_help`, `theme_extras_schedule_preview`, `theme_schedule_dark_mode`). Top Bar item drawer UI also swaps via filter `edminboost_mapper_item_sidebar_partial`.
 
 Current plugin version is defined in `EDMINBOOST_VERSION` / plugin header / `readme.txt` `Stable tag` — do not hardcode version numbers in rules unless documenting a one-time migration.

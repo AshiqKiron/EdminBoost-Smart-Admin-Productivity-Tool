@@ -4,7 +4,7 @@ Tags: admin, dashboard, productivity, admin-tools, admin-menu
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.2
+Stable tag: 1.4.3
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
@@ -55,6 +55,9 @@ No locked controls in wp-admin. The free tier includes a fixed set of layout, th
 Yes. When uninstalled, all plugin options are removed from the database.
 
 == Changelog ==
+
+= 1.4.3 =
+* WordPress.org release package excludes the repo `assets/` directory (directory banners and icons upload via SVN assets, not the plugin zip).
 
 = 1.4.2 =
 * WordPress.org zip excludes Pro admin UI (`admin/partials/pro/`). The free plugin shows only free-tier screens and fields—no locked Pro controls. Premium builds with an active Pro or Agency license load the pro admin package; plan limits remain enforced via settings read/sanitize.
