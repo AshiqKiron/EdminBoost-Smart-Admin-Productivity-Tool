@@ -207,103 +207,25 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 						<?php esc_html_e( 'Toggle items from the left panel or drag them here to build your top bar.', 'edminboost-admin-customization' ); ?>
 					</p>
 
-					<aside
-						class="edminboost-item-drawer"
-						id="edminboost-item-drawer"
-						aria-labelledby="edminboost-drawer-heading"
-						hidden
-					>
-					<h2 id="edminboost-drawer-heading"><?php esc_html_e( 'Item Configuration', 'edminboost-admin-customization' ); ?></h2>
-					<p class="description" id="edminboost-drawer-subtitle"></p>
-
-					<fieldset class="edminboost-fieldset">
-						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_icon' ); ?><?php esc_html_e( 'Icon', 'edminboost-admin-customization' ); ?></legend>
-						<div class="edminboost-icon-picker" id="edminboost-icon-picker" role="listbox" aria-label="<?php esc_attr_e( 'Choose dashicon', 'edminboost-admin-customization' ); ?>">
-							<?php foreach ( $edminboost_dashicon_options as $edminboost_dashicon ) : ?>
-								<button
-									type="button"
-									class="edminboost-icon-picker__btn"
-									data-icon="<?php echo esc_attr( $edminboost_dashicon ); ?>"
-									role="option"
-									aria-label="<?php echo esc_attr( $edminboost_dashicon ); ?>"
-								>
-									<span class="dashicons <?php echo esc_attr( $edminboost_dashicon ); ?>" aria-hidden="true"></span>
-								</button>
-							<?php endforeach; ?>
-						</div>
-					</fieldset>
-
-					<p>
-						<label for="edminboost-item-label"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_label' ); ?><?php esc_html_e( 'Label override', 'edminboost-admin-customization' ); ?></label>
-						<input type="text" id="edminboost-item-label" class="regular-text" />
-					</p>
-
-					<p>
-						<label for="edminboost-item-anchor"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_anchor' ); ?><?php esc_html_e( 'Anchor (optional)', 'edminboost-admin-customization' ); ?></label>
-						<input type="text" id="edminboost-item-anchor" class="regular-text code" placeholder="<?php echo esc_attr( 'woocommerce_permalink_structure' ); ?>" />
-						<span class="description"><?php esc_html_e( 'Scroll to a section on the page when the link is opened.', 'edminboost-admin-customization' ); ?></span>
-					</p>
-
-					<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-					<div class="<?php echo esc_attr( EDMINBOOST_Pro::section_class() ); ?>"<?php EDMINBOOST_Pro::echo_feature_attr( 'top_bar_drawer_items' ); ?>>
-					<fieldset class="edminboost-fieldset">
-						<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'item_interaction' ); ?><?php esc_html_e( 'Interaction', 'edminboost-admin-customization' ); ?></legend>
-						<label class="edminboost-checkbox-row">
-							<input type="radio" name="edminboost_item_interaction" value="redirect" checked />
-							<?php esc_html_e( 'Direct redirect', 'edminboost-admin-customization' ); ?>
-						</label>
-						<label class="edminboost-checkbox-row">
-							<input type="radio" name="edminboost_item_interaction" value="drawer" />
-							<?php esc_html_e( 'AJAX slide-out drawer', 'edminboost-admin-customization' ); ?>
-						</label>
-					</fieldset>
-
-					<p class="edminboost-item-drawer__preview" id="edminboost-drawer-preview-wrap" hidden>
-						<button type="button" class="button button-secondary" id="edminboost-drawer-preview">
-							<?php esc_html_e( 'Preview AJAX drawer', 'edminboost-admin-customization' ); ?>
-						</button>
-					</p>
-
-					<p>
-						<label for="edminboost-item-badge"><?php EDMINBOOST_Setting_Help::echo_icon( 'item_badge_source' ); ?><?php esc_html_e( 'Live badge binding', 'edminboost-admin-customization' ); ?></label>
-						<select id="edminboost-item-badge" class="regular-text">
-							<?php foreach ( $edminboost_badge_sources as $edminboost_source_key => $edminboost_source_label ) : ?>
-								<option value="<?php echo esc_attr( $edminboost_source_key ); ?>">
-									<?php echo esc_html( $edminboost_source_label ); ?>
-								</option>
-							<?php endforeach; ?>
-						</select>
-					</p>
-					</div>
-					<?php endif; ?>
-
-					<p>
-						<button type="button" class="button" id="edminboost-drawer-close">
-							<?php esc_html_e( 'Close', 'edminboost-admin-customization' ); ?>
-						</button>
-						<button type="button" class="button button-link-delete" id="edminboost-drawer-remove">
-							<?php esc_html_e( 'Remove from top bar', 'edminboost-admin-customization' ); ?>
-						</button>
-					</p>
-					</aside>
-				</section>
-
-				<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-				<section class="edminboost-card edminboost-cc-section edminboost-home-look is-disabled" id="edminboost-mapper-look" aria-labelledby="edminboost-mapper-look-heading" aria-disabled="true">
-					<h2 id="edminboost-mapper-look-heading"><?php esc_html_e( 'Panel & badges', 'edminboost-admin-customization' ); ?></h2>
-					<p class="description">
-						<?php esc_html_e( 'Adjust slide-out panel style and notification badges. Set a top bar link to AJAX slide-out drawer to configure these settings.', 'edminboost-admin-customization' ); ?>
-					</p>
 					<?php
-					// Included partial expects `$behavior` and `$cc_key` in parent scope.
-					// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-					$behavior = $edminboost_behavior;
-					$cc_key   = $edminboost_cc_key;
-					// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
-					include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-home-advanced-look.php';
+					$edminboost_mapper_sidebar_partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-mapper-item-sidebar.php';
+					if ( EDMINBOOST_Plan::is_direct_build() ) {
+						$edminboost_mapper_sidebar_partial = apply_filters(
+							'edminboost_mapper_item_sidebar_partial',
+							$edminboost_mapper_sidebar_partial
+						);
+					}
+					if ( is_readable( $edminboost_mapper_sidebar_partial ) ) {
+						include $edminboost_mapper_sidebar_partial;
+					}
 					?>
 				</section>
-				<?php endif; ?>
+
+				<?php
+				if ( EDMINBOOST_Plan::is_direct_build() ) {
+					do_action( 'edminboost_admin_extension', 'mapper_look_section' );
+				}
+				?>
 
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_layout_studio_save]" value="1" />

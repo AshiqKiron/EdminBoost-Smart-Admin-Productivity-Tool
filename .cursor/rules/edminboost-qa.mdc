@@ -16,9 +16,10 @@ bin/
   install-wp-tests.sh     # WP test suite bootstrap
   setup-qa-site.sh        # QA users + plugin symlink
   build-zip-lib.sh        # shared rsync staging for release zips
-  build-wporg-zip.sh      # WordPress.org package (excludes includes/pro/)
+  build-wporg-zip.sh      # WordPress.org package (excludes includes/pro/ + admin/{partials,js,css}/pro/)
+  build-plugin-zip.sh     # alias → build-wporg-zip.sh (back-compat)
   build-premium-zip.sh    # Premium/Freemius package
-  verify-wporg-zip.sh     # fail if Freemius, includes/pro/, wp_org_gatekeeper, or bare is_premium (allows is_premium_build identifiers)
+  verify-wporg-zip.sh     # fail if Freemius, includes/pro/, admin/{partials,js,css}/pro/, wp_org_gatekeeper, or bare is_premium (allows is_premium_build identifiers)
   verify-premium-zip.sh   # premium zip sanity checks
   make-pot.sh             # regenerate languages/edminboost-admin-customization.pot (composer make-pot)
   generate-plugin-banners.py / generate-plugin-icons.py / generate-website-heroes.py  # marketing assets
@@ -63,7 +64,7 @@ PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from 
 - Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar,Theme,AdminMenuOrder,Pro}Test.php`.
 - Name tests `test_{behavior}`; target static helpers on bar/CC classes where hook tests are heavy.
 - `SettingsTest::test_plugin_slug_and_text_domain_match_header()` asserts `EDMINBOOST_PLUGIN_SLUG`, `EDMINBOOST_TEXT_DOMAIN`, and bootstrap filename match the plugin header / slug (`edminboost-admin-customization`).
-- Pro gating tests: `ProTest` (`include_preset_in_ui`, `shows_pro_settings_ui`); `ThemeTest::test_strip_pro_theme_clears_scheduled_dark_mode()`; `CommandCenterTest::test_get_page_links()` / `test_get_nav_items()` and `AdminMenuOrderTest` branch on `EDMINBOOST_Pro::shows_pro_settings_ui()` (Settings nav when premium build + active Pro). Use `enable_pro_plan()` in tests that need drawer/badge or Pro-saved options.
+- Pro gating tests: `ProTest` (`include_preset_in_ui`, `has_licensed_admin_ui`, `EDMINBOOST_Plan_Limits::enforce_plan_limits`); billing catalog in `CommandCenterTest` uses `EDMINBOOST_Billing::*` when the premium package is loaded; `CommandCenterTest` / `AdminMenuOrderTest` branch on `EDMINBOOST_Plan::has_licensed_admin_ui()` and `is_direct_build()`. Use `enable_pro_plan()` in tests that need drawer/badge or Pro-saved options.
 
 ## Playwright Patterns
 

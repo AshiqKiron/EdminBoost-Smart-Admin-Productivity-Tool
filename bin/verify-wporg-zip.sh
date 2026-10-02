@@ -55,6 +55,20 @@ fi
 FORBIDDEN_PATHS=(
 	"vendor/freemius"
 	"includes/pro"
+	"admin/partials/pro"
+	"admin/js/pro"
+	"admin/css/pro"
+)
+
+FORBIDDEN_FILES=(
+	"includes/class-edminboost-pro.php"
+	"includes/class-edminboost-white-label.php"
+)
+
+# WordPress.org plugin directory banners/icons ship via SVN assets/, not the plugin zip.
+WPORG_PLUGIN_ZIP_ASSET_GLOBS=(
+	'assets/banner-*.png'
+	'assets/icon-*.png'
 )
 
 FORBIDDEN_PATTERNS=(
@@ -62,6 +76,12 @@ FORBIDDEN_PATTERNS=(
 	'fs_dynamic_init'
 	'wp_org_gatekeeper'
 	'is_premium([^_]|$)'
+	'edminboost_is_pro_active'
+	'edminboost_active_billing_plan'
+	'EDMINBOOST_UPGRADE_URL'
+	'class[[:space:]]+EDMINBOOST_Billing'
+	'class[[:space:]]+EDMINBOOST_Plan_Licensing'
+	'edminboost-billing-page\.php'
 )
 
 errors=0
@@ -74,6 +94,30 @@ for rel_path in "${FORBIDDEN_PATHS[@]}"; do
 		errors=$(( errors + 1 ))
 	fi
 done
+
+for rel_file in "${FORBIDDEN_FILES[@]}"; do
+	if [[ -f "$STAGE_DIR/$rel_file" ]]; then
+		echo "FAIL: forbidden file present: $rel_file" >&2
+		errors=$(( errors + 1 ))
+	fi
+done
+
+if grep -R -n -E 'class[[:space:]]+EDMINBOOST_Pro' --include='*.php' "$STAGE_DIR" 2>/dev/null | grep -v '/includes/pro/' >/dev/null 2>&1; then
+	echo "FAIL: EDMINBOOST_Pro class must ship only inside includes/pro/ (premium package)." >&2
+	grep -R -n -E 'class[[:space:]]+EDMINBOOST_Pro' --include='*.php' "$STAGE_DIR" | grep -v '/includes/pro/' | head -10 >&2
+	errors=$(( errors + 1 ))
+fi
+
+shopt -s nullglob
+for pattern in "${WPORG_PLUGIN_ZIP_ASSET_GLOBS[@]}"; do
+	for found in "$STAGE_DIR/$pattern"; do
+		if [[ -f "$found" ]]; then
+			echo "FAIL: WordPress.org banner/icon must not ship in plugin zip: ${found#$STAGE_DIR/}" >&2
+			errors=$(( errors + 1 ))
+		fi
+	done
+done
+shopt -u nullglob
 
 for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
 	if grep -R -n -E --include='*.php' --include='*.js' --include='*.css' "$pattern" "$STAGE_DIR" >/dev/null 2>&1; then

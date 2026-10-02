@@ -46,49 +46,46 @@ $edminboost_preset_picker_mode = 'wizard';
 	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_apply_preset]" id="edminboost_wizard_apply_preset" value="<?php echo esc_attr( $edminboost_wizard_preset ); ?>" />
 	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][default_preset]" id="edminboost_wizard_default_preset" value="<?php echo esc_attr( $edminboost_wizard_preset ); ?>" />
 
-	<nav class="edminboost-setup-stepper" aria-label="<?php esc_attr_e( 'Setup progress', 'edminboost-smart-admin-productivity-tool' ); ?>">
+	<nav class="edminboost-setup-stepper" aria-label="<?php esc_attr_e( 'Setup progress', 'edminboost-admin-customization' ); ?>">
 		<ol class="edminboost-setup-stepper__list">
 			<li class="edminboost-setup-stepper__item is-active" data-step="1">
 				<span class="edminboost-setup-stepper__number" aria-hidden="true">1</span>
-				<span class="edminboost-setup-stepper__label"><?php esc_html_e( 'Layout', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+				<span class="edminboost-setup-stepper__label"><?php esc_html_e( 'Layout', 'edminboost-admin-customization' ); ?></span>
 			</li>
 			<li class="edminboost-setup-stepper__item" data-step="2">
 				<span class="edminboost-setup-stepper__number" aria-hidden="true">2</span>
-				<span class="edminboost-setup-stepper__label"><?php esc_html_e( 'Color theme', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+				<span class="edminboost-setup-stepper__label"><?php esc_html_e( 'Color theme', 'edminboost-admin-customization' ); ?></span>
 			</li>
 			<li class="edminboost-setup-stepper__item" data-step="3">
 				<span class="edminboost-setup-stepper__number" aria-hidden="true">3</span>
-				<span class="edminboost-setup-stepper__label"><?php esc_html_e( 'Top bar', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+				<span class="edminboost-setup-stepper__label"><?php esc_html_e( 'Top bar', 'edminboost-admin-customization' ); ?></span>
 			</li>
 			<li class="edminboost-setup-stepper__item" data-step="4">
 				<span class="edminboost-setup-stepper__number" aria-hidden="true">4</span>
-				<span class="edminboost-setup-stepper__label"><?php esc_html_e( 'Review', 'edminboost-smart-admin-productivity-tool' ); ?></span>
+				<span class="edminboost-setup-stepper__label"><?php esc_html_e( 'Review', 'edminboost-admin-customization' ); ?></span>
 			</li>
 		</ol>
 	</nav>
 
 	<div class="edminboost-setup-step is-active" id="edminboost-setup-step-1" data-step="1" role="tabpanel" aria-labelledby="edminboost-setup-step-1-heading">
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-setup-step-1-heading">
-			<h2 id="edminboost-setup-step-1-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'layout_preset' ); ?><?php esc_html_e( 'Choose a layout preset', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+			<h2 id="edminboost-setup-step-1-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'layout_preset' ); ?><?php esc_html_e( 'Choose a layout preset', 'edminboost-admin-customization' ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'Pick a scenario or role-based template for which admin links appear in your top bar.', 'edminboost-smart-admin-productivity-tool' ); ?>
+				<?php esc_html_e( 'Pick a scenario or role-based template for which admin links appear in your top bar.', 'edminboost-admin-customization' ); ?>
 			</p>
 			<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-preset-picker.php'; ?>
 		</section>
 	</div>
 
 	<div class="edminboost-setup-step" id="edminboost-setup-step-2" data-step="2" role="tabpanel" aria-labelledby="edminboost-setup-step-2-heading" hidden>
-		<?php
-		$edminboost_show_theme_extras = EDMINBOOST_Pro::shows_pro_settings_ui();
-		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-theme-settings.php';
-		?>
+		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-theme-settings.php'; ?>
 	</div>
 
 	<div class="edminboost-setup-step" id="edminboost-setup-step-3" data-step="3" role="tabpanel" aria-labelledby="edminboost-setup-step-3-heading" hidden>
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-setup-step-3-heading">
-			<h2 id="edminboost-setup-step-3-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'setup_wizard_topbar' ); ?><?php esc_html_e( 'Review your top bar', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+			<h2 id="edminboost-setup-step-3-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'setup_wizard_topbar' ); ?><?php esc_html_e( 'Review your top bar', 'edminboost-admin-customization' ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'These links will appear in your Command Center top bar. Open the full editor for fine-tuning.', 'edminboost-smart-admin-productivity-tool' ); ?>
+				<?php esc_html_e( 'These links will appear in your Command Center top bar. Open the full editor for fine-tuning.', 'edminboost-admin-customization' ); ?>
 			</p>
 			<?php
 			$edminboost_top_bar_items = $edminboost_preview_items;
@@ -100,9 +97,9 @@ $edminboost_preset_picker_mode = 'wizard';
 
 	<div class="edminboost-setup-step" id="edminboost-setup-step-4" data-step="4" role="tabpanel" aria-labelledby="edminboost-setup-step-4-heading" hidden>
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-setup-step-4-heading">
-			<h2 id="edminboost-setup-step-4-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'setup_wizard_review' ); ?><?php esc_html_e( 'Review and save', 'edminboost-smart-admin-productivity-tool' ); ?></h2>
+			<h2 id="edminboost-setup-step-4-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'setup_wizard_review' ); ?><?php esc_html_e( 'Review and save', 'edminboost-admin-customization' ); ?></h2>
 			<p class="description">
-				<?php esc_html_e( 'Confirm your choices, then save to launch your Command Center.', 'edminboost-smart-admin-productivity-tool' ); ?>
+				<?php esc_html_e( 'Confirm your choices, then save to launch your Command Center.', 'edminboost-admin-customization' ); ?>
 			</p>
 			<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-setup-review.php'; ?>
 		</section>
@@ -110,11 +107,11 @@ $edminboost_preset_picker_mode = 'wizard';
 
 	<footer class="edminboost-setup-wizard__footer">
 		<button type="button" class="button" id="edminboost-setup-back" hidden>
-			<?php esc_html_e( 'Back', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'Back', 'edminboost-admin-customization' ); ?>
 		</button>
 		<button type="button" class="button button-primary" id="edminboost-setup-next">
-			<?php esc_html_e( 'Next', 'edminboost-smart-admin-productivity-tool' ); ?>
+			<?php esc_html_e( 'Next', 'edminboost-admin-customization' ); ?>
 		</button>
-		<?php submit_button( __( 'Save and launch', 'edminboost-smart-admin-productivity-tool' ), 'primary', 'submit', false, array( 'id' => 'edminboost-setup-submit', 'style' => 'display:none;' ) ); ?>
+		<?php submit_button( __( 'Save and launch', 'edminboost-admin-customization' ), 'primary', 'submit', false, array( 'id' => 'edminboost-setup-submit', 'style' => 'display:none;' ) ); ?>
 	</footer>
 </form>

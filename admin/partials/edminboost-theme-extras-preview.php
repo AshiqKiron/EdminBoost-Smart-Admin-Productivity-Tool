@@ -76,11 +76,7 @@ $edminboost_preview_style_vars = sprintf(
 	aria-live="polite"
 >
 	<p class="edminboost-theme-extras-preview__lead description">
-		<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-			<?php esc_html_e( 'Preview font size, admin background, favicon, post status colors, and scheduled dark mode.', 'edminboost-admin-customization' ); ?>
-		<?php else : ?>
-			<?php esc_html_e( 'Preview font size, admin background, favicon, and post status colors.', 'edminboost-admin-customization' ); ?>
-		<?php endif; ?>
+		<?php esc_html_e( 'Preview font size, admin background, favicon, and post status colors.', 'edminboost-admin-customization' ); ?>
 	</p>
 
 	<div class="edminboost-theme-extras-preview__browser" aria-hidden="true">
@@ -136,28 +132,9 @@ $edminboost_preview_style_vars = sprintf(
 		</div>
 	</div>
 
-	<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-	<div
-		class="edminboost-theme-extras-preview__schedule<?php echo $edminboost_schedule_enabled ? ' is-active' : ''; ?>"
-		id="edminboost-theme-extras-preview-schedule"
-		<?php echo $edminboost_schedule_enabled ? '' : 'hidden'; ?>
-	>
-		<p class="edminboost-theme-extras-preview__schedule-label">
-			<span class="dashicons dashicons-clock" aria-hidden="true"></span>
-			<?php esc_html_e( 'Scheduled dark mode (Auto color mode)', 'edminboost-admin-customization' ); ?>
-		</p>
-		<div
-			class="edminboost-theme-extras-preview__schedule-track"
-			style="--eb-te-schedule-start: <?php echo esc_attr( $edminboost_schedule_start ); ?>; --eb-te-schedule-end: <?php echo esc_attr( $edminboost_schedule_end ); ?>;"
-		>
-			<span class="edminboost-theme-extras-preview__schedule-day" aria-hidden="true"></span>
-			<span class="edminboost-theme-extras-preview__schedule-night" aria-hidden="true"></span>
-		</div>
-		<p class="edminboost-theme-extras-preview__schedule-times description">
-			<span id="edminboost-theme-extras-preview-schedule-start"><?php echo esc_html( $edminboost_schedule_start ); ?></span>
-			&ndash;
-			<span id="edminboost-theme-extras-preview-schedule-end"><?php echo esc_html( $edminboost_schedule_end ); ?></span>
-		</p>
-	</div>
-	<?php endif; ?>
+	<?php
+	if ( EDMINBOOST_Plan::is_direct_build() ) {
+		do_action( 'edminboost_admin_extension', 'theme_extras_schedule_preview' );
+	}
+	?>
 </div>

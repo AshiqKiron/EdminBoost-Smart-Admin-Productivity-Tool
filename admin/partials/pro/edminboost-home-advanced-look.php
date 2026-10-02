@@ -21,7 +21,7 @@ $edminboost_drawer_width_custom = max(
 	min( EDMINBOOST_Command_Center::DRAWER_CUSTOM_WIDTH_MAX, $edminboost_drawer_width_custom )
 );
 ?>
-<div class="edminboost-advanced-look edminboost-pro-section"<?php EDMINBOOST_Pro::echo_feature_attr( 'top_bar_advanced' ); ?>>
+<div class="edminboost-advanced-look">
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-drawer-settings-heading">
 			<h2 id="edminboost-drawer-settings-heading"><?php esc_html_e( 'Slide-out panel', 'edminboost-admin-customization' ); ?></h2>
 

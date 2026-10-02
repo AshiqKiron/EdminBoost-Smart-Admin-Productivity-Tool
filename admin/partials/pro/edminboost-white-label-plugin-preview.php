@@ -61,7 +61,9 @@ $edminboost_preview_menu_label  = '' !== ( $edminboost_wl['menu_label'] ?? '' ) 
 					<a
 						id="edminboost-wl-preview-author-link"
 						href="<?php echo esc_url( $edminboost_preview_uri ? $edminboost_preview_uri : '#' ); ?>"
-						<?php echo $edminboost_preview_uri ? '' : ' tabindex="-1"'; ?>
+						<?php if ( ! $edminboost_preview_uri ) : ?>
+							tabindex="-1"
+						<?php endif; ?>
 					><?php echo esc_html( $edminboost_preview_author ); ?></a>
 				</p>
 			</div>

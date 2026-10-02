@@ -26,6 +26,11 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 
 		$admin = new EDMINBOOST_Admin( new EDMINBOOST_Features() );
 		$admin->register_menu();
+
+		if ( class_exists( 'EDMINBOOST_Admin_Billing', false ) ) {
+			EDMINBOOST_Admin_Billing::register_submenu();
+		}
+
 		$admin->normalize_plugin_submenu();
 	}
 
@@ -59,10 +64,13 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 			__( 'Theme', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_APPEARANCE . ')',
 			__( 'Top Bar', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MAPPER . ')',
 			__( 'Menu Studio', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
-			__( 'Billing', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')',
 		);
 
-		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			$expected[] = __( 'Billing', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')';
+		}
+
+		if ( class_exists( 'EDMINBOOST_Pro', false ) && EDMINBOOST_Pro::has_licensed_admin_ui() ) {
 			$expected[] = __( 'Settings', 'edminboost-admin-customization' ) . ' (' . $slug . '-settings)';
 		}
 

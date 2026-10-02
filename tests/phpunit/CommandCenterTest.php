@@ -194,10 +194,13 @@ class CommandCenterTest extends Edminboost_Test_Case {
 			$base . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
 			$base . EDMINBOOST_Command_Center::PAGE_MAPPER,
 			$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
-			$base . EDMINBOOST_Command_Center::PAGE_BILLING,
 		);
 
-		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			$expected[] = $base . EDMINBOOST_Command_Center::PAGE_BILLING;
+		}
+
+		if ( class_exists( 'EDMINBOOST_Pro', false ) && EDMINBOOST_Pro::has_licensed_admin_ui() ) {
 			$expected[] = $base . '-settings';
 		}
 
@@ -223,13 +226,15 @@ class CommandCenterTest extends Edminboost_Test_Case {
 			$base . EDMINBOOST_Command_Center::PAGE_PERFORMANCE,
 		);
 
-		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+		if ( class_exists( 'EDMINBOOST_Pro', false ) && EDMINBOOST_Pro::has_licensed_admin_ui() ) {
 			$expected[] = $base . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL;
 		}
 
-		$expected[] = $base . EDMINBOOST_Command_Center::PAGE_BILLING;
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			$expected[] = $base . EDMINBOOST_Command_Center::PAGE_BILLING;
+		}
 
-		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
+		if ( class_exists( 'EDMINBOOST_Pro', false ) && EDMINBOOST_Pro::has_licensed_admin_ui() ) {
 			$expected[] = $base . '-settings';
 		}
 
@@ -240,7 +245,11 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 * Billing plans include Free, Pro, and Agency tiers.
 	 */
 	public function test_get_billing_plans() {
-		$plans = EDMINBOOST_Command_Center::get_billing_plans();
+		if ( ! class_exists( 'EDMINBOOST_Billing', false ) ) {
+			$this->markTestSkipped( 'Billing catalog ships only in the premium package.' );
+		}
+
+		$plans = EDMINBOOST_Billing::get_plans();
 
 		$this->assertArrayHasKey( 'free', $plans );
 		$this->assertArrayHasKey( 'pro', $plans );
@@ -251,7 +260,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertSame( 0, $plans['free']['sites'] );
 		$this->assertSame( 1, $plans['pro']['sites'] );
 		$this->assertSame( 10, $plans['agency']['sites'] );
-		$this->assertSame( 'free', EDMINBOOST_Command_Center::get_active_billing_plan() );
+		$this->assertSame( 'free', EDMINBOOST_Plan_Licensing::get_active_billing_plan() );
 		$this->assertGreaterThanOrEqual( 8, count( $plans['pro']['features'] ) );
 		$this->assertStringContainsString( 'Friend', $plans['free']['features'][2] );
 		$this->assertStringContainsString( 'visibility matrix', $plans['pro']['features'][3] );
@@ -261,7 +270,11 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 * Billing comparison rows include section headings and feature rows.
 	 */
 	public function test_get_billing_comparison_rows() {
-		$rows = EDMINBOOST_Command_Center::get_billing_comparison_rows();
+		if ( ! class_exists( 'EDMINBOOST_Billing', false ) ) {
+			$this->markTestSkipped( 'Billing catalog ships only in the premium package.' );
+		}
+
+		$rows = EDMINBOOST_Billing::get_comparison_rows();
 
 		$this->assertNotEmpty( $rows );
 		$this->assertSame( 'heading', $rows[0]['type'] );
@@ -286,7 +299,11 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 * Upgrade URL is filterable and used for external checkout links.
 	 */
 	public function test_get_upgrade_url() {
-		$this->assertSame( EDMINBOOST_UPGRADE_URL, EDMINBOOST_Command_Center::get_upgrade_url() );
+		if ( ! class_exists( 'EDMINBOOST_Billing', false ) || ! defined( 'EDMINBOOST_UPGRADE_URL' ) ) {
+			$this->markTestSkipped( 'Upgrade URL ships only in the premium package.' );
+		}
+
+		$this->assertSame( EDMINBOOST_UPGRADE_URL, EDMINBOOST_Billing::get_upgrade_url() );
 	}
 
 	/**

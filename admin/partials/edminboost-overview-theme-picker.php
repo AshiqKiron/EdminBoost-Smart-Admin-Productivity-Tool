@@ -32,7 +32,7 @@ $edminboost_preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
 		aria-hidden="true"
 	>
 		<?php foreach ( $edminboost_theme_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
-			<?php if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) : ?>
+			<?php if ( ! EDMINBOOST_Plan::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) : ?>
 				<?php continue; ?>
 			<?php endif; ?>
 			<option value="<?php echo esc_attr( $edminboost_preset_id ); ?>" <?php selected( $edminboost_active_preset, $edminboost_preset_id ); ?>>
@@ -79,7 +79,7 @@ $edminboost_preset_colors  = EDMINBOOST_Theme::resolve_preview_colors(
 		>
 			<?php foreach ( $edminboost_theme_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
 				<?php
-				if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) {
+				if ( ! EDMINBOOST_Plan::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) {
 					continue;
 				}
 				$edminboost_option_colors = EDMINBOOST_Theme::resolve_preview_colors(

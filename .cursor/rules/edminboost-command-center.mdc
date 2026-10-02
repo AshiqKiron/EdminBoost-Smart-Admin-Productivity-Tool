@@ -1,6 +1,6 @@
 ---
 description: Command Center patterns — dashboard, appearance, top bar, presets, menu studio, theme, feature pages, billing, white label, live admin bar
-globs: "includes/class-edminboost-{command-center*,pro}.php,includes/class-edminboost-{menu-studio,theme,white-label,feature-settings,setting-help}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,billing-page,billing-plan-cta,dashboard-overview,declutter-preview,declutter-settings,feature-fields,form-actions,home-advanced-look,mapper,overview-sidebar-preview,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,performance-preview,productivity-preview,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-extras-preview,theme-settings,topbar-summary,white-label-page,white-label-plugin-preview,white-label-status-preview,command-center}*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*"
+globs: "includes/class-edminboost-{command-center*,plan}.php,includes/class-edminboost-{menu-studio,theme,feature-settings,setting-help}.php,includes/pro/class-edminboost-{pro,billing,admin-billing,admin-licensed,plan-*,command-center-bar-pro,command-center-catalog-pro,theme-pro,theme-presets-pro,white-label}.php,admin/partials/edminboost-{admin-page,animation-speed-field,appearance-page,dashboard-overview,declutter-preview,declutter-settings,feature-fields,form-actions,mapper,mapper-item-sidebar,overview-sidebar-preview,overview-theme-picker,overview-theme-preview,overview-topbar-links-picker,overview-topbar-preview,performance-page,performance-preview,productivity-preview,preset-picker,presets,productivity-page,security-page,menu-studio,settings-page,setup-review,setup-wizard,theme-extras-preview,theme-settings,topbar-summary,command-center}*.php,admin/partials/pro/edminboost-*.php,admin/{css,js}/edminboost-{command-center-bar,themes,admin-menu}.*,admin/{css,js}/pro/edminboost-*.*"
 alwaysApply: false
 ---
 
@@ -11,9 +11,9 @@ Shared config UI for top-bar layout, presets/roles, and look settings. Data stor
 ## Class: `EDMINBOOST_Command_Center`
 
 - `get_defaults()` / `get_settings()` — merged CC settings
-- `get_page_links()` — sidebar submenu order (Dashboard, Layout Presets, Theme, Top Bar, Menu Studio, Billing; appends Settings when `EDMINBOOST_Pro::shows_pro_settings_ui()`)
-- `get_nav_items()` — full CC tab nav (`get_page_links()` + tab-only Productivity, Security, Performance; White Label when `shows_pro_settings_ui()`)
-- `get_billing_plans()`, `get_active_billing_plan()`, `get_billing_comparison_rows()`, `get_billing_catalog_counts()`, `get_upgrade_url()` — Billing page plan catalog, feature comparison matrix, and external upgrade/pricing URL (`EDMINBOOST_UPGRADE_URL`, filter `edminboost_upgrade_url`; active plan filter `edminboost_active_billing_plan`)
+- `get_page_links()` — sidebar submenu order (Dashboard, Layout Presets, Theme, Top Bar, Menu Studio; Billing when `EDMINBOOST_Plan::is_direct_build()`; filter `edminboost_command_center_page_links` appends Settings when licensed)
+- `get_nav_items()` — full CC tab nav (core pages + Productivity, Security, Performance; Billing on direct build; filter `edminboost_command_center_nav_items` appends White Label + Settings when licensed)
+- Billing catalog (premium package): `EDMINBOOST_Billing::get_plans()`, `get_comparison_rows()`, `get_upgrade_url()`; active plan `EDMINBOOST_Plan_Licensing::get_active_billing_plan()` (filters `edminboost_active_billing_plan`, `edminboost_upgrade_url`; `EDMINBOOST_UPGRADE_URL` defined in premium bootstrap)
 - `resolve_top_bar_items_for_user( $cc_settings )` — applies `role_assignments` preset top bar layouts at runtime
 - `resolve_menu_studio_for_user( $cc_settings )` — applies `role_assignments` preset sidebar config, then `merge_saved_custom_menu_items()` (preserves stored `custom_items` + order/submenu placement), then `apply_role_visibility_to_menu_studio()`
 - `merge_saved_custom_menu_items( $menu_studio, $saved_menu )` — merges saved `custom_items` from stored settings into role-resolved sidebar config; re-appends custom slugs to `order` / `submenu_order`
@@ -44,13 +44,13 @@ Shared config UI for top-bar layout, presets/roles, and look settings. Data stor
 
 ## Billing & builds
 
-**WordPress.org package** (`bin/build-wporg-zip.sh`): excludes `includes/pro/` — `EDMINBOOST_PREMIUM_BUILD` undefined (`is_direct_build()` / `is_premium_build()` false). No Freemius SDK (`bin/verify-wporg-zip.sh`; grep allows `is_premium_build()` / `is_premium_build` identifiers — forbids bare `is_premium` tokens such as Freemius API). `shows_pro_settings_ui()` false when `! is_active()` — omits Pro-only admin markup (no Settings sidebar tab or Plugins screen Settings link, no White Label page registration, no drawer/badge/mapper-look UI, no role matrix, no login redirects fieldset, no scheduled dark mode UI, no Menu Studio custom-link/display-mode panels, no Appearance extras block on Dashboard setup wizard step 2). Preset pickers list only free-tier layout/theme presets via `include_preset_in_ui()` (no locked rows or Pro badges). `enforce_plan_limits()` still runs on `EDMINBOOST_Settings::get()` / `sanitize()` so saved Pro options are stripped on free (`strip_pro_top_bar_items`, `strip_pro_behavior`, `strip_pro_theme`, `strip_pro_menu_studio`; `white_label` and `login_redirects` reset; `role_visibility` cleared; custom presets capped at `FREE_CUSTOM_PRESET_LIMIT`).
+**WordPress.org package** (`bin/build-wporg-zip.sh`): excludes `includes/pro/`, `admin/partials/pro/`, `admin/js/pro/`, `admin/css/pro/` — `EDMINBOOST_PREMIUM_BUILD` undefined (`EDMINBOOST_Plan::is_direct_build()` false). No Freemius SDK (`bin/verify-wporg-zip.sh`; grep allows `is_premium_build` identifiers — forbids bare `is_premium` tokens). No Billing screen. `has_licensed_admin_ui()` false — omits Pro-only markup (no Settings / White Label menus, no drawer/badge/mapper-look UI, no role matrix, no login redirects fieldset, no scheduled dark mode UI, no Menu Studio custom-link/display-mode panels). Preset pickers use `EDMINBOOST_Plan::include_preset_in_ui()` (defaults allow all presets on WP.org; no locked rows). Core CC bar renders redirect links only.
 
-**Direct-download / premium zip** (`bin/build-premium-zip.sh`): includes `includes/pro/edminboost-premium.php` (defines `EDMINBOOST_PREMIUM_BUILD`) and may bundle the Freemius SDK for licensing on the vendor site — not shipped to WordPress.org. When `! is_active()`, free-tier UI matches WordPress.org (Pro controls omitted, not locked). `shows_pro_settings_ui()` is true only when `is_premium_build() && is_active()` — then Settings backup/import, White Label, drawer/badges, role matrix, and related Pro fields render fully enabled. Upgrade messaging is limited to the Billing page (`edminboostData.billingUrl`, external pricing CTAs).
+**Direct-download / premium zip** (`bin/build-premium-zip.sh`): loads `edminboost-pro-package.php` when `is_direct_build()`. Unlicensed (`! EDMINBOOST_Plan_Licensing::is_active()`): UI matches WordPress.org (Pro controls omitted, not locked); `EDMINBOOST_Plan_Limits::enforce_plan_limits()` applied via `EDMINBOOST_Plan_Gating` on `edminboost_settings` / `edminboost_sanitize_settings` and preset filters. Licensed: `EDMINBOOST_Plan::has_licensed_admin_ui()` true — licensed partials from `admin/partials/pro/` via `EDMINBOOST_Plan::render_admin_extension( $slot )` / `EDMINBOOST_Pro::ADMIN_EXTENSION_PARTIALS`; drawer/bar behavior via `EDMINBOOST_Command_Center_Bar_Pro`; pro admin JS/CSS enqueued. Upgrade copy on Billing page only (external pricing CTAs).
 
-**`EDMINBOOST_Pro`** (bootstrap `class-edminboost-pro.php`, not a feature module): `is_direct_build()` / `is_premium_build()`, `is_active()` (filter `edminboost_is_pro_active`), `get_billing_url()`, preset helpers (`include_preset_in_ui()`, `is_layout_preset_available()`, `is_theme_preset_available()`, free lists `FREE_SCENARIO_PRESETS`, `FREE_THEME_PRESETS`), enforcement (`enforce_plan_limits()`, `enforce_command_center_limits()`, `strip_pro_*`, `can_save_custom_preset()`), UI helpers (`shows_pro_settings_ui()`, `section_class()`, `feature_attr()` / `echo_feature_attr()` — legacy no-ops: `render_badge()`, `render_upgrade_prompt()`; upgrades on Billing only). Product docs: `docs/plans-and-billing/` (see `docs/README.md`).
+**Premium classes (not feature modules):** `EDMINBOOST_Plan` (core facade), `EDMINBOOST_Pro` (partial loader), `EDMINBOOST_Plan_Licensing`, `EDMINBOOST_Plan_Limits`, `EDMINBOOST_Plan_Gating`, `EDMINBOOST_Billing`, `EDMINBOOST_Admin_Billing`, `EDMINBOOST_Admin_Licensed`. Product docs: `docs/plans-and-billing/` (see `docs/README.md`).
 
-**Free-tier limits (when `! is_active()`):** layout — scenario presets beyond Friend/Family hidden; workflow/system presets and custom presets allowed; one saved custom preset; role visibility disabled. Top bar — drawer interaction downgraded to redirect; badge sources cleared. Behavior — fullscreen/custom drawer width, animation speed, badge style, glassmorphism, badge refresh rate reset. Theme — only `default`, `midnight`, `terminal`, `custom`; scheduled dark mode cleared. Menu Studio — custom sidebar links cleared; display mode `both`. Features — login redirects reset; white label reset to defaults.
+**Free-tier limits on premium when unlicensed (`EDMINBOOST_Plan_Limits`):** layout — scenario presets beyond Friend/Family hidden; workflow/system presets allowed; custom preset save/rename gated by `allows_custom_preset_actions()`; role visibility cleared. Top bar — drawer → redirect; badge sources cleared. Behavior — pro drawer width modes, animation speed, badge style, glassmorphism, badge refresh rate reset. Theme — `FREE_THEME_PRESETS` only; scheduled dark mode cleared. Menu Studio — custom links cleared; display mode `both`. Features — login redirects disabled; white label reset.
 
 Page slug suffixes: `PAGE_ONBOARDING` (`-onboarding`, legacy redirect), `PAGE_MAPPER` (`-mapper`), `PAGE_PRESETS` (`-presets`), `PAGE_BEHAVIOR` (`-behavior`, legacy redirect), `PAGE_APPEARANCE` (`-appearance`, nav label **Theme**), `PAGE_MENU_STUDIO` (`-menu`), `PAGE_PRODUCTIVITY` (`-productivity`), `PAGE_SECURITY` (`-security`), `PAGE_PERFORMANCE` (`-performance`), `PAGE_WHITE_LABEL` (`-white-label`), `PAGE_BILLING` (`-billing`).
 
@@ -79,7 +79,7 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 - Drawer shell: `#edminboost-cc-drawer` with BEM classes `edminboost-cc-drawer__*`; width from behavior (`panel--compact|standard|fullscreen|custom`); `custom` uses inline `--edminboost-cc-drawer-width` (px); optional `is-glass` for glassmorphism; duration via CSS var `--edminboost-cc-drawer-duration`.
 - Shell pre-renders one `<iframe class="edminboost-cc-drawer__iframe">` per drawer item (`loading="eager"`, `data-edminboost-frame-url`); JS reuses/caches frames and prefetches on admin-bar hover.
 - Drawer iframe chrome: `filter_drawer_frame_body_class` adds `edminboost-cc-drawer-frame`; `dequeue_drawer_frame_assets` strips heartbeat, auth-check, and admin-bar assets inside the iframe.
-- JS (`edminboost-command-center-bar.js`) opens drawer on admin-bar click, loads signed iframe URL, supports backdrop/close/Escape; `body.edminboost-cc-drawer-active` locks scroll. Exposes `window.edminboostCcOpenDrawer( item )` for Layout Studio preview.
+- Drawer JS (`admin/js/pro/edminboost-command-center-bar.js`, enqueued by `EDMINBOOST_Command_Center_Bar_Pro` when licensed) opens drawer on admin-bar click, loads signed iframe URL, supports backdrop/close/Escape; `body.edminboost-cc-drawer-active` locks scroll. Exposes `window.edminboostCcOpenDrawer( item )` for Layout Studio preview. Free/WP.org builds use redirect-only bar nodes from core `EDMINBOOST_Command_Center_Bar`.
 - Iframe URL: `get_drawer_frame_url( $slug, $anchor, $mapper_preview )` adds `edminboost_drawer=1`, `edminboost_slug`, optional `edminboost_anchor`, `_wpnonce` (action `edminboost_cc_drawer_{md5(slug + "\0" + anchor)}`); mapper preview adds `edminboost_mapper_preview=1`.
 - Layout Studio preview: mapper JS POSTs to `admin-ajax.php` (`edminboost_cc_drawer_preview`); `edminboostData.drawerPreview` localized only on mapper screen.
 - Localized `edminboostCcBar.drawerItems` maps node IDs to `{ slug, label, frameUrl, openUrl }`.
@@ -87,17 +87,17 @@ Not a feature module — registered directly in `EDMINBOOST_Plugin::run()`.
 ## Rendering
 
 - Dashboard: `render_admin_page()` → `admin/partials/edminboost-admin-page.php` — first-run setup wizard (`edminboost-setup-wizard.php`) when `! is_setup_complete()`, else post-setup overview (`edminboost-dashboard-overview.php` with inline layout/theme pickers + preview partials); CC sub-nav shown only after setup is complete
-- Settings (premium build): `render_settings_page()` → `admin/partials/edminboost-settings-page.php` (CC sub-nav; JSON export/import via `#edminboost-backup-section` + `initBackupSettings()` when `shows_pro_settings_ui()`)
+- Settings (licensed): `render_settings_page()` → `admin/partials/edminboost-settings-page.php` (CC sub-nav; backup partial slot `settings_backup` + `initBackupSettings()` in pro JS when licensed)
 - Productivity: `render_productivity_page()` → `admin/partials/edminboost-productivity-page.php` (feature fields via `edminboost-feature-fields.php`, `$section = productivity`)
 - Security: `render_security_page()` → `admin/partials/edminboost-security-page.php` (`$section = security`)
 - Performance: `render_performance_page()` → `admin/partials/edminboost-performance-page.php` (`$section = performance`)
-- White Label: `render_white_label_page()` → `admin/partials/edminboost-white-label-page.php`
-- Billing: `render_billing_page()` → `admin/partials/edminboost-billing-page.php` (plan cards + Compare plans table from `get_billing_plans()` / `get_billing_comparison_rows()`; CTAs via shared `edminboost-billing-plan-cta.php` link to `get_upgrade_url()` in a new tab — no in-plugin checkout or license API)
+- White Label (licensed): `render_white_label_page()` → `admin/partials/pro/edminboost-white-label-page.php`
+- Billing (direct build): `EDMINBOOST_Admin_Billing::render_page()` → `admin/partials/pro/edminboost-billing-page.php` (plan cards + comparison from `EDMINBOOST_Billing`; CTAs via `edminboost-billing-plan-cta.php` + `get_upgrade_url()` — no in-plugin checkout)
 - Appearance (Theme): `render_appearance_page()` → `admin/partials/edminboost-appearance-page.php` (visual theme + admin bar declutter; live previews for declutter toggles and Appearance extras)
-- Top Bar: `render_mapper_page()` → `admin/partials/edminboost-mapper-page.php` (canvas builder + `#edminboost-mapper-look` Panel & badges section below canvas; includes `edminboost-home-advanced-look.php`)
+- Top Bar: `render_mapper_page()` → `admin/partials/edminboost-mapper-page.php` (canvas builder; licensed Panel & badges via extension slot `mapper_look_section` → `admin/partials/pro/edminboost-mapper-look-section.php` + `edminboost-home-advanced-look.php`)
 - Layout Presets: `render_presets_page()` → `admin/partials/edminboost-presets-page.php`
 - Menu Studio: `render_menu_studio_page()` → `admin/partials/edminboost-menu-studio-page.php`
-- Theme UI: partial `admin/partials/edminboost-theme-settings.php` (included on Appearance + setup wizard step 2; wizard passes `$edminboost_show_theme_extras = EDMINBOOST_Pro::is_premium_build()` so WordPress.org step 2 is visual theme only — configure Appearance extras on Theme after setup)
+- Theme UI: partial `admin/partials/edminboost-theme-settings.php` (included on Appearance + setup wizard step 2; optional `$edminboost_show_theme_extras` omits the Appearance extras block; on direct build, extension slots `theme_schedule_dark_mode` and `theme_extras_schedule_preview` add scheduled dark mode UI when `has_licensed_admin_ui()`)
 - Legacy `-onboarding` redirects to Dashboard; legacy `-behavior` redirects to Appearance
 - CC partials use `.edminboost-wrap.edminboost-cc-wrap` (add `.edminboost-cc-wrap--wide` for mapper/presets)
 
@@ -177,25 +177,34 @@ Slug uniqueness is per `slug + anchor` pair. Sanitizer splits `#` from slug when
 | `edminboost-overview-topbar-links-picker.php` | Read-only top bar links dropdown (`$top_bar_items`) |
 | `edminboost-overview-topbar-preview.php` | Mini admin bar link strip (`$preview_items`, `$preview_id`, optional `$preview_limit`, `$show_interaction`, `$compact_preview`); icon-only tips use `__tip` + child `__tooltip` (`role="tooltip"`), not `title` |
 | `edminboost-overview-sidebar-preview.php` | Mini sidebar menu strip (`$sidebar_items`, `$preview_id`, `$preview_limit`) |
-| `edminboost-settings-page.php` | Settings page shell (JSON backup/import when premium build; no settings form) |
+| `edminboost-settings-page.php` | Settings page shell (licensed backup slot `settings_backup`; no settings form) |
 | `edminboost-feature-fields.php` | Shared feature toggles (`$section`: `productivity`, `security`, `performance`); Productivity admin-notices fieldset + Performance emoji/assets fieldsets include live preview partials |
 | `edminboost-productivity-preview.php` | Live Productivity previews (`$preview`: `admin_notices` \| `screen` \| `dashboard_widgets`; `$features`); `#edminboost-productivity-{notices,screen,dashboard}-preview`; `.edminboost-productivity-preview` markup |
 | `edminboost-performance-preview.php` | Live Performance previews (`$preview`: `emoji` \| `assets`; `$features`); `#edminboost-performance-emoji-preview`, `#edminboost-performance-assets-preview` |
 | `edminboost-productivity-page.php` | Productivity feature page shell |
 | `edminboost-security-page.php` | Security feature page shell |
 | `edminboost-performance-page.php` | Performance feature page shell |
-| `edminboost-white-label-page.php` | White Label page shell — master toggle, system status footer + live preview, plugin rebranding fields |
-| `edminboost-white-label-plugin-preview.php` | Live plugin row + sidebar menu preview (`$wl`, `$defaults` from `get_plugin_header_defaults()`) |
-| `edminboost-white-label-status-preview.php` | Live system status footer preview (`$wl`); `#edminboost-wl-status-preview`; segment toggles sync via `initWhiteLabelStatusPreview()` |
-| `edminboost-billing-page.php` | Billing plan cards + feature comparison table (Free / Pro / Agency); current plan from `get_active_billing_plan()` |
-| `edminboost-billing-plan-cta.php` | Shared plan CTA — disabled "Current plan" button or external upgrade link (`$is_active`, `$plan`, `$upgrade_url`, optional `$class`) |
+| `pro/edminboost-white-label-page.php` | White Label page shell (licensed) |
+| `pro/edminboost-white-label-plugin-preview.php` | Live plugin row + sidebar menu preview |
+| `pro/edminboost-white-label-status-preview.php` | Live system status footer preview (`#edminboost-wl-status-preview`) |
+| `pro/edminboost-billing-page.php` | Billing plan cards + comparison (direct build) |
+| `pro/edminboost-billing-plan-cta.php` | Plan CTA — current plan or external upgrade link |
+| `pro/edminboost-mapper-look-section.php` | Top Bar Panel & badges wrapper (includes `edminboost-home-advanced-look.php`) |
+| `edminboost-mapper-item-sidebar.php` | Free Top Bar item panel (`#edminboost-item-panel` — icon, label, anchor) |
+| `pro/edminboost-mapper-item-sidebar.php` | Licensed item panel (`#edminboost-item-drawer`; filter `edminboost_mapper_item_sidebar_partial` when `has_licensed_admin_ui()`) |
+| `pro/edminboost-mapper-item-drawer-fields.php` | Interaction, badge source, drawer preview (included from licensed mapper item sidebar) |
+| `pro/edminboost-settings-backup.php` | Settings JSON export/import UI |
+| `pro/edminboost-security-login-redirects.php` | Security login redirects fieldset |
+| `pro/edminboost-menu-custom-link.php`, `pro/edminboost-menu-display-mode.php` | Menu Studio pro panels |
+| `pro/edminboost-presets-role-matrix-*.php`, `pro/edminboost-presets-role-visibility-help.php` | Layout Presets role matrix |
+| `pro/edminboost-theme-schedule-dark-mode.php`, `pro/edminboost-theme-extras-schedule-preview.php` | Scheduled dark mode UI + preview |
 | `edminboost-appearance-page.php` | Theme (Appearance) page shell + form |
 | `edminboost-preset-picker.php` | Layout preset dropdown (`$preset_picker_mode`: `wizard`, `full`, or `overview`; grouped by `get_preset_categories()`) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list (`$top_bar_items`, optional `$summary_id`) |
-| `edminboost-mapper-page.php` | Drag-and-drop top bar builder; `#edminboost-mapper-look` Panel & badges (`.edminboost-cc-section`, disabled until a canvas item uses `interaction === drawer`) |
+| `edminboost-mapper-page.php` | Drag-and-drop top bar builder; item sidebar from free partial or `edminboost_mapper_item_sidebar_partial`; `#edminboost-mapper-look` Panel & badges on direct build via `mapper_look_section` (disabled until a canvas item uses `interaction === drawer`) |
 | `edminboost-presets-page.php` | Preset library + save/rename custom presets + scrollable role visibility matrix (roles left, submenu columns `.is-submenu`) |
 | `edminboost-animation-speed-field.php` | Shared animation speed picker (screen-reader `<select>` + custom listbox UI); requires `$cc_key`, `$behavior` |
-| `edminboost-home-advanced-look.php` | Panel width, badges, animation speed (Top Bar `#edminboost-mapper-look`) |
+| `pro/edminboost-home-advanced-look.php` | Panel width, badges, animation speed (included from mapper look section) |
 | `edminboost-declutter-settings.php` | Admin bar cleanup toggles (Appearance page); includes `edminboost-declutter-preview.php` |
 | `edminboost-declutter-preview.php` | Live declutter preview (`$behavior`); `#edminboost-declutter-preview`; items `[data-preview]` match behavior toggle keys |
 | `edminboost-theme-extras-preview.php` | Live Appearance extras preview (`$theme`, `$preview_colors`, optional `$preview_id`); included from `edminboost-theme-settings.php` |
@@ -235,7 +244,7 @@ Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Separate from
 
 ## White Label: `EDMINBOOST_White_Label`
 
-Not a feature module — registered in `EDMINBOOST_Plugin::run()`. Config under `settings['white_label']`.
+Premium package only — `register_hooks()` via `EDMINBOOST_Plan_Gating::register_pro_runtime_modules()` when licensed. Config under `settings['white_label']`.
 
 - `get_defaults()`, `get_settings()`, `sanitize()`, `is_active()` — branding + footer helpers.
 - `get_plugin_header_defaults()` — plugin header + menu label fallbacks for empty rebranding fields and the live preview.

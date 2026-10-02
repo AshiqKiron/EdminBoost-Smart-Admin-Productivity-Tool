@@ -166,7 +166,7 @@ $edminboost_preview_aria      = sprintf(
 						<ul class="edminboost-layout-preset-picker__group-list" role="group" aria-labelledby="edminboost-layout-preset-group-<?php echo esc_attr( sanitize_html_class( $edminboost_category_id ) ); ?>">
 							<?php foreach ( $edminboost_grouped_presets[ $edminboost_category_id ] as $edminboost_preset_id => $edminboost_preset ) : ?>
 								<?php
-								if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'layout' ) ) {
+								if ( ! EDMINBOOST_Plan::include_preset_in_ui( $edminboost_preset_id, 'layout' ) ) {
 									continue;
 								}
 								$edminboost_is_system   = ! empty( $edminboost_preset['system'] );

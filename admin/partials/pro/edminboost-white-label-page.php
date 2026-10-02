@@ -87,7 +87,7 @@ $edminboost_wl_section_aria    = $edminboost_wl_enabled ? 'false' : 'true';
 						</label>
 					<?php endforeach; ?>
 				</div>
-				<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-white-label-status-preview.php'; ?>
+				<?php include __DIR__ . '/edminboost-white-label-status-preview.php'; ?>
 			</div>
 		</section>
 
@@ -127,7 +127,7 @@ $edminboost_wl_section_aria    = $edminboost_wl_enabled ? 'false' : 'true';
 				</div>
 				<?php
 				$edminboost_defaults = $edminboost_wl_plugin_defaults;
-				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-white-label-plugin-preview.php';
+				include __DIR__ . '/edminboost-white-label-plugin-preview.php';
 				?>
 			</div>
 		</section>

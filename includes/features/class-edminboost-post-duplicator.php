@@ -94,7 +94,8 @@ class EDMINBOOST_Post_Duplicator extends EDMINBOOST_Feature_Base {
 	 * @return void
 	 */
 	public function handle_duplicate() {
-		$post_id = isset( $_GET['post'] ) ? absint( $_GET['post'] ) : 0;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Verified via check_admin_referer below.
+		$post_id = isset( $_GET['post'] ) ? absint( wp_unslash( $_GET['post'] ) ) : 0;
 
 		if ( ! $post_id || ! current_user_can( 'edit_post', $post_id ) ) {
 			wp_die( esc_html__( 'You cannot duplicate this item.', 'edminboost-admin-customization' ) );

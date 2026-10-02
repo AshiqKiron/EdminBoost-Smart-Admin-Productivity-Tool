@@ -1,6 +1,6 @@
 ---
 description: Feature module patterns for EdminBoost productivity tools
-globs: "includes/features/**/*.php"
+globs: "includes/features/**/*.php,includes/pro/features/**/*.php"
 alwaysApply: false
 ---
 
@@ -42,7 +42,7 @@ class EDMINBOOST_My_Feature extends EDMINBOOST_Feature_Base {
 - Register hooks only in `register_hooks()`; no side effects in the constructor.
 - Scope hooks to admin unless explicitly broader (e.g. `disable_emojis` uses admin hooks only).
 - Skip plugin screens when a feature would interfere with its own UI — use `EDMINBOOST_Admin::PAGE_SLUG`.
-- **Login redirects** (`login_redirects` feature): settings UI renders only when `EDMINBOOST_Pro::shows_pro_settings_ui()`; free plan values reset in `EDMINBOOST_Pro::enforce_plan_limits()`.
+- **Login redirects** (`login_redirects` feature): class `EDMINBOOST_Login_Redirects` in `includes/pro/features/` — registered via `edminboost_feature_classes` in `edminboost-pro-package.php`. Settings UI via licensed partial slot `security_login_redirects`; runtime enabled via `EDMINBOOST_Plan::is_login_redirects_enabled()` / `EDMINBOOST_Plan_Limits` when unlicensed.
 - Prefer WordPress APIs over inline CSS/JS; inline styles only when justified (`EDMINBOOST_Hide_Notices`).
 - For settings UI labels, expose static helpers (e.g. `get_widget_labels()`, `get_option_labels()`).
 
@@ -68,7 +68,7 @@ Sidebar hide/reorder lives in Menu Studio (`command_center.menu_studio`), not th
 | Security | `edminboost-security-page.php` | `security` |
 | Performance | `edminboost-performance-page.php` | `performance` |
 
-Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, Security, and Performance pages. Security includes `login_redirects` in all builds. Settings page (`edminboost-settings-page.php`) provides JSON backup/import for all builds.
+Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, Security, and Performance pages. **Login redirects** UI loads via `EDMINBOOST_Plan::render_admin_extension( 'security_login_redirects' )` (licensed partial); free/unlicensed builds omit the fieldset. **Settings** backup/import (`#edminboost-backup-section`, `initBackupSettings()` in pro JS) requires `has_licensed_admin_ui()`.
 
 ## Current Features
 
@@ -93,7 +93,7 @@ Shared fields: `admin/partials/edminboost-feature-fields.php` on Productivity, S
 | `disable_xmlrpc` | `EDMINBOOST_Disable_Xmlrpc` | `xmlrpc_enabled`, `wp_headers` |
 | `disable_feeds` | `EDMINBOOST_Disable_Feeds` | `do_feed*` actions |
 | `rest_api_hardening` | `EDMINBOOST_Rest_Api_Hardening` | `rest_authentication_errors`, `rest_index` |
-| `login_redirects` | `EDMINBOOST_Login_Redirects` | `login_redirect`, `wp_logout`; Security UI: master `#edminboost_login_redirects_enabled` + dependent `#edminboost-login-redirects-options` (`.edminboost-dependent-section`; disabled until toggle on — see `initSecurityFeatures` in `admin-assets.mdc`) |
+| `login_redirects` | `EDMINBOOST_Login_Redirects` (premium package) | `login_redirect`, `wp_logout`; Security UI: licensed partial + `initSecurityFeatures` in `edminboost-admin-pro.js` |
 | `disable_comments` | `EDMINBOOST_Disable_Comments` | `admin_init`, `wp_before_admin_bar_render`, filters on comments |
 
 ### Performance

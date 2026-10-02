@@ -34,9 +34,13 @@ foreach ( $edminboost_sidebar_items as $edminboost_sidebar_item ) {
 
 	$edminboost_visible_items[] = $edminboost_sidebar_item;
 }
+$edminboost_sidebar_preview_class = 'edminboost-overview-card__preview edminboost-overview-sidebar-preview';
+if ( empty( $edminboost_visible_items ) ) {
+	$edminboost_sidebar_preview_class .= ' edminboost-overview-sidebar-preview--empty';
+}
 ?>
 <div
-	class="edminboost-overview-card__preview edminboost-overview-sidebar-preview<?php echo empty( $edminboost_visible_items ) ? ' edminboost-overview-sidebar-preview--empty' : ''; ?>"
+	class="<?php echo esc_attr( $edminboost_sidebar_preview_class ); ?>"
 	id="<?php echo esc_attr( $edminboost_preview_id ); ?>"
 	role="img"
 	aria-label="<?php echo esc_attr( $edminboost_preview_aria_label ); ?>"

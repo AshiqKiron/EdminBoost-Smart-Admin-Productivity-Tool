@@ -46,6 +46,31 @@ class EDMINBOOST_Settings {
 	const CAPABILITY = 'manage_options';
 
 	/**
+	 * Default white-label settings (premium runtime lives in includes/pro/).
+	 *
+	 * @return array
+	 */
+	public static function get_white_label_defaults() {
+		return array(
+			'enabled'               => false,
+			'hide_wp_footer_credit' => false,
+			'show_ip'               => false,
+			'show_php_version'      => false,
+			'show_wp_version'       => false,
+			'show_memory_usage'     => false,
+			'show_memory_limit'     => false,
+			'show_memory_available' => false,
+			'admin_logo_light_id'   => 0,
+			'admin_logo_dark_id'    => 0,
+			'plugin_name'           => '',
+			'plugin_description'    => '',
+			'plugin_author'         => '',
+			'plugin_uri'            => '',
+			'menu_label'            => '',
+		);
+	}
+
+	/**
 	 * Default settings.
 	 *
 	 * @return array
@@ -55,7 +80,7 @@ class EDMINBOOST_Settings {
 			'enabled'         => true,
 			'command_center'  => EDMINBOOST_Command_Center::get_defaults(),
 			'features'        => EDMINBOOST_Feature_Settings::get_defaults(),
-			'white_label'     => EDMINBOOST_White_Label::get_defaults(),
+			'white_label'     => self::get_white_label_defaults(),
 		);
 
 		/**
@@ -149,7 +174,7 @@ class EDMINBOOST_Settings {
 		 */
 		$settings = apply_filters( 'edminboost_settings', $settings );
 
-		return EDMINBOOST_Pro::enforce_plan_limits( $settings );
+		return $settings;
 	}
 
 	/**
@@ -271,7 +296,11 @@ class EDMINBOOST_Settings {
 		}
 
 		if ( isset( $input['white_label'] ) && is_array( $input['white_label'] ) ) {
-			$sanitized['white_label'] = EDMINBOOST_White_Label::sanitize( $input['white_label'] );
+			if ( class_exists( 'EDMINBOOST_White_Label', false ) && apply_filters( 'edminboost_should_sanitize_white_label', false ) ) {
+				$sanitized['white_label'] = EDMINBOOST_White_Label::sanitize( $input['white_label'] );
+			} else {
+				$sanitized['white_label'] = self::get_white_label_defaults();
+			}
 		}
 
 		if ( ! isset( $input['features'] ) || ! is_array( $input['features'] ) ) {
@@ -288,7 +317,7 @@ class EDMINBOOST_Settings {
 		 */
 		$sanitized = apply_filters( 'edminboost_sanitize_settings', $sanitized, $input );
 
-		return EDMINBOOST_Pro::enforce_plan_limits( $sanitized );
+		return $sanitized;
 	}
 
 	/**
@@ -336,7 +365,7 @@ class EDMINBOOST_Settings {
 
 		if ( ! empty( $raw['_setup_wizard_save'] ) && ! empty( $raw['_apply_preset'] ) ) {
 			$preset_id = sanitize_key( $raw['_apply_preset'] );
-			if ( EDMINBOOST_Pro::is_layout_preset_available( $preset_id ) ) {
+			if ( EDMINBOOST_Plan::is_layout_preset_available( $preset_id ) ) {
 				$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id );
 				if ( ! empty( $items ) ) {
 					$output['top_bar_items']  = self::sanitize_top_bar_items( $items );
@@ -418,7 +447,7 @@ class EDMINBOOST_Settings {
 				}
 
 				if ( '' === $preset_id || in_array( $preset_id, $all_presets, true ) ) {
-					if ( '' !== $preset_id && ! EDMINBOOST_Pro::is_layout_preset_available( $preset_id ) ) {
+					if ( '' !== $preset_id && ! EDMINBOOST_Plan::is_layout_preset_available( $preset_id ) ) {
 						continue;
 					}
 					$assignments[ $role_key ] = $preset_id;
@@ -459,7 +488,7 @@ class EDMINBOOST_Settings {
 			$output['presets'] = self::sanitize_custom_presets( $raw['presets'] );
 		}
 
-		if ( ! empty( $raw['_save_custom_preset'] ) && is_array( $raw['_save_custom_preset'] ) && EDMINBOOST_Pro::can_save_custom_preset( $output ) ) {
+		if ( ! empty( $raw['_save_custom_preset'] ) && is_array( $raw['_save_custom_preset'] ) && self::allows_custom_layout_preset_writes() ) {
 			$output['presets'] = self::sanitize_custom_presets(
 				array_merge(
 					isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array(),
@@ -468,7 +497,7 @@ class EDMINBOOST_Settings {
 			);
 		}
 
-		if ( ! empty( $raw['_rename_custom_preset'] ) && is_array( $raw['_rename_custom_preset'] ) ) {
+		if ( ! empty( $raw['_rename_custom_preset'] ) && is_array( $raw['_rename_custom_preset'] ) && self::allows_custom_layout_preset_writes() ) {
 			$output['presets'] = self::rename_custom_preset(
 				$raw['_rename_custom_preset'],
 				isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array()
@@ -477,7 +506,7 @@ class EDMINBOOST_Settings {
 
 		if ( ! empty( $raw['_duplicate_preset'] ) ) {
 			$source_id = sanitize_key( $raw['_duplicate_preset'] );
-			if ( EDMINBOOST_Pro::can_save_custom_preset( $output ) ) {
+			if ( self::allows_custom_layout_preset_writes() ) {
 				$duplicate = self::duplicate_custom_preset( $source_id, $output );
 				if ( ! empty( $duplicate ) ) {
 					$existing = isset( $output['presets'] ) && is_array( $output['presets'] ) ? $output['presets'] : array();
@@ -717,6 +746,24 @@ class EDMINBOOST_Settings {
 		}
 
 		return $sanitized;
+	}
+
+	/**
+	 * Whether custom layout preset save/rename/duplicate writes are allowed.
+	 *
+	 * @return bool
+	 */
+	private static function allows_custom_layout_preset_writes() {
+		if ( ! EDMINBOOST_Plan::is_direct_build() ) {
+			return true;
+		}
+
+		/**
+		 * Filter custom layout preset write actions on the direct-download build.
+		 *
+		 * @param bool $allowed Default false until the premium package registers licensing.
+		 */
+		return (bool) apply_filters( 'edminboost_allows_custom_preset_actions', false );
 	}
 
 	/**
@@ -994,8 +1041,11 @@ class EDMINBOOST_Settings {
 		$output   = $defaults;
 
 		$allowed_widths = array( 'compact', 'standard', 'fullscreen', 'custom' );
-		if ( isset( $raw['drawer_width'] ) && in_array( $raw['drawer_width'], $allowed_widths, true ) ) {
-			$output['drawer_width'] = $raw['drawer_width'];
+		if ( isset( $raw['drawer_width'] ) ) {
+			$drawer_width = sanitize_key( $raw['drawer_width'] );
+			if ( in_array( $drawer_width, $allowed_widths, true ) ) {
+				$output['drawer_width'] = $drawer_width;
+			}
 		}
 
 		if ( isset( $raw['drawer_width_custom'] ) ) {
@@ -1009,8 +1059,11 @@ class EDMINBOOST_Settings {
 		}
 
 		$allowed_speeds = array( 'fast', 'normal', 'slow' );
-		if ( isset( $raw['animation_speed'] ) && in_array( $raw['animation_speed'], $allowed_speeds, true ) ) {
-			$output['animation_speed'] = $raw['animation_speed'];
+		if ( isset( $raw['animation_speed'] ) ) {
+			$animation_speed = sanitize_key( $raw['animation_speed'] );
+			if ( in_array( $animation_speed, $allowed_speeds, true ) ) {
+				$output['animation_speed'] = $animation_speed;
+			}
 		}
 
 		$output['glassmorphism'] = ! empty( $raw['glassmorphism'] );
@@ -1024,8 +1077,11 @@ class EDMINBOOST_Settings {
 		}
 
 		$allowed_styles = array( 'dot', 'pill', 'accent' );
-		if ( isset( $raw['badge_style'] ) && in_array( $raw['badge_style'], $allowed_styles, true ) ) {
-			$output['badge_style'] = $raw['badge_style'];
+		if ( isset( $raw['badge_style'] ) ) {
+			$badge_style = sanitize_key( $raw['badge_style'] );
+			if ( in_array( $badge_style, $allowed_styles, true ) ) {
+				$output['badge_style'] = $badge_style;
+			}
 		}
 
 		$output['hide_wp_logo']         = ! empty( $raw['hide_wp_logo'] );

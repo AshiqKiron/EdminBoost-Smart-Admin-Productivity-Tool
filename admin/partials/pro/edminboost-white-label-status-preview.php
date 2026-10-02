@@ -25,10 +25,14 @@ $edminboost_segment_labels   = array(
 	'show_memory_available' => __( 'Memory available', 'edminboost-admin-customization' ),
 );
 $edminboost_has_enabled_part = ! empty( $edminboost_enabled_parts );
+$edminboost_status_preview_class = 'edminboost-wl-status-preview';
+if ( ! $edminboost_has_enabled_part ) {
+	$edminboost_status_preview_class .= ' is-empty';
+}
 ?>
 <div
 	id="edminboost-wl-status-preview"
-	class="edminboost-wl-status-preview<?php echo $edminboost_has_enabled_part ? '' : ' is-empty'; ?>"
+	class="<?php echo esc_attr( $edminboost_status_preview_class ); ?>"
 	role="region"
 	aria-label="<?php esc_attr_e( 'System status footer live preview', 'edminboost-admin-customization' ); ?>"
 	aria-live="polite"
@@ -42,12 +46,16 @@ $edminboost_has_enabled_part = ! empty( $edminboost_enabled_parts );
 			<span
 				id="edminboost-wl-status-preview-empty"
 				class="edminboost-wl-status-preview__empty"
-				<?php echo $edminboost_has_enabled_part ? ' hidden' : ''; ?>
+				<?php if ( $edminboost_has_enabled_part ) : ?>
+					hidden
+				<?php endif; ?>
 			><?php esc_html_e( 'No status details selected.', 'edminboost-admin-customization' ); ?></span>
 			<span
 				id="edminboost-wl-status-preview-line"
 				class="edminboost-wl-status-preview__line"
-				<?php echo $edminboost_has_enabled_part ? '' : ' hidden'; ?>
+				<?php if ( ! $edminboost_has_enabled_part ) : ?>
+					hidden
+				<?php endif; ?>
 			>
 				<?php foreach ( $edminboost_segment_texts as $edminboost_segment_key => $edminboost_segment_text ) : ?>
 					<?php

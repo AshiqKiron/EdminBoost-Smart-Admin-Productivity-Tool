@@ -187,7 +187,19 @@ class EDMINBOOST_Feature_Settings {
 					|| ! empty( $features['rest_api_hardening']['disable_guests'] );
 
 			case 'login_redirects':
-				return ! empty( $features['login_redirects']['enabled'] );
+				if ( ! EDMINBOOST_Plan::is_direct_build() ) {
+					return false;
+				}
+
+				$enabled = ! empty( $features['login_redirects']['enabled'] );
+
+				/**
+				 * Filter whether login redirects are active on the direct-download build.
+				 *
+				 * @param bool $active  Default false.
+				 * @param bool $enabled Stored enabled flag.
+				 */
+				return (bool) apply_filters( 'edminboost_login_redirects_enabled', false, $enabled );
 
 			case 'heartbeat_control':
 				$hb = $features['heartbeat_control'];
@@ -319,7 +331,7 @@ class EDMINBOOST_Feature_Settings {
 
 		$types = array();
 		foreach ( $raw as $type ) {
-			$type = sanitize_key( $type );
+			$type = sanitize_key( wp_unslash( (string) $type ) );
 			if ( '' !== $type && post_type_exists( $type ) && ! in_array( $type, $types, true ) ) {
 				$types[] = $type;
 			}

@@ -108,24 +108,6 @@ class EDMINBOOST_Admin {
 			array( $this, 'render_menu_studio_page' )
 		);
 
-		$this->register_plugin_submenu_page(
-			self::PAGE_SLUG,
-			__( 'Billing', 'edminboost-admin-customization' ),
-			__( 'Billing', 'edminboost-admin-customization' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING,
-			array( $this, 'render_billing_page' )
-		);
-
-		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
-			$this->register_plugin_submenu_page(
-				self::PAGE_SLUG,
-				__( 'Settings', 'edminboost-admin-customization' ),
-				__( 'Settings', 'edminboost-admin-customization' ),
-				self::PAGE_SLUG . '-settings',
-				array( $this, 'render_settings_page' )
-			);
-		}
-
 		// Tab-only pages — registered but not shown in the sidebar.
 		$this->register_plugin_submenu_page(
 			null,
@@ -151,15 +133,12 @@ class EDMINBOOST_Admin {
 			array( $this, 'render_performance_page' )
 		);
 
-		if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) {
-			$this->register_plugin_submenu_page(
-				null,
-				__( 'White Label', 'edminboost-admin-customization' ),
-				__( 'White Label', 'edminboost-admin-customization' ),
-				self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
-				array( $this, 'render_white_label_page' )
-			);
-		}
+		/**
+		 * Register optional admin menus (premium package adds Settings and White Label when licensed).
+		 *
+		 * @param EDMINBOOST_Admin $admin Admin instance.
+		 */
+		do_action( 'edminboost_register_admin_menus', $this );
 
 		// Legacy slugs — redirect to Dashboard (not shown in sidebar).
 		$this->register_plugin_submenu_page(
@@ -427,18 +406,7 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function render_white_label_page() {
-		$this->render_command_center_page( 'admin/partials/edminboost-white-label-page.php' );
-	}
-
-	/**
-	 * Render the Billing page.
-	 *
-	 * Informational plan catalog only — no in-plugin checkout or license validation.
-	 *
-	 * @return void
-	 */
-	public function render_billing_page() {
-		$this->render_command_center_page( 'admin/partials/edminboost-billing-page.php' );
+		$this->render_command_center_page( 'admin/partials/pro/edminboost-white-label-page.php' );
 	}
 
 	/**
@@ -514,6 +482,7 @@ class EDMINBOOST_Admin {
 			array( 'dashicons', 'edminboost-themes' ),
 			EDMINBOOST_VERSION
 		);
+
 	}
 
 	/**
@@ -535,15 +504,22 @@ class EDMINBOOST_Admin {
 			true
 		);
 
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			wp_enqueue_script(
+				'edminboost-admin-pro',
+				EDMINBOOST_PLUGIN_URL . 'admin/js/pro/edminboost-admin-pro.js',
+				array( 'edminboost-admin' ),
+				EDMINBOOST_VERSION,
+				true
+			);
+		}
+
 		$screen_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$localize = array(
-			'version'             => EDMINBOOST_VERSION,
-			'isPremiumBuild'      => EDMINBOOST_Pro::is_direct_build(),
-			'isPro'               => EDMINBOOST_Pro::is_active(),
-			'billingUrl'          => EDMINBOOST_Pro::get_billing_url(),
-			'canSaveCustomPreset' => EDMINBOOST_Pro::can_save_custom_preset(),
-			'currentPage'         => $screen_page,
+			'version'        => EDMINBOOST_VERSION,
+			'isPremiumBuild' => EDMINBOOST_Plan::is_direct_build(),
+			'currentPage'    => $screen_page,
 			'optionName' => EDMINBOOST_Settings::OPTION_NAME,
 			'strings'    => array(
 				'ready'           => __( 'EdminBoost is ready.', 'edminboost-admin-customization' ),
@@ -595,11 +571,6 @@ class EDMINBOOST_Admin {
 				'formResetCancel'           => __( 'Cancel', 'edminboost-admin-customization' ),
 			),
 			'presets'          => self::get_presets_for_js(),
-			'roleMatrix'       => array(
-				'protectedSlugs'        => EDMINBOOST_Menu_Studio::get_protected_slugs(),
-				'protectedSlugsByRole'  => EDMINBOOST_Command_Center::get_protected_slugs_by_role(),
-				'accessibleSlugsByRole' => EDMINBOOST_Command_Center::get_role_accessible_menu_slugs(),
-			),
 			'presetCategories' => EDMINBOOST_Command_Center::get_preset_categories(),
 			'themePresets'     => EDMINBOOST_Theme::get_presets_for_js(),
 			'themeColorLabels' => EDMINBOOST_Theme::get_color_labels(),
@@ -613,13 +584,21 @@ class EDMINBOOST_Admin {
 				'action'  => 'edminboost_load_cc_page',
 				'nonce'   => wp_create_nonce( 'edminboost_cc_nav' ),
 			),
-			'drawerPreview' => array(
+		);
+
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			$localize['roleMatrix'] = array(
+				'protectedSlugs'        => EDMINBOOST_Menu_Studio::get_protected_slugs(),
+				'protectedSlugsByRole'  => EDMINBOOST_Command_Center::get_protected_slugs_by_role(),
+				'accessibleSlugsByRole' => EDMINBOOST_Command_Center::get_role_accessible_menu_slugs(),
+			);
+			$localize['drawerPreview'] = array(
 				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
 				'action'       => 'edminboost_cc_drawer_preview',
 				'nonce'        => wp_create_nonce( 'edminboost_cc_drawer_preview' ),
 				'contextNonce' => wp_create_nonce( 'edminboost_cc_mapper_context' ),
-			),
-		);
+			);
+		}
 
 		wp_localize_script(
 			'edminboost-admin',
@@ -637,7 +616,7 @@ class EDMINBOOST_Admin {
 		$presets = array();
 
 		foreach ( EDMINBOOST_Command_Center::get_picker_presets( true ) as $preset_id => $preset ) {
-			if ( ! EDMINBOOST_Pro::include_preset_in_ui( $preset_id, 'layout' ) ) {
+			if ( ! EDMINBOOST_Plan::include_preset_in_ui( $preset_id, 'layout' ) ) {
 				continue;
 			}
 
@@ -708,20 +687,27 @@ class EDMINBOOST_Admin {
 	 * @param array $links Existing plugin action links.
 	 * @return array
 	 */
-	public function add_settings_link( $links ) {
-		if ( ! EDMINBOOST_Pro::shows_pro_settings_ui() ) {
-			return $links;
-		}
-
-		$settings_link = sprintf(
-			'<a href="%s">%s</a>',
-			esc_url( admin_url( 'admin.php?page=' . self::PAGE_SLUG . '-settings' ) ),
-			esc_html__( 'Settings', 'edminboost-admin-customization' )
+	/**
+	 * Register Settings and White Label submenu pages (premium package only).
+	 *
+	 * @return void
+	 */
+	public function register_licensed_submenus() {
+		$this->register_plugin_submenu_page(
+			self::PAGE_SLUG,
+			__( 'Settings', 'edminboost-admin-customization' ),
+			__( 'Settings', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . '-settings',
+			array( $this, 'render_settings_page' )
 		);
 
-		array_unshift( $links, $settings_link );
-
-		return $links;
+		$this->register_plugin_submenu_page(
+			null,
+			__( 'White Label', 'edminboost-admin-customization' ),
+			__( 'White Label', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
+			array( $this, 'render_white_label_page' )
+		);
 	}
 
 	/**
@@ -868,6 +854,11 @@ class EDMINBOOST_Admin {
 
 		ob_start();
 
+		$rendered = apply_filters( 'edminboost_render_cc_page', false, $page, $this );
+		if ( $rendered ) {
+			return (string) ob_get_clean();
+		}
+
 		switch ( $page ) {
 			case self::PAGE_SLUG:
 				$this->render_admin_page();
@@ -895,9 +886,6 @@ class EDMINBOOST_Admin {
 				break;
 			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL:
 				$this->render_white_label_page();
-				break;
-			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING:
-				$this->render_billing_page();
 				break;
 			case self::PAGE_SLUG . '-settings':
 				$this->render_settings_page();
@@ -941,6 +929,17 @@ class EDMINBOOST_Admin {
 	 * @return string
 	 */
 	private function get_cc_page_title( $page ) {
+		/**
+		 * Filter the Command Center page title for extension screens.
+		 *
+		 * @param string $title Page title.
+		 * @param string $page  Admin page slug.
+		 */
+		$filtered = apply_filters( 'edminboost_cc_page_title', '', $page );
+		if ( '' !== $filtered ) {
+			return $filtered;
+		}
+
 		$titles = array(
 			self::PAGE_SLUG                                              => __( 'Dashboard', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE => __( 'Theme', 'edminboost-admin-customization' ),
@@ -951,7 +950,6 @@ class EDMINBOOST_Admin {
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE  => __( 'Performance', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL  => __( 'White Label', 'edminboost-admin-customization' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING      => __( 'Billing', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . '-settings'                                => __( 'Settings', 'edminboost-admin-customization' ),
 		);
 
@@ -1091,10 +1089,6 @@ class EDMINBOOST_Admin {
 			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
 		}
 
-		if ( ! EDMINBOOST_Pro::shows_pro_settings_ui() ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
-		}
-
 		if ( ! check_ajax_referer( 'edminboost_export_settings', 'nonce', false ) ) {
 			wp_send_json_error(
 				array(
@@ -1118,10 +1112,6 @@ class EDMINBOOST_Admin {
 	 */
 	public function ajax_import_settings() {
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
-		}
-
-		if ( ! EDMINBOOST_Pro::shows_pro_settings_ui() ) {
 			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
 		}
 

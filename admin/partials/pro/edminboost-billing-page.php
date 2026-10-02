@@ -12,11 +12,11 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$edminboost_plans           = EDMINBOOST_Command_Center::get_billing_plans();
-$edminboost_comparison_rows = EDMINBOOST_Command_Center::get_billing_comparison_rows();
-$edminboost_active_plan     = EDMINBOOST_Command_Center::get_active_billing_plan();
+$edminboost_plans           = EDMINBOOST_Billing::get_plans();
+$edminboost_comparison_rows = EDMINBOOST_Billing::get_comparison_rows();
+$edminboost_active_plan     = EDMINBOOST_Plan_Licensing::get_active_billing_plan();
 $edminboost_active_label    = isset( $edminboost_plans[ $edminboost_active_plan ] ) ? $edminboost_plans[ $edminboost_active_plan ]['name'] : __( 'Free', 'edminboost-admin-customization' );
-$edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
+$edminboost_upgrade_url     = EDMINBOOST_Billing::get_upgrade_url();
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap">
 	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
@@ -79,7 +79,7 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 				<footer class="edminboost-billing-plan__footer">
 					<?php
 					$edminboost_class = 'edminboost-billing-plan__upgrade';
-					include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-billing-plan-cta.php';
+					include EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-billing-plan-cta.php';
 					?>
 				</footer>
 			</article>
@@ -159,9 +159,15 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 									?>
 									<td class="<?php echo esc_attr( $edminboost_cell_class ); ?>">
 										<?php if ( is_bool( $edminboost_cell ) ) : ?>
-											<span class="edminboost-billing-comparison__status<?php echo $edminboost_cell ? ' is-included' : ' is-excluded'; ?>"></span>
+											<span class="<?php echo esc_attr( 'edminboost-billing-comparison__status' . ( $edminboost_cell ? ' is-included' : ' is-excluded' ) ); ?>"></span>
 											<span class="screen-reader-text">
-												<?php echo $edminboost_cell ? esc_html__( 'Included', 'edminboost-admin-customization' ) : esc_html__( 'Not included', 'edminboost-admin-customization' ); ?>
+												<?php
+												if ( $edminboost_cell ) {
+													esc_html_e( 'Included', 'edminboost-admin-customization' );
+												} else {
+													esc_html_e( 'Not included', 'edminboost-admin-customization' );
+												}
+												?>
 											</span>
 										<?php else : ?>
 											<span class="edminboost-billing-comparison__value"><?php echo esc_html( (string) $edminboost_cell ); ?></span>
@@ -188,7 +194,7 @@ $edminboost_upgrade_url     = EDMINBOOST_Command_Center::get_upgrade_url();
 							<td class="<?php echo esc_attr( $edminboost_col_class ); ?>">
 								<?php
 								$edminboost_class = 'edminboost-billing-comparison__cta';
-								include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-billing-plan-cta.php';
+								include EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-billing-plan-cta.php';
 								?>
 							</td>
 						<?php endforeach; ?>

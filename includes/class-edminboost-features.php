@@ -47,7 +47,6 @@ class EDMINBOOST_Features {
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-disable-xmlrpc.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-rest-api-hardening.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-disable-feeds.php';
-		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-login-redirects.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-remove-asset-versions.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-remove-dashicons-frontend.php';
 		require_once EDMINBOOST_PLUGIN_DIR . 'includes/features/class-edminboost-heartbeat-control.php';
@@ -68,7 +67,6 @@ class EDMINBOOST_Features {
 			'EDMINBOOST_Disable_Xmlrpc',
 			'EDMINBOOST_Rest_Api_Hardening',
 			'EDMINBOOST_Disable_Feeds',
-			'EDMINBOOST_Login_Redirects',
 			'EDMINBOOST_Remove_Asset_Versions',
 			'EDMINBOOST_Remove_Dashicons_Frontend',
 			'EDMINBOOST_Heartbeat_Control',

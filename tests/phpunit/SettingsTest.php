@@ -553,6 +553,7 @@ class SettingsTest extends Edminboost_Test_Case {
 	 * Saving a custom layout preset stores the user-provided name and sidebar config.
 	 */
 	public function test_sanitize_save_custom_preset_with_name() {
+		$this->enable_pro_plan();
 		$this->seed_settings(
 			array(
 				'command_center' => array(
@@ -599,6 +600,7 @@ class SettingsTest extends Edminboost_Test_Case {
 	 * Renaming a saved custom preset updates the stored label.
 	 */
 	public function test_sanitize_rename_custom_preset() {
+		$this->enable_pro_plan();
 		$this->seed_settings(
 			array(
 				'command_center' => array(

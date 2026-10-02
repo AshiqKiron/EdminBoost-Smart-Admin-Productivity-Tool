@@ -22,7 +22,13 @@ $edminboost_mapper_url     = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PA
 $edminboost_presets_url    = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS );
 $edminboost_appearance_url = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE );
 ?>
-<div class="wrap edminboost-wrap edminboost-home-wrap<?php echo $edminboost_is_setup ? '' : ' edminboost-home-wrap--wizard'; ?>">
+<?php
+$edminboost_home_wrap_class = 'wrap edminboost-wrap edminboost-home-wrap';
+if ( ! $edminboost_is_setup ) {
+	$edminboost_home_wrap_class .= ' edminboost-home-wrap--wizard';
+}
+?>
+<div class="<?php echo esc_attr( $edminboost_home_wrap_class ); ?>">
 	<?php if ( $edminboost_is_setup ) : ?>
 		<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
 	<?php endif; ?>

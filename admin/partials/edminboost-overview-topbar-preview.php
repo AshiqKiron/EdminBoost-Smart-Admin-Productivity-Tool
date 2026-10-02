@@ -56,9 +56,16 @@ foreach ( $edminboost_preview_items as $edminboost_preview_item ) {
 
 	$edminboost_visible_items[] = $edminboost_preview_item;
 }
+$edminboost_topbar_preview_class = 'edminboost-overview-card__preview edminboost-overview-topbar-preview';
+if ( $edminboost_compact_preview ) {
+	$edminboost_topbar_preview_class .= ' edminboost-overview-topbar-preview--compact';
+}
+if ( empty( $edminboost_visible_items ) ) {
+	$edminboost_topbar_preview_class .= ' edminboost-overview-topbar-preview--empty';
+}
 ?>
 <div
-	class="edminboost-overview-card__preview edminboost-overview-topbar-preview<?php echo $edminboost_compact_preview ? ' edminboost-overview-topbar-preview--compact' : ''; ?><?php echo empty( $edminboost_visible_items ) ? ' edminboost-overview-topbar-preview--empty' : ''; ?>"
+	class="<?php echo esc_attr( $edminboost_topbar_preview_class ); ?>"
 	id="<?php echo esc_attr( $edminboost_preview_id ); ?>"
 	role="group"
 	aria-label="<?php echo esc_attr( $edminboost_preview_aria_label ); ?>"
@@ -81,7 +88,7 @@ foreach ( $edminboost_preview_items as $edminboost_preview_item ) {
 					$edminboost_item_interaction = isset( $edminboost_preview_item['interaction'] ) ? $edminboost_preview_item['interaction'] : 'redirect';
 					$edminboost_is_drawer        = ( 'drawer' === $edminboost_item_interaction );
 					?>
-					<li class="edminboost-overview-topbar-preview__item<?php echo $edminboost_is_drawer ? ' is-drawer' : ' is-direct'; ?>">
+					<li class="<?php echo esc_attr( 'edminboost-overview-topbar-preview__item' . ( $edminboost_is_drawer ? ' is-drawer' : ' is-direct' ) ); ?>">
 						<span class="edminboost-overview-topbar-preview__tip">
 							<span class="dashicons <?php echo esc_attr( $edminboost_item_icon ); ?>" aria-hidden="true"></span>
 							<span class="edminboost-overview-topbar-preview__tooltip" role="tooltip"><?php echo esc_html( $edminboost_item_label ); ?></span>

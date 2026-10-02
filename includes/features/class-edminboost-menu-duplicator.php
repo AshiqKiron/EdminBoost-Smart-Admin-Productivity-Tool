@@ -56,7 +56,7 @@ class EDMINBOOST_Menu_Duplicator extends EDMINBOOST_Feature_Base {
 			return;
 		}
 
-		$menu_id = isset( $_GET['menu'] ) ? absint( $_GET['menu'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$menu_id = isset( $_GET['menu'] ) ? absint( wp_unslash( $_GET['menu'] ) ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		if ( ! $menu_id ) {
 			return;
@@ -89,7 +89,8 @@ class EDMINBOOST_Menu_Duplicator extends EDMINBOOST_Feature_Base {
 	 * @return void
 	 */
 	public function handle_duplicate() {
-		$menu_id = isset( $_GET['menu_id'] ) ? absint( $_GET['menu_id'] ) : 0;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Verified via check_admin_referer below.
+		$menu_id = isset( $_GET['menu_id'] ) ? absint( wp_unslash( $_GET['menu_id'] ) ) : 0;
 
 		if ( ! $menu_id || ! current_user_can( 'edit_theme_options' ) ) {
 			wp_die( esc_html__( 'You cannot duplicate this menu.', 'edminboost-admin-customization' ) );

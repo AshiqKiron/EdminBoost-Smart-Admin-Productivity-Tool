@@ -21,10 +21,14 @@ $edminboost_current_page = isset( $current_page ) ? $current_page : '';
 			$edminboost_is_active   = ( $edminboost_current_page === $edminboost_item['slug'] );
 			$edminboost_is_external = ! empty( $edminboost_item['external'] ) && ! empty( $edminboost_item['url'] );
 			$edminboost_url         = $edminboost_is_external ? $edminboost_item['url'] : admin_url( 'admin.php?page=' . $edminboost_item['slug'] );
+			$edminboost_link_class  = 'edminboost-cc-nav__link';
+			if ( $edminboost_is_active ) {
+				$edminboost_link_class .= ' is-active';
+			}
 			?>
 			<li class="edminboost-cc-nav__item">
 				<a
-					class="edminboost-cc-nav__link<?php echo $edminboost_is_active ? ' is-active' : ''; ?>"
+					class="<?php echo esc_attr( $edminboost_link_class ); ?>"
 					href="<?php echo esc_url( $edminboost_url ); ?>"
 					data-edminboost-page="<?php echo esc_attr( $edminboost_item['slug'] ); ?>"
 					<?php if ( $edminboost_is_external ) : ?>
@@ -32,7 +36,9 @@ $edminboost_current_page = isset( $current_page ) ? $current_page : '';
 						rel="noopener noreferrer"
 						data-edminboost-external="1"
 					<?php endif; ?>
-					<?php echo $edminboost_is_active ? ' aria-current="page"' : ''; ?>
+					<?php if ( $edminboost_is_active ) : ?>
+						aria-current="page"
+					<?php endif; ?>
 				>
 					<?php echo esc_html( $edminboost_item['label'] ); ?>
 				</a>

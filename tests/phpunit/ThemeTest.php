@@ -222,21 +222,27 @@ class ThemeTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * Scheduled dark mode is cleared on free plan theme enforcement.
+	 * Scheduled dark mode is not applied on the free billing plan.
 	 */
-	public function test_strip_pro_theme_clears_scheduled_dark_mode() {
+	public function test_resolve_command_center_clears_scheduled_dark_mode_on_free_plan() {
+		if ( ! class_exists( 'EDMINBOOST_Plan_Limits', false ) ) {
+			$this->markTestSkipped( 'Plan limits ship only in the premium package.' );
+		}
+
 		$defaults = EDMINBOOST_Theme::get_defaults();
-		$stripped = EDMINBOOST_Pro::strip_pro_theme(
+		$resolved = EDMINBOOST_Plan_Limits::resolve_command_center(
 			array(
-				'preset'             => 'default',
-				'schedule_dark_mode' => true,
-				'dark_mode_start'    => '20:00',
-				'dark_mode_end'      => '05:00',
+				'theme' => array(
+					'preset'             => 'default',
+					'schedule_dark_mode' => true,
+					'dark_mode_start'    => '20:00',
+					'dark_mode_end'      => '05:00',
+				),
 			)
 		);
 
-		$this->assertFalse( $stripped['schedule_dark_mode'] );
-		$this->assertSame( $defaults['dark_mode_start'], $stripped['dark_mode_start'] );
-		$this->assertSame( $defaults['dark_mode_end'], $stripped['dark_mode_end'] );
+		$this->assertFalse( $resolved['theme']['schedule_dark_mode'] );
+		$this->assertSame( $defaults['dark_mode_start'], $resolved['theme']['dark_mode_start'] );
+		$this->assertSame( $defaults['dark_mode_end'], $resolved['theme']['dark_mode_end'] );
 	}
 }

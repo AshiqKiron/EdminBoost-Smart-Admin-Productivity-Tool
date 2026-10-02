@@ -26,10 +26,8 @@ $edminboost_matrix_items      = EDMINBOOST_Command_Center::get_role_matrix_menu_
 $edminboost_top_bar_items     = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
 	? $cc_settings['top_bar_items']
 	: array();
-$edminboost_has_layout             = ! empty( $edminboost_top_bar_items );
-$edminboost_has_matrix             = ! empty( $edminboost_matrix_items );
-$edminboost_can_save_preset      = EDMINBOOST_Pro::can_save_custom_preset( $cc_settings );
-$edminboost_show_role_visibility = EDMINBOOST_Pro::shows_pro_settings_ui();
+$edminboost_has_layout = ! empty( $edminboost_top_bar_items );
+$edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap edminboost-cc-wrap--wide">
 	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
@@ -41,34 +39,39 @@ $edminboost_show_role_visibility = EDMINBOOST_Pro::shows_pro_settings_ui();
 				<?php esc_html_e( 'Choose a layout template—or reuse one you saved—to set up the top bar and sidebar menu, then control which admin menu items each user role can see.', 'edminboost-admin-customization' ); ?>
 			</p>
 		</div>
-		<div class="edminboost-cc-hero__actions">
-			<div class="edminboost-save-preset" id="edminboost-save-preset">
-				<button type="button" class="button edminboost-save-preset__trigger" id="edminboost-save-preset-btn" <?php disabled( ! $edminboost_has_layout || ! $edminboost_can_save_preset ); ?>>
-					<?php esc_html_e( 'Save current layout as preset', 'edminboost-admin-customization' ); ?>
-				</button>
-				<?php if ( ! $edminboost_can_save_preset && $edminboost_has_layout && ! EDMINBOOST_Pro::is_active() ) : ?>
-					<p class="description"><?php esc_html_e( 'Free includes one saved custom layout.', 'edminboost-admin-customization' ); ?></p>
-				<?php endif; ?>
-				<div class="edminboost-save-preset__form" id="edminboost-save-preset-form">
-					<label class="edminboost-save-preset__label" for="edminboost_save_preset_name_input">
-						<?php esc_html_e( 'Preset name', 'edminboost-admin-customization' ); ?>
-					</label>
-					<input
-						type="text"
-						class="regular-text edminboost-save-preset__input"
-						id="edminboost_save_preset_name_input"
-						placeholder="<?php echo esc_attr__( 'Enter a name for your preset', 'edminboost-admin-customization' ); ?>"
-						autocomplete="off"
-					/>
-					<button type="button" class="button button-primary" id="edminboost-save-preset-confirm-btn">
-						<?php esc_html_e( 'Save preset', 'edminboost-admin-customization' ); ?>
+		<?php
+		$edminboost_allows_custom_presets = ! EDMINBOOST_Plan::is_direct_build();
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			$edminboost_allows_custom_presets = (bool) apply_filters( 'edminboost_allows_custom_preset_actions', false );
+		}
+		?>
+		<?php if ( $edminboost_allows_custom_presets ) : ?>
+			<div class="edminboost-cc-hero__actions">
+				<div class="edminboost-save-preset" id="edminboost-save-preset">
+					<button type="button" class="button edminboost-save-preset__trigger" id="edminboost-save-preset-btn" <?php disabled( ! $edminboost_has_layout ); ?>>
+						<?php esc_html_e( 'Save current layout as preset', 'edminboost-admin-customization' ); ?>
 					</button>
-					<button type="button" class="button" id="edminboost-save-preset-cancel-btn">
-						<?php esc_html_e( 'Cancel', 'edminboost-admin-customization' ); ?>
-					</button>
+					<div class="edminboost-save-preset__form" id="edminboost-save-preset-form">
+						<label class="edminboost-save-preset__label" for="edminboost_save_preset_name_input">
+							<?php esc_html_e( 'Preset name', 'edminboost-admin-customization' ); ?>
+						</label>
+						<input
+							type="text"
+							class="regular-text edminboost-save-preset__input"
+							id="edminboost_save_preset_name_input"
+							placeholder="<?php echo esc_attr__( 'Enter a name for your preset', 'edminboost-admin-customization' ); ?>"
+							autocomplete="off"
+						/>
+						<button type="button" class="button button-primary" id="edminboost-save-preset-confirm-btn">
+							<?php esc_html_e( 'Save preset', 'edminboost-admin-customization' ); ?>
+						</button>
+						<button type="button" class="button" id="edminboost-save-preset-cancel-btn">
+							<?php esc_html_e( 'Cancel', 'edminboost-admin-customization' ); ?>
+						</button>
+					</div>
 				</div>
 			</div>
-		</div>
+		<?php endif; ?>
 	</header>
 
 	<form action="options.php" method="post" class="edminboost-cc-form" id="edminboost-presets-form">
@@ -89,13 +92,7 @@ $edminboost_show_role_visibility = EDMINBOOST_Pro::shows_pro_settings_ui();
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-roles-heading">
 			<h2 id="edminboost-roles-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'role_visibility' ); ?><?php esc_html_e( 'Who sees what', 'edminboost-admin-customization' ); ?></h2>
 			<p class="description">
-				<?php
-				if ( $edminboost_show_role_visibility ) {
-					esc_html_e( 'Assign a layout preset per role to customize both the top bar and admin sidebar for that role. Changing a preset updates the menu checkboxes for that role; you can still fine-tune visibility before saving.', 'edminboost-admin-customization' );
-				} else {
-					esc_html_e( 'Assign a layout preset per role to customize both the top bar and admin sidebar for that role.', 'edminboost-admin-customization' );
-				}
-				?>
+				<?php esc_html_e( 'Assign a layout preset per role to customize both the top bar and admin sidebar for that role.', 'edminboost-admin-customization' ); ?>
 			</p>
 
 			<?php if ( empty( $edminboost_roles ) ) : ?>
@@ -111,37 +108,11 @@ $edminboost_show_role_visibility = EDMINBOOST_Pro::shows_pro_settings_ui();
 								<th scope="col" class="edminboost-role-matrix__preset-col">
 									<?php EDMINBOOST_Setting_Help::echo_icon( 'role_assignments' ); ?><?php esc_html_e( 'Assigned preset', 'edminboost-admin-customization' ); ?>
 								</th>
-								<?php if ( $edminboost_show_role_visibility ) : ?>
-								<?php foreach ( $edminboost_matrix_items as $edminboost_item ) : ?>
-									<?php
-									$edminboost_item_slug       = isset( $edminboost_item['slug'] ) ? $edminboost_item['slug'] : '';
-									if ( '' === $edminboost_item_slug ) {
-										continue;
-									}
-									$edminboost_item_label      = isset( $edminboost_item['label'] ) ? $edminboost_item['label'] : $edminboost_item_slug;
-									$edminboost_item_source     = isset( $edminboost_item['source'] ) ? $edminboost_item['source'] : 'top';
-									$edminboost_is_submenu      = 'submenu' === $edminboost_item_source;
-									$edminboost_parent_label    = isset( $edminboost_item['parent_label'] ) ? $edminboost_item['parent_label'] : '';
-									$edminboost_column_classes  = 'edminboost-role-matrix__menu-col';
-									if ( $edminboost_is_submenu ) {
-										$edminboost_column_classes .= ' is-submenu';
-									}
-									?>
-									<th scope="col" class="<?php echo esc_attr( $edminboost_column_classes ); ?>">
-										<span class="edminboost-role-matrix__menu-heading">
-											<?php if ( ! $edminboost_is_submenu ) : ?>
-												<span class="dashicons <?php echo esc_attr( isset( $edminboost_item['icon'] ) ? $edminboost_item['icon'] : 'dashicons-admin-generic' ); ?>" aria-hidden="true"></span>
-											<?php endif; ?>
-											<span class="edminboost-role-matrix__menu-label">
-												<?php if ( $edminboost_is_submenu && '' !== $edminboost_parent_label ) : ?>
-													<span class="edminboost-role-matrix__menu-parent"><?php echo esc_html( $edminboost_parent_label ); ?></span>
-												<?php endif; ?>
-												<span class="edminboost-role-matrix__menu-name"><?php echo esc_html( $edminboost_item_label ); ?></span>
-											</span>
-										</span>
-									</th>
-								<?php endforeach; ?>
-								<?php endif; ?>
+								<?php
+								if ( EDMINBOOST_Plan::is_direct_build() ) {
+									do_action( 'edminboost_admin_extension', 'presets_role_matrix_head' );
+								}
+								?>
 							</tr>
 						</thead>
 						<tbody>
@@ -165,7 +136,7 @@ $edminboost_show_role_visibility = EDMINBOOST_Pro::shows_pro_settings_ui();
 											<option value=""><?php esc_html_e( '— Use site default —', 'edminboost-admin-customization' ); ?></option>
 											<?php foreach ( $edminboost_all_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
 												<?php
-												if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'layout' ) ) {
+												if ( ! EDMINBOOST_Plan::include_preset_in_ui( $edminboost_preset_id, 'layout' ) ) {
 													continue;
 												}
 												?>
@@ -178,98 +149,21 @@ $edminboost_show_role_visibility = EDMINBOOST_Pro::shows_pro_settings_ui();
 											<?php endforeach; ?>
 										</select>
 									</td>
-									<?php if ( $edminboost_show_role_visibility ) : ?>
-									<?php foreach ( $edminboost_matrix_items as $edminboost_item ) : ?>
-										<?php
-										$edminboost_item_slug       = isset( $edminboost_item['slug'] ) ? $edminboost_item['slug'] : '';
-										if ( '' === $edminboost_item_slug ) {
-											continue;
-										}
-										$edminboost_item_label      = isset( $edminboost_item['label'] ) ? $edminboost_item['label'] : $edminboost_item_slug;
-										$edminboost_item_source     = isset( $edminboost_item['source'] ) ? $edminboost_item['source'] : 'top';
-										$edminboost_is_submenu      = 'submenu' === $edminboost_item_source;
-										$edminboost_parent_label    = isset( $edminboost_item['parent_label'] ) ? $edminboost_item['parent_label'] : '';
-										$edminboost_can_access      = EDMINBOOST_Command_Center::role_can_access_menu_slug( $edminboost_role_key, $edminboost_item_slug );
-										$edminboost_hidden_for_role = isset( $edminboost_role_visibility[ $edminboost_role_key ] ) && is_array( $edminboost_role_visibility[ $edminboost_role_key ] )
-											? $edminboost_role_visibility[ $edminboost_role_key ]
-											: array();
-										$edminboost_has_saved_visibility = array_key_exists( $edminboost_role_key, $edminboost_role_visibility );
-										$edminboost_is_hidden            = in_array( $edminboost_item_slug, $edminboost_hidden_for_role, true );
-										$edminboost_protected_slugs      = EDMINBOOST_Command_Center::get_protected_slugs_for_role( $edminboost_role_key );
-										$edminboost_is_protected         = ! $edminboost_is_submenu && in_array( $edminboost_item_slug, $edminboost_protected_slugs, true );
-										$edminboost_field_id             = 'edminboost_vis_' . sanitize_html_class( $edminboost_role_key . '_' . $edminboost_item_slug );
-
-										if ( $edminboost_is_protected ) {
-											$edminboost_is_checked = true;
-										} elseif ( ! $edminboost_can_access && ! $edminboost_has_saved_visibility ) {
-											$edminboost_is_checked = false;
-										} else {
-											$edminboost_is_checked = ! $edminboost_is_hidden;
-										}
-
-										$edminboost_cell_classes = 'edminboost-role-matrix__check';
-										if ( $edminboost_is_submenu ) {
-											$edminboost_cell_classes .= ' is-submenu';
-										}
-										if ( $edminboost_is_protected ) {
-											$edminboost_cell_classes .= ' is-protected';
-										} elseif ( ! $edminboost_can_access ) {
-											$edminboost_cell_classes .= ' is-capability-restricted';
-										}
-										?>
-										<td
-											class="<?php echo esc_attr( $edminboost_cell_classes ); ?>"
-											data-item-slug="<?php echo esc_attr( $edminboost_item_slug ); ?>"
-										>
-											<label class="edminboost-role-matrix__check-label" for="<?php echo esc_attr( $edminboost_field_id ); ?>">
-												<span class="screen-reader-text">
-													<?php
-													if ( $edminboost_is_submenu && '' !== $edminboost_parent_label ) {
-														echo esc_html(
-															sprintf(
-																/* translators: 1: role name, 2: parent menu label, 3: submenu label */
-																__( 'Show %2$s › %3$s for %1$s', 'edminboost-admin-customization' ),
-																$edminboost_role_label,
-																$edminboost_parent_label,
-																$edminboost_item_label
-															)
-														);
-													} else {
-														echo esc_html(
-															sprintf(
-																/* translators: 1: role name, 2: item label */
-																__( 'Show %2$s for %1$s', 'edminboost-admin-customization' ),
-																$edminboost_role_label,
-																$edminboost_item_label
-															)
-														);
-													}
-													?>
-												</span>
-												<input
-													type="checkbox"
-													class="edminboost-role-visibility-checkbox"
-													id="<?php echo esc_attr( $edminboost_field_id ); ?>"
-													name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][role_visibility][<?php echo esc_attr( $edminboost_role_key ); ?>][]"
-													value="<?php echo esc_attr( $edminboost_item_slug ); ?>"
-													data-item-slug="<?php echo esc_attr( $edminboost_item_slug ); ?>"
-													<?php checked( $edminboost_is_checked ); ?>
-													<?php disabled( $edminboost_is_protected ); ?>
-												/>
-											</label>
-										</td>
-									<?php endforeach; ?>
-									<?php endif; ?>
+									<?php
+									if ( EDMINBOOST_Plan::is_direct_build() ) {
+										do_action( 'edminboost_admin_extension', 'presets_role_matrix_cells' );
+									}
+									?>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
 					</table>
 				</div>
-				<?php if ( $edminboost_show_role_visibility ) : ?>
-				<p class="description">
-					<?php esc_html_e( 'Checked menu items stay visible in the top bar and sidebar for that role. Uncheck to hide tools from clients or editors. Submenu columns control individual pages under a parent menu. Items not included in the assigned preset start unchecked; you can still enable them manually. Items this role cannot access by default appear unchecked—you may enable them if needed.', 'edminboost-admin-customization' ); ?>
-				</p>
-				<?php endif; ?>
+				<?php
+				if ( EDMINBOOST_Plan::is_direct_build() ) {
+					do_action( 'edminboost_admin_extension', 'presets_role_visibility_help' );
+				}
+				?>
 			<?php endif; ?>
 		</section>
 

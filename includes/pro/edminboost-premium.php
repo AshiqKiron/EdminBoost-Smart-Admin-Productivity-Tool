@@ -13,6 +13,10 @@ if ( ! defined( 'EDMINBOOST_PREMIUM_BUILD' ) ) {
 	define( 'EDMINBOOST_PREMIUM_BUILD', true );
 }
 
+if ( ! defined( 'EDMINBOOST_UPGRADE_URL' ) ) {
+	define( 'EDMINBOOST_UPGRADE_URL', 'https://asphaltthemes.com/edminboost' );
+}
+
 /** Freemius product ID. */
 const EDMINBOOST_FREEMIUS_PRODUCT_ID = 40023;
 
@@ -167,3 +171,4 @@ if ( '' !== edminboost_premium_freemius_sdk_path() ) {
 		$fs->add_action( 'after_uninstall', 'edminboost_premium_uninstall_cleanup' );
 	}
 }
+

@@ -80,14 +80,20 @@ $edminboost_active_ms    = $edminboost_animation_speeds[ $edminboost_active_spee
 			hidden
 		>
 			<?php foreach ( $edminboost_animation_speeds as $edminboost_speed_id => $edminboost_speed ) : ?>
-				<?php $edminboost_is_selected = ( $edminboost_active_speed === $edminboost_speed_id ); ?>
+				<?php
+				$edminboost_is_selected       = ( $edminboost_active_speed === $edminboost_speed_id );
+				$edminboost_speed_option_class = 'edminboost-animation-speed-picker__option';
+				if ( $edminboost_is_selected ) {
+					$edminboost_speed_option_class .= ' is-selected';
+				}
+				?>
 				<li
-					class="edminboost-animation-speed-picker__option<?php echo $edminboost_is_selected ? ' is-selected' : ''; ?>"
+					class="<?php echo esc_attr( $edminboost_speed_option_class ); ?>"
 					role="option"
 					tabindex="-1"
 					data-value="<?php echo esc_attr( $edminboost_speed_id ); ?>"
 					data-ms="<?php echo esc_attr( (string) $edminboost_speed['ms'] ); ?>"
-					aria-selected="<?php echo $edminboost_is_selected ? 'true' : 'false'; ?>"
+					aria-selected="<?php echo esc_attr( $edminboost_is_selected ? 'true' : 'false' ); ?>"
 				>
 					<span class="edminboost-animation-speed-picker__option-main">
 						<span class="edminboost-animation-speed-picker__option-name"><?php echo esc_html( $edminboost_speed['label'] ); ?></span>

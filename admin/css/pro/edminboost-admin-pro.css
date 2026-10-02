@@ -1,0 +1,298 @@
+/**
+ * Premium: Top Bar drawer panel settings, badge previews, and animation speed picker.
+ */
+
+/* Layout Studio item configuration (Pro — drawer interaction + badges) */
+.edminboost-item-drawer[hidden] {
+	display: none !important;
+}
+
+.edminboost-item-drawer:not([hidden]) {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 1px solid #dcdcde;
+}
+
+.edminboost-item-drawer h2 {
+	margin-top: 0;
+}
+
+body.edminboost-theme-active .edminboost-wrap .edminboost-item-drawer:not([hidden]) {
+	border-top-color: var( --eb-border, #dcdcde );
+}
+
+/* Badge preview */
+.edminboost-badge-preview {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 16px;
+	margin-top: 16px;
+	padding: 16px;
+	background: #1d2327;
+	border-radius: 4px;
+}
+
+.edminboost-badge-preview__label {
+	color: #a7aaad;
+	font-size: 12px;
+	margin-right: 8px;
+}
+
+.edminboost-badge-preview__item {
+	position: relative;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	color: #f0f0f1;
+}
+
+.edminboost-badge-preview__item .edminboost-topbar-item__badge {
+	position: absolute;
+	top: 0;
+	right: 0;
+	transform: translate(25%, -25%);
+}
+
+.edminboost-badge-preview__item[hidden] {
+	display: none;
+}
+
+/* Drawer width custom slider */
+.edminboost-drawer-width-custom {
+	margin: 8px 0 0 24px;
+	padding: 12px 16px;
+	max-width: 420px;
+	background: #f6f7f7;
+	border: 1px solid #dcdcde;
+	border-radius: 4px;
+}
+
+.edminboost-drawer-width-custom label {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-bottom: 8px;
+	font-weight: 500;
+}
+
+.edminboost-drawer-width-custom__value {
+	font-weight: 600;
+	color: #2271b1;
+}
+
+.edminboost-drawer-width-custom input[type="range"] {
+	width: 100%;
+	margin: 0;
+}
+
+.edminboost-drawer-width-preview {
+	margin: 12px 0 0 24px;
+	max-width: 420px;
+}
+
+.edminboost-drawer-width-preview__heading {
+	margin: 0 0 8px;
+	font-size: 12px;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: #646970;
+}
+
+.edminboost-drawer-width-preview__viewport {
+	position: relative;
+	height: 80px;
+	border: 1px solid #c3c4c7;
+	border-radius: 4px;
+	overflow: hidden;
+	background: #fff;
+	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.04 );
+}
+
+.edminboost-drawer-width-preview__adminbar {
+	height: 10px;
+	background: linear-gradient( 180deg, #2c3338 0%, #1d2327 100% );
+}
+
+.edminboost-drawer-width-preview__stage {
+	display: flex;
+	height: calc( 100% - 10px );
+}
+
+.edminboost-drawer-width-preview__content {
+	position: relative;
+	flex: 1;
+	min-width: 0;
+	background:
+		repeating-linear-gradient(
+			-45deg,
+			#f6f7f7,
+			#f6f7f7 6px,
+			#f0f0f1 6px,
+			#f0f0f1 12px
+		);
+}
+
+.edminboost-drawer-width-preview__content-label,
+.edminboost-drawer-width-preview__drawer-label {
+	position: absolute;
+	top: 8px;
+	left: 8px;
+	font-size: 10px;
+	font-weight: 600;
+	line-height: 1;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	color: rgba( 29, 35, 39, 0.55 );
+}
+
+.edminboost-drawer-width-preview__drawer {
+	position: relative;
+	flex-shrink: 0;
+	width: 0;
+	background: linear-gradient( 180deg, #3582c4 0%, #2271b1 100% );
+	border-left: 2px solid #135e96;
+	box-shadow: -4px 0 12px rgba( 34, 113, 177, 0.18 );
+	transition: width 0.12s ease;
+}
+
+.edminboost-drawer-width-preview__drawer-label {
+	left: auto;
+	right: 8px;
+	color: rgba( 255, 255, 255, 0.92 );
+}
+
+.edminboost-drawer-width-preview__caption {
+	margin: 8px 0 0;
+}
+
+.edminboost-animation-speed-picker {
+	position: relative;
+	max-width: 420px;
+	margin-top: 8px;
+}
+
+.edminboost-animation-speed-picker__toggle {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	width: 100%;
+	min-height: 40px;
+	padding: 8px 12px;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
+	background: #fff;
+	color: #1d2327;
+	cursor: pointer;
+	text-align: left;
+}
+
+.edminboost-animation-speed-picker__toggle:hover,
+.edminboost-animation-speed-picker__toggle:focus {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+	outline: none;
+}
+
+.edminboost-animation-speed-picker__label {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	min-width: 0;
+}
+
+.edminboost-animation-speed-picker__name {
+	font-weight: 600;
+	white-space: nowrap;
+}
+
+.edminboost-animation-speed-picker__preview {
+	position: relative;
+	flex-shrink: 0;
+	width: 72px;
+	height: 32px;
+	overflow: hidden;
+	border: 1px solid #dcdcde;
+	border-radius: 3px;
+	background: #f6f7f7;
+}
+
+.edminboost-animation-speed-picker__preview-content {
+	position: absolute;
+	inset: 0;
+	background: linear-gradient( 180deg, #f0f0f1 0%, #e8e8e9 100% );
+}
+
+.edminboost-animation-speed-picker__preview-drawer {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	width: 0;
+	background: linear-gradient( 180deg, #3582c4 0%, #2271b1 100% );
+	border-left: 1px solid #135e96;
+	box-shadow: -2px 0 6px rgba( 34, 113, 177, 0.2 );
+	transition: width var( --edminboost-animation-preview-ms, 300ms ) ease;
+}
+
+.edminboost-animation-speed-picker__preview-drawer.is-open {
+	width: 52%;
+}
+
+.edminboost-animation-speed-picker__list {
+	position: absolute;
+	z-index: 20;
+	top: calc( 100% + 4px );
+	left: 0;
+	right: 0;
+	margin: 0;
+	padding: 4px 0;
+	list-style: none;
+	border: 1px solid #8c8f94;
+	border-radius: 4px;
+	background: #fff;
+	box-shadow: 0 4px 12px rgba( 0, 0, 0, 0.08 );
+}
+
+.edminboost-animation-speed-picker__list[hidden] {
+	display: none;
+}
+
+.edminboost-animation-speed-picker__option {
+	margin: 0;
+	padding: 8px 12px;
+	cursor: pointer;
+}
+
+.edminboost-animation-speed-picker__option:hover,
+.edminboost-animation-speed-picker__option:focus {
+	background: #f6f7f7;
+	outline: none;
+}
+
+.edminboost-animation-speed-picker__option.is-selected {
+	background: #f0f6fc;
+	box-shadow: inset 3px 0 0 #2271b1;
+}
+
+.edminboost-animation-speed-picker__option-main {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.edminboost-animation-speed-picker__option-name {
+	font-weight: 500;
+}
+
+body.edminboost-theme-active .edminboost-wrap .edminboost-badge-preview {
+	background: var( --eb-drawer-header-bg, #1d2327 );
+}

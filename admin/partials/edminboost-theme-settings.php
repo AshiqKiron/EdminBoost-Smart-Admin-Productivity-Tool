@@ -45,7 +45,7 @@ $edminboost_show_theme_extras = isset( $edminboost_show_theme_extras ) ? (bool) 
 			aria-hidden="true"
 		>
 			<?php foreach ( $edminboost_theme_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
-				<?php if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) : ?>
+				<?php if ( ! EDMINBOOST_Plan::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) : ?>
 					<?php continue; ?>
 				<?php endif; ?>
 				<option value="<?php echo esc_attr( $edminboost_preset_id ); ?>" <?php selected( $edminboost_active_preset, $edminboost_preset_id ); ?>>
@@ -92,7 +92,7 @@ $edminboost_show_theme_extras = isset( $edminboost_show_theme_extras ) ? (bool) 
 			>
 				<?php foreach ( $edminboost_theme_presets as $edminboost_preset_id => $edminboost_preset ) : ?>
 					<?php
-					if ( ! EDMINBOOST_Pro::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) {
+					if ( ! EDMINBOOST_Plan::include_preset_in_ui( $edminboost_preset_id, 'theme' ) ) {
 						continue;
 					}
 					$edminboost_option_colors = EDMINBOOST_Theme::resolve_preview_colors(
@@ -258,11 +258,7 @@ $edminboost_show_theme_extras = isset( $edminboost_show_theme_extras ) ? (bool) 
 <section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-theme-extras-heading">
 	<h2 id="edminboost-theme-extras-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_extras' ); ?><?php esc_html_e( 'Appearance extras', 'edminboost-admin-customization' ); ?></h2>
 	<p class="description">
-		<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-			<?php esc_html_e( 'Fine-tune admin typography, background, favicon, post list colors, and optional scheduled dark mode.', 'edminboost-admin-customization' ); ?>
-		<?php else : ?>
-			<?php esc_html_e( 'Fine-tune admin typography, background, favicon, and post list colors.', 'edminboost-admin-customization' ); ?>
-		<?php endif; ?>
+		<?php esc_html_e( 'Fine-tune admin typography, background, favicon, and post list colors.', 'edminboost-admin-customization' ); ?>
 	</p>
 
 	<div class="edminboost-theme-extras-layout">
@@ -346,43 +342,11 @@ $edminboost_show_theme_extras = isset( $edminboost_show_theme_extras ) ? (bool) 
 				</div>
 			</fieldset>
 
-			<?php if ( EDMINBOOST_Pro::shows_pro_settings_ui() ) : ?>
-			<fieldset class="edminboost-fieldset edminboost-theme-extras-group <?php echo esc_attr( EDMINBOOST_Pro::section_class( 'schedule_dark_mode' ) ); ?>"<?php EDMINBOOST_Pro::echo_feature_attr( 'schedule_dark_mode' ); ?>>
-				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_schedule_dark_mode' ); ?><?php esc_html_e( 'Scheduled dark mode', 'edminboost-admin-customization' ); ?></legend>
-				<label class="edminboost-checkbox-row" for="edminboost_schedule_dark_mode">
-					<input type="checkbox" id="edminboost_schedule_dark_mode" name="<?php echo esc_attr( $edminboost_theme_key ); ?>[schedule_dark_mode]" value="1" <?php checked( ! empty( $edminboost_theme['schedule_dark_mode'] ) ); ?> />
-					<?php esc_html_e( 'Enable scheduled dark mode window for Auto color mode.', 'edminboost-admin-customization' ); ?>
-				</label>
-				<div
-					class="edminboost-dependent-section edminboost-theme-extras-schedule<?php echo empty( $edminboost_theme['schedule_dark_mode'] ) ? ' is-disabled' : ''; ?>"
-					id="edminboost-theme-schedule-options"
-					aria-disabled="<?php echo empty( $edminboost_theme['schedule_dark_mode'] ) ? 'true' : 'false'; ?>"
-				>
-					<div class="edminboost-theme-extras-schedule-grid">
-						<div class="edminboost-theme-extras-row">
-							<label for="edminboost_dark_mode_start"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_dark_mode_start' ); ?><?php esc_html_e( 'Dark mode start', 'edminboost-admin-customization' ); ?></label>
-							<input
-								type="time"
-								class="edminboost-theme-extras-time"
-								id="edminboost_dark_mode_start"
-								name="<?php echo esc_attr( $edminboost_theme_key ); ?>[dark_mode_start]"
-								value="<?php echo esc_attr( $edminboost_theme['dark_mode_start'] ?? '18:00' ); ?>"
-							/>
-						</div>
-						<div class="edminboost-theme-extras-row">
-							<label for="edminboost_dark_mode_end"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_dark_mode_end' ); ?><?php esc_html_e( 'Dark mode end', 'edminboost-admin-customization' ); ?></label>
-							<input
-								type="time"
-								class="edminboost-theme-extras-time"
-								id="edminboost_dark_mode_end"
-								name="<?php echo esc_attr( $edminboost_theme_key ); ?>[dark_mode_end]"
-								value="<?php echo esc_attr( $edminboost_theme['dark_mode_end'] ?? '06:00' ); ?>"
-							/>
-						</div>
-					</div>
-				</div>
-			</fieldset>
-			<?php endif; ?>
+			<?php
+			if ( EDMINBOOST_Plan::is_direct_build() ) {
+				do_action( 'edminboost_admin_extension', 'theme_schedule_dark_mode' );
+			}
+			?>
 
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
 				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_status_colors' ); ?><?php esc_html_e( 'Post status row colors', 'edminboost-admin-customization' ); ?></legend>

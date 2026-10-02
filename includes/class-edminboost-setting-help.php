@@ -98,8 +98,24 @@ class EDMINBOOST_Setting_Help {
 	 * @return void
 	 */
 	public static function echo_icon( $key, $text = '' ) {
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- render() escapes output.
-		echo self::render( $key, $text );
+		echo wp_kses(
+			self::render( $key, $text ),
+			array(
+				'span'   => array(
+					'class'             => true,
+					'role'              => true,
+					'id'                => true,
+					'aria-hidden'       => true,
+					'aria-describedby'  => true,
+				),
+				'button' => array(
+					'type'              => true,
+					'class'             => true,
+					'aria-label'        => true,
+					'aria-describedby'  => true,
+				),
+			)
+		);
 	}
 
 	/**

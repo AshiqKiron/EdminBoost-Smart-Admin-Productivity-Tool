@@ -36,10 +36,10 @@ The **git development repo** may contain `includes/pro/` for the direct-download
 
 ## Free-tier behavior (WordPress.org installs)
 
-- No in-plugin license API; plan stays **Free** unless a custom filter is added.
+- No in-plugin license API, Billing screen, upgrade URLs, or `edminboost_is_pro_active` hooks in the free package.
 - Pro-only admin screens and controls are **omitted** (not locked with upsell prompts).
-- Plan limits are enforced on settings read/save via `EDMINBOOST_Pro::enforce_plan_limits()`.
-- Upgrade links on the in-plugin **Billing** page open the external pricing site in a new tab only when clicked — no background checkout or telemetry.
+- Capability is defined by which code ships in the zip (smaller preset/theme catalogs; no `includes/pro/`).
+- Unlicensed premium builds enforce limits via classes in `includes/pro/` loaded only on the direct-download build.
 
 See also: [plans-and-billing/free-vs-pro.md](plans-and-billing/free-vs-pro.md) and the FAQ in [`readme.txt`](../readme.txt).
 

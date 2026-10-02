@@ -23,7 +23,12 @@ ZIP_BASENAME="$PLUGIN_SLUG.zip"
 edminboost_build_require_tools
 
 edminboost_build_rsync_stage "$PLUGIN_DIR" "$STAGE_DIR" \
-	--exclude='includes/pro/'
+	--exclude='includes/pro/' \
+	--exclude='admin/partials/pro/' \
+	--exclude='admin/js/pro/' \
+	--exclude='admin/css/pro/' \
+	--exclude='assets/banner-*.png' \
+	--exclude='assets/icon-*.png'
 
 ZIP_PATH="$(edminboost_build_create_zip "$BUILD_DIR" "$PLUGIN_SLUG" "$ZIP_BASENAME")"
 
