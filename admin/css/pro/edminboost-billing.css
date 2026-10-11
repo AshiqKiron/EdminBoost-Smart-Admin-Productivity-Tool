@@ -1,0 +1,382 @@
+/**
+ * Billing page styles (direct-download build only; omitted from WordPress.org zips).
+ */
+
+/* Billing plans */
+.edminboost-billing-current__plan {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 8px 16px;
+	margin: 0;
+}
+
+.edminboost-billing-current__label {
+	font-size: 18px;
+	font-weight: 600;
+	color: #1d2327;
+}
+
+.edminboost-billing-current__meta {
+	color: #646970;
+}
+
+.edminboost-billing-plans {
+	display: grid;
+	grid-template-columns: repeat( 3, minmax( 0, 1fr ) );
+	gap: 20px;
+	margin-top: 20px;
+}
+
+.edminboost-billing-plan {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	padding: 24px;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	background: #fff;
+	box-shadow: 0 1px 1px rgba( 0, 0, 0, 0.04 );
+}
+
+.edminboost-billing-plan.is-featured {
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1, 0 8px 24px rgba( 34, 113, 177, 0.12 );
+}
+
+.edminboost-billing-plan.is-current {
+	background: #f6f7f7;
+}
+
+.edminboost-billing-plan__badge {
+	position: absolute;
+	top: -10px;
+	left: 20px;
+	margin: 0;
+	padding: 2px 10px;
+	border-radius: 999px;
+	background: #2271b1;
+	color: #fff;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.02em;
+	text-transform: uppercase;
+}
+
+.edminboost-billing-plan__header {
+	margin-bottom: 16px;
+}
+
+.edminboost-billing-plan__name {
+	margin: 0 0 8px;
+	font-size: 20px;
+}
+
+.edminboost-billing-plan__price {
+	display: flex;
+	align-items: baseline;
+	gap: 4px;
+	margin: 0 0 4px;
+}
+
+.edminboost-billing-plan__amount {
+	font-size: 32px;
+	font-weight: 700;
+	line-height: 1;
+	color: #1d2327;
+}
+
+.edminboost-billing-plan__period {
+	color: #646970;
+	font-size: 14px;
+}
+
+.edminboost-billing-plan__sites {
+	margin: 0 0 8px;
+	font-weight: 600;
+	color: #2271b1;
+}
+
+.edminboost-billing-plan__desc {
+	margin: 0;
+	color: #646970;
+	font-size: 13px;
+	line-height: 1.5;
+}
+
+.edminboost-billing-plan__features {
+	flex: 1;
+	margin: 0 0 20px;
+	padding: 0;
+	list-style: none;
+}
+
+.edminboost-billing-plan__features li {
+	position: relative;
+	padding: 6px 0 6px 22px;
+	border-bottom: 1px solid #f0f0f1;
+	color: #1d2327;
+	font-size: 13px;
+	line-height: 1.45;
+}
+
+.edminboost-billing-plan__features li:last-child {
+	border-bottom: 0;
+}
+
+.edminboost-billing-plan__features li::before {
+	content: "\2713";
+	position: absolute;
+	left: 0;
+	top: 6px;
+	color: #00a32a;
+	font-weight: 700;
+}
+
+.edminboost-billing-plan__footer {
+	margin-top: auto;
+}
+
+.edminboost-billing-plan__footer .button.button-large,
+.edminboost-billing-comparison__cta-row .button.button-large {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	box-sizing: border-box;
+	width: 100%;
+	min-height: 36px;
+	margin: 0;
+	line-height: 1.4;
+	text-align: center;
+	text-decoration: none;
+	white-space: normal;
+}
+
+.edminboost-billing-plan__footer .button-primary,
+.edminboost-billing-comparison__cta-row .button-primary {
+	color: #fff;
+}
+
+.edminboost-billing-plan__footer .button-primary:hover,
+.edminboost-billing-plan__footer .button-primary:focus,
+.edminboost-billing-comparison__cta-row .button-primary:hover,
+.edminboost-billing-comparison__cta-row .button-primary:focus {
+	color: #fff;
+}
+
+.edminboost-billing-plan__footer .button-secondary,
+.edminboost-billing-comparison__cta-row .button-secondary {
+	color: #2271b1;
+}
+
+.edminboost-billing-comparison__cta-row th,
+.edminboost-billing-comparison__cta-row td {
+	padding: 16px;
+	border-top: 1px solid #dcdcde;
+	vertical-align: middle;
+	background: #fff;
+}
+
+.edminboost-billing-comparison__cta-row td.is-featured {
+	background: #f0f6fc;
+}
+
+.edminboost-billing-note {
+	margin-top: 16px;
+}
+
+.edminboost-billing-comparison__lead {
+	margin: 0 0 12px;
+}
+
+.edminboost-billing-comparison__legend {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 12px 20px;
+	margin: 0 0 16px;
+	padding: 0;
+	list-style: none;
+	font-size: 12px;
+	color: #646970;
+}
+
+.edminboost-billing-comparison__legend li {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.edminboost-billing-comparison__wrap {
+	overflow-x: auto;
+	border: 1px solid #dcdcde;
+	border-radius: 8px;
+	background: #fff;
+}
+
+.edminboost-billing-comparison__table {
+	width: 100%;
+	min-width: 720px;
+	margin: 0;
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+.edminboost-billing-comparison__table thead th {
+	position: sticky;
+	top: 0;
+	z-index: 2;
+	padding: 14px 16px;
+	border-bottom: 1px solid #dcdcde;
+	background: #fff;
+	vertical-align: bottom;
+}
+
+.edminboost-billing-comparison__feature-col {
+	min-width: 240px;
+	max-width: 360px;
+	text-align: left;
+}
+
+.edminboost-billing-comparison__plan-col {
+	width: 132px;
+	min-width: 132px;
+	text-align: center;
+}
+
+.edminboost-billing-comparison__plan-col.is-featured {
+	background: #f0f6fc;
+}
+
+.edminboost-billing-comparison__plan-name {
+	display: block;
+	font-size: 15px;
+	font-weight: 700;
+	color: #1d2327;
+}
+
+.edminboost-billing-comparison__plan-price {
+	display: block;
+	margin-top: 4px;
+	font-size: 11px;
+	font-weight: 500;
+	line-height: 1.4;
+	color: #646970;
+}
+
+.edminboost-billing-comparison__plan-current {
+	display: inline-block;
+	margin-top: 8px;
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: #2271b1;
+	color: #fff;
+	font-size: 10px;
+	font-weight: 700;
+	letter-spacing: 0.03em;
+	text-transform: uppercase;
+}
+
+.edminboost-billing-comparison__feature-row:hover {
+	background: #f6f7f7;
+}
+
+.edminboost-billing-comparison__feature-row th,
+.edminboost-billing-comparison__feature-row td {
+	padding: 12px 16px;
+	border-bottom: 1px solid #f0f0f1;
+	vertical-align: middle;
+}
+
+.edminboost-billing-comparison__feature-row th {
+	font-weight: 500;
+}
+
+.edminboost-billing-comparison__feature-label {
+	display: block;
+	font-size: 13px;
+	font-weight: 600;
+	line-height: 1.4;
+	color: #1d2327;
+}
+
+.edminboost-billing-comparison__feature-detail {
+	display: block;
+	margin-top: 2px;
+	font-size: 12px;
+	font-weight: 400;
+	line-height: 1.45;
+	color: #646970;
+}
+
+.edminboost-billing-comparison__heading-row th {
+	padding: 14px 16px 8px;
+	border-top: 1px solid #e2e4e7;
+	border-bottom: 0;
+	background: #f6f7f7;
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #50575e;
+}
+
+.edminboost-billing-comparison__heading-row:first-child th {
+	border-top: 0;
+}
+
+.edminboost-billing-comparison__heading-row + .edminboost-billing-comparison__feature-row th,
+.edminboost-billing-comparison__heading-row + .edminboost-billing-comparison__feature-row td {
+	border-top: 1px solid #f0f0f1;
+}
+
+.edminboost-billing-comparison__status {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 30px;
+	height: 30px;
+	border-radius: 50%;
+	font-size: 16px;
+	font-weight: 700;
+	line-height: 1;
+}
+
+.edminboost-billing-comparison__status.is-included {
+	background: #edfaef;
+	color: #008a20;
+}
+
+.edminboost-billing-comparison__status.is-included::before {
+	content: "\2713";
+}
+
+.edminboost-billing-comparison__status.is-excluded {
+	background: #f6f7f7;
+	color: #c3c4c7;
+}
+
+.edminboost-billing-comparison__status.is-excluded::before {
+	content: "\2014";
+}
+
+.edminboost-billing-comparison__value {
+	display: inline-block;
+	padding: 4px 10px;
+	border-radius: 999px;
+	background: #f0f0f1;
+	font-size: 12px;
+	font-weight: 700;
+	line-height: 1.3;
+	color: #1d2327;
+}
+
+.edminboost-billing-comparison__plan-col.is-featured .edminboost-billing-comparison__value {
+	background: #dce9f8;
+	color: #135e96;
+}
+
+@media ( max-width: 1100px ) {
+	.edminboost-billing-plans {
+		grid-template-columns: 1fr;
+	}
+}

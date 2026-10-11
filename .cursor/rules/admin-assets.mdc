@@ -30,10 +30,14 @@ alwaysApply: false
 {
 	version: string,
 	isPremiumBuild: boolean,  // EDMINBOOST_Plan::is_direct_build()
+	hasLicensedAdminUi: boolean,  // set true via edminboost_admin_script_data when licensed (EDMINBOOST_Admin_Licensed)
 	currentPage: string,
 	optionName: 'edminboost_settings',
 	strings: {
 		ready, configureItem, removeFromTopBar, emptyCanvas, exportSuccess, exportFailed,
+		topBarOverviewEmpty, topBarOverviewHasLinks,
+		topBarOverviewEmptyLicensed, topBarOpensDirectlyOne, topBarOpensDirectlyMany,
+		opensDirectly, topBarOpensInDrawerOne, topBarOpensInDrawerMany, opensInDrawer,
 		customLinkPathRequired, customLinkLabelRequired, customLinkPathInvalid,
 		customLinkAnchorInvalid, customLinkDuplicate, drawerPreviewFailed,
 		drawerWidthPreviewCaption, drawerWidthPreviewFullscreen, drawerWidthPreviewLabel,
@@ -167,7 +171,9 @@ alwaysApply: false
 | `edminboost-declutter-settings.php` | Admin bar cleanup toggles; includes `edminboost-declutter-preview.php` |
 | `edminboost-declutter-preview.php` | Live declutter preview (`$behavior`); `#edminboost-declutter-preview`; synced by `initDeclutterPreview()` |
 | `edminboost-theme-extras-preview.php` | Live Appearance extras preview (`$theme`, `$preview_colors`, optional `$preview_id`); `#edminboost-theme-extras-preview`; included from `edminboost-theme-settings.php`; synced by `initThemeExtras()` |
-| `edminboost-animation-speed-field.php` | Animation speed picker partial (`$cc_key`, `$behavior`) |
+| `pro/edminboost-animation-speed-field.php` | Licensed animation speed picker (`$cc_key`, `$behavior`; included from `pro/edminboost-home-advanced-look.php`) |
+| `pro/edminboost-overview-topbar-link-meta.php` | Overview top bar link interaction meta (readable include from overview picker when licensed) |
+| `pro/edminboost-theme-settings-licensed-desc.php` | Theme page licensed drawer description snippet |
 | `edminboost-preset-picker.php` | Layout preset dropdown (`wizard` / `full` / `overview` modes) |
 | `edminboost-topbar-summary.php` | Read-only top bar link list |
 | `edminboost-feature-fields.php` | Shared feature toggles (`$section`: productivity, security, performance); checkbox rows place `EDMINBOOST_Setting_Help::echo_icon()` before the input; multi-select groups (e.g. Heartbeat) use `.edminboost-select-rows` with per-field help keys; master toggles wrap nested fields in `.edminboost-dependent-section` (`.is-disabled` when off): `#edminboost-login-redirects-options`, `#edminboost-dashboard-widgets-options`, `#edminboost-admin-footer-options`; Productivity admin-notices fieldset includes `edminboost-productivity-preview.php`; Performance emoji/assets fieldsets include `edminboost-performance-preview.php` |
@@ -248,7 +254,7 @@ Key elements: `#edminboost-dashboard-overview-form`, `#edminboost_dashboard_appl
 - Layout preset option click sets `_apply_preset` hidden field and AJAX-saves; success reloads the page (preset apply).
 - Theme preset option click updates `edminboostData.themeSettings.preset`, syncs hidden `#edminboost_theme_preset`, calls `syncThemeSettingsFn()` (live body preview via `initTheme`), updates `#edminboost-overview-theme-preview` swatches, and AJAX-saves with `{ silent: true }`.
 - `saveDashboardOverview()` returns a Promise, queues concurrent saves via `pendingDashboardOverviewSave`, and syncs `#edminboost_theme_preset` from `edminboostData.themeSettings` before submit.
-- Read-only top bar links picker toggles `#edminboost-overview-topbar-links-list` (closes on scroll via `initPickerCloseOnScroll`).
+- Read-only top bar links picker toggles `#edminboost-overview-topbar-links-list` (closes on scroll via `initPickerCloseOnScroll`); `buildTopBarDescription()` and `rebuildTopbarLinksList()` use `hasLicensedAdminUi()` + licensed strings for redirect/drawer counts and `.edminboost-overview-topbar-links-picker__option-meta` (server-rendered list uses `pro/edminboost-overview-topbar-link-meta.php` when the package ships).
 
 ## Setup wizard JS (`initSetupWizard`)
 

@@ -132,5 +132,5 @@ $edminboost_preview_style_vars = sprintf(
 		</div>
 	</div>
 
-	<?php EDMINBOOST_Plan::render_admin_extension( 'theme_extras_schedule_preview' ); ?>
+	<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_theme_extras_schedule_preview_partials' ); ?>
 </div>

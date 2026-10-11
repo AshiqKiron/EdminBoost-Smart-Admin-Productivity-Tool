@@ -19,6 +19,8 @@ class EDMINBOOST_Admin_Licensed {
 	 */
 	public static function register_hooks() {
 		add_action( 'edminboost_register_admin_menus', array( __CLASS__, 'register_submenus' ) );
+		add_filter( 'edminboost_render_cc_page', array( __CLASS__, 'filter_render_cc_page' ), 10, 3 );
+		add_filter( 'edminboost_cc_page_title', array( __CLASS__, 'filter_cc_page_title' ), 10, 2 );
 		add_filter( 'edminboost_command_center_page_links', array( __CLASS__, 'filter_page_links' ) );
 		add_filter( 'edminboost_command_center_nav_items', array( __CLASS__, 'filter_nav_items' ) );
 		add_filter( 'edminboost_should_sanitize_white_label', array( __CLASS__, 'filter_should_sanitize_white_label' ) );
@@ -32,15 +34,167 @@ class EDMINBOOST_Admin_Licensed {
 	}
 
 	/**
-	 * @param EDMINBOOST_Admin $admin Admin instance.
+	 * @param EDMINBOOST_Admin $admin Admin instance (unused).
 	 * @return void
 	 */
 	public static function register_submenus( $admin ) {
+		unset( $admin );
+
 		if ( ! EDMINBOOST_Pro::has_licensed_admin_ui() ) {
 			return;
 		}
 
-		$admin->register_licensed_submenus();
+		$settings_title = __( 'Settings', 'edminboost-admin-customization' );
+		$settings_slug  = EDMINBOOST_Admin::PAGE_SLUG . '-settings';
+
+		self::bind_admin_page_title(
+			add_submenu_page(
+				EDMINBOOST_Admin::PAGE_SLUG,
+				$settings_title,
+				$settings_title,
+				EDMINBOOST_Settings::CAPABILITY,
+				$settings_slug,
+				array( __CLASS__, 'render_settings_page' )
+			),
+			$settings_title
+		);
+
+		$white_label_title = __( 'White Label', 'edminboost-admin-customization' );
+		$white_label_slug  = EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL;
+
+		self::bind_admin_page_title(
+			add_submenu_page(
+				null,
+				$white_label_title,
+				$white_label_title,
+				EDMINBOOST_Settings::CAPABILITY,
+				$white_label_slug,
+				array( __CLASS__, 'render_white_label_page' )
+			),
+			$white_label_title
+		);
+	}
+
+	/**
+	 * @return string
+	 */
+	private static function get_settings_page_slug() {
+		return EDMINBOOST_Admin::PAGE_SLUG . '-settings';
+	}
+
+	/**
+	 * @return string
+	 */
+	private static function get_white_label_page_slug() {
+		return EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL;
+	}
+
+	/**
+	 * @param bool             $handled Whether the page was rendered.
+	 * @param string           $page    Page slug.
+	 * @param EDMINBOOST_Admin $admin   Admin instance.
+	 * @return bool
+	 */
+	public static function filter_render_cc_page( $handled, $page, $admin ) {
+		if ( $handled || ! EDMINBOOST_Pro::has_licensed_admin_ui() ) {
+			return $handled;
+		}
+
+		if ( self::get_settings_page_slug() === $page ) {
+			self::render_settings_page_via( $admin );
+			return true;
+		}
+
+		if ( self::get_white_label_page_slug() === $page ) {
+			self::render_white_label_page_via( $admin );
+			return true;
+		}
+
+		return $handled;
+	}
+
+	/**
+	 * @param string $title Page title.
+	 * @param string $page  Page slug.
+	 * @return string
+	 */
+	public static function filter_cc_page_title( $title, $page ) {
+		if ( ! EDMINBOOST_Pro::has_licensed_admin_ui() ) {
+			return $title;
+		}
+
+		if ( self::get_settings_page_slug() === $page ) {
+			return __( 'Settings', 'edminboost-admin-customization' );
+		}
+
+		if ( self::get_white_label_page_slug() === $page ) {
+			return __( 'White Label', 'edminboost-admin-customization' );
+		}
+
+		return $title;
+	}
+
+	/**
+	 * @return void
+	 */
+	public static function render_settings_page() {
+		self::render_settings_page_via( edminboost_run_plugin()->get_admin() );
+	}
+
+	/**
+	 * @return void
+	 */
+	public static function render_white_label_page() {
+		self::render_white_label_page_via( edminboost_run_plugin()->get_admin() );
+	}
+
+	/**
+	 * @param EDMINBOOST_Admin $admin Admin instance.
+	 * @return void
+	 */
+	private static function render_settings_page_via( $admin ) {
+		$partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-settings-page.php';
+		if ( ! is_readable( $partial ) ) {
+			wp_safe_redirect( admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG ) );
+			exit;
+		}
+
+		$admin->render_command_center_partial( 'admin/partials/pro/edminboost-settings-page.php' );
+	}
+
+	/**
+	 * @param EDMINBOOST_Admin $admin Admin instance.
+	 * @return void
+	 */
+	private static function render_white_label_page_via( $admin ) {
+		$partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-white-label-page.php';
+		if ( ! is_readable( $partial ) ) {
+			wp_safe_redirect( admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG ) );
+			exit;
+		}
+
+		$admin->render_command_center_partial( 'admin/partials/pro/edminboost-white-label-page.php' );
+	}
+
+	/**
+	 * Ensure admin-header.php receives a string page title (PHP 8.1+).
+	 *
+	 * @param string|false $hook_suffix Hook suffix from add_menu_page / add_submenu_page.
+	 * @param string       $page_title  Document title when the screen loads.
+	 * @return void
+	 */
+	private static function bind_admin_page_title( $hook_suffix, $page_title ) {
+		if ( ! $hook_suffix ) {
+			return;
+		}
+
+		add_action(
+			"load-{$hook_suffix}",
+			static function () use ( $page_title ) {
+				global $title;
+				$title = $page_title;
+			}
+		);
 	}
 
 	/**
@@ -140,6 +294,11 @@ class EDMINBOOST_Admin_Licensed {
 			isset( $localize['strings'] ) && is_array( $localize['strings'] ) ? $localize['strings'] : array(),
 			array(
 				'topBarOverviewEmptyLicensed' => __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer.', 'edminboost-admin-customization' ),
+				/* translators: %d: number of links that open directly */
+				'topBarOpensDirectlyOne'      => __( '%d opens directly', 'edminboost-admin-customization' ),
+				/* translators: %d: number of links that open directly */
+				'topBarOpensDirectlyMany'     => __( '%d open directly', 'edminboost-admin-customization' ),
+				'opensDirectly'               => __( 'Opens directly', 'edminboost-admin-customization' ),
 				/* translators: %d: number of links that open in a slide-out drawer */
 				'topBarOpensInDrawerOne'      => __( '%d opens in a slide-out drawer', 'edminboost-admin-customization' ),
 				/* translators: %d: number of links that open in a slide-out drawer */
@@ -155,6 +314,10 @@ class EDMINBOOST_Admin_Licensed {
 				'importFileRequired'          => __( 'Choose a JSON file to import.', 'edminboost-admin-customization' ),
 				'importReadFailed'            => __( 'Could not read the selected file.', 'edminboost-admin-customization' ),
 				'importFailed'                => __( 'Could not import settings. Check the JSON and try again.', 'edminboost-admin-customization' ),
+				'customMenuPathRequired'      => __( 'Enter an admin path.', 'edminboost-admin-customization' ),
+				'customMenuLabelRequired'     => __( 'Enter a label.', 'edminboost-admin-customization' ),
+				'customMenuPathInvalid'       => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost-admin-customization' ),
+				'customMenuDuplicate'         => __( 'That link is already on your sidebar.', 'edminboost-admin-customization' ),
 			)
 		);
 

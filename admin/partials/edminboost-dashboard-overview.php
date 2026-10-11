@@ -40,47 +40,11 @@ $edminboost_top_bar_items = isset( $cc_settings['top_bar_items'] ) && is_array( 
 	: array();
 $edminboost_top_bar_count    = count( $edminboost_top_bar_items );
 $edminboost_show_topbar_interaction = (bool) apply_filters( 'edminboost_show_topbar_interaction_ui', false );
-$edminboost_redirect_count   = 0;
-$edminboost_drawer_count     = 0;
-
-if ( $edminboost_show_topbar_interaction ) {
-	foreach ( $edminboost_top_bar_items as $edminboost_top_bar_item ) {
-		$edminboost_interaction = isset( $edminboost_top_bar_item['interaction'] ) ? $edminboost_top_bar_item['interaction'] : 'redirect';
-		if ( 'drawer' === $edminboost_interaction ) {
-			++$edminboost_drawer_count;
-		} else {
-			++$edminboost_redirect_count;
-		}
-	}
-}
 
 if ( 0 === $edminboost_top_bar_count ) {
-	$edminboost_top_bar_desc = $edminboost_show_topbar_interaction
-		? __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer.', 'edminboost-admin-customization' )
-		: __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor.', 'edminboost-admin-customization' );
+	$edminboost_top_bar_desc = __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor.', 'edminboost-admin-customization' );
 } else {
-	$edminboost_top_bar_desc  = __( 'Admin link shortcuts appear in your WordPress top bar.', 'edminboost-admin-customization' );
-	$edminboost_opening_parts = array();
-
-	if ( $edminboost_show_topbar_interaction && $edminboost_redirect_count > 0 ) {
-		$edminboost_opening_parts[] = sprintf(
-			/* translators: %d: number of links that open directly */
-			_n( '%d opens directly', '%d open directly', $edminboost_redirect_count, 'edminboost-admin-customization' ),
-			$edminboost_redirect_count
-		);
-	}
-
-	if ( $edminboost_show_topbar_interaction && $edminboost_drawer_count > 0 ) {
-		$edminboost_opening_parts[] = sprintf(
-			/* translators: %d: number of links that open in a slide-out drawer */
-			_n( '%d opens in a slide-out drawer', '%d open in a slide-out drawer', $edminboost_drawer_count, 'edminboost-admin-customization' ),
-			$edminboost_drawer_count
-		);
-	}
-
-	if ( ! empty( $edminboost_opening_parts ) ) {
-		$edminboost_top_bar_desc .= ' ' . implode( '; ', $edminboost_opening_parts ) . '.';
-	}
+	$edminboost_top_bar_desc = __( 'Admin link shortcuts appear in your WordPress top bar.', 'edminboost-admin-customization' );
 }
 
 $edminboost_layout_sidebar_items = EDMINBOOST_Command_Center::resolve_preset_sidebar_preview_items( $edminboost_layout_preset, $cc_settings );

@@ -109,19 +109,4 @@ class EDMINBOOST_Plan {
 	public static function is_login_redirects_enabled( $enabled ) {
 		return (bool) apply_filters( 'edminboost_login_redirects_enabled', false, $enabled );
 	}
-
-	/**
-	 * Include a licensed admin partial for an extension slot (no-op when unlicensed).
-	 *
-	 * @param string $slot Extension slot identifier.
-	 * @return void
-	 */
-	public static function render_admin_extension( $slot ) {
-		/**
-		 * Render a licensed admin UI extension slot.
-		 *
-		 * @param string $slot Extension slot identifier.
-		 */
-		do_action( 'edminboost_admin_extension', $slot );
-	}
 }

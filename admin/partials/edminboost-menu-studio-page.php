@@ -171,7 +171,7 @@ $edminboost_color_fields = array(
 					<?php endif; ?>
 				</ul>
 
-				<?php EDMINBOOST_Plan::render_admin_extension( 'menu_custom_link' ); ?>
+				<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_menu_studio_custom_link_partials' ); ?>
 			</aside>
 
 			<div class="edminboost-menu-studio-main">
@@ -332,7 +332,7 @@ $edminboost_color_fields = array(
 									</div>
 								</fieldset>
 
-								<?php EDMINBOOST_Plan::render_admin_extension( 'menu_display_mode' ); ?>
+								<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_menu_studio_display_mode_partials' ); ?>
 							</div>
 						</div>
 

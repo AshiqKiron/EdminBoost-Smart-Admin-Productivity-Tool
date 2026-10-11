@@ -19,6 +19,7 @@ class EDMINBOOST_Admin_Billing {
 	 */
 	public static function register_hooks() {
 		add_action( 'admin_menu', array( __CLASS__, 'register_submenu' ), 20 );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_styles' ), 15 );
 		add_filter( 'edminboost_render_cc_page', array( __CLASS__, 'filter_render_cc_page' ), 10, 3 );
 		add_filter( 'edminboost_cc_page_title', array( __CLASS__, 'filter_cc_page_title' ), 10, 2 );
 	}
@@ -73,6 +74,32 @@ class EDMINBOOST_Admin_Billing {
 		}
 
 		return $title;
+	}
+
+	/**
+	 * Enqueue Billing page styles on the direct-download build.
+	 *
+	 * @param string $hook_suffix Current admin page hook.
+	 * @return void
+	 */
+	public static function enqueue_styles( $hook_suffix ) {
+		unset( $hook_suffix );
+
+		if ( ! EDMINBOOST_Plan::is_direct_build() ) {
+			return;
+		}
+
+		$screen_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( self::get_page_slug() !== $screen_page ) {
+			return;
+		}
+
+		wp_enqueue_style(
+			'edminboost-billing',
+			EDMINBOOST_PLUGIN_URL . 'admin/css/pro/edminboost-billing.css',
+			array( 'edminboost-admin' ),
+			EDMINBOOST_VERSION
+		);
 	}
 
 	/**

@@ -25,19 +25,18 @@ class EDMINBOOST_Pro {
 	const LICENSED_ADMIN_PACKAGE_MARKER = 'admin/partials/pro/index.php';
 
 	/**
-	 * Admin extension slot => partial basename under admin/partials/pro/.
+	 * Command Center markup slot filters => partial basename under admin/partials/pro/.
 	 */
-	const ADMIN_EXTENSION_PARTIALS = array(
-		'settings_backup'               => 'edminboost-settings-backup.php',
-		'mapper_look_section'           => 'edminboost-mapper-look-section.php',
-		'security_login_redirects'      => 'edminboost-security-login-redirects.php',
-		'menu_custom_link'              => 'edminboost-menu-custom-link.php',
-		'menu_display_mode'             => 'edminboost-menu-display-mode.php',
-		'presets_role_matrix_head'      => 'edminboost-presets-role-matrix-head.php',
-		'presets_role_matrix_cells'     => 'edminboost-presets-role-matrix-cells.php',
-		'presets_role_visibility_help'  => 'edminboost-presets-role-visibility-help.php',
-		'theme_extras_schedule_preview' => 'edminboost-theme-extras-schedule-preview.php',
-		'theme_schedule_dark_mode'      => 'edminboost-theme-schedule-dark-mode.php',
+	const LICENSED_PARTIAL_FILTERS = array(
+		'edminboost_mapper_after_canvas_partials'           => 'edminboost-mapper-look-section.php',
+		'edminboost_presets_role_matrix_head_partials'      => 'edminboost-presets-role-matrix-head.php',
+		'edminboost_presets_role_matrix_row_partials'       => 'edminboost-presets-role-matrix-cells.php',
+		'edminboost_presets_role_matrix_after_table_partials' => 'edminboost-presets-role-visibility-help.php',
+		'edminboost_theme_settings_schedule_partials'       => 'edminboost-theme-schedule-dark-mode.php',
+		'edminboost_theme_extras_schedule_preview_partials' => 'edminboost-theme-extras-schedule-preview.php',
+		'edminboost_security_page_extra_partials'           => 'edminboost-security-login-redirects.php',
+		'edminboost_menu_studio_custom_link_partials'       => 'edminboost-menu-custom-link.php',
+		'edminboost_menu_studio_display_mode_partials'      => 'edminboost-menu-display-mode.php',
 	);
 
 	/**
@@ -46,12 +45,23 @@ class EDMINBOOST_Pro {
 	 * @return void
 	 */
 	public static function register_admin_ui_hooks() {
-		add_filter( 'edminboost_has_licensed_admin_ui', array( __CLASS__, 'filter_has_licensed_admin_ui' ) );
+		add_filter( 'edminboost_should_register_licensed_admin_menus', array( __CLASS__, 'filter_should_register_licensed_admin_menus' ) );
+		add_filter( 'edminboost_should_enqueue_licensed_admin_assets', array( __CLASS__, 'filter_should_enqueue_licensed_admin_assets' ) );
 		add_filter( 'edminboost_show_topbar_interaction_ui', array( __CLASS__, 'filter_show_topbar_interaction_ui' ) );
 		add_filter( 'edminboost_allows_custom_preset_actions', array( __CLASS__, 'filter_allows_custom_preset_actions' ) );
 		add_filter( 'edminboost_login_redirects_enabled', array( __CLASS__, 'filter_login_redirects_enabled' ), 10, 2 );
 		add_filter( 'edminboost_mapper_item_sidebar_partial', array( __CLASS__, 'filter_mapper_item_sidebar_partial' ) );
-		add_action( 'edminboost_admin_extension', array( __CLASS__, 'render_admin_extension' ) );
+
+		foreach ( self::LICENSED_PARTIAL_FILTERS as $filter_name => $basename ) {
+			add_filter(
+				$filter_name,
+				function ( $paths ) use ( $basename ) {
+					return self::merge_licensed_partial_path( $paths, $basename );
+				},
+				10,
+				1
+			);
+		}
 	}
 
 	/**
@@ -60,7 +70,35 @@ class EDMINBOOST_Pro {
 	 * @return bool
 	 */
 	public static function has_licensed_admin_ui() {
-		return (bool) apply_filters( 'edminboost_has_licensed_admin_ui', false );
+		if ( ! self::has_licensed_admin_package() ) {
+			return false;
+		}
+
+		return EDMINBOOST_Plan_Licensing::is_active();
+	}
+
+	/**
+	 * @param bool $register Default false on the WordPress.org build.
+	 * @return bool
+	 */
+	public static function filter_should_register_licensed_admin_menus( $register ) {
+		if ( $register ) {
+			return true;
+		}
+
+		return self::has_licensed_admin_ui();
+	}
+
+	/**
+	 * @param bool $enqueue Default false on the WordPress.org build.
+	 * @return bool
+	 */
+	public static function filter_should_enqueue_licensed_admin_assets( $enqueue ) {
+		if ( $enqueue ) {
+			return true;
+		}
+
+		return self::has_licensed_admin_ui();
 	}
 
 	/**
@@ -83,22 +121,6 @@ class EDMINBOOST_Pro {
 	 */
 	public static function has_licensed_admin_package() {
 		return file_exists( EDMINBOOST_PLUGIN_DIR . self::LICENSED_ADMIN_PACKAGE_MARKER );
-	}
-
-	/**
-	 * @param bool $active Default from WordPress.org build.
-	 * @return bool
-	 */
-	public static function filter_has_licensed_admin_ui( $active ) {
-		if ( $active ) {
-			return true;
-		}
-
-		if ( ! self::has_licensed_admin_package() ) {
-			return false;
-		}
-
-		return EDMINBOOST_Plan_Licensing::is_active();
 	}
 
 	/**
@@ -154,21 +176,29 @@ class EDMINBOOST_Pro {
 	}
 
 	/**
-	 * Include a licensed admin partial for an extension slot.
+	 * Append a licensed partial path when the package is active.
 	 *
-	 * @param string $slot Extension slot identifier.
-	 * @return void
+	 * @param string[] $paths    Existing paths.
+	 * @param string   $basename Filename under admin/partials/pro/.
+	 * @return string[]
 	 */
-	public static function render_admin_extension( $slot ) {
+	public static function merge_licensed_partial_path( $paths, $basename ) {
 		if ( ! self::has_licensed_admin_ui() ) {
-			return;
+			return is_array( $paths ) ? $paths : array();
 		}
 
-		if ( ! isset( self::ADMIN_EXTENSION_PARTIALS[ $slot ] ) ) {
-			return;
+		$path = self::get_licensed_partial_path( $basename );
+		if ( ! is_readable( $path ) ) {
+			return is_array( $paths ) ? $paths : array();
 		}
 
-		self::include_licensed_partial( self::ADMIN_EXTENSION_PARTIALS[ $slot ] );
+		if ( ! is_array( $paths ) ) {
+			$paths = array();
+		}
+
+		$paths[] = $path;
+
+		return $paths;
 	}
 
 	/**

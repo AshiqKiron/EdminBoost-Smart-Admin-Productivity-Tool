@@ -218,7 +218,7 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 					?>
 				</section>
 
-				<?php EDMINBOOST_Plan::render_admin_extension( 'mapper_look_section' ); ?>
+				<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_mapper_after_canvas_partials' ); ?>
 
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_layout_studio_save]" value="1" />

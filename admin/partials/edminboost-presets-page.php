@@ -85,7 +85,7 @@ $edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 		</section>
 
 		<section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-roles-heading">
-			<h2 id="edminboost-roles-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'role_visibility' ); ?><?php esc_html_e( 'Who sees what', 'edminboost-admin-customization' ); ?></h2>
+			<h2 id="edminboost-roles-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'role_assignments' ); ?><?php esc_html_e( 'Who sees what', 'edminboost-admin-customization' ); ?></h2>
 			<p class="description">
 				<?php esc_html_e( 'Assign a layout preset per role to customize both the top bar and admin sidebar for that role.', 'edminboost-admin-customization' ); ?>
 			</p>
@@ -103,7 +103,7 @@ $edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 								<th scope="col" class="edminboost-role-matrix__preset-col">
 									<?php EDMINBOOST_Setting_Help::echo_icon( 'role_assignments' ); ?><?php esc_html_e( 'Assigned preset', 'edminboost-admin-customization' ); ?>
 								</th>
-								<?php EDMINBOOST_Plan::render_admin_extension( 'presets_role_matrix_head' ); ?>
+								<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_presets_role_matrix_head_partials' ); ?>
 							</tr>
 						</thead>
 						<tbody>
@@ -140,13 +140,13 @@ $edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 											<?php endforeach; ?>
 										</select>
 									</td>
-									<?php EDMINBOOST_Plan::render_admin_extension( 'presets_role_matrix_cells' ); ?>
+									<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_presets_role_matrix_row_partials', $edminboost_role_key ); ?>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
 					</table>
 				</div>
-				<?php EDMINBOOST_Plan::render_admin_extension( 'presets_role_visibility_help' ); ?>
+				<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_presets_role_matrix_after_table_partials' ); ?>
 			<?php endif; ?>
 		</section>
 

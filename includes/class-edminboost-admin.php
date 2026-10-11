@@ -133,12 +133,14 @@ class EDMINBOOST_Admin {
 			array( $this, 'render_performance_page' )
 		);
 
-		/**
-		 * Register optional admin menus (premium package adds Settings and White Label when licensed).
-		 *
-		 * @param EDMINBOOST_Admin $admin Admin instance.
-		 */
-		do_action( 'edminboost_register_admin_menus', $this );
+		if ( apply_filters( 'edminboost_should_register_licensed_admin_menus', false ) ) {
+			/**
+			 * Register optional admin menus (premium package adds Settings and White Label when licensed).
+			 *
+			 * @param EDMINBOOST_Admin $admin Admin instance.
+			 */
+			do_action( 'edminboost_register_admin_menus', $this );
+		}
 
 		// Legacy slugs — redirect to Dashboard (not shown in sidebar).
 		$this->register_plugin_submenu_page(
@@ -401,21 +403,6 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
-	 * Render the White Label settings page.
-	 *
-	 * @return void
-	 */
-	public function render_white_label_page() {
-		$partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-white-label-page.php';
-		if ( ! is_readable( $partial ) ) {
-			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
-			exit;
-		}
-
-		$this->render_command_center_page( 'admin/partials/pro/edminboost-white-label-page.php' );
-	}
-
-	/**
 	 * Render a Command Center partial.
 	 *
 	 * @param string $partial Relative path under the plugin directory.
@@ -430,6 +417,44 @@ class EDMINBOOST_Admin {
 		$current_page = $this->get_current_cc_page_slug();
 
 		include EDMINBOOST_PLUGIN_DIR . $partial;
+	}
+
+	/**
+	 * Render a Command Center partial (used by premium licensed screens and CC tab AJAX).
+	 *
+	 * @param string $partial Relative path under the plugin directory.
+	 * @return void
+	 */
+	public function render_command_center_partial( $partial ) {
+		$this->render_command_center_page( $partial );
+	}
+
+	/**
+	 * Include optional admin partial paths supplied by filters (empty on WordPress.org).
+	 *
+	 * @param string $filter_name Filter returning an array of absolute partial paths.
+	 * @param mixed  ...$args     Optional extra filter arguments.
+	 * @return void
+	 */
+	public static function include_filtered_partials( $filter_name, ...$args ) {
+		/**
+		 * Filter optional admin partial paths to include at a Command Center markup slot.
+		 *
+		 * @param string[] $partial_paths Absolute paths; default empty array.
+		 */
+		$partial_paths = apply_filters( $filter_name, array(), ...$args );
+
+		if ( ! is_array( $partial_paths ) ) {
+			return;
+		}
+
+		foreach ( $partial_paths as $partial_path ) {
+			if ( ! is_string( $partial_path ) || ! is_readable( $partial_path ) ) {
+				continue;
+			}
+
+			include $partial_path;
+		}
 	}
 
 	/**
@@ -451,21 +476,6 @@ class EDMINBOOST_Admin {
 		}
 
 		return '';
-	}
-
-	/**
-	 * Render the settings page.
-	 *
-	 * @return void
-	 */
-	public function render_settings_page() {
-		$partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-settings-page.php';
-		if ( ! is_readable( $partial ) ) {
-			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
-			exit;
-		}
-
-		$this->render_command_center_page( 'admin/partials/pro/edminboost-settings-page.php' );
 	}
 
 	/**
@@ -528,7 +538,6 @@ class EDMINBOOST_Admin {
 				'configureItem'   => __( 'Configure', 'edminboost-admin-customization' ),
 				'removeFromTopBar' => __( 'Remove from top bar', 'edminboost-admin-customization' ),
 				'emptyCanvas'     => __( 'Toggle items from the left panel or drag them here to build your top bar.', 'edminboost-admin-customization' ),
-				'exportSuccess'   => __( 'Preset exported.', 'edminboost-admin-customization' ),
 				'customLinkPathRequired'  => __( 'Enter an admin path.', 'edminboost-admin-customization' ),
 				'customLinkLabelRequired' => __( 'Enter a label.', 'edminboost-admin-customization' ),
 				'customLinkPathInvalid'   => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost-admin-customization' ),
@@ -536,11 +545,6 @@ class EDMINBOOST_Admin {
 				'customLinkDuplicate'     => __( 'That link is already on your top bar.', 'edminboost-admin-customization' ),
 				'topBarOverviewEmpty'       => __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor.', 'edminboost-admin-customization' ),
 				'topBarOverviewHasLinks'    => __( 'Admin link shortcuts appear in your WordPress top bar.', 'edminboost-admin-customization' ),
-				/* translators: %d: number of links that open directly */
-				'topBarOpensDirectlyOne'    => __( '%d opens directly', 'edminboost-admin-customization' ),
-				/* translators: %d: number of links that open directly */
-				'topBarOpensDirectlyMany'   => __( '%d open directly', 'edminboost-admin-customization' ),
-				'opensDirectly'             => __( 'Opens directly', 'edminboost-admin-customization' ),
 				'settingsSaved'             => __( 'Settings saved.', 'edminboost-admin-customization' ),
 				'settingsSaveFailed'        => __( 'Could not save settings. Please try again.', 'edminboost-admin-customization' ),
 				'presetApplied'             => __( 'Preset applied.', 'edminboost-admin-customization' ),
@@ -550,10 +554,6 @@ class EDMINBOOST_Admin {
 				'presetDuplicated'          => __( 'Preset duplicated.', 'edminboost-admin-customization' ),
 				'emptyMenuCanvas'           => __( 'Drag menu items here to reorder your admin sidebar.', 'edminboost-admin-customization' ),
 				'removeFromSidebar'         => __( 'Remove from sidebar', 'edminboost-admin-customization' ),
-				'customMenuPathRequired'    => __( 'Enter an admin path.', 'edminboost-admin-customization' ),
-				'customMenuLabelRequired'   => __( 'Enter a label.', 'edminboost-admin-customization' ),
-				'customMenuPathInvalid'     => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost-admin-customization' ),
-				'customMenuDuplicate'       => __( 'That link is already on your sidebar.', 'edminboost-admin-customization' ),
 				'selectLayoutPreset'        => __( 'Select a layout preset to continue.', 'edminboost-admin-customization' ),
 				'saveAndLaunch'             => __( 'Save and launch', 'edminboost-admin-customization' ),
 				'presetBadgeBuiltIn'        => __( 'Built-in', 'edminboost-admin-customization' ),
@@ -599,13 +599,15 @@ class EDMINBOOST_Admin {
 			$localize
 		);
 
-		/**
-		 * Enqueue licensed admin scripts after the base plugin script.
-		 *
-		 * @param string $hook_suffix Current admin page hook.
-		 * @param string $screen_page Current admin page slug query arg.
-		 */
-		do_action( 'edminboost_enqueue_licensed_admin_scripts', $hook_suffix, $screen_page );
+		if ( apply_filters( 'edminboost_should_enqueue_licensed_admin_assets', false ) ) {
+			/**
+			 * Enqueue licensed admin scripts after the base plugin script.
+			 *
+			 * @param string $hook_suffix Current admin page hook.
+			 * @param string $screen_page Current admin page slug query arg.
+			 */
+			do_action( 'edminboost_enqueue_licensed_admin_scripts', $hook_suffix, $screen_page );
+		}
 	}
 
 	/**
@@ -680,35 +682,6 @@ class EDMINBOOST_Admin {
 
 		wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
 		exit;
-	}
-
-	/**
-	 * Add a settings link on the plugins screen.
-	 *
-	 * @param array $links Existing plugin action links.
-	 * @return array
-	 */
-	/**
-	 * Register Settings and White Label submenu pages (premium package only).
-	 *
-	 * @return void
-	 */
-	public function register_licensed_submenus() {
-		$this->register_plugin_submenu_page(
-			self::PAGE_SLUG,
-			__( 'Settings', 'edminboost-admin-customization' ),
-			__( 'Settings', 'edminboost-admin-customization' ),
-			self::PAGE_SLUG . '-settings',
-			array( $this, 'render_settings_page' )
-		);
-
-		$this->register_plugin_submenu_page(
-			null,
-			__( 'White Label', 'edminboost-admin-customization' ),
-			__( 'White Label', 'edminboost-admin-customization' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL,
-			array( $this, 'render_white_label_page' )
-		);
 	}
 
 	/**
@@ -891,12 +864,6 @@ class EDMINBOOST_Admin {
 			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE:
 				$this->render_performance_page();
 				break;
-			case self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL:
-				$this->render_white_label_page();
-				break;
-			case self::PAGE_SLUG . '-settings':
-				$this->render_settings_page();
-				break;
 			default:
 				ob_end_clean();
 				if ( $form_defaults_filter ) {
@@ -956,8 +923,6 @@ class EDMINBOOST_Admin {
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY => __( 'Productivity', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE  => __( 'Performance', 'edminboost-admin-customization' ),
-			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL  => __( 'White Label', 'edminboost-admin-customization' ),
-			self::PAGE_SLUG . '-settings'                                => __( 'Settings', 'edminboost-admin-customization' ),
 		);
 
 		return isset( $titles[ $page ] ) ? $titles[ $page ] : '';

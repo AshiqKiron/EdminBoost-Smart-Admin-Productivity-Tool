@@ -32,8 +32,14 @@ $edminboost_show_theme_extras = isset( $edminboost_show_theme_extras ) ? (bool) 
 <section class="edminboost-card edminboost-cc-section" aria-labelledby="edminboost-theme-heading">
 	<h2 id="edminboost-theme-heading"><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_preset' ); ?><?php esc_html_e( 'Visual theme', 'edminboost-admin-customization' ); ?></h2>
 	<p class="description">
-		<?php esc_html_e( 'Colors and fonts for the admin top bar, sidebar menu, Command Center bar, slide-out drawer, and EdminBoost admin screens. Does not change behavior or top bar layout.', 'edminboost-admin-customization' ); ?>
+		<?php esc_html_e( 'Colors and fonts for the admin top bar, sidebar menu, Command Center bar, and EdminBoost admin screens. Does not change behavior or top bar layout.', 'edminboost-admin-customization' ); ?>
 	</p>
+	<?php
+	$edminboost_theme_desc_licensed = EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-theme-settings-licensed-desc.php';
+	if ( apply_filters( 'edminboost_show_topbar_interaction_ui', false ) && is_readable( $edminboost_theme_desc_licensed ) ) {
+		include $edminboost_theme_desc_licensed;
+	}
+	?>
 
 	<fieldset class="edminboost-fieldset">
 		<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_preset' ); ?><?php esc_html_e( 'Theme preset', 'edminboost-admin-customization' ); ?></legend>
@@ -342,7 +348,7 @@ $edminboost_show_theme_extras = isset( $edminboost_show_theme_extras ) ? (bool) 
 				</div>
 			</fieldset>
 
-			<?php EDMINBOOST_Plan::render_admin_extension( 'theme_schedule_dark_mode' ); ?>
+			<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_theme_settings_schedule_partials' ); ?>
 
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
 				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_status_colors' ); ?><?php esc_html_e( 'Post status row colors', 'edminboost-admin-customization' ); ?></legend>

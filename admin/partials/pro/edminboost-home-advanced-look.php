@@ -94,7 +94,7 @@ $edminboost_drawer_width_custom = max(
 				</div>
 			</fieldset>
 
-			<?php require EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-animation-speed-field.php'; ?>
+			<?php require EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-animation-speed-field.php'; ?>
 
 			<label class="edminboost-checkbox-row" for="edminboost_glassmorphism">
 				<?php EDMINBOOST_Setting_Help::echo_icon( 'glassmorphism' ); ?>

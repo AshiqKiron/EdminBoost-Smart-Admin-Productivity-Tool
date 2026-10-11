@@ -65,14 +65,14 @@ $edminboost_summary_label = 0 === $edminboost_top_bar_count
 						<span class="dashicons <?php echo esc_attr( isset( $edminboost_top_bar_item['icon'] ) ? $edminboost_top_bar_item['icon'] : 'dashicons-admin-generic' ); ?>" aria-hidden="true"></span>
 						<span class="edminboost-overview-topbar-links-picker__option-name"><?php echo esc_html( $edminboost_display_label ); ?></span>
 					</span>
-					<?php if ( $edminboost_show_interaction ) : ?>
-						<?php
-						$edminboost_interaction_label = 'drawer' === $edminboost_item_interaction
-							? __( 'Opens in drawer', 'edminboost-admin-customization' )
-							: __( 'Opens directly', 'edminboost-admin-customization' );
-						?>
-						<span class="edminboost-overview-topbar-links-picker__option-meta"><?php echo esc_html( $edminboost_interaction_label ); ?></span>
-					<?php endif; ?>
+					<?php
+					if ( $edminboost_show_interaction ) {
+						$edminboost_link_meta_partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-overview-topbar-link-meta.php';
+						if ( is_readable( $edminboost_link_meta_partial ) ) {
+							include $edminboost_link_meta_partial;
+						}
+					}
+					?>
 				</li>
 			<?php endforeach; ?>
 		<?php endif; ?>

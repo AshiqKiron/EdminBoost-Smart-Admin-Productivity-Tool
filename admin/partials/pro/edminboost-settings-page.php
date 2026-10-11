@@ -19,5 +19,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 	</header>
 
-	<?php EDMINBOOST_Plan::render_admin_extension( 'settings_backup' ); ?>
+	<?php
+	if ( class_exists( 'EDMINBOOST_Pro', false ) ) {
+		EDMINBOOST_Pro::include_licensed_partial( 'edminboost-settings-backup.php' );
+	}
+	?>
 </div>
