@@ -534,6 +534,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 */
 	public function test_role_visibility_sanitization() {
 		$this->enable_pro_plan();
+		$this->skip_if_pro_package_unloaded();
 
 		$matrix_slugs = wp_list_pluck( EDMINBOOST_Command_Center::get_role_matrix_menu_items(), 'slug' );
 		$this->assertNotEmpty( $matrix_slugs );
@@ -616,6 +617,8 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 * Applying preset via sanitizer writes top bar items.
 	 */
 	public function test_sanitize_apply_preset() {
+		$this->enable_pro_plan();
+
 		$result = EDMINBOOST_Settings::sanitize(
 			array(
 				'enabled'        => 1,
@@ -640,6 +643,8 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 * Applying preset replaces prior custom Menu Studio config instead of merging it.
 	 */
 	public function test_sanitize_apply_preset_replaces_custom_menu_studio() {
+		$this->enable_pro_plan();
+
 		$this->seed_settings(
 			array(
 				'command_center' => array(
@@ -823,6 +828,9 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 * Role visibility can hide individual submenu items for a role.
 	 */
 	public function test_apply_role_visibility_hides_submenu_items() {
+		$this->enable_pro_plan();
+		$this->skip_if_pro_package_unloaded();
+
 		if ( ! did_action( 'admin_menu' ) ) {
 			do_action( 'admin_menu' );
 		}
@@ -857,11 +865,11 @@ class CommandCenterTest extends Edminboost_Test_Case {
 			),
 		);
 
-		$result = EDMINBOOST_Command_Center::apply_role_visibility_to_menu_studio(
-			$menu_studio,
-			array( 'editor' ),
-			$cc_settings
-		);
+		$editor = new WP_User( $this->factory->user->create( array( 'role' => 'editor' ) ) );
+		wp_set_current_user( $editor->ID );
+
+		$cc_settings['menu_studio'] = $menu_studio;
+		$result                     = EDMINBOOST_Command_Center::resolve_menu_studio_for_user( $cc_settings );
 
 		$this->assertContains( $submenu_slug, $result['hidden_items'] );
 	}

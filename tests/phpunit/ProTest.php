@@ -172,7 +172,7 @@ class ProTest extends Edminboost_Test_Case {
 	 * Licensed admin UI is off when Pro is not active.
 	 */
 	public function test_has_licensed_admin_ui_false_when_pro_inactive() {
-		$this->assertFalse( EDMINBOOST_Plan::has_licensed_admin_ui() );
+		$this->assertFalse( EDMINBOOST_Pro::has_licensed_admin_ui() );
 	}
 
 	/**

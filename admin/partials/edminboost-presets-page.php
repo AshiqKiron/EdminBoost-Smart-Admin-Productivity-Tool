@@ -39,12 +39,7 @@ $edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 				<?php esc_html_e( 'Choose a layout template—or reuse one you saved—to set up the top bar and sidebar menu, then control which admin menu items each user role can see.', 'edminboost-admin-customization' ); ?>
 			</p>
 		</div>
-		<?php
-		$edminboost_allows_custom_presets = ! EDMINBOOST_Plan::is_direct_build();
-		if ( EDMINBOOST_Plan::is_direct_build() ) {
-			$edminboost_allows_custom_presets = (bool) apply_filters( 'edminboost_allows_custom_preset_actions', false );
-		}
-		?>
+		<?php $edminboost_allows_custom_presets = EDMINBOOST_Plan::allows_custom_preset_actions(); ?>
 		<?php if ( $edminboost_allows_custom_presets ) : ?>
 			<div class="edminboost-cc-hero__actions">
 				<div class="edminboost-save-preset" id="edminboost-save-preset">
@@ -108,11 +103,7 @@ $edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 								<th scope="col" class="edminboost-role-matrix__preset-col">
 									<?php EDMINBOOST_Setting_Help::echo_icon( 'role_assignments' ); ?><?php esc_html_e( 'Assigned preset', 'edminboost-admin-customization' ); ?>
 								</th>
-								<?php
-								if ( EDMINBOOST_Plan::is_direct_build() ) {
-									do_action( 'edminboost_admin_extension', 'presets_role_matrix_head' );
-								}
-								?>
+								<?php EDMINBOOST_Plan::render_admin_extension( 'presets_role_matrix_head' ); ?>
 							</tr>
 						</thead>
 						<tbody>
@@ -149,21 +140,13 @@ $edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 											<?php endforeach; ?>
 										</select>
 									</td>
-									<?php
-									if ( EDMINBOOST_Plan::is_direct_build() ) {
-										do_action( 'edminboost_admin_extension', 'presets_role_matrix_cells' );
-									}
-									?>
+									<?php EDMINBOOST_Plan::render_admin_extension( 'presets_role_matrix_cells' ); ?>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>
 					</table>
 				</div>
-				<?php
-				if ( EDMINBOOST_Plan::is_direct_build() ) {
-					do_action( 'edminboost_admin_extension', 'presets_role_visibility_help' );
-				}
-				?>
+				<?php EDMINBOOST_Plan::render_admin_extension( 'presets_role_visibility_help' ); ?>
 			<?php endif; ?>
 		</section>
 

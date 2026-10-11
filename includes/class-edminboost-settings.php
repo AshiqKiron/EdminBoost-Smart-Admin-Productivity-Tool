@@ -545,13 +545,6 @@ class EDMINBOOST_Settings {
 			$output['role_assignments'] = $assignments;
 		}
 
-		if ( EDMINBOOST_Plan::has_licensed_admin_ui() && isset( $raw['role_visibility'] ) && is_array( $raw['role_visibility'] ) ) {
-			$output['role_visibility'] = self::sanitize_role_visibility(
-				$raw['role_visibility'],
-				EDMINBOOST_Command_Center::get_role_matrix_menu_items()
-			);
-		}
-
 		if ( isset( $raw['behavior'] ) && is_array( $raw['behavior'] ) ) {
 			$output['behavior'] = self::sanitize_behavior( $raw['behavior'] );
 		}
@@ -575,6 +568,31 @@ class EDMINBOOST_Settings {
 		if ( isset( $raw['presets'] ) && is_array( $raw['presets'] ) ) {
 			$output['presets'] = self::sanitize_custom_presets( $raw['presets'] );
 		}
+
+		if ( ! empty( $raw['_setup_wizard_save'] ) && ! empty( $output['top_bar_items'] ) ) {
+			$output['onboarding_completed'] = true;
+		}
+
+		if ( ! empty( $raw['_mark_setup_complete'] ) && ! empty( $output['top_bar_items'] ) ) {
+			$output['onboarding_completed'] = true;
+		}
+
+		if ( ! empty( $raw['_menu_studio_save'] ) ) {
+			$output['menu_studio'] = self::sanitize_menu_studio(
+				isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) ? $raw['menu_studio'] : array(),
+				isset( $output['menu_studio'] ) && is_array( $output['menu_studio'] ) ? $output['menu_studio'] : null
+			);
+		} elseif ( isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) && ! $preset_menu_applied ) {
+			$output['menu_studio'] = self::sanitize_menu_studio( $raw['menu_studio'], $output['menu_studio'] ?? null );
+		}
+
+		/**
+		 * Filter sanitized Command Center settings before they are merged into the plugin option.
+		 *
+		 * @param array $output Sanitized Command Center settings.
+		 * @param array $raw    Raw Command Center input from the request.
+		 */
+		$output = apply_filters( 'edminboost_sanitize_command_center', $output, $raw );
 
 		if ( ! empty( $raw['_save_custom_preset'] ) && is_array( $raw['_save_custom_preset'] ) && self::allows_custom_layout_preset_writes() ) {
 			$output['presets'] = self::sanitize_custom_presets(
@@ -601,23 +619,6 @@ class EDMINBOOST_Settings {
 					$output['presets'] = self::sanitize_custom_presets( array_merge( $existing, $duplicate ) );
 				}
 			}
-		}
-
-		if ( ! empty( $raw['_setup_wizard_save'] ) && ! empty( $output['top_bar_items'] ) ) {
-			$output['onboarding_completed'] = true;
-		}
-
-		if ( ! empty( $raw['_mark_setup_complete'] ) && ! empty( $output['top_bar_items'] ) ) {
-			$output['onboarding_completed'] = true;
-		}
-
-		if ( ! empty( $raw['_menu_studio_save'] ) ) {
-			$output['menu_studio'] = self::sanitize_menu_studio(
-				isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) ? $raw['menu_studio'] : array(),
-				isset( $output['menu_studio'] ) && is_array( $output['menu_studio'] ) ? $output['menu_studio'] : null
-			);
-		} elseif ( isset( $raw['menu_studio'] ) && is_array( $raw['menu_studio'] ) && ! $preset_menu_applied ) {
-			$output['menu_studio'] = self::sanitize_menu_studio( $raw['menu_studio'], $output['menu_studio'] ?? null );
 		}
 
 		return $output;
@@ -659,11 +660,6 @@ class EDMINBOOST_Settings {
 
 		if ( isset( $raw['letter_spacing'] ) ) {
 			$output['letter_spacing'] = max( -2, min( 6, (int) $raw['letter_spacing'] ) );
-		}
-
-		if ( isset( $raw['display_mode'] ) ) {
-			$mode = sanitize_key( $raw['display_mode'] );
-			$output['display_mode'] = in_array( $mode, array( 'both', 'icon', 'text' ), true ) ? $mode : 'both';
 		}
 
 		if ( isset( $raw['padding'] ) && is_array( $raw['padding'] ) ) {
@@ -743,12 +739,8 @@ class EDMINBOOST_Settings {
 			$output['submenu_order'] = $submenu_order;
 		}
 
-		if ( EDMINBOOST_Plan::is_direct_build() && isset( $raw['custom_items'] ) && is_array( $raw['custom_items'] ) ) {
-			$output['custom_items'] = self::sanitize_menu_studio_custom_items( $raw['custom_items'] );
-		} elseif ( ! EDMINBOOST_Plan::is_direct_build() ) {
-			$output['custom_items']  = array();
-			$output['display_mode'] = 'both';
-		}
+		$output['custom_items']  = array();
+		$output['display_mode'] = 'both';
 
 		if ( isset( $raw['colors'] ) && is_array( $raw['colors'] ) ) {
 			$colors  = wp_parse_args( $output['colors'], $defaults['colors'] );
@@ -766,77 +758,6 @@ class EDMINBOOST_Settings {
 		}
 
 		return $output;
-	}
-
-	/**
-	 * Sanitize Menu Studio custom sidebar links.
-	 *
-	 * @param array $items Raw custom items.
-	 * @return array
-	 */
-	private static function sanitize_menu_studio_custom_items( $items ) {
-		$sanitized        = array();
-		$allowed_icons    = EDMINBOOST_Command_Center::get_dashicon_options();
-		$allowed_parents  = array();
-		$seen_ids         = array();
-
-		foreach ( EDMINBOOST_Command_Center::get_discovered_menu_tree() as $menu_item ) {
-			if ( ! empty( $menu_item['slug'] ) ) {
-				$allowed_parents[] = $menu_item['slug'];
-			}
-		}
-
-		foreach ( $items as $item ) {
-			if ( ! is_array( $item ) ) {
-				continue;
-			}
-
-			$id = isset( $item['id'] ) ? sanitize_key( $item['id'] ) : '';
-			if ( '' === $id ) {
-				$id = 'custom_' . wp_generate_password( 8, false, false );
-			}
-
-			if ( in_array( $id, $seen_ids, true ) ) {
-				continue;
-			}
-
-			$label = isset( $item['label'] ) ? sanitize_text_field( wp_unslash( $item['label'] ) ) : '';
-			$path  = isset( $item['path'] ) ? sanitize_text_field( wp_unslash( $item['path'] ) ) : '';
-			$path  = ltrim( $path, '/' );
-
-			if ( '' === $label || '' === $path || preg_match( '#^https?://#i', $path ) ) {
-				continue;
-			}
-
-			if ( ! preg_match( '~^[a-zA-Z0-9_\-\./?=&%#]+$~', $path ) ) {
-				continue;
-			}
-
-			$icon = isset( $item['icon'] ) ? sanitize_text_field( wp_unslash( $item['icon'] ) ) : 'dashicons-admin-links';
-			if ( false === strpos( $icon, 'dashicons-' ) ) {
-				$icon = 'dashicons-' . $icon;
-			}
-			if ( ! in_array( $icon, $allowed_icons, true ) ) {
-				$icon = 'dashicons-admin-links';
-			}
-
-			$parent = isset( $item['parent'] ) ? sanitize_text_field( wp_unslash( $item['parent'] ) ) : '';
-			if ( '' !== $parent && ! in_array( $parent, $allowed_parents, true ) ) {
-				$parent = '';
-			}
-
-			$sanitized[] = array(
-				'id'     => $id,
-				'label'  => $label,
-				'path'   => $path,
-				'icon'   => $icon,
-				'parent' => $parent,
-			);
-
-			$seen_ids[] = $id;
-		}
-
-		return $sanitized;
 	}
 
 	/**
@@ -991,11 +912,17 @@ class EDMINBOOST_Settings {
 			}
 		}
 
-		return $sanitized;
+		/**
+		 * Filter sanitized custom layout presets.
+		 *
+		 * @param array $sanitized Sanitized custom presets.
+		 * @param array $raw       Raw presets input.
+		 */
+		return apply_filters( 'edminboost_sanitize_custom_presets', $sanitized, $presets );
 	}
 
 	/**
-	 * Sanitize top bar item configuration.
+	 * Sanitize top bar item configuration (free tier: redirect-only, no badges).
 	 *
 	 * @param array $items Raw items.
 	 * @return array
@@ -1003,9 +930,7 @@ class EDMINBOOST_Settings {
 	private static function sanitize_top_bar_items( $items ) {
 		$sanitized      = array();
 		$allowed_icons  = EDMINBOOST_Command_Center::get_dashicon_options();
-		$badge_sources  = array_keys( EDMINBOOST_Command_Center::get_badge_sources() );
 		$seen_slugs     = array();
-		$is_direct      = EDMINBOOST_Plan::is_direct_build();
 
 		foreach ( $items as $item ) {
 			if ( ! is_array( $item ) || empty( $item['slug'] ) ) {
@@ -1052,79 +977,17 @@ class EDMINBOOST_Settings {
 				$icon = 'dashicons-admin-generic';
 			}
 
-			$interaction = isset( $item['interaction'] ) ? sanitize_key( $item['interaction'] ) : 'redirect';
-			if ( ! in_array( $interaction, array( 'redirect', 'drawer' ), true ) ) {
-				$interaction = 'redirect';
-			}
-
-			$badge_source = isset( $item['badge_source'] ) ? sanitize_key( $item['badge_source'] ) : '';
-			if ( ! in_array( $badge_source, $badge_sources, true ) ) {
-				$badge_source = '';
-			}
-
-			if ( ! $is_direct ) {
-				$interaction  = 'redirect';
-				$badge_source = '';
-			}
-
 			$sanitized[] = array(
 				'slug'         => $slug,
 				'anchor'       => $anchor,
 				'label'        => isset( $item['label'] ) ? sanitize_text_field( wp_unslash( $item['label'] ) ) : $slug,
 				'icon'         => $icon,
-				'interaction'  => $interaction,
-				'badge_source' => $badge_source,
+				'interaction'  => 'redirect',
+				'badge_source' => '',
 			);
 		}
 
 		return $sanitized;
-	}
-
-	/**
-	 * Sanitize per-role icon visibility (stores hidden slugs).
-	 *
-	 * @param array $raw_visibility Submitted visible slugs per role.
-	 * @param array $matrix_items Role matrix menu items.
-	 * @return array
-	 */
-	private static function sanitize_role_visibility( $raw_visibility, $matrix_items ) {
-		unset( $matrix_items );
-
-		$hidden_by_role = array();
-
-		foreach ( $raw_visibility as $role_key => $visible_slugs ) {
-			$role_key = sanitize_key( $role_key );
-
-			if ( '' === $role_key || ! is_array( $visible_slugs ) ) {
-				continue;
-			}
-
-			$role_matrix = EDMINBOOST_Command_Center::get_role_matrix_menu_items();
-			$all_slugs   = array();
-
-			foreach ( $role_matrix as $item ) {
-				if ( ! empty( $item['slug'] ) ) {
-					$all_slugs[] = $item['slug'];
-				}
-			}
-
-			$visible = array();
-			foreach ( $visible_slugs as $slug ) {
-				$slug = sanitize_text_field( wp_unslash( $slug ) );
-				if ( in_array( $slug, $all_slugs, true ) ) {
-					$visible[] = $slug;
-				}
-			}
-
-			$hidden = array_values( array_diff( $all_slugs, $visible ) );
-			$hidden = array_values(
-				array_diff( $hidden, EDMINBOOST_Command_Center::get_protected_slugs_for_role( $role_key ) )
-			);
-
-			$hidden_by_role[ $role_key ] = $hidden;
-		}
-
-		return $hidden_by_role;
 	}
 
 	/**
@@ -1188,17 +1051,15 @@ class EDMINBOOST_Settings {
 		$output['hide_new_content']     = ! empty( $raw['hide_new_content'] );
 		$output['hide_customize']       = ! empty( $raw['hide_customize'] );
 
-		if ( ! EDMINBOOST_Plan::is_direct_build() ) {
-			if ( in_array( $output['drawer_width'], array( 'fullscreen', 'custom' ), true ) ) {
-				$output['drawer_width'] = $defaults['drawer_width'];
-			}
-
-			$output['drawer_width_custom']  = $defaults['drawer_width_custom'];
-			$output['animation_speed']      = $defaults['animation_speed'];
-			$output['badge_style']          = $defaults['badge_style'];
-			$output['glassmorphism']        = false;
-			$output['badge_refresh_rate']   = $defaults['badge_refresh_rate'];
+		if ( in_array( $output['drawer_width'], array( 'fullscreen', 'custom' ), true ) ) {
+			$output['drawer_width'] = $defaults['drawer_width'];
 		}
+
+		$output['drawer_width_custom']  = $defaults['drawer_width_custom'];
+		$output['animation_speed']      = $defaults['animation_speed'];
+		$output['badge_style']          = $defaults['badge_style'];
+		$output['glassmorphism']        = false;
+		$output['badge_refresh_rate']   = $defaults['badge_refresh_rate'];
 
 		return $output;
 	}

@@ -210,11 +210,7 @@ $edminboost_admin_footer_options_aria  = $edminboost_admin_footer_enabled ? 'fal
 	<?php endforeach; ?>
 </fieldset>
 
-	<?php
-	if ( EDMINBOOST_Plan::is_direct_build() ) {
-		do_action( 'edminboost_admin_extension', 'security_login_redirects' );
-	}
-	?>
+	<?php EDMINBOOST_Plan::render_admin_extension( 'security_login_redirects' ); ?>
 <?php endif; ?>
 
 <?php if ( 'performance' === $edminboost_section ) : ?>

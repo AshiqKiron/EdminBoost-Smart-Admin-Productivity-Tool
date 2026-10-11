@@ -87,6 +87,7 @@ class CommandCenterBarTest extends Edminboost_Test_Case {
 	 */
 	public function test_get_items_for_current_user_role_visibility() {
 		$this->enable_pro_plan();
+		$this->skip_if_pro_package_unloaded();
 
 		$editor_id = $this->factory->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $editor_id );
@@ -128,6 +129,9 @@ class CommandCenterBarTest extends Edminboost_Test_Case {
 	 * Capability filter removes inaccessible slugs even when role visibility allows them.
 	 */
 	public function test_get_items_for_current_user_respects_saved_role_visibility_override() {
+		$this->enable_pro_plan();
+		$this->skip_if_pro_package_unloaded();
+
 		$subscriber_id = $this->factory->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $subscriber_id );
 
@@ -169,6 +173,7 @@ class CommandCenterBarTest extends Edminboost_Test_Case {
 	 */
 	public function test_has_drawer_items() {
 		$this->enable_pro_plan();
+		$this->skip_if_pro_package_unloaded();
 
 		$this->seed_settings(
 			array(
@@ -206,6 +211,61 @@ class CommandCenterBarTest extends Edminboost_Test_Case {
 		$_POST['mapper_context_nonce'] = wp_create_nonce( 'edminboost_cc_mapper_context' );
 
 		$this->assertTrue( EDMINBOOST_Command_Center_Bar::is_mapper_preview_context() );
+	}
+
+	/**
+	 * Unlicensed premium builds still register redirect-only bar nodes (same as WordPress.org).
+	 */
+	public function test_register_nodes_redirect_only_when_pro_inactive_on_premium_build() {
+		if ( ! EDMINBOOST_Plan::is_direct_build() ) {
+			$this->markTestSkipped( 'Premium build only.' );
+		}
+
+		$this->assertFalse( EDMINBOOST_Pro::has_licensed_admin_ui() );
+
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'top_bar_items' => array(
+						array(
+							'slug'         => 'edit.php',
+							'label'        => 'Posts',
+							'icon'         => 'dashicons-admin-post',
+							'interaction'  => 'redirect',
+							'badge_source' => '',
+						),
+					),
+				),
+			)
+		);
+
+		$admin_bar = new class() {
+			/** @var array<string, array<string, mixed>> */
+			public $nodes = array();
+
+			/**
+			 * @param array<string, mixed> $args Node args.
+			 * @return void
+			 */
+			public function add_node( $args ) {
+				if ( ! empty( $args['id'] ) ) {
+					$this->nodes[ $args['id'] ] = $args;
+				}
+			}
+
+			/**
+			 * @param string $id Node ID.
+			 * @return object|null
+			 */
+			public function get_node( $id ) {
+				return isset( $this->nodes[ $id ] ) ? (object) $this->nodes[ $id ] : null;
+			}
+		};
+
+		EDMINBOOST_Command_Center_Bar::register_nodes( $admin_bar );
+
+		$node_id = EDMINBOOST_Command_Center_Bar::get_node_id( 'edit.php', '' );
+		$this->assertNotNull( $admin_bar->get_node( $node_id ) );
 	}
 
 	/**

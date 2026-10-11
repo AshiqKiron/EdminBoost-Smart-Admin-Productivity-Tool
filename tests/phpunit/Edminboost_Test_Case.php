@@ -72,6 +72,17 @@ abstract class Edminboost_Test_Case extends WP_UnitTestCase {
 	}
 
 	/**
+	 * Skip when includes/pro/ was not loaded (EDMINBOOST_TEST_WPORG=1 simulates the WordPress.org zip).
+	 *
+	 * @return void
+	 */
+	protected function skip_if_pro_package_unloaded() {
+		if ( ! class_exists( 'EDMINBOOST_Pro', false ) ) {
+			$this->markTestSkipped( 'Requires includes/pro/ (not loaded under EDMINBOOST_TEST_WPORG=1).' );
+		}
+	}
+
+	/**
 	 * Filter callback for active billing plan in tests.
 	 *
 	 * @return string

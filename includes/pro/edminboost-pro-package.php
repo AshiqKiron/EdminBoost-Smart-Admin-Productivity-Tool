@@ -13,6 +13,9 @@ require_once dirname( __DIR__ ) . '/features/class-edminboost-feature-base.php';
 require_once __DIR__ . '/class-edminboost-white-label.php';
 require_once __DIR__ . '/features/class-edminboost-login-redirects.php';
 require_once __DIR__ . '/class-edminboost-command-center-bar-pro.php';
+require_once __DIR__ . '/class-edminboost-command-center-role-visibility-pro.php';
+require_once __DIR__ . '/class-edminboost-settings-sanitize-pro.php';
+require_once __DIR__ . '/class-edminboost-setting-help-pro.php';
 require_once __DIR__ . '/class-edminboost-theme-pro.php';
 require_once __DIR__ . '/class-edminboost-plan-licensing.php';
 require_once __DIR__ . '/class-edminboost-billing.php';
@@ -42,4 +45,7 @@ add_filter(
 );
 
 EDMINBOOST_Command_Center_Bar_Pro::register_hooks();
+EDMINBOOST_Command_Center_Role_Visibility_Pro::register_hooks();
+EDMINBOOST_Settings_Sanitize_Pro::register_hooks();
+EDMINBOOST_Setting_Help_Pro::register_hooks();
 EDMINBOOST_Theme_Pro::register_hooks();

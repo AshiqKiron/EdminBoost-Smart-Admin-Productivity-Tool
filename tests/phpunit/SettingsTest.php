@@ -346,6 +346,9 @@ class SettingsTest extends Edminboost_Test_Case {
 	 * Custom drawer width is clamped to the allowed pixel range.
 	 */
 	public function test_sanitize_clamps_custom_drawer_width() {
+		$this->enable_pro_plan();
+		$this->skip_if_pro_package_unloaded();
+
 		$result = EDMINBOOST_Settings::sanitize(
 			array(
 				'command_center' => array(

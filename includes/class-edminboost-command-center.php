@@ -961,7 +961,14 @@ class EDMINBOOST_Command_Center {
 
 		$user = wp_get_current_user();
 		if ( empty( $user->roles ) ) {
-			return $menu_studio;
+			/**
+			 * Filter Menu Studio settings resolved for the current user.
+			 *
+			 * @param array   $menu_studio Resolved Menu Studio settings.
+			 * @param array   $cc_settings Command Center settings.
+			 * @param WP_User $user        Current user.
+			 */
+			return apply_filters( 'edminboost_menu_studio_for_user', $menu_studio, $cc_settings, $user );
 		}
 
 		$assignments = isset( $cc_settings['role_assignments'] ) && is_array( $cc_settings['role_assignments'] )
@@ -983,7 +990,14 @@ class EDMINBOOST_Command_Center {
 
 		$menu_studio = self::merge_saved_custom_menu_items( $menu_studio, $saved_menu );
 
-		return self::apply_role_visibility_to_menu_studio( $menu_studio, $user->roles, $cc_settings );
+		/**
+		 * Filter Menu Studio settings resolved for the current user.
+		 *
+		 * @param array   $menu_studio Resolved Menu Studio settings.
+		 * @param array   $cc_settings Command Center settings.
+		 * @param WP_User $user        Current user.
+		 */
+		return apply_filters( 'edminboost_menu_studio_for_user', $menu_studio, $cc_settings, $user );
 	}
 
 	/**
@@ -1410,28 +1424,6 @@ class EDMINBOOST_Command_Center {
 	}
 
 	/**
-	 * Whether a menu slug is visible for at least one of the user's roles.
-	 *
-	 * @param string   $slug            Menu slug.
-	 * @param string[] $user_roles      Role slugs.
-	 * @param array    $role_visibility Hidden slugs keyed by role.
-	 * @return bool
-	 */
-	public static function is_item_visible_for_user_roles( $slug, $user_roles, $role_visibility ) {
-		foreach ( $user_roles as $role ) {
-			$hidden_for_role = isset( $role_visibility[ $role ] ) && is_array( $role_visibility[ $role ] )
-				? $role_visibility[ $role ]
-				: array();
-
-			if ( ! in_array( $slug, $hidden_for_role, true ) ) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	/**
 	 * Visible menu slugs for a Menu Studio configuration.
 	 *
 	 * @param array $menu_studio Menu Studio settings.
@@ -1528,82 +1520,6 @@ class EDMINBOOST_Command_Center {
 		}
 
 		return array_values( array_unique( $top_level ) );
-	}
-
-	/**
-	 * Apply per-role visibility overrides to Menu Studio settings.
-	 *
-	 * @param array    $menu_studio     Base Menu Studio settings.
-	 * @param string[] $user_roles      Current user roles.
-	 * @param array    $cc_settings     Command Center settings.
-	 * @return array
-	 */
-	public static function apply_role_visibility_to_menu_studio( $menu_studio, $user_roles, $cc_settings ) {
-		$role_visibility = isset( $cc_settings['role_visibility'] ) && is_array( $cc_settings['role_visibility'] )
-			? $cc_settings['role_visibility']
-			: array();
-
-		if ( empty( $role_visibility ) || empty( $user_roles ) ) {
-			return $menu_studio;
-		}
-
-		$defaults    = self::get_menu_studio_defaults();
-		$menu_studio = wp_parse_args( $menu_studio, $defaults );
-
-		if ( empty( $menu_studio['enabled'] ) ) {
-			$menu_studio['enabled'] = true;
-		}
-
-		if ( empty( $menu_studio['order'] ) ) {
-			foreach ( self::get_discovered_menu_tree() as $item ) {
-				if ( ! empty( $item['slug'] ) ) {
-					$menu_studio['order'][] = (string) $item['slug'];
-				}
-			}
-		}
-
-		$hidden = isset( $menu_studio['hidden_items'] ) && is_array( $menu_studio['hidden_items'] )
-			? $menu_studio['hidden_items']
-			: array();
-		$order  = isset( $menu_studio['order'] ) && is_array( $menu_studio['order'] )
-			? $menu_studio['order']
-			: array();
-
-		foreach ( self::get_role_matrix_menu_items() as $item ) {
-			if ( empty( $item['slug'] ) ) {
-				continue;
-			}
-
-			$slug   = (string) $item['slug'];
-			$source = isset( $item['source'] ) ? (string) $item['source'] : 'top';
-
-			if ( self::is_item_visible_for_user_roles( $slug, $user_roles, $role_visibility ) ) {
-				continue;
-			}
-
-			if ( 'submenu' === $source ) {
-				if ( ! in_array( $slug, $hidden, true ) ) {
-					$hidden[] = $slug;
-				}
-				continue;
-			}
-
-			$top_slug = $slug;
-			if ( in_array( $top_slug, EDMINBOOST_Menu_Studio::get_protected_slugs(), true ) ) {
-				continue;
-			}
-
-			if ( ! in_array( $top_slug, $hidden, true ) ) {
-				$hidden[] = $top_slug;
-			}
-
-			$order = array_values( array_diff( $order, array( $top_slug ) ) );
-		}
-
-		$menu_studio['hidden_items'] = $hidden;
-		$menu_studio['order']        = $order;
-
-		return $menu_studio;
 	}
 
 	/**

@@ -406,15 +406,6 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function render_white_label_page() {
-		if ( ! EDMINBOOST_Plan::has_licensed_admin_ui() ) {
-			if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-				return;
-			}
-
-			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
-			exit;
-		}
-
 		$partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-white-label-page.php';
 		if ( ! is_readable( $partial ) ) {
 			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
@@ -468,7 +459,13 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function render_settings_page() {
-		$this->render_command_center_page( 'admin/partials/edminboost-settings-page.php' );
+		$partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-settings-page.php';
+		if ( ! is_readable( $partial ) ) {
+			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
+			exit;
+		}
+
+		$this->render_command_center_page( 'admin/partials/pro/edminboost-settings-page.php' );
 	}
 
 	/**
@@ -519,40 +516,31 @@ class EDMINBOOST_Admin {
 			true
 		);
 
-		if ( EDMINBOOST_Plan::is_direct_build() ) {
-			wp_enqueue_script(
-				'edminboost-admin-pro',
-				EDMINBOOST_PLUGIN_URL . 'admin/js/pro/edminboost-admin-pro.js',
-				array( 'edminboost-admin' ),
-				EDMINBOOST_VERSION,
-				true
-			);
-		}
-
 		$screen_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$localize = array(
-			'version'        => EDMINBOOST_VERSION,
-			'isPremiumBuild' => EDMINBOOST_Plan::is_direct_build(),
-			'currentPage'    => $screen_page,
-			'optionName' => EDMINBOOST_Settings::OPTION_NAME,
-			'strings'    => array(
+			'version'              => EDMINBOOST_VERSION,
+			'isPremiumBuild'       => EDMINBOOST_Plan::is_direct_build(),
+			'currentPage'          => $screen_page,
+			'optionName'           => EDMINBOOST_Settings::OPTION_NAME,
+			'strings'              => array(
 				'ready'           => __( 'EdminBoost is ready.', 'edminboost-admin-customization' ),
 				'configureItem'   => __( 'Configure', 'edminboost-admin-customization' ),
 				'removeFromTopBar' => __( 'Remove from top bar', 'edminboost-admin-customization' ),
 				'emptyCanvas'     => __( 'Toggle items from the left panel or drag them here to build your top bar.', 'edminboost-admin-customization' ),
 				'exportSuccess'   => __( 'Preset exported.', 'edminboost-admin-customization' ),
-				'exportFailed'    => __( 'Could not export settings. Please try again.', 'edminboost-admin-customization' ),
 				'customLinkPathRequired'  => __( 'Enter an admin path.', 'edminboost-admin-customization' ),
 				'customLinkLabelRequired' => __( 'Enter a label.', 'edminboost-admin-customization' ),
 				'customLinkPathInvalid'   => __( 'Use a relative admin path such as edit.php?post_type=page.', 'edminboost-admin-customization' ),
 				'customLinkAnchorInvalid' => __( 'Use letters, numbers, hyphens, underscores, or dots in the anchor.', 'edminboost-admin-customization' ),
 				'customLinkDuplicate'     => __( 'That link is already on your top bar.', 'edminboost-admin-customization' ),
-				'drawerPreviewFailed'     => __( 'Could not open the drawer preview.', 'edminboost-admin-customization' ),
-				/* translators: 1: drawer width in pixels, 2: approximate percentage of a typical desktop screen width. */
-				'drawerWidthPreviewCaption'    => __( 'Drawer uses %1$s px — about %2$s%% of a typical desktop screen.', 'edminboost-admin-customization' ),
-				'drawerWidthPreviewFullscreen' => __( 'Drawer uses the full screen width.', 'edminboost-admin-customization' ),
-				'drawerWidthPreviewLabel'      => __( 'Drawer width preview on a typical desktop screen.', 'edminboost-admin-customization' ),
+				'topBarOverviewEmpty'       => __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor.', 'edminboost-admin-customization' ),
+				'topBarOverviewHasLinks'    => __( 'Admin link shortcuts appear in your WordPress top bar.', 'edminboost-admin-customization' ),
+				/* translators: %d: number of links that open directly */
+				'topBarOpensDirectlyOne'    => __( '%d opens directly', 'edminboost-admin-customization' ),
+				/* translators: %d: number of links that open directly */
+				'topBarOpensDirectlyMany'   => __( '%d open directly', 'edminboost-admin-customization' ),
+				'opensDirectly'             => __( 'Opens directly', 'edminboost-admin-customization' ),
 				'settingsSaved'             => __( 'Settings saved.', 'edminboost-admin-customization' ),
 				'settingsSaveFailed'        => __( 'Could not save settings. Please try again.', 'edminboost-admin-customization' ),
 				'presetApplied'             => __( 'Preset applied.', 'edminboost-admin-customization' ),
@@ -577,10 +565,6 @@ class EDMINBOOST_Admin {
 				'previewProfile'            => __( 'My account', 'edminboost-admin-customization' ),
 				'pageLoading'               => __( 'Loading…', 'edminboost-admin-customization' ),
 				'pageLoadFailed'            => __( 'Could not load that page. Please try again.', 'edminboost-admin-customization' ),
-				'importJsonRequired'        => __( 'Paste exported JSON or choose a file to import.', 'edminboost-admin-customization' ),
-				'importFileRequired'        => __( 'Choose a JSON file to import.', 'edminboost-admin-customization' ),
-				'importReadFailed'          => __( 'Could not read the selected file.', 'edminboost-admin-customization' ),
-				'importFailed'              => __( 'Could not import settings. Check the JSON and try again.', 'edminboost-admin-customization' ),
 				'formResetConfirm'          => __( 'Reset all fields on this page to their default values? Your saved settings are not changed until you click Save.', 'edminboost-admin-customization' ),
 				'formResetConfirmYes'       => __( 'Yes, reset to defaults', 'edminboost-admin-customization' ),
 				'formResetCancel'           => __( 'Cancel', 'edminboost-admin-customization' ),
@@ -601,25 +585,27 @@ class EDMINBOOST_Admin {
 			),
 		);
 
-		if ( EDMINBOOST_Plan::is_direct_build() ) {
-			$localize['roleMatrix'] = array(
-				'protectedSlugs'        => EDMINBOOST_Menu_Studio::get_protected_slugs(),
-				'protectedSlugsByRole'  => EDMINBOOST_Command_Center::get_protected_slugs_by_role(),
-				'accessibleSlugsByRole' => EDMINBOOST_Command_Center::get_role_accessible_menu_slugs(),
-			);
-			$localize['drawerPreview'] = array(
-				'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-				'action'       => 'edminboost_cc_drawer_preview',
-				'nonce'        => wp_create_nonce( 'edminboost_cc_drawer_preview' ),
-				'contextNonce' => wp_create_nonce( 'edminboost_cc_mapper_context' ),
-			);
-		}
+		/**
+		 * Filter localized data for plugin admin JavaScript.
+		 *
+		 * @param array  $localize    Localized script data.
+		 * @param string $screen_page Current admin page slug query arg.
+		 */
+		$localize = apply_filters( 'edminboost_admin_script_data', $localize, $screen_page );
 
 		wp_localize_script(
 			'edminboost-admin',
 			'edminboostData',
 			$localize
 		);
+
+		/**
+		 * Enqueue licensed admin scripts after the base plugin script.
+		 *
+		 * @param string $hook_suffix Current admin page hook.
+		 * @param string $screen_page Current admin page slug query arg.
+		 */
+		do_action( 'edminboost_enqueue_licensed_admin_scripts', $hook_suffix, $screen_page );
 	}
 
 	/**
@@ -814,22 +800,28 @@ class EDMINBOOST_Admin {
 
 		$page_title = $this->get_cc_page_title( $page );
 
-		wp_send_json_success(
-			array(
-				'html'          => $html,
-				'page'          => $page,
-				'title'         => $page_title,
-				'documentTitle' => sprintf(
-					/* translators: 1: page title, 2: site name */
-					__( '%1$s ‹ %2$s — WordPress', 'edminboost-admin-customization' ),
-					$page_title,
-					get_bloginfo( 'name' )
-				),
-				'ccNavNonce'         => wp_create_nonce( 'edminboost_cc_nav' ),
-				'drawerNonce'        => wp_create_nonce( 'edminboost_cc_drawer_preview' ),
-				'drawerContextNonce' => wp_create_nonce( 'edminboost_cc_mapper_context' ),
-			)
+		$response = array(
+			'html'          => $html,
+			'page'          => $page,
+			'title'         => $page_title,
+			'documentTitle' => sprintf(
+				/* translators: 1: page title, 2: site name */
+				__( '%1$s ‹ %2$s — WordPress', 'edminboost-admin-customization' ),
+				$page_title,
+				get_bloginfo( 'name' )
+			),
+			'ccNavNonce' => wp_create_nonce( 'edminboost_cc_nav' ),
 		);
+
+		/**
+		 * Filter CC tab navigation AJAX payload (premium adds drawer preview nonces when licensed).
+		 *
+		 * @param array  $response AJAX success payload.
+		 * @param string $page     Loaded admin page slug.
+		 */
+		$response = apply_filters( 'edminboost_cc_nav_ajax_response', $response, $page );
+
+		wp_send_json_success( $response );
 	}
 
 	/**

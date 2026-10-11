@@ -85,15 +85,6 @@ class EDMINBOOST_Plan {
 	}
 
 	/**
-	 * Whether licensed premium admin screens and partials should load.
-	 *
-	 * @return bool
-	 */
-	public static function has_licensed_admin_ui() {
-		return (bool) apply_filters( 'edminboost_has_licensed_admin_ui', false );
-	}
-
-	/**
 	 * Whether custom preset save/rename/duplicate actions are allowed on this build.
 	 *
 	 * @return bool

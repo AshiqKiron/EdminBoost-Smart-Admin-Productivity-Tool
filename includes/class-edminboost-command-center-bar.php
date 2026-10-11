@@ -3,7 +3,7 @@
  * Command Center top bar — renders saved layout items on the WordPress admin bar.
  *
  * Purpose: Inject Layout Studio items into #wpadminbar for logged-in users.
- * Pro drawer/badges live in EDMINBOOST_Command_Center_Bar_Pro (premium package only).
+ * Pro drawer/badges hook via edminboost_cc_bar_* filters (premium package only).
  *
  * @package EdminBoost
  */
@@ -58,11 +58,12 @@ class EDMINBOOST_Command_Center_Bar {
 	 * @return bool
 	 */
 	public static function has_drawer_items() {
-		if ( class_exists( 'EDMINBOOST_Command_Center_Bar_Pro', false ) ) {
-			return EDMINBOOST_Command_Center_Bar_Pro::has_drawer_items();
-		}
-
-		return false;
+		/**
+		 * Filter whether the live top bar has drawer interaction items.
+		 *
+		 * @param bool $has_drawer_items Default false on the WordPress.org build.
+		 */
+		return (bool) apply_filters( 'edminboost_cc_bar_has_drawer_items', false );
 	}
 
 	/**
@@ -86,11 +87,16 @@ class EDMINBOOST_Command_Center_Bar {
 	 * @return bool
 	 */
 	public static function is_mapper_preview_context() {
-		if ( class_exists( 'EDMINBOOST_Command_Center_Bar_Pro', false ) ) {
-			return EDMINBOOST_Command_Center_Bar_Pro::is_mapper_preview_context();
+		if ( self::is_mapper_screen() ) {
+			return true;
 		}
 
-		return self::is_mapper_screen();
+		/**
+		 * Filter Layout Studio preview AJAX context (premium drawer preview).
+		 *
+		 * @param bool $is_mapper_preview_context Default false on the WordPress.org build.
+		 */
+		return (bool) apply_filters( 'edminboost_cc_bar_mapper_preview_context', false );
 	}
 
 	/**
@@ -100,11 +106,12 @@ class EDMINBOOST_Command_Center_Bar {
 	 * @return string
 	 */
 	public static function filter_drawer_frame_body_class( $classes ) {
-		if ( class_exists( 'EDMINBOOST_Command_Center_Bar_Pro', false ) ) {
-			return EDMINBOOST_Command_Center_Bar_Pro::filter_drawer_frame_body_class( $classes );
-		}
-
-		return $classes;
+		/**
+		 * Filter admin body classes for drawer iframe loads.
+		 *
+		 * @param string $classes Space-separated admin body classes.
+		 */
+		return apply_filters( 'edminboost_cc_bar_drawer_frame_body_class', $classes );
 	}
 
 	/**
@@ -118,8 +125,18 @@ class EDMINBOOST_Command_Center_Bar {
 			return;
 		}
 
-		if ( class_exists( 'EDMINBOOST_Command_Center_Bar_Pro', false ) ) {
-			EDMINBOOST_Command_Center_Bar_Pro::register_nodes( $admin_bar );
+		/**
+		 * Filter whether premium top bar nodes replace the redirect-only renderer.
+		 *
+		 * @param bool $use_pro_nodes Default false on the WordPress.org build.
+		 */
+		if ( apply_filters( 'edminboost_cc_bar_use_pro_register_nodes', false ) ) {
+			/**
+			 * Register premium top bar nodes (drawer triggers, badges).
+			 *
+			 * @param WP_Admin_Bar $admin_bar Admin bar instance.
+			 */
+			do_action( 'edminboost_cc_bar_register_pro_nodes', $admin_bar );
 			return;
 		}
 
@@ -213,14 +230,6 @@ class EDMINBOOST_Command_Center_Bar {
 			array( 'dashicons', 'edminboost-themes' ),
 			EDMINBOOST_VERSION
 		);
-
-		if (
-			class_exists( 'EDMINBOOST_Command_Center_Bar_Pro', false )
-			&& EDMINBOOST_Plan::is_direct_build()
-			&& ( self::is_active() || $mapper_screen )
-		) {
-			EDMINBOOST_Command_Center_Bar_Pro::enqueue_pro_styles();
-		}
 	}
 
 	/**
@@ -238,28 +247,19 @@ class EDMINBOOST_Command_Center_Bar {
 		}
 
 		$user = wp_get_current_user();
-		if ( empty( $user->roles ) ) {
-			return $items;
-		}
 
-		$role_visibility = isset( $cc_settings['role_visibility'] ) && is_array( $cc_settings['role_visibility'] )
-			? $cc_settings['role_visibility']
-			: array();
-
-		$visible = array();
-
-		foreach ( $items as $item ) {
-			$slug = isset( $item['slug'] ) ? $item['slug'] : '';
-			if ( '' === $slug || ! self::is_item_visible_for_user( $slug, $user->roles, $role_visibility ) ) {
-				continue;
-			}
-
-			$visible[] = $item;
-		}
+		/**
+		 * Filter top bar items resolved for the current user (after role preset assignment).
+		 *
+		 * @param array[] $items       Top bar items.
+		 * @param array   $cc_settings Command Center settings.
+		 * @param WP_User $user        Current user.
+		 */
+		$items = apply_filters( 'edminboost_top_bar_items_for_user', $items, $cc_settings, $user );
 
 		EDMINBOOST_Command_Center::ensure_discovery_menu_snapshot();
 
-		return EDMINBOOST_Command_Center::filter_top_bar_items_for_user_capabilities( $visible );
+		return EDMINBOOST_Command_Center::filter_top_bar_items_for_user_capabilities( $items );
 	}
 
 	/**
@@ -289,28 +289,6 @@ class EDMINBOOST_Command_Center_Bar {
 		}
 
 		return $url;
-	}
-
-	/**
-	 * Whether a top bar item is visible for the user's roles.
-	 *
-	 * @param string   $slug            Menu slug.
-	 * @param string[] $user_roles      Current user roles.
-	 * @param array    $role_visibility Hidden slugs keyed by role.
-	 * @return bool
-	 */
-	private static function is_item_visible_for_user( $slug, $user_roles, $role_visibility ) {
-		foreach ( $user_roles as $role ) {
-			$hidden_for_role = isset( $role_visibility[ $role ] ) && is_array( $role_visibility[ $role ] )
-				? $role_visibility[ $role ]
-				: array();
-
-			if ( ! in_array( $slug, $hidden_for_role, true ) ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**

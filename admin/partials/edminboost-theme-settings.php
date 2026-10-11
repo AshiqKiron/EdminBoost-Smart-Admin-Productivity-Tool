@@ -342,11 +342,7 @@ $edminboost_show_theme_extras = isset( $edminboost_show_theme_extras ) ? (bool) 
 				</div>
 			</fieldset>
 
-			<?php
-			if ( EDMINBOOST_Plan::is_direct_build() ) {
-				do_action( 'edminboost_admin_extension', 'theme_schedule_dark_mode' );
-			}
-			?>
+			<?php EDMINBOOST_Plan::render_admin_extension( 'theme_schedule_dark_mode' ); ?>
 
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
 				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_status_colors' ); ?><?php esc_html_e( 'Post status row colors', 'edminboost-admin-customization' ); ?></legend>

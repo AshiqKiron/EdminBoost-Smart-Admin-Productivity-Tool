@@ -19,9 +19,5 @@ if ( ! defined( 'ABSPATH' ) ) {
 		<h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
 	</header>
 
-	<?php
-	if ( EDMINBOOST_Plan::is_direct_build() ) {
-		do_action( 'edminboost_admin_extension', 'settings_backup' );
-	}
-	?>
+	<?php EDMINBOOST_Plan::render_admin_extension( 'settings_backup' ); ?>
 </div>

@@ -275,14 +275,6 @@ class EDMINBOOST_Feature_Settings {
 		$output['rest_api_hardening']['hide_head']      = ! empty( $raw['rest_api_hardening']['hide_head'] );
 		$output['rest_api_hardening']['disable_guests'] = ! empty( $raw['rest_api_hardening']['disable_guests'] );
 
-		if ( EDMINBOOST_Plan::is_direct_build() && isset( $raw['login_redirects'] ) && is_array( $raw['login_redirects'] ) ) {
-			$output['login_redirects']['enabled']        = ! empty( $raw['login_redirects']['enabled'] );
-			$output['login_redirects']['default_login']  = self::sanitize_redirect_url( $raw['login_redirects']['default_login'] ?? '' );
-			$output['login_redirects']['default_logout'] = self::sanitize_redirect_url( $raw['login_redirects']['default_logout'] ?? '' );
-			$output['login_redirects']['login_roles']    = self::sanitize_role_redirects( $raw['login_redirects']['login_roles'] ?? array() );
-			$output['login_redirects']['logout_roles']   = self::sanitize_role_redirects( $raw['login_redirects']['logout_roles'] ?? array() );
-		}
-
 		$hb_contexts = array( 'admin', 'editor', 'frontend' );
 		$hb_allowed  = array( 'default', 'slow', 'disable' );
 		foreach ( $hb_contexts as $ctx ) {
@@ -316,7 +308,13 @@ class EDMINBOOST_Feature_Settings {
 			array( 'post', 'page' )
 		);
 
-		return $output;
+		/**
+		 * Filter sanitized feature settings.
+		 *
+		 * @param array $output Sanitized feature settings.
+		 * @param array $raw    Raw features input.
+		 */
+		return apply_filters( 'edminboost_sanitize_features', $output, $raw );
 	}
 
 	/**

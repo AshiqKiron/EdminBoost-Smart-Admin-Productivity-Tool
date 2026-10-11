@@ -883,10 +883,7 @@ class EDMINBOOST_Theme {
 		$output['admin_favicon_id']  = absint( $raw['admin_favicon_id'] ?? 0 );
 		$output['admin_bg_color']    = self::sanitize_hex_color( $raw['admin_bg_color'] ?? '' );
 		$output['admin_bg_image_id'] = absint( $raw['admin_bg_image_id'] ?? 0 );
-		$output['font_size']         = max( 12, min( 20, absint( $raw['font_size'] ?? 14 ) ) );
-		$output['schedule_dark_mode'] = ! empty( $raw['schedule_dark_mode'] );
-		$output['dark_mode_start']   = self::sanitize_time( $raw['dark_mode_start'] ?? '18:00' );
-		$output['dark_mode_end']     = self::sanitize_time( $raw['dark_mode_end'] ?? '06:00' );
+		$output['font_size'] = max( 12, min( 20, absint( $raw['font_size'] ?? 14 ) ) );
 
 		if ( isset( $raw['status_colors'] ) && is_array( $raw['status_colors'] ) ) {
 			foreach ( array_keys( $output['status_colors'] ) as $status_key ) {
@@ -894,12 +891,6 @@ class EDMINBOOST_Theme {
 					$output['status_colors'][ $status_key ] = self::sanitize_hex_color( $raw['status_colors'][ $status_key ] );
 				}
 			}
-		}
-
-		if ( ! EDMINBOOST_Plan::is_direct_build() ) {
-			$output['schedule_dark_mode'] = false;
-			$output['dark_mode_start']    = self::get_defaults()['dark_mode_start'];
-			$output['dark_mode_end']      = self::get_defaults()['dark_mode_end'];
 		}
 
 		return $output;

@@ -66,6 +66,7 @@ FORBIDDEN_PATHS=(
 FORBIDDEN_FILES=(
 	"includes/class-edminboost-pro.php"
 	"includes/class-edminboost-white-label.php"
+	"admin/partials/edminboost-settings-page.php"
 	"EdminBoost.code-workspace"
 )
 
@@ -81,6 +82,8 @@ FORBIDDEN_PATTERNS=(
 	'class[[:space:]]+EDMINBOOST_Plan_Licensing'
 	'edminboost-billing-page\.php'
 	'edminboost-pro-package\.php'
+	'has_licensed_admin_ui'
+	'EDMINBOOST_Command_Center_Bar_Pro'
 )
 
 errors=0

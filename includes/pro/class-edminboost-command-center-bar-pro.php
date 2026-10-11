@@ -20,12 +20,61 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 	 * @return void
 	 */
 	public static function register_hooks() {
+		add_filter( 'edminboost_cc_bar_use_pro_register_nodes', array( __CLASS__, 'filter_use_pro_register_nodes' ) );
+		add_action( 'edminboost_cc_bar_register_pro_nodes', array( __CLASS__, 'register_nodes' ) );
+		add_filter( 'edminboost_cc_bar_has_drawer_items', array( __CLASS__, 'filter_has_drawer_items' ) );
+		add_filter( 'edminboost_cc_bar_mapper_preview_context', array( __CLASS__, 'filter_mapper_preview_context' ) );
+		add_filter( 'edminboost_cc_bar_drawer_frame_body_class', array( __CLASS__, 'filter_drawer_frame_body_class' ) );
 		add_action( 'admin_init', array( __CLASS__, 'maybe_prepare_drawer_frame' ) );
 		add_action( 'admin_footer', array( __CLASS__, 'render_drawer_shell' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'render_drawer_shell' ) );
 		add_action( 'wp_ajax_edminboost_cc_drawer_preview', array( __CLASS__, 'ajax_drawer_preview' ) );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_drawer_assets' ), 20 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_drawer_assets' ), 20 );
+	}
+
+	/**
+	 * @param bool $use Default false on the WordPress.org build.
+	 * @return bool
+	 */
+	public static function filter_use_pro_register_nodes( $use ) {
+		if ( $use ) {
+			return true;
+		}
+
+		return EDMINBOOST_Pro::has_licensed_admin_ui();
+	}
+
+	/**
+	 * @param bool $has Default false on the WordPress.org build.
+	 * @return bool
+	 */
+	public static function filter_has_drawer_items( $has ) {
+		if ( $has ) {
+			return true;
+		}
+
+		return self::has_drawer_items();
+	}
+
+	/**
+	 * @param bool $is_context Default false when not on the mapper screen.
+	 * @return bool
+	 */
+	public static function filter_mapper_preview_context( $is_context ) {
+		if ( $is_context ) {
+			return true;
+		}
+
+		$context_nonce = isset( $_POST['mapper_context_nonce'] )
+			? sanitize_text_field( wp_unslash( $_POST['mapper_context_nonce'] ) )
+			: '';
+
+		if ( '' === $context_nonce ) {
+			return false;
+		}
+
+		return (bool) wp_verify_nonce( $context_nonce, 'edminboost_cc_mapper_context' );
 	}
 
 	/**
@@ -100,7 +149,7 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 	 * @return void
 	 */
 	public static function enqueue_drawer_assets() {
-		if ( ! EDMINBOOST_Settings::is_enabled() || ! is_user_logged_in() ) {
+		if ( ! EDMINBOOST_Pro::has_licensed_admin_ui() || ! EDMINBOOST_Settings::is_enabled() || ! is_user_logged_in() ) {
 			return;
 		}
 
@@ -161,7 +210,7 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 			);
 		}
 
-		if ( ! self::is_mapper_preview_context() ) {
+		if ( ! EDMINBOOST_Command_Center_Bar::is_mapper_preview_context() ) {
 			wp_send_json_error(
 				array( 'message' => __( 'Drawer preview is only available in Layout Studio.', 'edminboost-admin-customization' ) ),
 				400
@@ -457,22 +506,6 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 	 *
 	 * @return bool
 	 */
-	public static function is_mapper_preview_context() {
-		if ( EDMINBOOST_Command_Center_Bar::is_mapper_screen() ) {
-			return true;
-		}
-
-		$context_nonce = isset( $_POST['mapper_context_nonce'] )
-			? sanitize_text_field( wp_unslash( $_POST['mapper_context_nonce'] ) )
-			: '';
-
-		if ( '' === $context_nonce ) {
-			return false;
-		}
-
-		return (bool) wp_verify_nonce( $context_nonce, 'edminboost_cc_mapper_context' );
-	}
-
 	/**
 	 * Whether a slug and anchor are valid for drawer iframe loads.
 	 *

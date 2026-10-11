@@ -54,6 +54,10 @@
 		target.style.setProperty( '--eb-op-content', colors.content || '#f0f0f1' );
 	}
 
+	function hasLicensedAdminUi() {
+		return !!( window.edminboostData && window.edminboostData.hasLicensedAdminUi );
+	}
+
 	function getOverviewPreviewStrings() {
 		var strings = edminboostData.strings || {};
 
@@ -61,6 +65,36 @@
 			wordpressLogo: strings.previewWordPressLogo || 'WordPress',
 			profile: strings.previewProfile || 'My account',
 		};
+	}
+
+	function formatTopBarOpensDirectly( count ) {
+		var strings = edminboostData.strings || {};
+		var template = count === 1 ? strings.topBarOpensDirectlyOne : strings.topBarOpensDirectlyMany;
+
+		if ( template ) {
+			return template.replace( '%d', String( count ) );
+		}
+
+		return count === 1 ? count + ' opens directly' : count + ' open directly';
+	}
+
+	function formatTopBarOpensInDrawer( count ) {
+		var strings = edminboostData.strings || {};
+		var template = count === 1 ? strings.topBarOpensInDrawerOne : strings.topBarOpensInDrawerMany;
+
+		if ( template ) {
+			return template.replace( '%d', String( count ) );
+		}
+
+		return count === 1 ? count + ' opens in a slide-out drawer' : count + ' open in a slide-out drawer';
+	}
+
+	function getTopBarPreviewInteractionClass( interaction ) {
+		if ( hasLicensedAdminUi() && 'drawer' === interaction ) {
+			return 'is-drawer';
+		}
+
+		return 'is-direct';
 	}
 
 	function createTopBarPreviewTip( title, iconClass ) {
@@ -3504,8 +3538,7 @@
 				var li = document.createElement( 'li' );
 				var interaction = item.interaction || 'redirect';
 				var itemLabel = item.label || item.slug || '';
-				li.className = 'edminboost-overview-topbar-preview__item ' +
-					( interaction === 'drawer' ? 'is-drawer' : 'is-direct' );
+				li.className = 'edminboost-overview-topbar-preview__item ' + getTopBarPreviewInteractionClass( interaction );
 
 				li.appendChild( createTopBarPreviewTip( itemLabel, item.icon || 'dashicons-admin-generic' ) );
 
@@ -4002,8 +4035,7 @@
 				var li = document.createElement( 'li' );
 				var interaction = item.interaction || 'redirect';
 				var itemLabel = item.label || item.slug || '';
-				li.className = 'edminboost-overview-topbar-preview__item ' +
-					( interaction === 'drawer' ? 'is-drawer' : 'is-direct' );
+				li.className = 'edminboost-overview-topbar-preview__item ' + getTopBarPreviewInteractionClass( interaction );
 
 				li.appendChild( createTopBarPreviewTip( itemLabel, item.icon || 'dashicons-admin-generic' ) );
 
@@ -4035,41 +4067,43 @@
 		}
 
 		function buildTopBarDescription( items ) {
+			var strings = edminboostData.strings || {};
+			var licensed = hasLicensedAdminUi();
 			var redirectCount = 0;
 			var drawerCount   = 0;
 
-			( items || [] ).forEach( function ( item ) {
-				if ( ! item ) {
-					return;
-				}
+			if ( licensed ) {
+				( items || [] ).forEach( function ( item ) {
+					if ( ! item ) {
+						return;
+					}
 
-				if ( 'drawer' === ( item.interaction || 'redirect' ) ) {
-					drawerCount += 1;
-				} else {
-					redirectCount += 1;
-				}
-			} );
+					if ( 'drawer' === ( item.interaction || 'redirect' ) ) {
+						drawerCount += 1;
+					} else {
+						redirectCount += 1;
+					}
+				} );
+			}
 
 			if ( ! items || ! items.length ) {
-				return 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer.';
+				if ( licensed && strings.topBarOverviewEmptyLicensed ) {
+					return strings.topBarOverviewEmptyLicensed;
+				}
+
+				return strings.topBarOverviewEmpty || 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor.';
 			}
 
-			var parts = [ 'Admin link shortcuts appear in your WordPress top bar.' ];
+			var parts = [
+				strings.topBarOverviewHasLinks || 'Admin link shortcuts appear in your WordPress top bar.',
+			];
 
-			if ( redirectCount > 0 ) {
-				parts.push(
-					redirectCount === 1
-						? '1 opens directly'
-						: redirectCount + ' open directly'
-				);
+			if ( licensed && redirectCount > 0 ) {
+				parts.push( formatTopBarOpensDirectly( redirectCount ) );
 			}
 
-			if ( drawerCount > 0 ) {
-				parts.push(
-					drawerCount === 1
-						? '1 opens in a slide-out drawer'
-						: drawerCount + ' open in a slide-out drawer'
-				);
+			if ( licensed && drawerCount > 0 ) {
+				parts.push( formatTopBarOpensInDrawer( drawerCount ) );
 			}
 
 			return parts.join( ' ' ) + ( parts.length > 1 ? '.' : '' );
@@ -4119,14 +4153,18 @@
 				main.appendChild( icon );
 				main.appendChild( name );
 
-				var meta = document.createElement( 'span' );
-				meta.className = 'edminboost-overview-topbar-links-picker__option-meta';
-				meta.textContent = 'drawer' === ( item.interaction || 'redirect' )
-					? 'Opens in drawer'
-					: 'Opens directly';
-
 				li.appendChild( main );
-				li.appendChild( meta );
+
+				if ( hasLicensedAdminUi() ) {
+					var meta = document.createElement( 'span' );
+					meta.className = 'edminboost-overview-topbar-links-picker__option-meta';
+					var strings = edminboostData.strings || {};
+					meta.textContent = 'drawer' === ( item.interaction || 'redirect' )
+						? ( strings.opensInDrawer || 'Opens in drawer' )
+						: ( strings.opensDirectly || 'Opens directly' );
+					li.appendChild( meta );
+				}
+
 				topbarList.appendChild( li );
 			} );
 		}

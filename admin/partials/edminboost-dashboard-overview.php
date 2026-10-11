@@ -38,26 +38,31 @@ $edminboost_layout_name   = isset( $edminboost_all_presets[ $edminboost_layout_p
 $edminboost_top_bar_items = isset( $cc_settings['top_bar_items'] ) && is_array( $cc_settings['top_bar_items'] )
 	? $cc_settings['top_bar_items']
 	: array();
-$edminboost_top_bar_count = count( $edminboost_top_bar_items );
-$edminboost_redirect_count = 0;
-$edminboost_drawer_count   = 0;
+$edminboost_top_bar_count    = count( $edminboost_top_bar_items );
+$edminboost_show_topbar_interaction = (bool) apply_filters( 'edminboost_show_topbar_interaction_ui', false );
+$edminboost_redirect_count   = 0;
+$edminboost_drawer_count     = 0;
 
-foreach ( $edminboost_top_bar_items as $edminboost_top_bar_item ) {
-	$edminboost_interaction = isset( $edminboost_top_bar_item['interaction'] ) ? $edminboost_top_bar_item['interaction'] : 'redirect';
-	if ( 'drawer' === $edminboost_interaction ) {
-		++$edminboost_drawer_count;
-	} else {
-		++$edminboost_redirect_count;
+if ( $edminboost_show_topbar_interaction ) {
+	foreach ( $edminboost_top_bar_items as $edminboost_top_bar_item ) {
+		$edminboost_interaction = isset( $edminboost_top_bar_item['interaction'] ) ? $edminboost_top_bar_item['interaction'] : 'redirect';
+		if ( 'drawer' === $edminboost_interaction ) {
+			++$edminboost_drawer_count;
+		} else {
+			++$edminboost_redirect_count;
+		}
 	}
 }
 
 if ( 0 === $edminboost_top_bar_count ) {
-	$edminboost_top_bar_desc = __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer.', 'edminboost-admin-customization' );
+	$edminboost_top_bar_desc = $edminboost_show_topbar_interaction
+		? __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer.', 'edminboost-admin-customization' )
+		: __( 'Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor.', 'edminboost-admin-customization' );
 } else {
 	$edminboost_top_bar_desc  = __( 'Admin link shortcuts appear in your WordPress top bar.', 'edminboost-admin-customization' );
 	$edminboost_opening_parts = array();
 
-	if ( $edminboost_redirect_count > 0 ) {
+	if ( $edminboost_show_topbar_interaction && $edminboost_redirect_count > 0 ) {
 		$edminboost_opening_parts[] = sprintf(
 			/* translators: %d: number of links that open directly */
 			_n( '%d opens directly', '%d open directly', $edminboost_redirect_count, 'edminboost-admin-customization' ),
@@ -65,7 +70,7 @@ if ( 0 === $edminboost_top_bar_count ) {
 		);
 	}
 
-	if ( $edminboost_drawer_count > 0 ) {
+	if ( $edminboost_show_topbar_interaction && $edminboost_drawer_count > 0 ) {
 		$edminboost_opening_parts[] = sprintf(
 			/* translators: %d: number of links that open in a slide-out drawer */
 			_n( '%d opens in a slide-out drawer', '%d open in a slide-out drawer', $edminboost_drawer_count, 'edminboost-admin-customization' ),
@@ -167,7 +172,7 @@ $edminboost_theme_key = $edminboost_option_name . '[command_center][theme]';
 				$edminboost_preview_items      = $edminboost_top_bar_items;
 				$edminboost_preview_id         = 'edminboost-overview-topbar-preview';
 				$edminboost_preview_aria_label = __( 'Preview of your configured top bar links', 'edminboost-admin-customization' );
-				$edminboost_show_interaction   = true;
+				$edminboost_show_interaction   = $edminboost_show_topbar_interaction;
 				$edminboost_compact_preview    = true;
 				include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-overview-topbar-preview.php';
 				?>

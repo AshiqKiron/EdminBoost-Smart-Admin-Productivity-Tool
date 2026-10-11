@@ -47,6 +47,7 @@ class EDMINBOOST_Pro {
 	 */
 	public static function register_admin_ui_hooks() {
 		add_filter( 'edminboost_has_licensed_admin_ui', array( __CLASS__, 'filter_has_licensed_admin_ui' ) );
+		add_filter( 'edminboost_show_topbar_interaction_ui', array( __CLASS__, 'filter_show_topbar_interaction_ui' ) );
 		add_filter( 'edminboost_allows_custom_preset_actions', array( __CLASS__, 'filter_allows_custom_preset_actions' ) );
 		add_filter( 'edminboost_login_redirects_enabled', array( __CLASS__, 'filter_login_redirects_enabled' ), 10, 2 );
 		add_filter( 'edminboost_mapper_item_sidebar_partial', array( __CLASS__, 'filter_mapper_item_sidebar_partial' ) );
@@ -98,6 +99,18 @@ class EDMINBOOST_Pro {
 		}
 
 		return EDMINBOOST_Plan_Licensing::is_active();
+	}
+
+	/**
+	 * @param bool $show Default false on the WordPress.org build.
+	 * @return bool
+	 */
+	public static function filter_show_topbar_interaction_ui( $show ) {
+		if ( $show ) {
+			return true;
+		}
+
+		return self::has_licensed_admin_ui();
 	}
 
 	/**

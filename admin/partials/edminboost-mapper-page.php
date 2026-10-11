@@ -208,24 +208,17 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 					</p>
 
 					<?php
-					$edminboost_mapper_sidebar_partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-mapper-item-sidebar.php';
-					if ( EDMINBOOST_Plan::is_direct_build() ) {
-						$edminboost_mapper_sidebar_partial = apply_filters(
-							'edminboost_mapper_item_sidebar_partial',
-							$edminboost_mapper_sidebar_partial
-						);
-					}
+					$edminboost_mapper_sidebar_partial = apply_filters(
+						'edminboost_mapper_item_sidebar_partial',
+						EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-mapper-item-sidebar.php'
+					);
 					if ( is_readable( $edminboost_mapper_sidebar_partial ) ) {
 						include $edminboost_mapper_sidebar_partial;
 					}
 					?>
 				</section>
 
-				<?php
-				if ( EDMINBOOST_Plan::is_direct_build() ) {
-					do_action( 'edminboost_admin_extension', 'mapper_look_section' );
-				}
-				?>
+				<?php EDMINBOOST_Plan::render_admin_extension( 'mapper_look_section' ); ?>
 
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_layout_studio_save]" value="1" />

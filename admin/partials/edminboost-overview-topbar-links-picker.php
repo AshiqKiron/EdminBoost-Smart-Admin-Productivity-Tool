@@ -11,7 +11,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-$edminboost_top_bar_count = count( $edminboost_top_bar_items );
+$edminboost_top_bar_count   = count( $edminboost_top_bar_items );
+$edminboost_show_interaction = (bool) apply_filters( 'edminboost_show_topbar_interaction_ui', false );
 $edminboost_summary_label = 0 === $edminboost_top_bar_count
 	? __( 'No links configured', 'edminboost-admin-customization' )
 	: sprintf(
@@ -53,9 +54,6 @@ $edminboost_summary_label = 0 === $edminboost_top_bar_count
 				$edminboost_item_slug       = isset( $edminboost_top_bar_item['slug'] ) ? $edminboost_top_bar_item['slug'] : '';
 				$edminboost_item_interaction = isset( $edminboost_top_bar_item['interaction'] ) ? $edminboost_top_bar_item['interaction'] : 'redirect';
 				$edminboost_display_label   = '' !== $edminboost_item_label ? $edminboost_item_label : $edminboost_item_slug;
-				$edminboost_interaction_label = 'drawer' === $edminboost_item_interaction
-					? __( 'Opens in drawer', 'edminboost-admin-customization' )
-					: __( 'Opens directly', 'edminboost-admin-customization' );
 				?>
 				<li
 					class="edminboost-overview-topbar-links-picker__option"
@@ -67,7 +65,14 @@ $edminboost_summary_label = 0 === $edminboost_top_bar_count
 						<span class="dashicons <?php echo esc_attr( isset( $edminboost_top_bar_item['icon'] ) ? $edminboost_top_bar_item['icon'] : 'dashicons-admin-generic' ); ?>" aria-hidden="true"></span>
 						<span class="edminboost-overview-topbar-links-picker__option-name"><?php echo esc_html( $edminboost_display_label ); ?></span>
 					</span>
-					<span class="edminboost-overview-topbar-links-picker__option-meta"><?php echo esc_html( $edminboost_interaction_label ); ?></span>
+					<?php if ( $edminboost_show_interaction ) : ?>
+						<?php
+						$edminboost_interaction_label = 'drawer' === $edminboost_item_interaction
+							? __( 'Opens in drawer', 'edminboost-admin-customization' )
+							: __( 'Opens directly', 'edminboost-admin-customization' );
+						?>
+						<span class="edminboost-overview-topbar-links-picker__option-meta"><?php echo esc_html( $edminboost_interaction_label ); ?></span>
+					<?php endif; ?>
 				</li>
 			<?php endforeach; ?>
 		<?php endif; ?>
