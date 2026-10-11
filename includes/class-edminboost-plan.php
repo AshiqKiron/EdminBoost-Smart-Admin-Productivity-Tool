@@ -90,10 +90,6 @@ class EDMINBOOST_Plan {
 	 * @return bool
 	 */
 	public static function has_licensed_admin_ui() {
-		if ( class_exists( 'EDMINBOOST_Pro', false ) ) {
-			return EDMINBOOST_Pro::has_licensed_admin_ui();
-		}
-
 		return (bool) apply_filters( 'edminboost_has_licensed_admin_ui', false );
 	}
 
@@ -103,11 +99,14 @@ class EDMINBOOST_Plan {
 	 * @return bool
 	 */
 	public static function allows_custom_preset_actions() {
-		if ( class_exists( 'EDMINBOOST_Pro', false ) ) {
-			return EDMINBOOST_Pro::allows_custom_preset_actions();
-		}
-
-		return true;
+		/**
+		 * Filter custom preset save/rename/duplicate on the direct-download build.
+		 *
+		 * Default true on WordPress.org; premium package filters when unlicensed.
+		 *
+		 * @param bool $allowed Whether custom preset writes are allowed.
+		 */
+		return (bool) apply_filters( 'edminboost_allows_custom_preset_actions', ! self::is_direct_build() );
 	}
 
 	/**
@@ -117,10 +116,6 @@ class EDMINBOOST_Plan {
 	 * @return bool
 	 */
 	public static function is_login_redirects_enabled( $enabled ) {
-		if ( class_exists( 'EDMINBOOST_Plan_Limits', false ) ) {
-			return EDMINBOOST_Plan_Limits::is_login_redirects_enabled( $enabled );
-		}
-
 		return (bool) apply_filters( 'edminboost_login_redirects_enabled', false, $enabled );
 	}
 

@@ -58,6 +58,9 @@ Yes. When uninstalled, all plugin options are removed from the database.
 
 = 1.4.3 =
 * WordPress.org release package excludes the repo `assets/` directory (directory banners and icons upload via SVN assets, not the plugin zip).
+* Release packages exclude the repo `docs/` directory (product Markdown for the external docs site, not runtime plugin code).
+* Free plugin core no longer loads premium bootstrap code; Pro features load only when the direct-download package defines `EDMINBOOST_PREMIUM_BUILD` and ships `includes/pro/`.
+* Free build strips Pro-only stored settings (drawer/badges, role visibility, login redirects, white label, scheduled dark mode, Menu Studio custom links) on read and save.
 
 = 1.4.2 =
 * WordPress.org zip excludes Pro admin UI (`admin/partials/pro/`). The free plugin shows only free-tier screens and fields—no locked Pro controls. Premium builds with an active Pro or Agency license load the pro admin package; plan limits remain enforced via settings read/sanitize.

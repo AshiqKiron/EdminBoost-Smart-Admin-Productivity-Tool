@@ -45,8 +45,10 @@ edminboost_build_rsync_stage() {
 		--exclude='node_modules/'
 		--exclude='vendor/'
 		--exclude='tests/'
+		--exclude='docs/'
 		--exclude='bin/'
 		--exclude='dist/'
+		--exclude='*.code-workspace'
 		--exclude='build/'
 		--exclude='.env.qa'
 		--exclude='.env.qa.example'
@@ -69,6 +71,71 @@ edminboost_build_rsync_stage() {
 	fi
 
 	rsync "${rsync_args[@]}" "$plugin_dir/" "$stage_dir/"
+}
+
+# Inject premium bootstrap requires into a staged copy (WordPress.org source stays pro-free).
+edminboost_build_inject_premium_bootstrap() {
+	local bootstrap="$1"
+
+	if [[ ! -f "$bootstrap" ]]; then
+		echo "Bootstrap not found: $bootstrap" >&2
+		exit 1
+	fi
+
+	local tmp
+	tmp="$(mktemp)"
+
+	awk '
+		/define\( '\''EDMINBOOST_PLUGIN_DOCS_URL'\''/ && !injected_premium {
+			print
+			print ""
+			print "if ( file_exists( EDMINBOOST_PLUGIN_DIR . '\''includes/pro/edminboost-premium.php'\'' ) ) {"
+			print "\trequire_once EDMINBOOST_PLUGIN_DIR . '\''includes/pro/edminboost-premium.php'\'';"
+			print "}"
+			injected_premium = 1
+			next
+		}
+		/if \( null === \$plugin \)/ {
+			print
+			getline
+			if ( !injected_package ) {
+				print "\t\tif ( EDMINBOOST_Plan::is_direct_build() ) {"
+				print "\t\t\trequire_once EDMINBOOST_PLUGIN_DIR . '\''includes/pro/edminboost-pro-package.php'\'';"
+				print "\t\t}"
+				print ""
+				injected_package = 1
+			}
+			print
+			next
+		}
+		{ print }
+	' "$bootstrap" > "$tmp"
+
+	mv "$tmp" "$bootstrap"
+}
+
+# Regenerate languages/*.pot from staged sources (WordPress.org zip — no includes/pro/ in stage).
+edminboost_build_regenerate_wporg_pot() {
+	local dev_plugin_dir="$1"
+	local stage_dir="$2"
+	local domain="edminboost-admin-customization"
+	local wp_i18n="$dev_plugin_dir/vendor/bin/wp"
+	local out_file="$stage_dir/languages/${domain}.pot"
+
+	if [[ ! -x "$wp_i18n" ]]; then
+		echo "Note: vendor/bin/wp not found — WordPress.org zip keeps the repo POT (run composer install + rebuild for a Pro-free POT)." >&2
+		return 0
+	fi
+
+	mkdir -p "$stage_dir/languages"
+
+	"$wp_i18n" i18n make-pot "$stage_dir" "$out_file" \
+		--domain="$domain" \
+		--slug="$domain" \
+		--exclude=vendor,node_modules,tests,dist,build,.git,.cursor \
+		--headers='{"Report-Msgid-Bugs-To":"https://asphaltthemes.com/edminboost"}'
+
+	echo "Regenerated Pro-free POT for WordPress.org package: $out_file"
 }
 
 edminboost_build_create_zip() {

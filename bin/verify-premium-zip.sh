@@ -36,6 +36,8 @@ fi
 
 echo "Verifying premium build: $ZIP_PATH"
 
+errors=0
+
 BOOTSTRAP="$STAGE_DIR/edminboost-admin-customization.php"
 if [[ ! -f "$BOOTSTRAP" ]]; then
 	echo "FAIL: plugin bootstrap missing." >&2
@@ -59,6 +61,38 @@ if [[ -f "$STAGE_DIR/uninstall.php" ]]; then
 	exit 1
 fi
 echo "OK: uninstall.php omitted (Freemius after_uninstall cleanup)."
+
+if [[ -d "$STAGE_DIR/docs" ]]; then
+	echo "FAIL: docs/ must not ship in distributable zips (external docs site only)." >&2
+	errors=$(( errors + 1 ))
+else
+	echo "OK: docs/ omitted."
+fi
+
+if [[ -d "$STAGE_DIR/.cursor" ]]; then
+	echo "FAIL: .cursor/ must not ship in distributable zips." >&2
+	errors=$(( errors + 1 ))
+fi
+
+if [[ -f "$STAGE_DIR/EdminBoost.code-workspace" ]]; then
+	echo "FAIL: editor workspace files must not ship in distributable zips." >&2
+	errors=$(( errors + 1 ))
+fi
+
+while IFS= read -r -d '' md_file; do
+	if [[ "$md_file" == *"/includes/pro/freemius/"* ]]; then
+		continue
+	fi
+	rel_md="${md_file#"$STAGE_DIR"/}"
+	echo "FAIL: product documentation must not ship in distributable zips: $rel_md" >&2
+	errors=$(( errors + 1 ))
+done < <(find "$STAGE_DIR" -name '*.md' -print0 2>/dev/null)
+
+if [[ "$errors" -gt 0 ]]; then
+	echo "" >&2
+	echo "$errors verification check(s) failed." >&2
+	exit 1
+fi
 
 if [[ -d "$STAGE_DIR/includes/pro" ]]; then
 	echo "OK: includes/pro/ is present in the premium zip."

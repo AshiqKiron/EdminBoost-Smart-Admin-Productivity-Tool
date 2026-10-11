@@ -16,11 +16,11 @@ bin/
   install-wp-tests.sh     # WP test suite bootstrap
   setup-qa-site.sh        # QA users + plugin symlink
   build-zip-lib.sh        # shared rsync staging for release zips
-  build-wporg-zip.sh      # WordPress.org package (excludes includes/pro/, admin/{partials,js,css}/pro/, assets/)
+  build-wporg-zip.sh      # WordPress.org package (excludes includes/pro/, admin/{partials,js,css}/pro/, assets/, docs/)
   build-plugin-zip.sh     # alias → build-wporg-zip.sh (back-compat)
   build-premium-zip.sh    # Premium/Freemius package
-  verify-wporg-zip.sh     # fail if Freemius, includes/pro/, admin/{partials,js,css}/pro/, assets/, wp_org_gatekeeper, or bare is_premium (allows is_premium_build identifiers)
-  verify-premium-zip.sh   # premium zip sanity checks
+  verify-wporg-zip.sh     # fail if Freemius, includes/pro/, admin/{partials,js,css}/pro/, assets/, docs/, .cursor/, stray *.md, wp_org_gatekeeper, or bare is_premium (allows is_premium_build identifiers)
+  verify-premium-zip.sh   # premium zip sanity checks (docs/, .cursor/, product *.md omitted; Freemius SDK README allowed)
   make-pot.sh             # regenerate languages/edminboost-admin-customization.pot (composer make-pot)
   generate-plugin-banners.py / generate-plugin-icons.py / generate-website-heroes.py  # marketing assets
   capture-doc-screenshots.mjs  # optional docs screenshots (Playwright)
@@ -50,6 +50,7 @@ cp tests/wp-tests-config.sample.php tests/wp-tests-config.php
 bash bin/setup-qa-site.sh   # one-time
 
 composer test               # PHPUnit (uses MAMP PHP via bin/run-phpunit.sh)
+EDMINBOOST_TEST_WPORG=1 composer test   # simulate WP.org build (skip loading includes/pro/edminboost-premium.php)
 npm run test:e2e            # Playwright (PLAYWRIGHT_BROWSERS_PATH=./.playwright-browsers)
 npm run test:e2e:ui         # debug UI
 npm run test:e2e:report     # open HTML report
@@ -64,7 +65,7 @@ PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from 
 - Test files: `tests/phpunit/{Settings,Features,CommandCenter,CommandCenterBar,Theme,AdminMenuOrder,Pro}Test.php`.
 - Name tests `test_{behavior}`; target static helpers on bar/CC classes where hook tests are heavy.
 - `SettingsTest::test_plugin_slug_and_text_domain_match_header()` asserts `EDMINBOOST_PLUGIN_SLUG`, `EDMINBOOST_TEXT_DOMAIN`, and bootstrap filename match the plugin header / slug (`edminboost-admin-customization`).
-- Pro gating tests: `ProTest` (`include_preset_in_ui`, `has_licensed_admin_ui`, `EDMINBOOST_Plan_Limits::enforce_plan_limits`); billing catalog in `CommandCenterTest` uses `EDMINBOOST_Billing::*` when the premium package is loaded; `CommandCenterTest` / `AdminMenuOrderTest` branch on `EDMINBOOST_Plan::has_licensed_admin_ui()` and `is_direct_build()`. Use `enable_pro_plan()` in tests that need drawer/badge or Pro-saved options.
+- Pro gating tests: `ProTest` (`include_preset_in_ui`, `has_licensed_admin_ui`, `EDMINBOOST_Plan_Limits::enforce_plan_limits`, `test_strip_free_build_product_features_on_get` / `_on_sanitize` when `! is_direct_build()` — run with `EDMINBOOST_TEST_WPORG=1` in dev tree); billing catalog in `CommandCenterTest` uses `EDMINBOOST_Billing::*` when the premium package is loaded; `CommandCenterTest` / `AdminMenuOrderTest` branch on `EDMINBOOST_Plan::has_licensed_admin_ui()` and `is_direct_build()`. Use `enable_pro_plan()` in tests that need drawer/badge, role visibility sanitization, or Pro-saved options.
 
 ## Playwright Patterns
 

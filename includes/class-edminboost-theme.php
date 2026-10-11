@@ -896,6 +896,12 @@ class EDMINBOOST_Theme {
 			}
 		}
 
+		if ( ! EDMINBOOST_Plan::is_direct_build() ) {
+			$output['schedule_dark_mode'] = false;
+			$output['dark_mode_start']    = self::get_defaults()['dark_mode_start'];
+			$output['dark_mode_end']      = self::get_defaults()['dark_mode_end'];
+		}
+
 		return $output;
 	}
 

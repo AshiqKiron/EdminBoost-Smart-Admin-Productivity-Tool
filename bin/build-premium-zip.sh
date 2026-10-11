@@ -23,6 +23,8 @@ edminboost_build_require_tools
 edminboost_build_rsync_stage "$PLUGIN_DIR" "$STAGE_DIR" \
 	--exclude='uninstall.php'
 
+edminboost_build_inject_premium_bootstrap "$STAGE_DIR/${PLUGIN_SLUG}.php"
+
 ZIP_PATH="$(edminboost_build_create_zip "$BUILD_DIR" "$PLUGIN_SLUG" "$ZIP_BASENAME")"
 
 echo "Built premium package: $ZIP_PATH"

@@ -406,6 +406,21 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function render_white_label_page() {
+		if ( ! EDMINBOOST_Plan::has_licensed_admin_ui() ) {
+			if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
+				return;
+			}
+
+			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
+			exit;
+		}
+
+		$partial = EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-white-label-page.php';
+		if ( ! is_readable( $partial ) ) {
+			wp_safe_redirect( admin_url( 'admin.php?page=' . self::PAGE_SLUG ) );
+			exit;
+		}
+
 		$this->render_command_center_page( 'admin/partials/pro/edminboost-white-label-page.php' );
 	}
 

@@ -112,7 +112,7 @@ class EDMINBOOST_Settings {
 	 * @return array
 	 */
 	public static function get_form_defaults() {
-		return self::merge_settings( array(), false );
+		return self::strip_free_build_product_features( self::merge_settings( array(), false ) );
 	}
 
 	/**
@@ -174,7 +174,95 @@ class EDMINBOOST_Settings {
 		 */
 		$settings = apply_filters( 'edminboost_settings', $settings );
 
+		return self::strip_free_build_product_features( $settings );
+	}
+
+	/**
+	 * Remove stored keys for product features not shipped in the WordPress.org build.
+	 *
+	 * No-op on the direct-download build; premium unlicensed limits use EDMINBOOST_Plan_Limits
+	 * via EDMINBOOST_Plan_Gating when the pro package is loaded.
+	 *
+	 * @param array $settings Merged settings.
+	 * @return array
+	 */
+	public static function strip_free_build_product_features( $settings ) {
+		if ( ! is_array( $settings ) ) {
+			return array();
+		}
+
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			return $settings;
+		}
+
+		unset( $settings['white_label'] );
+
+		if ( isset( $settings['features'] ) && is_array( $settings['features'] ) ) {
+			unset( $settings['features']['login_redirects'] );
+		}
+
+		if ( isset( $settings['command_center'] ) && is_array( $settings['command_center'] ) ) {
+			$settings['command_center'] = self::strip_free_build_command_center_features( $settings['command_center'] );
+		}
+
 		return $settings;
+	}
+
+	/**
+	 * Strip Pro-only Command Center keys from stored config (WordPress.org build).
+	 *
+	 * @param array $cc Command Center settings.
+	 * @return array
+	 */
+	private static function strip_free_build_command_center_features( $cc ) {
+		$defaults = EDMINBOOST_Command_Center::get_defaults();
+		$cc       = wp_parse_args( $cc, $defaults );
+
+		$cc['role_visibility'] = array();
+
+		if ( isset( $cc['top_bar_items'] ) && is_array( $cc['top_bar_items'] ) ) {
+			foreach ( $cc['top_bar_items'] as $index => $item ) {
+				if ( ! is_array( $item ) ) {
+					unset( $cc['top_bar_items'][ $index ] );
+					continue;
+				}
+
+				$cc['top_bar_items'][ $index ]['interaction']  = 'redirect';
+				$cc['top_bar_items'][ $index ]['badge_source'] = '';
+			}
+
+			$cc['top_bar_items'] = array_values( $cc['top_bar_items'] );
+		}
+
+		if ( isset( $cc['behavior'] ) && is_array( $cc['behavior'] ) ) {
+			$behavior = wp_parse_args( $cc['behavior'], $defaults['behavior'] );
+
+			if ( in_array( $behavior['drawer_width'], array( 'fullscreen', 'custom' ), true ) ) {
+				$behavior['drawer_width'] = $defaults['behavior']['drawer_width'];
+			}
+
+			$behavior['animation_speed']    = $defaults['behavior']['animation_speed'];
+			$behavior['badge_style']        = $defaults['behavior']['badge_style'];
+			$behavior['glassmorphism']      = false;
+			$behavior['badge_refresh_rate'] = $defaults['behavior']['badge_refresh_rate'];
+
+			$cc['behavior'] = $behavior;
+		}
+
+		if ( isset( $cc['theme'] ) && is_array( $cc['theme'] ) ) {
+			unset( $cc['theme']['schedule_dark_mode'], $cc['theme']['dark_mode_start'], $cc['theme']['dark_mode_end'] );
+		}
+
+		if ( isset( $cc['menu_studio'] ) && is_array( $cc['menu_studio'] ) ) {
+			$menu_studio = wp_parse_args( $cc['menu_studio'], EDMINBOOST_Command_Center::get_menu_studio_defaults() );
+
+			$menu_studio['custom_items']  = array();
+			$menu_studio['display_mode'] = 'both';
+
+			$cc['menu_studio'] = $menu_studio;
+		}
+
+		return $cc;
 	}
 
 	/**
@@ -304,7 +392,7 @@ class EDMINBOOST_Settings {
 		}
 
 		if ( ! isset( $input['features'] ) || ! is_array( $input['features'] ) ) {
-			return $sanitized;
+			return self::strip_free_build_product_features( $sanitized );
 		}
 
 		$sanitized['features'] = EDMINBOOST_Feature_Settings::sanitize( $input['features'], $sanitized );
@@ -317,7 +405,7 @@ class EDMINBOOST_Settings {
 		 */
 		$sanitized = apply_filters( 'edminboost_sanitize_settings', $sanitized, $input );
 
-		return $sanitized;
+		return self::strip_free_build_product_features( $sanitized );
 	}
 
 	/**
@@ -457,7 +545,7 @@ class EDMINBOOST_Settings {
 			$output['role_assignments'] = $assignments;
 		}
 
-		if ( isset( $raw['role_visibility'] ) && is_array( $raw['role_visibility'] ) ) {
+		if ( EDMINBOOST_Plan::has_licensed_admin_ui() && isset( $raw['role_visibility'] ) && is_array( $raw['role_visibility'] ) ) {
 			$output['role_visibility'] = self::sanitize_role_visibility(
 				$raw['role_visibility'],
 				EDMINBOOST_Command_Center::get_role_matrix_menu_items()
@@ -655,8 +743,11 @@ class EDMINBOOST_Settings {
 			$output['submenu_order'] = $submenu_order;
 		}
 
-		if ( isset( $raw['custom_items'] ) && is_array( $raw['custom_items'] ) ) {
+		if ( EDMINBOOST_Plan::is_direct_build() && isset( $raw['custom_items'] ) && is_array( $raw['custom_items'] ) ) {
 			$output['custom_items'] = self::sanitize_menu_studio_custom_items( $raw['custom_items'] );
+		} elseif ( ! EDMINBOOST_Plan::is_direct_build() ) {
+			$output['custom_items']  = array();
+			$output['display_mode'] = 'both';
 		}
 
 		if ( isset( $raw['colors'] ) && is_array( $raw['colors'] ) ) {
@@ -914,6 +1005,7 @@ class EDMINBOOST_Settings {
 		$allowed_icons  = EDMINBOOST_Command_Center::get_dashicon_options();
 		$badge_sources  = array_keys( EDMINBOOST_Command_Center::get_badge_sources() );
 		$seen_slugs     = array();
+		$is_direct      = EDMINBOOST_Plan::is_direct_build();
 
 		foreach ( $items as $item ) {
 			if ( ! is_array( $item ) || empty( $item['slug'] ) ) {
@@ -967,6 +1059,11 @@ class EDMINBOOST_Settings {
 
 			$badge_source = isset( $item['badge_source'] ) ? sanitize_key( $item['badge_source'] ) : '';
 			if ( ! in_array( $badge_source, $badge_sources, true ) ) {
+				$badge_source = '';
+			}
+
+			if ( ! $is_direct ) {
+				$interaction  = 'redirect';
 				$badge_source = '';
 			}
 
@@ -1090,6 +1187,18 @@ class EDMINBOOST_Settings {
 		$output['hide_comments']        = ! empty( $raw['hide_comments'] );
 		$output['hide_new_content']     = ! empty( $raw['hide_new_content'] );
 		$output['hide_customize']       = ! empty( $raw['hide_customize'] );
+
+		if ( ! EDMINBOOST_Plan::is_direct_build() ) {
+			if ( in_array( $output['drawer_width'], array( 'fullscreen', 'custom' ), true ) ) {
+				$output['drawer_width'] = $defaults['drawer_width'];
+			}
+
+			$output['drawer_width_custom']  = $defaults['drawer_width_custom'];
+			$output['animation_speed']      = $defaults['animation_speed'];
+			$output['badge_style']          = $defaults['badge_style'];
+			$output['glassmorphism']        = false;
+			$output['badge_refresh_rate']   = $defaults['badge_refresh_rate'];
+		}
 
 		return $output;
 	}

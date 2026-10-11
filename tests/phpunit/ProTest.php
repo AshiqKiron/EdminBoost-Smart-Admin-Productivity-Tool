@@ -11,6 +11,126 @@
 class ProTest extends Edminboost_Test_Case {
 
 	/**
+	 * WordPress.org build does not load premium bootstrap constants.
+	 */
+	public function test_is_direct_build_false_without_premium_constant() {
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			$this->markTestSkipped( 'PHPUnit dev tree loads includes/pro/edminboost-premium.php; run with EDMINBOOST_TEST_WPORG=1 for wp.org simulation.' );
+		}
+
+		$this->assertFalse( EDMINBOOST_Plan::is_direct_build() );
+	}
+
+	/**
+	 * Pro-only stored settings are stripped on read for the free build.
+	 */
+	public function test_strip_free_build_product_features_on_get() {
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			$this->markTestSkipped( 'Direct-download build keeps Pro settings for Plan_Gating.' );
+		}
+
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'top_bar_items' => array(
+						array(
+							'slug'         => 'edit.php',
+							'label'        => 'Posts',
+							'icon'         => 'dashicons-admin-post',
+							'interaction'  => 'drawer',
+							'badge_source' => 'comments',
+						),
+					),
+					'menu_studio'   => array(
+						'custom_items' => array(
+							array(
+								'id'    => 'custom_1',
+								'label' => 'Custom',
+								'path'  => 'edit.php',
+								'icon'  => 'dashicons-admin-links',
+							),
+						),
+						'display_mode' => 'icon',
+					),
+				),
+				'features'        => array(
+					'login_redirects' => array(
+						'enabled' => true,
+					),
+				),
+				'white_label'     => array(
+					'enabled' => true,
+				),
+			)
+		);
+
+		$settings = EDMINBOOST_Settings::get();
+		$item     = $settings['command_center']['top_bar_items'][0];
+
+		$this->assertSame( 'redirect', $item['interaction'] );
+		$this->assertSame( '', $item['badge_source'] );
+		$this->assertSame( array(), $settings['command_center']['menu_studio']['custom_items'] );
+		$this->assertSame( 'both', $settings['command_center']['menu_studio']['display_mode'] );
+		$this->assertArrayNotHasKey( 'login_redirects', $settings['features'] );
+		$this->assertArrayNotHasKey( 'white_label', $settings );
+		$this->assertFalse( EDMINBOOST_Command_Center_Bar::has_drawer_items() );
+	}
+
+	/**
+	 * Pro-only values are not persisted on save for the WordPress.org build.
+	 */
+	public function test_strip_free_build_product_features_on_sanitize() {
+		if ( EDMINBOOST_Plan::is_direct_build() ) {
+			$this->markTestSkipped( 'Direct-download build keeps Pro settings for Plan_Gating.' );
+		}
+
+		$saved = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'_layout_studio_save' => 1,
+					'top_bar_items'       => array(
+						array(
+							'slug'         => 'edit.php',
+							'label'        => 'Posts',
+							'icon'         => 'dashicons-admin-post',
+							'interaction'  => 'drawer',
+							'badge_source' => 'comments',
+						),
+					),
+					'behavior'            => array(
+						'drawer_width'    => 'fullscreen',
+						'animation_speed' => 'fast',
+						'badge_style'     => 'dot',
+						'glassmorphism'   => 1,
+					),
+					'theme'               => array(
+						'preset'             => 'default',
+						'schedule_dark_mode' => 1,
+						'dark_mode_start'    => '20:00',
+					),
+				),
+				'features'       => array(
+					'login_redirects' => array(
+						'enabled' => 1,
+					),
+				),
+				'white_label'    => array(
+					'enabled' => 1,
+				),
+			)
+		);
+
+		$item = $saved['command_center']['top_bar_items'][0];
+		$this->assertSame( 'redirect', $item['interaction'] );
+		$this->assertSame( '', $item['badge_source'] );
+		$this->assertSame( 'standard', $saved['command_center']['behavior']['drawer_width'] );
+		$this->assertArrayNotHasKey( 'schedule_dark_mode', $saved['command_center']['theme'] );
+		$this->assertArrayNotHasKey( 'login_redirects', $saved['features'] );
+		$this->assertArrayNotHasKey( 'white_label', $saved );
+	}
+
+	/**
 	 * Free tier excludes Pro theme skins from pickers.
 	 */
 	public function test_include_preset_in_ui_excludes_pro_theme_when_not_active() {
@@ -52,7 +172,7 @@ class ProTest extends Edminboost_Test_Case {
 	 * Licensed admin UI is off when Pro is not active.
 	 */
 	public function test_has_licensed_admin_ui_false_when_pro_inactive() {
-		$this->assertFalse( EDMINBOOST_Pro::has_licensed_admin_ui() );
+		$this->assertFalse( EDMINBOOST_Plan::has_licensed_admin_ui() );
 	}
 
 	/**

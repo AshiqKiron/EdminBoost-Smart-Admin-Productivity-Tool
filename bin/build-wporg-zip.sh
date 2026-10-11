@@ -29,6 +29,8 @@ edminboost_build_rsync_stage "$PLUGIN_DIR" "$STAGE_DIR" \
 	--exclude='admin/css/pro/' \
 	--exclude='assets/'
 
+edminboost_build_regenerate_wporg_pot "$PLUGIN_DIR" "$STAGE_DIR"
+
 ZIP_PATH="$(edminboost_build_create_zip "$BUILD_DIR" "$PLUGIN_SLUG" "$ZIP_BASENAME")"
 
 echo "Built WordPress.org package: $ZIP_PATH"

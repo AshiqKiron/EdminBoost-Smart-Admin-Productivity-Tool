@@ -33,10 +33,6 @@ define( 'EDMINBOOST_PLUGIN_SLUG', 'edminboost-admin-customization' );
 define( 'EDMINBOOST_TEXT_DOMAIN', 'edminboost-admin-customization' );
 define( 'EDMINBOOST_PLUGIN_DOCS_URL', 'https://asphaltthemes.com/edminboost/docs' );
 
-if ( file_exists( EDMINBOOST_PLUGIN_DIR . 'includes/pro/edminboost-premium.php' ) ) {
-	require_once EDMINBOOST_PLUGIN_DIR . 'includes/pro/edminboost-premium.php';
-}
-
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-activator.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-deactivator.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-settings.php';
@@ -63,10 +59,6 @@ function edminboost_run_plugin() {
 	static $plugin = null;
 
 	if ( null === $plugin ) {
-		if ( EDMINBOOST_Plan::is_direct_build() ) {
-			require_once EDMINBOOST_PLUGIN_DIR . 'includes/pro/edminboost-pro-package.php';
-		}
-
 		$plugin = new EDMINBOOST_Plugin();
 		$plugin->run();
 	}
@@ -74,4 +66,6 @@ function edminboost_run_plugin() {
 	return $plugin;
 }
 
-edminboost_run_plugin();
+if ( ! defined( 'EDMINBOOST_SKIP_AUTO_RUN' ) ) {
+	edminboost_run_plugin();
+}

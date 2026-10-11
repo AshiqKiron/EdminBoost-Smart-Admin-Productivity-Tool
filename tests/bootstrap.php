@@ -18,9 +18,32 @@ require_once $_tests_dir . '/functions.php';
 
 /**
  * Load the plugin before tests run.
+ *
+ * Simulates the premium direct-download build when includes/pro/ is present (PHPUnit dev tree).
+ * WordPress.org packages omit includes/pro/ and never define EDMINBOOST_PREMIUM_BUILD.
  */
 function _edminboost_manually_load_plugin() {
-	require dirname( __DIR__ ) . '/edminboost-admin-customization.php';
+	$plugin_root = dirname( __DIR__ );
+	$premium     = $plugin_root . '/includes/pro/edminboost-premium.php';
+
+	if ( '1' !== getenv( 'EDMINBOOST_TEST_WPORG' ) && is_readable( $premium ) ) {
+		require_once $premium;
+	}
+
+	if ( ! defined( 'EDMINBOOST_SKIP_AUTO_RUN' ) ) {
+		define( 'EDMINBOOST_SKIP_AUTO_RUN', true );
+	}
+
+	require $plugin_root . '/edminboost-admin-customization.php';
+
+	if ( EDMINBOOST_Plan::is_direct_build() ) {
+		$pro_package = $plugin_root . '/includes/pro/edminboost-pro-package.php';
+		if ( is_readable( $pro_package ) ) {
+			require_once $pro_package;
+		}
+	}
+
+	edminboost_run_plugin();
 }
 
 tests_add_filter( 'muplugins_loaded', '_edminboost_manually_load_plugin' );

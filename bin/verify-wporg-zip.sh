@@ -59,11 +59,14 @@ FORBIDDEN_PATHS=(
 	"admin/js/pro"
 	"admin/css/pro"
 	"assets"
+	"docs"
+	".cursor"
 )
 
 FORBIDDEN_FILES=(
 	"includes/class-edminboost-pro.php"
 	"includes/class-edminboost-white-label.php"
+	"EdminBoost.code-workspace"
 )
 
 FORBIDDEN_PATTERNS=(
@@ -77,11 +80,22 @@ FORBIDDEN_PATTERNS=(
 	'class[[:space:]]+EDMINBOOST_Billing'
 	'class[[:space:]]+EDMINBOOST_Plan_Licensing'
 	'edminboost-billing-page\.php'
+	'edminboost-pro-package\.php'
 )
 
 errors=0
 
 echo "Verifying WordPress.org free build: $ZIP_PATH"
+
+if grep -q 'includes/pro/edminboost-premium.php' "$BOOTSTRAP" 2>/dev/null; then
+	echo "FAIL: WordPress.org bootstrap must not load includes/pro/edminboost-premium.php." >&2
+	errors=$(( errors + 1 ))
+fi
+
+if grep -q 'includes/pro/edminboost-pro-package.php' "$BOOTSTRAP" 2>/dev/null; then
+	echo "FAIL: WordPress.org bootstrap must not reference includes/pro/edminboost-pro-package.php." >&2
+	errors=$(( errors + 1 ))
+fi
 
 for rel_path in "${FORBIDDEN_PATHS[@]}"; do
 	if [[ -e "$STAGE_DIR/$rel_path" ]]; then
@@ -97,11 +111,13 @@ for rel_file in "${FORBIDDEN_FILES[@]}"; do
 	fi
 done
 
-if grep -R -n -E 'class[[:space:]]+EDMINBOOST_Pro' --include='*.php' "$STAGE_DIR" 2>/dev/null | grep -v '/includes/pro/' >/dev/null 2>&1; then
-	echo "FAIL: EDMINBOOST_Pro class must ship only inside includes/pro/ (premium package)." >&2
-	grep -R -n -E 'class[[:space:]]+EDMINBOOST_Pro' --include='*.php' "$STAGE_DIR" | grep -v '/includes/pro/' | head -10 >&2
-	errors=$(( errors + 1 ))
-fi
+for pro_class in 'EDMINBOOST_Pro' 'EDMINBOOST_Command_Center_Bar_Pro' 'EDMINBOOST_White_Label' 'EDMINBOOST_Billing' 'EDMINBOOST_Plan_Licensing'; do
+	if grep -R -n -E "class[[:space:]]+${pro_class}" --include='*.php' "$STAGE_DIR" 2>/dev/null | grep -v '/includes/pro/' >/dev/null 2>&1; then
+		echo "FAIL: ${pro_class} class must ship only inside includes/pro/ (premium package)." >&2
+		grep -R -n -E "class[[:space:]]+${pro_class}" --include='*.php' "$STAGE_DIR" | grep -v '/includes/pro/' | head -10 >&2
+		errors=$(( errors + 1 ))
+	fi
+done
 
 for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
 	if grep -R -n -E --include='*.php' --include='*.js' --include='*.css' "$pattern" "$STAGE_DIR" >/dev/null 2>&1; then
@@ -110,6 +126,21 @@ for pattern in "${FORBIDDEN_PATTERNS[@]}"; do
 		errors=$(( errors + 1 ))
 	fi
 done
+
+while IFS= read -r -d '' md_file; do
+	rel_md="${md_file#"$STAGE_DIR"/}"
+	echo "FAIL: product documentation must not ship in the WordPress.org zip: $rel_md" >&2
+	errors=$(( errors + 1 ))
+done < <(find "$STAGE_DIR" -name '*.md' -print0 2>/dev/null)
+
+POT_FILE="$STAGE_DIR/languages/${PLUGIN_SLUG}.pot"
+if [[ -f "$POT_FILE" ]]; then
+	if grep -qE 'admin/partials/pro/|admin/js/pro/|admin/css/pro/|includes/pro/' "$POT_FILE" 2>/dev/null; then
+		echo "FAIL: WordPress.org POT must not reference premium source paths (rebuild with composer install so make-pot runs on the staged free tree)." >&2
+		grep -n -E 'admin/partials/pro/|admin/js/pro/|admin/css/pro/|includes/pro/' "$POT_FILE" | head -15 >&2
+		errors=$(( errors + 1 ))
+	fi
+fi
 
 if [[ "$errors" -gt 0 ]]; then
 	echo "" >&2

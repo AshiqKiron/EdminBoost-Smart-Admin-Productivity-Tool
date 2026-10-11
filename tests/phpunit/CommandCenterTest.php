@@ -533,6 +533,8 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 * Role visibility sanitization stores hidden slugs.
 	 */
 	public function test_role_visibility_sanitization() {
+		$this->enable_pro_plan();
+
 		$matrix_slugs = wp_list_pluck( EDMINBOOST_Command_Center::get_role_matrix_menu_items(), 'slug' );
 		$this->assertNotEmpty( $matrix_slugs );
 
