@@ -25,7 +25,7 @@ class EDMINBOOST_Pro {
 	const LICENSED_ADMIN_PACKAGE_MARKER = 'admin/partials/pro/index.php';
 
 	/**
-	 * Command Center markup slot filters => partial basename under admin/partials/pro/.
+	 * Command Center markup slot keys => partial basename under admin/partials/pro/.
 	 */
 	const LICENSED_PARTIAL_FILTERS = array(
 		'edminboost_mapper_after_canvas_partials'           => 'edminboost-mapper-look-section.php',
@@ -52,14 +52,18 @@ class EDMINBOOST_Pro {
 		add_filter( 'edminboost_login_redirects_enabled', array( __CLASS__, 'filter_login_redirects_enabled' ), 10, 2 );
 		add_filter( 'edminboost_mapper_item_sidebar_partial', array( __CLASS__, 'filter_mapper_item_sidebar_partial' ) );
 
-		foreach ( self::LICENSED_PARTIAL_FILTERS as $filter_name => $basename ) {
+		foreach ( self::LICENSED_PARTIAL_FILTERS as $slot => $basename ) {
 			add_filter(
-				$filter_name,
-				function ( $paths ) use ( $basename ) {
+				'edminboost_command_center_partial_paths',
+				function ( $paths, $partial_slot ) use ( $slot, $basename ) {
+					if ( $partial_slot !== $slot ) {
+						return $paths;
+					}
+
 					return self::merge_licensed_partial_path( $paths, $basename );
 				},
 				10,
-				1
+				2
 			);
 		}
 	}

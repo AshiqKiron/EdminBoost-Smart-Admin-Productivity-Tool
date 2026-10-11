@@ -432,17 +432,18 @@ class EDMINBOOST_Admin {
 	/**
 	 * Include optional admin partial paths supplied by filters (empty on WordPress.org).
 	 *
-	 * @param string $filter_name Filter returning an array of absolute partial paths.
-	 * @param mixed  ...$args     Optional extra filter arguments.
+	 * @param string $slot    Markup slot key (edminboost_*); premium package maps slots to partials.
+	 * @param mixed  ...$args Optional extra filter arguments passed to the slot filter.
 	 * @return void
 	 */
-	public static function include_filtered_partials( $filter_name, ...$args ) {
+	public static function include_filtered_partials( $slot, ...$args ) {
 		/**
 		 * Filter optional admin partial paths to include at a Command Center markup slot.
 		 *
 		 * @param string[] $partial_paths Absolute paths; default empty array.
+		 * @param string   $slot          Markup slot key (same value passed to include_filtered_partials()).
 		 */
-		$partial_paths = apply_filters( $filter_name, array(), ...$args );
+		$partial_paths = apply_filters( 'edminboost_command_center_partial_paths', array(), $slot, ...$args );
 
 		if ( ! is_array( $partial_paths ) ) {
 			return;
