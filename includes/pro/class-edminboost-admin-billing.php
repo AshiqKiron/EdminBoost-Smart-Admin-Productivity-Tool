@@ -102,7 +102,7 @@ class EDMINBOOST_Admin_Billing {
 
 		wp_enqueue_style(
 			'edminboost-billing',
-			EDMINBOOST_PLUGIN_URL . 'admin/css/pro/edminboost-billing.css',
+			EDMINBOOST_PLUGIN_URL . 'admin/css/edminboost-billing.css',
 			array( 'edminboost-admin' ),
 			EDMINBOOST_VERSION
 		);

@@ -7,7 +7,7 @@
  * Plugin Name: Edminboost - Admin white label, Menu Editor, theme, topbar shortcuts
  * Plugin URI: https://asphaltthemes.com/edminboost
  * Description: Boost WordPress admin productivity with smart tools to simplify workflows, customize the dashboard, and streamline daily admin tasks.
- * Version: 1.4.4
+ * Version: 1.4.5
  * Requires at least: 6.0
  * Requires PHP: 7.4
  * Author: ashiquzzaman
@@ -24,14 +24,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'EDMINBOOST_VERSION', '1.4.4' );
+define( 'EDMINBOOST_VERSION', '1.4.5' );
 define( 'EDMINBOOST_PLUGIN_FILE', __FILE__ );
 define( 'EDMINBOOST_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 define( 'EDMINBOOST_PLUGIN_SLUG', 'edminboost-admin-customization' );
 define( 'EDMINBOOST_TEXT_DOMAIN', 'edminboost-admin-customization' );
-define( 'EDMINBOOST_PLUGIN_DOCS_URL', 'https://asphaltthemes.com/edminboost/docs' );
+define( 'EDMINBOOST_PLUGIN_DOCS_URL', 'https://asphaltthemes.com/docs/edminboost/' );
+define( 'EDMINBOOST_PLUGIN_GO_PRO_URL', 'https://asphaltthemes.com/edminboost-white-label-admin-menu-editor-top-bar-customizer-for-wordpress/' );
 
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-activator.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-deactivator.php';
@@ -44,6 +45,7 @@ require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-command-center-b
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-menu-studio.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-features.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-admin.php';
+require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-admin-plans.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-setting-help.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-plugin.php';
 

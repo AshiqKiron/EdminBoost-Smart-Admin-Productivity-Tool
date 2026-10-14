@@ -37,6 +37,7 @@ Agent and editor guidance for this repo. Rules live as `.mdc` files in this fold
 | Hook/option prefix | `edminboost` / `EDMINBOOST_` (10-char prefix — **not** the text domain) |
 | Local licensed Pro QA (dev only) | Gitignored `edminboost-localhost.php` (from `bin/edminboost-localhost.sample.php`); never in release zips |
 | PHPUnit / CI | `EDMINBOOST_DISABLE_LOCALHOST` (see `tests/bootstrap.php`); `EDMINBOOST_TEST_WPORG=1` simulates WP.org package |
+| WP.org product / Go Pro URL | `EDMINBOOST_PLUGIN_GO_PRO_URL` (static Billing CTAs; bootstrap constant) |
 
 The git checkout folder name (e.g. `EdminBoost - Smart Admin Productivity Tool`) is not the slug. Do not use legacy domains such as `edminboost-smart-admin-productivity-tool` in `__()` / `_e()` calls — WordPress.org Plugin Check expects the header domain.
 

@@ -55,3 +55,14 @@ EDMINBOOST_Command_Center_Role_Visibility_Pro::register_hooks();
 EDMINBOOST_Settings_Sanitize_Pro::register_hooks();
 EDMINBOOST_Setting_Help_Pro::register_hooks();
 EDMINBOOST_Theme_Pro::register_hooks();
+
+add_filter(
+	'edminboost_show_plugin_go_pro_link',
+	static function ( $show ) {
+		if ( EDMINBOOST_Plan_Licensing::is_active() ) {
+			return false;
+		}
+
+		return $show;
+	}
+);

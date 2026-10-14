@@ -17,8 +17,7 @@
  *   - admin_menu                  → register admin pages
  *   - admin_init                  → register settings + feature hooks
  *   - admin_enqueue_scripts (×2)  → enqueue CSS/JS on plugin screens
- *   - plugin_action_links_{basename} → Settings shortcut on Plugins screen
- *   - plugin_row_meta                  → Docs link on Plugins screen
+ *   - plugin_action_links_{basename} → Go Pro, Docs (+ licensed Settings shortcut)
  *
  * Feature hooks (registered by EDMINBOOST_Features when enabled):
  *   - hide_admin_notices → admin_enqueue_scripts
@@ -92,11 +91,12 @@ class EDMINBOOST_Plugin {
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_styles' ) );
 		add_action( 'admin_enqueue_scripts', array( $this->admin, 'enqueue_scripts' ) );
 		add_filter( 'admin_body_class', array( $this->admin, 'filter_admin_body_class' ) );
-		add_filter( 'plugin_row_meta', array( $this->admin, 'add_plugin_row_meta' ), 10, 2 );
+		add_filter( 'plugin_action_links_' . EDMINBOOST_PLUGIN_BASENAME, array( $this->admin, 'add_plugin_action_links' ), 20 );
 		add_action( 'init', array( $this->features, 'register_hooks' ) );
 		EDMINBOOST_Command_Center_Bar::register_hooks();
 		EDMINBOOST_Command_Center::register_hooks();
 		EDMINBOOST_Menu_Studio::register_hooks();
 		EDMINBOOST_Theme::register_hooks();
+		EDMINBOOST_Admin_Plans::register_hooks();
 	}
 }

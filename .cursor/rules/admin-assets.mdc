@@ -183,6 +183,8 @@ alwaysApply: false
 | `edminboost-mapper-page.php` | Top bar builder; includes free/pro item sidebar via `edminboost_mapper_item_sidebar_partial`; licensed Panel & badges via slot `edminboost_mapper_after_canvas_partials` |
 | `edminboost-presets-page.php` | Layout presets & role matrix (matrix head/cells via `edminboost_presets_role_matrix_*` partial slots when licensed) |
 | `edminboost-menu-studio-page.php` | Sidebar menu builder |
+| `edminboost-plans-page.php` | Static Billing plan cards + comparison (WordPress.org build) |
+| `edminboost-plans-cta.php` | Static plan CTA (current plan or external product link) |
 | `pro/edminboost-billing-page.php` | Billing plan cards + comparison (direct-download build) |
 | `pro/edminboost-billing-plan-cta.php` | Plan CTA (current plan or external upgrade link) |
 | `pro/edminboost-home-advanced-look.php` | Panel width, badges, animation speed (included from `pro/edminboost-mapper-look-section.php`) |
@@ -380,7 +382,7 @@ Key elements: `#edminboost-presets-form`, `#edminboost_layout_preset`, `#edminbo
 | `edminboost-themes` | `admin/css/edminboost-themes.css` | `EDMINBOOST_Theme::is_active()` (all wp-admin when plugin enabled; also CC bar front end) |
 | `edminboost-admin` | `admin/js/edminboost-admin.js`, `admin/css/edminboost-admin.css` | Plugin screens (`EDMINBOOST_Admin::is_plugin_screen()`); CSS depends on `edminboost-themes` |
 | `edminboost-admin-pro` | `admin/js/pro/edminboost-admin-pro.js`, `admin/css/pro/edminboost-admin-pro.css` | Direct-download build on plugin screens; pro CSS also when licensed (`EDMINBOOST_Admin_Licensed::enqueue_styles`) |
-| `edminboost-billing` | `admin/css/pro/edminboost-billing.css` | Billing page only (`EDMINBOOST_Admin_Billing::enqueue_styles`, direct-download build) |
+| `edminboost-billing` | `admin/css/edminboost-billing.css` | Billing page (`EDMINBOOST_Admin_Plans::enqueue_styles` on WP.org; `EDMINBOOST_Admin_Billing::enqueue_styles` on direct build) |
 | `edminboost-admin-menu` | `admin/css/edminboost-admin-menu.css` (+ inline layout/color vars) | Menu Studio active |
 | `edminboost-command-center-bar` (style) | `admin/css/edminboost-command-center-bar.css` (+ `edminboost-command-center-bar-pro.css` when licensed) | CC bar active or Layout Studio |
 | `edminboost-command-center-bar` (script) | `admin/js/pro/edminboost-command-center-bar.js` | Licensed + (`has_drawer_items()` or Layout Studio) |

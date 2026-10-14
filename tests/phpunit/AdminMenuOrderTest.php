@@ -66,9 +66,7 @@ class AdminMenuOrderTest extends Edminboost_Test_Case {
 			__( 'Menu Studio', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO . ')',
 		);
 
-		if ( EDMINBOOST_Plan::is_direct_build() ) {
-			$expected[] = __( 'Billing', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')';
-		}
+		$expected[] = __( 'Billing', 'edminboost-admin-customization' ) . ' (' . $slug . EDMINBOOST_Command_Center::PAGE_BILLING . ')';
 
 		if ( class_exists( 'EDMINBOOST_Pro', false ) && EDMINBOOST_Pro::has_licensed_admin_ui() ) {
 			$expected[] = __( 'Settings', 'edminboost-admin-customization' ) . ' (' . $slug . '-settings)';

@@ -340,12 +340,10 @@ class EDMINBOOST_Command_Center {
 			),
 		);
 
-		if ( EDMINBOOST_Plan::is_direct_build() ) {
-			$items[] = array(
-				'slug'  => $base . self::PAGE_BILLING,
-				'label' => __( 'Billing', 'edminboost-admin-customization' ),
-			);
-		}
+		$items[] = array(
+			'slug'  => $base . self::PAGE_BILLING,
+			'label' => __( 'Billing', 'edminboost-admin-customization' ),
+		);
 
 		/**
 		 * Filter Command Center sidebar page links.
@@ -398,12 +396,10 @@ class EDMINBOOST_Command_Center {
 			),
 		);
 
-		if ( EDMINBOOST_Plan::is_direct_build() ) {
-			$items[] = array(
-				'slug'  => $base . self::PAGE_BILLING,
-				'label' => __( 'Billing', 'edminboost-admin-customization' ),
-			);
-		}
+		$items[] = array(
+			'slug'  => $base . self::PAGE_BILLING,
+			'label' => __( 'Billing', 'edminboost-admin-customization' ),
+		);
 
 		/**
 		 * Filter Command Center tab navigation items.

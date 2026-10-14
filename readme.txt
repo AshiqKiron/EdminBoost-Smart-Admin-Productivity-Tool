@@ -4,43 +4,179 @@ Tags: admin, dashboard, productivity, admin-tools, admin-menu
 Requires at least: 6.0
 Tested up to: 7.1
 Requires PHP: 7.4
-Stable tag: 1.4.4
+Stable tag: 1.4.5
 License: GPLv3 or later
 License URI: https://www.gnu.org/licenses/gpl-3.0.html
 
-Boost WordPress admin productivity with smart tools to simplify workflows, customize the dashboard, and streamline daily admin tasks.
+Customize wp-admin with layout presets, a top bar builder, Menu Studio, visual themes, and modular productivity tools, all from your WordPress dashboard.
 
 == Description ==
 
-EdminBoost is a smart admin productivity plugin for WordPress. It helps site administrators customize and optimize the WordPress admin experience with modular, opt-in tools.
+**EdminBoost** is a smart admin productivity plugin for WordPress site owners, freelancers, and agencies who want a cleaner, faster, and more branded wp-admin experience without editing theme files or pasting snippets. From a single **Command Center**, you configure layout presets, a custom admin top bar, sidebar Menu Studio, visual themes, and opt-in productivity, security, and performance tools — each toggle stays independent so you enable only what you need.
 
-= Features =
+Stop juggling one-off mu-plugins, fragile `functions.php` hacks, or heavyweight admin themes that fight WordPress updates. EdminBoost stores every setting in your own database through the WordPress Options API. Nothing runs until you turn the plugin on and save — fresh installs keep wp-admin unchanged until you complete setup or save settings.
 
-* **Hide Admin Notices** — Reduce clutter by hiding notices outside EdminBoost screens
-* **Dashboard Widget Control** — Remove selected default dashboard widgets
-* **Custom Admin Footer** — Replace the default WordPress footer text
-* **Disable Emojis** — Remove emoji detection scripts from the admin area
-* **Admin Bar Tweaks** — Hide selected admin bar items
-* Modular, extensible architecture with developer filters
-* Translation-ready with a dedicated text domain
-* Uninstall-safe — removes all plugin options on uninstall
+**Built for Daily Admin Work, Designed for Clarity:** EdminBoost ships a four-step Dashboard setup wizard, AJAX tab navigation across Command Center pages, and live previews on Theme, Top Bar, Menu Studio, Productivity, and Performance screens. Layout presets apply real top bar and sidebar configurations in one click; granular overrides stay on Top Bar and Menu Studio when you outgrow a preset.
+
+#### Why Choose a WordPress-Native Admin Customizer?
+
+* **Own Your Admin Configuration:** Keep layouts, themes, menu order, and feature toggles on your site. No third-party SaaS dashboard, hidden telemetry, or subscription lock-in for basic admin tweaks.
+* **Command Center in One Place:** Dashboard, Layout Presets, Theme, Top Bar, Menu Studio, Productivity, Security, Performance, and Billing (plan comparison) live under **EdminBoost** in the admin sidebar — with in-page tabs so most changes save without full reloads.
+* **Modular, Opt-In Features:** Hide notices, trim dashboard widgets, harden XML-RPC, control Heartbeat, disable emojis, and more — each tool respects the global enable switch and can stay off until you need it.
+* **Role-Aware Layout Library:** Built-in **by use case** presets (Friend's Website, Family Member's Site, and additional scenarios on Pro) plus **by role** workflow presets aligned with WordPress roles on Users → Add New.
+* **Developer-Friendly:** Standard WordPress hooks and filters (`edminboost_settings`, `edminboost_feature_classes`, `edminboost_command_center_partial_paths`, and others) let agencies extend behavior without forking core plugin code.
+
+#### How It Works
+
+1. **Install and Open Command Center:** Activate EdminBoost and go to **EdminBoost → Dashboard**. Complete the setup wizard or enable tools from the tab navigation.
+2. **Pick a Layout Preset:** Choose a **By use case** or **By role** preset on the wizard or **Layout Presets** page — top bar links and sidebar shape update together; save custom layouts as named presets when you need a reusable starting point.
+3. **Tune Theme and Menu Studio:** On **Theme**, pick a visual skin, light/dark/auto mode, fonts, and appearance extras. On **Menu Studio**, reorder or hide sidebar items and preview the live admin menu.
+4. **Enable Productivity Tools:** Use **Productivity**, **Security**, and **Performance** tabs to turn on individual features with live previews where available — then save once from the shared form footer.
+
+#### Designed for Every WordPress Admin Workflow
+
+* **For Site Owners:** Reduce notice clutter, simplify the dashboard, and apply a cohesive admin color theme without touching code.
+* **For Content Teams:** Use role-based presets so authors and editors see focused top bars and sidebars matched to their daily tasks.
+* **For WooCommerce Shops:** Pro adds live badge counters on top bar shortcuts (orders, reviews, and related sources read local data only).
+* **For Freelancers and Agencies:** White-label branding, JSON settings backup, role visibility matrices, and multi-site Agency licensing on the direct-download build help you ship consistent client admin experiences.
+* **For Developers:** Extend presets, features, and Command Center partials via filters; badge and menu discovery respect WordPress capabilities.
+
+#### Comprehensive Command Center
+
+Configure the full admin experience from dedicated screens with live previews on key tabs:
+
+* **Dashboard:** First-run setup wizard (layout, theme, top bar review, save) and post-setup overview cards with compact layout, theme, and top bar previews.
+* **Layout Presets:** Grouped preset picker (by use case, by role, saved custom layouts); assign presets per role; save and rename custom presets (Pro: **Who sees what** role visibility matrix).
+* **Theme (Appearance):** **20+** visual skins on Pro ( **3** bundled presets on the free WordPress.org package: Default, Midnight, Terminal), plus Custom colors, light/dark/auto mode, system font stacks, admin font size, favicon, background, post status row colors, and admin bar declutter toggles with preview (Pro: scheduled dark mode).
+* **Top Bar:** Drag-and-drop builder over discovered admin pages; custom labels, dashicons, and anchors (Pro: AJAX slide-out drawer panels, live notification badges, drawer width, animation speed, badge style).
+* **Menu Studio:** Reorder and hide wp-admin sidebar items; layout and typography controls; optional sidebar colors with live preview (Pro: custom sidebar links, icon/text display modes).
+* **Productivity:** Hide admin notices (preserves errors/warnings), hide Screen Options/Help, dashboard widget control, custom admin footer, post duplicator, classic widgets, custom list columns, menu duplicator, manual post ordering — with live previews on key toggles.
+* **Security:** Disable XML-RPC, harden REST API, disable feeds, disable comments, and related hardening options (Pro: role-based login and logout redirects).
+* **Performance:** Emoji scope toggle, remove asset query versions, optional front-end Dashicons removal, Heartbeat control, disable embeds — with scope previews.
+* **Billing:** Static Free, Pro ($49 / 1 site), and Agency ($99 / 10 sites) plan cards and feature comparison with user-initiated external purchase links (no in-plugin checkout or license validation on WordPress.org).
+
+#### Why Administrators Choose EdminBoost
+
+* **See Before You Save:** Live previews on Theme extras, declutter toggles, Productivity notices, Performance emoji/assets, Menu Studio layout/colors, and White Label branding (Pro) cut guesswork.
+* **Presets That Match Real Roles:** Apply Administrator, Editor, Author, and other role workflow layouts without hand-picking dozens of menu slugs every time.
+* **Stay on WordPress:** Uses Settings API storage, admin AJAX saves with nonces and capability checks, and enqueued assets scoped to plugin screens (visual theme CSS loads on wp-admin when enabled; Command Center bar assets load when the bar is active).
+* **No Locked Ghost Controls on Free:** The WordPress.org package omits Pro-only screens and fields entirely — what you see is fully usable. Upgrade paths are described on **Billing** with external links only when you choose to click.
+* **Uninstall-Safe Defaults:** Deactivating does not wipe data; deleting the plugin removes `edminboost_settings` and `edminboost_version` from the database.
+
+#### Free vs. EdminBoost Pro Features
+
+**Free Version Features (WordPress.org download):**
+
+* Command Center Dashboard with setup wizard and overview cards
+* Top bar builder with **redirect** shortcuts to admin pages
+* Friend's Website and Family Member's Site layout presets plus **by role** workflow presets
+* Save, rename, and duplicate custom layout presets
+* Default, Midnight, and Terminal visual theme presets plus Custom color tokens
+* Light, dark, and auto (system) color modes; system font stacks; appearance extras (font size, favicon, admin background, post status colors)
+* Menu Studio sidebar reorder and hide with layout/typography and optional menu colors
+* Admin bar declutter toggles (hide WP logo, updates, comments, Howdy, and related items)
+* Full Productivity, Security, and Performance modular toolsets shown in the free UI
+* AJAX Command Center tab navigation and settings save without full page reload
+* Static Billing page with plan comparison and external upgrade links (user-initiated only)
+* Translation-ready; GPL-licensed; no tracking or background remote requests
+
+**EdminBoost Pro Features (direct-download package with active license):**
+
+* **8** additional **by use case** layout presets (Client's Website, Your Own Website, Small Business, Nonprofit / Community, Freelancer / Agency, Content Editor, Shop Manager, Power User)
+* Unlimited saved custom layout presets
+* **Role visibility matrix** — control which sidebar items each role sees beyond preset defaults
+* **17** additional visual theme skins beyond Default, Midnight, and Terminal
+* **Scheduled dark mode** with start/end times
+* **Slide-out drawer panels** on the live admin top bar plus **live badge counters** (local WooCommerce orders/reviews, comments, updates, WPForms entries when plugins exist)
+* Full-screen and custom drawer widths, badge style, animation speed, glassmorphism, and badge refresh controls
+* **Custom sidebar links** and icon/text/both display modes in Menu Studio
+* **White-label branding** — plugin row, menu label, admin logos, system status footer toggles with live preview
+* **Settings JSON export and import** for backups and migrations
+* **Role-based login and logout redirects**
+
+**EdminBoost Agency:** Everything in Pro plus a **10-site** license pack for client portfolios.
+
+#### Supercharge Your Admin Workflow with EdminBoost Pro
+
+The free WordPress.org build covers a capable Command Center — presets, themes, Menu Studio, modular features, and honest Billing comparison. **EdminBoost Pro** is for teams that need drawer-first workflows, live operational badges, white-label delivery, and portable settings across environments.
+
+* **Open deep screens without leaving context:** Map WooCommerce, plugins, or long admin pages to AJAX slide-out drawers from the top bar instead of losing your place in a maze of tabs.
+* **See workload at a glance:** Attach live badges to shortcuts so pending orders, comments, or updates surface on the bar (local counts only — no external API).
+* **Standardize client handoffs:** Hide dev-only menu items per role, assign presets by role, and rebrand the Plugins screen and admin menu from White Label.
+* **Move settings between sites:** Export and import JSON backups after major layout or theme changes (Pro licensed UI).
+* **Upgrade without rebuilding:** Install the premium package, activate your license, and keep stored options; compare Pro and Agency on **EdminBoost → Billing** before purchasing.
+
+Learn more and compare Pro and Agency plans: [Upgrade to EdminBoost Pro](https://asphaltthemes.com/edminboost-white-label-admin-menu-editor-top-bar-customizer-for-wordpress/)
+
+#### More Notable Products From the Author
+
+EdminBoost is developed by [Asphalt Themes](https://asphaltthemes.com/). Other free WordPress products from the same author:
+
+* **[Trustbadg – Trust Badges, Payment Icons & Secure Checkout Seals](https://wordpress.org/plugins/trustbadg-trust-badges/)** — Build trust badge and payment icon rows with Gutenberg blocks, shortcodes, and automatic e-commerce placements — server-rendered HTML with inline SVG icons.
+* **[Rezicraft – Professional Resume & CV Builder](https://wordpress.org/plugins/rezicraft-professional-resume-cv-builder/)** — Create polished online resumes and CVs with Gutenberg-friendly layouts and sections for experience and skills.
+* **[Resumee](https://wordpress.org/themes/resumee/)** — A free WordPress resume and portfolio theme with flexible profile sections and a clean one-column layout.
+
+#### Why EdminBoost vs. Generic Admin Tweaks
+
+Many sites rely on ad hoc code snippets or opaque admin theme plugins that break after updates or leak styles across unrelated screens. EdminBoost focuses on a reviewable, WordPress.org-friendly architecture:
+
+* **Complete Data Ownership & Privacy**
+  Settings live in your WordPress options table. The plugin does not track administrators or send site data to external servers. Billing upgrade links open the vendor pricing page in a new tab only when you click them.
+* **No Fake “Pro Locks” in wp-admin**
+  The free package omits Pro-only controls instead of showing disabled upsell placeholders — a clearer experience for directory users and clients alike.
+* **Capability-Aware Discovery**
+  Top bar and Menu Studio discovery respect WordPress menu capabilities; role matrices and preset assignments align with who can actually access each screen.
+* **Performance-Conscious Admin Scope**
+  Optional performance features target emoji scripts, asset versions, Heartbeat, embeds, and front-end Dashicons — without replacing your public theme. Visual theme and Command Center bar assets load only when those features are active.
+* **Maintainable for Review**
+  Human-readable PHP, WPCS-oriented structure, sanitized settings, and privileged AJAX guarded by nonces and `manage_options` — built to survive WordPress.org plugin review and long-term client maintenance.
+
+= Privacy =
+
+EdminBoost does not send site or user data to external servers. No analytics or tracking is included. Badge counters (Pro) read local WordPress, WooCommerce, or WPForms data only when those integrations exist — no remote license checks or telemetry in the WordPress.org build. Optional Pro purchase links on the Billing page are standard external anchors (`target="_blank"`) with no background requests.
+
+= Performance =
+
+EdminBoost is built to keep optional admin optimizations under your control:
+
+* **Scoped asset loading:** Plugin admin CSS and JavaScript enqueue on EdminBoost screens; visual theme CSS applies on wp-admin when enabled; Command Center bar CSS/JS load when the live bar or drawer is active (or on Top Bar for drawer preview).
+* **Opt-in front-end impact:** Disable emojis, embeds, or front-end Dashicons only when you enable those performance features — defaults leave the public site unchanged.
+* **Local badge sources:** Pro badge counts use guarded local queries (for example WooCommerce orders or WPForms entries when available) — no third-party count APIs.
+* **Options API storage:** Settings use `edminboost_settings` (not autoloaded by default) — no custom database tables.
+* **Developer overrides:** Filters such as `edminboost_settings`, `edminboost_is_feature_enabled`, and `edminboost_upgrade_url` allow tailored behavior without patching plugin files.
 
 == Installation ==
 
-1. Upload the plugin folder to the `/wp-content/plugins/` directory.
-2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Go to **EdminBoost** in the admin sidebar to get started.
-4. Use **Productivity**, **Security**, and **Performance** in the Command Center tabs to enable individual tools (Settings export/import is available on Pro builds).
+#### Quick WordPress Installation
+
+1. In your WordPress admin dashboard, navigate to **Plugins → Add New**.
+2. Search for _Edminboost - Admin white label, Menu Editor, theme, topbar shortcuts_.
+3. Click **Install Now**, then click **Activate**.
+4. Open **EdminBoost** in the admin sidebar and follow the Dashboard setup wizard, or browse Command Center tabs to enable individual tools.
+
+#### Manual Installation
+
+1. Download the plugin archive and upload the `edminboost-admin-customization` folder to the `/wp-content/plugins/` directory on your server.
+2. Activate the plugin through the **Plugins** screen in WordPress.
+3. Go to **EdminBoost → Dashboard** to run setup, or open **Layout Presets**, **Theme**, **Top Bar**, and **Menu Studio** to customize wp-admin step by step.
 
 == Frequently Asked Questions ==
 
+= Who is EdminBoost built for? =
+
+EdminBoost is built for WordPress administrators, site owners, freelancers, and agencies who want a cleaner, branded, and more efficient wp-admin experience — without maintaining custom code for every client site.
+
 = What does this plugin do? =
 
-EdminBoost provides modular admin productivity tools. Each feature can be enabled or disabled independently from the Productivity, Security, and Performance tabs in the Command Center.
+EdminBoost provides a Command Center for layout presets, top bar shortcuts, Menu Studio sidebar control, visual admin themes, and modular productivity, security, and performance tools. Each feature can be enabled or disabled independently.
 
 = Who can access the plugin settings? =
 
 Only users with the `manage_options` capability (typically Administrators) can access EdminBoost settings.
+
+= Does this plugin modify WordPress core files? =
+
+No. EdminBoost uses standard WordPress hooks, the Options API, and admin UI — it does not edit core, theme, or unrelated plugin files.
 
 = Does this plugin send data to external servers? =
 
@@ -48,11 +184,31 @@ No. EdminBoost does not track users or send site data to external servers. Optio
 
 = Are features locked behind a paid plan? =
 
-No locked controls in wp-admin. The free tier includes a fixed set of layout, theme, Menu Studio, and productivity tools — everything shown is fully usable. Pro and Agency add more capabilities (drawer panels, live badges, role visibility, extra presets and theme skins, White Label, backup/import, login redirects, custom sidebar links, and related options). Those Pro-only screens and settings are omitted until you have an active license on the direct-download build; the Billing page describes plans and upgrade options.
+No locked controls in wp-admin on the WordPress.org package. The free download includes a fixed set of layout, theme, Menu Studio, and productivity tools — everything shown is fully usable. Pro and Agency add drawer panels, live badges, role visibility, additional presets and theme skins, White Label, settings backup/import, login redirects, custom sidebar links, and related options. Those Pro-only screens and settings are omitted from the free package; the Billing page describes plans and upgrade options.
 
-= Is the plugin uninstall-safe? =
+= Where are my settings stored? =
 
-Yes. When uninstalled, all plugin options are removed from the database.
+All EdminBoost configuration is stored in the WordPress options table (`edminboost_settings` and `edminboost_version`). There are no custom database tables.
+
+= Are slide-out drawer panels and live badges available on Free? =
+
+AJAX slide-out drawer interaction, live badge counters, and related Top Bar advanced controls are **Pro** features. The WordPress.org build uses redirect top bar links. Compare capabilities under **EdminBoost → Billing**.
+
+= Is White Label or settings export/import available on Free? =
+
+White Label branding and JSON settings export/import are **Pro** features and are not included in the WordPress.org plugin UI. Productivity, Security, and Performance tools shown on the free build remain fully available.
+
+= What happens when I uninstall the plugin? =
+
+Deactivating EdminBoost does not remove your settings. Uninstalling ( deleting ) the plugin removes `edminboost_settings` and `edminboost_version` from the database.
+
+= How do I upgrade to Pro? =
+
+Compare plans under **EdminBoost → Billing**, then purchase Pro or Agency from the Asphalt Themes site via the external upgrade link. Install the premium package, activate your license on the direct-download build, and your stored layout and theme options remain in the database.
+
+= Is the plugin translation-ready? =
+
+Yes. User-facing strings use the `edminboost-admin-customization` text domain with language files under `/languages`.
 
 == Screenshots ==
 
@@ -73,7 +229,16 @@ Yes. When uninstalled, all plugin options are removed from the database.
 
 == Changelog ==
 
+= 1.4.5 =
+* WordPress.org build: register a static Billing page with plan cards, comparison table, and external purchase links (no checkout or license logic in-plugin).
+* Show Billing in Command Center sidebar and tab navigation on all builds; direct-download sites keep the premium Billing renderer when the pro package is loaded.
+* Plugins screen: add Go Pro and Docs action links under the plugin name (`edminboost_show_plugin_go_pro_link` filter to hide Go Pro when licensed).
+* Point the Docs link to the updated documentation URL on asphaltthemes.com.
+* Readme: expanded product description, FAQ, and upgrade guidance aligned with WordPress.org best practices.
+* Share billing page styles between WordPress.org and direct-download builds.
+
 = 1.4.4 =
+* Readme: expanded Command Center overview, Free vs Pro guidance, author product highlights, and clearer upgrade path following WordPress.org best practices.
 * Add a static Billing page to the WordPress.org build with Free, Pro, and Agency plan cards, feature comparison, and external purchase links (no in-plugin checkout or license logic).
 * Direct-download Billing page omits the redundant Current plan summary card; active plan is shown on plan cards and the comparison table.
 * Dashboard setup wizard includes the Default layout preset in the layout dropdown and pre-selects it on fresh installs.
@@ -226,3 +391,23 @@ Yes. When uninstalled, all plugin options are removed from the database.
 
 = 1.0.0 =
 * Initial release with plugin scaffold, dashboard, and settings page.
+
+== Upgrade Notice ==
+
+= 1.4.5 =
+Billing is available on the WordPress.org package with external Pro and Agency links. Plugins screen adds Go Pro and Docs shortcuts; readme and docs URL updates.
+
+= 1.4.4 =
+Readme refresh with expanded Command Center overview, Free vs Pro comparison, and clearer upgrade guidance. Billing page on WordPress.org lists external Pro and Agency purchase links only.
+
+= 1.4.3 =
+WordPress.org package split: premium code and Pro admin UI ship only in the direct-download build; free core strips Pro-only stored settings on read and save.
+
+= 1.4.2 =
+WordPress.org zip omits Pro admin partials — free build shows fully usable free-tier UI without locked Pro placeholders.
+
+= 1.4.1 =
+Translation and Plugin Check alignment for the `edminboost-admin-customization` text domain.
+
+= 1.4.0 =
+Major Command Center release: Billing page, live previews, White Label, Menu Studio improvements, and WordPress.org-safe Free vs Pro UI split.

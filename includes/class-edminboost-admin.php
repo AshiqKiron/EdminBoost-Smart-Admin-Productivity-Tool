@@ -734,22 +734,36 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
-	 * Add a documentation link on the plugins screen.
+	 * Add Go Pro and Docs links on the Plugins screen (under the plugin name).
 	 *
-	 * @param array  $links       Plugin row meta links.
-	 * @param string $plugin_file Plugin basename.
+	 * Runs after the licensed Settings shortcut so order is Go Pro, Docs, Settings, …
+	 *
+	 * @param array $links Plugin action links.
 	 * @return array
 	 */
-	public function add_plugin_row_meta( $links, $plugin_file ) {
-		if ( EDMINBOOST_PLUGIN_BASENAME !== $plugin_file ) {
-			return $links;
-		}
-
-		$links[] = sprintf(
+	public function add_plugin_action_links( $links ) {
+		$docs_link = sprintf(
 			'<a href="%1$s" target="_blank" rel="noopener noreferrer">%2$s</a>',
 			esc_url( EDMINBOOST_PLUGIN_DOCS_URL ),
 			esc_html__( 'Docs', 'edminboost-admin-customization' )
 		);
+
+		array_unshift( $links, $docs_link );
+
+		/**
+		 * Filter whether the Plugins screen shows the external Go Pro link.
+		 *
+		 * @param bool $show Default true (WordPress.org and unlicensed premium).
+		 */
+		if ( apply_filters( 'edminboost_show_plugin_go_pro_link', true ) ) {
+			$go_pro_link = sprintf(
+				'<a href="%1$s" target="_blank" rel="noopener noreferrer"><strong>%2$s</strong></a>',
+				esc_url( EDMINBOOST_PLUGIN_GO_PRO_URL ),
+				esc_html__( 'Go Pro', 'edminboost-admin-customization' )
+			);
+
+			array_unshift( $links, $go_pro_link );
+		}
 
 		return $links;
 	}
@@ -1069,6 +1083,7 @@ class EDMINBOOST_Admin {
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRODUCTIVITY => __( 'Productivity', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY     => __( 'Security', 'edminboost-admin-customization' ),
 			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PERFORMANCE  => __( 'Performance', 'edminboost-admin-customization' ),
+			self::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_BILLING     => __( 'Billing', 'edminboost-admin-customization' ),
 		);
 
 		return isset( $titles[ $page ] ) ? $titles[ $page ] : '';

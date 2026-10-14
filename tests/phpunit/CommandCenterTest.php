@@ -196,9 +196,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 			$base . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
 		);
 
-		if ( EDMINBOOST_Plan::is_direct_build() ) {
-			$expected[] = $base . EDMINBOOST_Command_Center::PAGE_BILLING;
-		}
+		$expected[] = $base . EDMINBOOST_Command_Center::PAGE_BILLING;
 
 		if ( class_exists( 'EDMINBOOST_Pro', false ) && EDMINBOOST_Pro::has_licensed_admin_ui() ) {
 			$expected[] = $base . '-settings';
@@ -230,9 +228,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 			$expected[] = $base . EDMINBOOST_Command_Center::PAGE_WHITE_LABEL;
 		}
 
-		if ( EDMINBOOST_Plan::is_direct_build() ) {
-			$expected[] = $base . EDMINBOOST_Command_Center::PAGE_BILLING;
-		}
+		$expected[] = $base . EDMINBOOST_Command_Center::PAGE_BILLING;
 
 		if ( class_exists( 'EDMINBOOST_Pro', false ) && EDMINBOOST_Pro::has_licensed_admin_ui() ) {
 			$expected[] = $base . '-settings';

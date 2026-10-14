@@ -2,7 +2,7 @@
 # This file is distributed under the GPL-3.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: Edminboost - Admin white label, Menu Editor, theme, topbar shortcuts 1.4.4\n"
+"Project-Id-Version: Edminboost - Admin white label, Menu Editor, theme, topbar shortcuts 1.4.5\n"
 "Report-Msgid-Bugs-To: https://asphaltthemes.com/edminboost\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
