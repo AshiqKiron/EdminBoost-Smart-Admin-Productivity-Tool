@@ -64,6 +64,7 @@ edminboost_build_rsync_stage() {
 		--exclude='.DS_Store'
 		--exclude='Thumbs.db'
 		--exclude='*.log'
+		--exclude='edminboost-localhost.php'
 	)
 
 	if [[ ${#extra_excludes[@]} -gt 0 ]]; then
@@ -99,8 +100,8 @@ edminboost_build_inject_premium_bootstrap() {
 			print
 			getline
 			if ( !injected_package ) {
-				print "\t\tif ( EDMINBOOST_Plan::is_direct_build() ) {"
-				print "\t\t\trequire_once EDMINBOOST_PLUGIN_DIR . '\''includes/pro/edminboost-pro-package.php'\'';"
+				print "\t\tif ( function_exists( '\''edminboost_premium_load_pro_package'\'' ) ) {"
+				print "\t\t\tedminboost_premium_load_pro_package();"
 				print "\t\t}"
 				print ""
 				injected_package = 1

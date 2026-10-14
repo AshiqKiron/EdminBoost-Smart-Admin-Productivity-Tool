@@ -214,6 +214,60 @@ class CommandCenterBarTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Layout Studio drawer preview AJAX must return parseable JSON.
+	 */
+	public function test_ajax_drawer_preview_returns_json() {
+		$this->skip_if_pro_package_unloaded();
+		$this->enable_pro_plan();
+
+		$_POST['action']               = 'edminboost_cc_drawer_preview';
+		$_POST['nonce']                = wp_create_nonce( 'edminboost_cc_drawer_preview' );
+		$_POST['mapper_context_nonce'] = wp_create_nonce( 'edminboost_cc_mapper_context' );
+		$_POST['slug']                 = 'edit.php';
+		$_POST['label']                = 'Posts';
+
+		$json_body = $this->invoke_ajax_action( 'wp_ajax_edminboost_cc_drawer_preview' );
+
+		$this->assertNotSame( '', $json_body );
+		$this->assertSame( '{', $json_body[0], 'Response must be JSON, got: ' . substr( $json_body, 0, 120 ) );
+
+		$decoded = json_decode( $json_body, true );
+		$this->assertIsArray( $decoded );
+		$this->assertTrue( $decoded['success'] );
+		$this->assertNotEmpty( $decoded['data']['frameUrl'] );
+	}
+
+	/**
+	 * Invoke a privileged AJAX action and return the JSON body from wp_die.
+	 *
+	 * @param string $hook AJAX hook name.
+	 * @return string
+	 */
+	private function invoke_ajax_action( $hook ) {
+		$json_body = '';
+
+		add_filter(
+			'wp_die_ajax_handler',
+			static function () use ( &$json_body ) {
+				return static function ( $message ) use ( &$json_body ) {
+					$json_body = is_string( $message ) ? $message : wp_json_encode( $message );
+				};
+			},
+			9999
+		);
+
+		ob_start();
+		do_action( $hook );
+		$stray = (string) ob_get_clean();
+
+		remove_all_filters( 'wp_die_ajax_handler' );
+
+		$this->assertSame( '', $stray, 'Stray output during AJAX: ' . substr( $stray, 0, 200 ) );
+
+		return $json_body;
+	}
+
+	/**
 	 * Unlicensed premium builds still register redirect-only bar nodes (same as WordPress.org).
 	 */
 	public function test_register_nodes_redirect_only_when_pro_inactive_on_premium_build() {

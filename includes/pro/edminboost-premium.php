@@ -105,6 +105,10 @@ function edminboost_fs() {
 function edminboost_premium_active_billing_plan( $plan ) {
 	$fs = edminboost_fs();
 	if ( ! is_object( $fs ) || ! $fs->is_registered() ) {
+		if ( in_array( $plan, array( 'pro', 'agency' ), true ) ) {
+			return $plan;
+		}
+
 		return 'free';
 	}
 
@@ -169,6 +173,25 @@ if ( '' !== edminboost_premium_freemius_sdk_path() ) {
 	$fs = edminboost_fs();
 	if ( is_object( $fs ) ) {
 		$fs->add_action( 'after_uninstall', 'edminboost_premium_uninstall_cleanup' );
+	}
+}
+
+/**
+ * Load premium runtime modules after core plugin constants and classes are available.
+ *
+ * @return void
+ */
+function edminboost_premium_load_pro_package() {
+	static $loaded = false;
+
+	if ( $loaded ) {
+		return;
+	}
+
+	$pro_package = __DIR__ . '/edminboost-pro-package.php';
+	if ( is_readable( $pro_package ) ) {
+		require_once $pro_package;
+		$loaded = true;
 	}
 }
 

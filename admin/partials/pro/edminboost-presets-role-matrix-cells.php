@@ -15,6 +15,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( empty( $edminboost_matrix_items ) || ! is_array( $edminboost_matrix_items ) ) {
+	return;
+}
+
 foreach ( $edminboost_matrix_items as $edminboost_item ) :
 	$edminboost_item_slug       = isset( $edminboost_item['slug'] ) ? $edminboost_item['slug'] : '';
 	if ( '' === $edminboost_item_slug ) {
@@ -85,7 +89,6 @@ foreach ( $edminboost_matrix_items as $edminboost_item ) :
 				type="checkbox"
 				class="edminboost-role-visibility-checkbox"
 				id="<?php echo esc_attr( $edminboost_field_id ); ?>"
-				name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][role_visibility][<?php echo esc_attr( $edminboost_role_key ); ?>][]"
 				value="<?php echo esc_attr( $edminboost_item_slug ); ?>"
 				data-item-slug="<?php echo esc_attr( $edminboost_item_slug ); ?>"
 				<?php checked( $edminboost_is_checked ); ?>

@@ -212,12 +212,17 @@ class EDMINBOOST_Command_Center_Bar {
 	 * @return void
 	 */
 	public static function enqueue_assets() {
-		if ( ! EDMINBOOST_Settings::is_enabled() || ! is_user_logged_in() ) {
+		if ( ! is_user_logged_in() ) {
 			return;
 		}
 
 		$mapper_screen = self::is_mapper_screen();
 		$plugin_screen = EDMINBOOST_Admin::is_plugin_admin_page();
+		$enabled       = EDMINBOOST_Settings::is_enabled();
+
+		if ( ! $enabled && ! $mapper_screen && ! $plugin_screen ) {
+			return;
+		}
 
 		if ( ! self::is_active() && ! $mapper_screen && ! $plugin_screen ) {
 			return;

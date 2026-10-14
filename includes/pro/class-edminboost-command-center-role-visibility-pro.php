@@ -37,6 +37,14 @@ class EDMINBOOST_Command_Center_Role_Visibility_Pro {
 			return $output;
 		}
 
+		if ( ! empty( $raw['_role_visibility_sync'] ) ) {
+			$output['role_visibility'] = self::sanitize_role_visibility_hidden(
+				isset( $raw['role_visibility'] ) && is_array( $raw['role_visibility'] ) ? $raw['role_visibility'] : array()
+			);
+
+			return $output;
+		}
+
 		if ( ! isset( $raw['role_visibility'] ) || ! is_array( $raw['role_visibility'] ) ) {
 			return $output;
 		}
@@ -126,6 +134,50 @@ class EDMINBOOST_Command_Center_Role_Visibility_Pro {
 	 * @param array $raw_visibility Submitted visible slugs per role.
 	 * @return array
 	 */
+	public static function sanitize_role_visibility_hidden( $raw_visibility ) {
+		$matrix_slugs = array();
+		foreach ( EDMINBOOST_Command_Center::get_role_matrix_menu_items() as $item ) {
+			if ( ! empty( $item['slug'] ) ) {
+				$matrix_slugs[] = (string) $item['slug'];
+			}
+		}
+
+		$hidden_by_role = array();
+
+		foreach ( array_keys( EDMINBOOST_Command_Center::get_assignable_roles() ) as $role_key ) {
+			$role_key = sanitize_key( $role_key );
+			if ( '' === $role_key ) {
+				continue;
+			}
+
+			$submitted = isset( $raw_visibility[ $role_key ] ) && is_array( $raw_visibility[ $role_key ] )
+				? $raw_visibility[ $role_key ]
+				: array();
+
+			$hidden = array();
+			foreach ( $submitted as $slug ) {
+				$slug = sanitize_text_field( wp_unslash( $slug ) );
+				if ( in_array( $slug, $matrix_slugs, true ) ) {
+					$hidden[] = $slug;
+				}
+			}
+
+			$hidden = array_values(
+				array_diff( $hidden, EDMINBOOST_Command_Center::get_protected_slugs_for_role( $role_key ) )
+			);
+
+			$hidden_by_role[ $role_key ] = $hidden;
+		}
+
+		return $hidden_by_role;
+	}
+
+	/**
+	 * Sanitize submitted visible slugs per role into stored hidden slugs.
+	 *
+	 * @param array $raw_visibility Submitted visible slugs per role.
+	 * @return array
+	 */
 	public static function sanitize_role_visibility( $raw_visibility ) {
 		$hidden_by_role = array();
 
@@ -183,7 +235,7 @@ class EDMINBOOST_Command_Center_Role_Visibility_Pro {
 		$menu_studio = wp_parse_args( $menu_studio, $defaults );
 
 		if ( empty( $menu_studio['enabled'] ) ) {
-			$menu_studio['enabled'] = true;
+			return $menu_studio;
 		}
 
 		if ( empty( $menu_studio['order'] ) ) {

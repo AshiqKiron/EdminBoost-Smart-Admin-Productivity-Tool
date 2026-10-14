@@ -432,18 +432,29 @@ class EDMINBOOST_Admin {
 	/**
 	 * Include optional admin partial paths supplied by filters (empty on WordPress.org).
 	 *
+	 * When the first argument is an associative array, its keys are extracted into the
+	 * partial include scope (partials included from a static method do not inherit the caller scope).
+	 *
 	 * @param string $slot    Markup slot key (edminboost_*); premium package maps slots to partials.
-	 * @param mixed  ...$args Optional extra filter arguments passed to the slot filter.
+	 * @param mixed  ...$args Optional variable context array, then extra filter arguments for the slot filter.
 	 * @return void
 	 */
 	public static function include_filtered_partials( $slot, ...$args ) {
+		$include_context = array();
+		$filter_args     = $args;
+
+		if ( ! empty( $args ) && is_array( $args[0] ) && self::is_partial_include_context( $args[0] ) ) {
+			$include_context = $args[0];
+			$filter_args     = array_slice( $args, 1 );
+		}
+
 		/**
 		 * Filter optional admin partial paths to include at a Command Center markup slot.
 		 *
 		 * @param string[] $partial_paths Absolute paths; default empty array.
 		 * @param string   $slot          Markup slot key (same value passed to include_filtered_partials()).
 		 */
-		$partial_paths = apply_filters( 'edminboost_command_center_partial_paths', array(), $slot, ...$args );
+		$partial_paths = apply_filters( 'edminboost_command_center_partial_paths', array(), $slot, ...$filter_args );
 
 		if ( ! is_array( $partial_paths ) ) {
 			return;
@@ -454,8 +465,33 @@ class EDMINBOOST_Admin {
 				continue;
 			}
 
+			if ( ! empty( $include_context ) ) {
+				// phpcs:ignore WordPress.PHP.DontExtract.extract_extract -- scoped partial variables from caller.
+				extract( $include_context, EXTR_SKIP );
+			}
+
 			include $partial_path;
 		}
+	}
+
+	/**
+	 * Whether an array is a variable context map for partial includes (not a numeric filter argument list).
+	 *
+	 * @param array $context Candidate context array.
+	 * @return bool
+	 */
+	private static function is_partial_include_context( $context ) {
+		if ( ! is_array( $context ) || array() === $context ) {
+			return false;
+		}
+
+		foreach ( array_keys( $context ) as $key ) {
+			if ( is_string( $key ) ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	/**
@@ -519,15 +555,26 @@ class EDMINBOOST_Admin {
 			return;
 		}
 
+		$screen_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
+
+		$admin_script_deps = array();
+		if (
+			apply_filters( 'edminboost_should_enqueue_licensed_admin_assets', false )
+			&& class_exists( 'EDMINBOOST_Command_Center_Bar_Pro', false )
+		) {
+			EDMINBOOST_Command_Center_Bar_Pro::enqueue_drawer_assets();
+			if ( wp_script_is( 'edminboost-command-center-bar', 'enqueued' ) ) {
+				$admin_script_deps[] = 'edminboost-command-center-bar';
+			}
+		}
+
 		wp_enqueue_script(
 			'edminboost-admin',
 			EDMINBOOST_PLUGIN_URL . 'admin/js/edminboost-admin.js',
-			array(),
+			$admin_script_deps,
 			EDMINBOOST_VERSION,
 			true
 		);
-
-		$screen_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
 		$localize = array(
 			'version'              => EDMINBOOST_VERSION,
@@ -548,6 +595,7 @@ class EDMINBOOST_Admin {
 				'topBarOverviewHasLinks'    => __( 'Admin link shortcuts appear in your WordPress top bar.', 'edminboost-admin-customization' ),
 				'settingsSaved'             => __( 'Settings saved.', 'edminboost-admin-customization' ),
 				'settingsSaveFailed'        => __( 'Could not save settings. Please try again.', 'edminboost-admin-customization' ),
+				'sessionExpired'            => __( 'Your session expired. Refresh the page and log in again.', 'edminboost-admin-customization' ),
 				'presetApplied'             => __( 'Preset applied.', 'edminboost-admin-customization' ),
 				'presetNameRequired'        => __( 'Enter a name for your preset.', 'edminboost-admin-customization' ),
 				'presetSaved'               => __( 'Preset saved.', 'edminboost-admin-customization' ),
@@ -726,13 +774,110 @@ class EDMINBOOST_Admin {
 	}
 
 	/**
+	 * Output buffer depth before an AJAX handler starts its capture buffer.
+	 *
+	 * @var int
+	 */
+	private static $ajax_json_buffer_depth = 0;
+
+	/**
+	 * Whether the early EdminBoost admin-ajax output buffer was started.
+	 *
+	 * @var bool
+	 */
+	private static $ajax_prime_buffer_started = false;
+
+	/**
+	 * Start output buffering as early as possible for EdminBoost admin-ajax actions.
+	 *
+	 * @return void
+	 */
+	public function prime_edminboost_ajax_output_buffer() {
+		if ( ! wp_doing_ajax() ) {
+			return;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- routing only.
+		$action = isset( $_REQUEST['action'] ) ? sanitize_key( wp_unslash( $_REQUEST['action'] ) ) : '';
+		if ( '' === $action || 0 !== strpos( $action, 'edminboost_' ) ) {
+			return;
+		}
+
+		if ( self::$ajax_prime_buffer_started ) {
+			return;
+		}
+
+		self::$ajax_prime_buffer_started = true;
+		self::$ajax_json_buffer_depth    = ob_get_level();
+		ob_start();
+	}
+
+	/**
+	 * Begin capturing stray output for an EdminBoost admin-ajax handler.
+	 *
+	 * @return void
+	 */
+	public static function begin_ajax_json_response() {
+		self::begin_ajax_json_buffer();
+	}
+
+	/**
+	 * @return void
+	 */
+	private static function begin_ajax_json_buffer() {
+		if ( ! self::$ajax_prime_buffer_started ) {
+			self::$ajax_json_buffer_depth = ob_get_level();
+			ob_start();
+			return;
+		}
+
+		ob_start();
+	}
+
+	/**
+	 * Discard captured AJAX output so the response body is valid JSON only.
+	 *
+	 * @return void
+	 */
+	private static function discard_ajax_json_buffer() {
+		while ( ob_get_level() > self::$ajax_json_buffer_depth ) {
+			ob_end_clean();
+		}
+	}
+
+	/**
+	 * @param mixed $data Success payload.
+	 * @return void
+	 */
+	public static function send_ajax_json_success( $data ) {
+		self::discard_ajax_json_buffer();
+		wp_send_json_success( $data );
+	}
+
+	/**
+	 * @param mixed    $data        Error payload.
+	 * @param int|null $status_code Optional HTTP status code.
+	 * @return void
+	 */
+	public static function send_ajax_json_error( $data, $status_code = null ) {
+		self::discard_ajax_json_buffer();
+		if ( null !== $status_code ) {
+			wp_send_json_error( $data, $status_code );
+		}
+
+		wp_send_json_error( $data );
+	}
+
+	/**
 	 * AJAX: load a Command Center tab without a full page reload.
 	 *
 	 * @return void
 	 */
 	public function ajax_load_cc_page() {
+		self::begin_ajax_json_buffer();
+
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error(
+			self::send_ajax_json_error(
 				array(
 					'message' => __( 'You do not have permission to view this page.', 'edminboost-admin-customization' ),
 				),
@@ -741,7 +886,7 @@ class EDMINBOOST_Admin {
 		}
 
 		if ( ! check_ajax_referer( 'edminboost_cc_nav', 'nonce', false ) ) {
-			wp_send_json_error(
+			self::send_ajax_json_error(
 				array(
 					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-admin-customization' ),
 				),
@@ -753,7 +898,7 @@ class EDMINBOOST_Admin {
 		$use_form_defaults = ! empty( $_POST['form_defaults'] );
 
 		if ( ! $this->is_valid_cc_nav_page( $page ) ) {
-			wp_send_json_error(
+			self::send_ajax_json_error(
 				array(
 					'message' => __( 'Unknown Command Center page.', 'edminboost-admin-customization' ),
 				),
@@ -764,7 +909,7 @@ class EDMINBOOST_Admin {
 		$html = $this->capture_cc_page_html( $page, $use_form_defaults );
 
 		if ( '' === $html ) {
-			wp_send_json_error(
+			self::send_ajax_json_error(
 				array(
 					'message' => __( 'Could not load that page.', 'edminboost-admin-customization' ),
 				),
@@ -795,7 +940,7 @@ class EDMINBOOST_Admin {
 		 */
 		$response = apply_filters( 'edminboost_cc_nav_ajax_response', $response, $page );
 
-		wp_send_json_success( $response );
+		self::send_ajax_json_success( $response );
 	}
 
 	/**
@@ -935,8 +1080,10 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function ajax_save_settings() {
+		self::begin_ajax_json_buffer();
+
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error(
+			self::send_ajax_json_error(
 				array(
 					'message' => __( 'You do not have permission to save these settings.', 'edminboost-admin-customization' ),
 				),
@@ -947,7 +1094,7 @@ class EDMINBOOST_Admin {
 		$nonce = isset( $_POST['_wpnonce'] ) ? sanitize_text_field( wp_unslash( $_POST['_wpnonce'] ) ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, EDMINBOOST_Settings::SETTINGS_GROUP . '-options' ) ) {
-			wp_send_json_error(
+			self::send_ajax_json_error(
 				array(
 					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-admin-customization' ),
 				),
@@ -960,7 +1107,7 @@ class EDMINBOOST_Admin {
 			: array();
 
 		if ( ! is_array( $raw ) ) {
-			wp_send_json_error(
+			self::send_ajax_json_error(
 				array(
 					'message' => __( 'Invalid settings payload.', 'edminboost-admin-customization' ),
 				),
@@ -980,7 +1127,9 @@ class EDMINBOOST_Admin {
 			? $raw['command_center']
 			: array();
 
-		wp_send_json_success(
+		EDMINBOOST_Command_Center::ensure_discovery_menu_snapshot();
+
+		self::send_ajax_json_success(
 			$this->build_ajax_save_response( $sanitized, $cc_raw, $before_custom_preset_ids )
 		);
 	}
@@ -1031,7 +1180,7 @@ class EDMINBOOST_Admin {
 			$message         = __( 'Preset renamed.', 'edminboost-admin-customization' );
 		}
 
-		return array(
+		$response = array(
 			'message'              => $message,
 			'presets'              => $this->get_presets_for_js(),
 			'selected_preset'      => $selected_preset,
@@ -1040,6 +1189,14 @@ class EDMINBOOST_Admin {
 			'theme'                => EDMINBOOST_Theme::get_settings( $cc ),
 			'setup_complete'       => EDMINBOOST_Command_Center::is_setup_complete( $cc ),
 		);
+
+		/**
+		 * Filter the AJAX settings save success payload for admin JavaScript.
+		 *
+		 * @param array $response Success payload.
+		 * @param array $cc_raw   Raw command_center input from the save request.
+		 */
+		return apply_filters( 'edminboost_ajax_save_response', $response, $cc_raw );
 	}
 
 	/**
@@ -1058,12 +1215,14 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function ajax_export_settings() {
+		self::begin_ajax_json_buffer();
+
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
+			self::send_ajax_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
 		}
 
 		if ( ! check_ajax_referer( 'edminboost_export_settings', 'nonce', false ) ) {
-			wp_send_json_error(
+			self::send_ajax_json_error(
 				array(
 					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-admin-customization' ),
 				),
@@ -1071,7 +1230,7 @@ class EDMINBOOST_Admin {
 			);
 		}
 
-		wp_send_json_success(
+		self::send_ajax_json_success(
 			array(
 				'json' => wp_json_encode( EDMINBOOST_Settings::get(), JSON_PRETTY_PRINT ),
 			)
@@ -1084,12 +1243,14 @@ class EDMINBOOST_Admin {
 	 * @return void
 	 */
 	public function ajax_import_settings() {
+		self::begin_ajax_json_buffer();
+
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
+			self::send_ajax_json_error( array( 'message' => __( 'Permission denied.', 'edminboost-admin-customization' ) ), 403 );
 		}
 
 		if ( ! check_ajax_referer( 'edminboost_import_settings', 'nonce', false ) ) {
-			wp_send_json_error(
+			self::send_ajax_json_error(
 				array(
 					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-admin-customization' ),
 				),
@@ -1101,13 +1262,13 @@ class EDMINBOOST_Admin {
 		$data = json_decode( $json, true );
 
 		if ( ! is_array( $data ) ) {
-			wp_send_json_error( array( 'message' => __( 'Invalid JSON payload.', 'edminboost-admin-customization' ) ), 400 );
+			self::send_ajax_json_error( array( 'message' => __( 'Invalid JSON payload.', 'edminboost-admin-customization' ) ), 400 );
 		}
 
 		$sanitized = EDMINBOOST_Settings::sanitize( $data );
 		update_option( EDMINBOOST_Settings::OPTION_NAME, $sanitized, false );
 
-		wp_send_json_success( array( 'message' => __( 'Settings imported.', 'edminboost-admin-customization' ) ) );
+		self::send_ajax_json_success( array( 'message' => __( 'Settings imported.', 'edminboost-admin-customization' ) ) );
 	}
 
 	/**

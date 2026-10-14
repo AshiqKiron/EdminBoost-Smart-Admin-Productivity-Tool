@@ -19,9 +19,12 @@ $edminboost_menu_studio   = isset( $cc_settings['menu_studio'] ) && is_array( $c
 $edminboost_ms_key        = $edminboost_option_name . '[command_center][menu_studio]';
 $edminboost_menu_tree     = EDMINBOOST_Command_Center::get_discovered_menu_tree();
 $edminboost_canvas_items  = EDMINBOOST_Command_Center::resolve_menu_studio_order( $edminboost_menu_studio );
-$edminboost_hidden_items  = isset( $edminboost_menu_studio['hidden_items'] ) && is_array( $edminboost_menu_studio['hidden_items'] )
-	? $edminboost_menu_studio['hidden_items']
-	: array();
+$edminboost_canvas_slugs  = array();
+foreach ( $edminboost_canvas_items as $edminboost_canvas_item ) {
+	if ( ! empty( $edminboost_canvas_item['slug'] ) ) {
+		$edminboost_canvas_slugs[] = (string) $edminboost_canvas_item['slug'];
+	}
+}
 $edminboost_menu_studio_colors        = isset( $edminboost_menu_studio['colors'] ) && is_array( $edminboost_menu_studio['colors'] )
 	? wp_parse_args( $edminboost_menu_studio['colors'], EDMINBOOST_Command_Center::get_menu_studio_defaults()['colors'] )
 	: EDMINBOOST_Command_Center::get_menu_studio_defaults()['colors'];
@@ -128,7 +131,7 @@ $edminboost_color_fields = array(
 						<?php foreach ( $edminboost_menu_tree as $edminboost_index => $edminboost_menu_item ) : ?>
 							<?php
 							$edminboost_slug         = $edminboost_menu_item['slug'];
-							$edminboost_is_hidden    = in_array( $edminboost_slug, $edminboost_hidden_items, true );
+							$edminboost_is_hidden    = ! in_array( $edminboost_slug, $edminboost_canvas_slugs, true );
 							$edminboost_is_protected = in_array( $edminboost_slug, $edminboost_protected, true );
 							$edminboost_item_id = 'edminboost_menu_discovered_' . $edminboost_index;
 							$edminboost_child_count  = ! empty( $edminboost_menu_item['children'] ) ? count( $edminboost_menu_item['children'] ) : 0;
@@ -171,7 +174,14 @@ $edminboost_color_fields = array(
 					<?php endif; ?>
 				</ul>
 
-				<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_menu_studio_custom_link_partials' ); ?>
+				<?php
+				EDMINBOOST_Admin::include_filtered_partials(
+					'edminboost_menu_studio_custom_link_partials',
+					array(
+						'edminboost_menu_tree' => $edminboost_menu_tree,
+					)
+				);
+				?>
 			</aside>
 
 			<div class="edminboost-menu-studio-main">
@@ -332,7 +342,15 @@ $edminboost_color_fields = array(
 									</div>
 								</fieldset>
 
-								<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_menu_studio_display_mode_partials' ); ?>
+								<?php
+								EDMINBOOST_Admin::include_filtered_partials(
+									'edminboost_menu_studio_display_mode_partials',
+									array(
+										'edminboost_ms_key'        => $edminboost_ms_key,
+										'edminboost_menu_studio'   => $edminboost_menu_studio,
+									)
+								);
+								?>
 							</div>
 						</div>
 

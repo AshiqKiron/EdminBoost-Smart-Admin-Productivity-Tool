@@ -47,6 +47,13 @@ require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-admin.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-setting-help.php';
 require_once EDMINBOOST_PLUGIN_DIR . 'includes/class-edminboost-plugin.php';
 
+if ( ! defined( 'EDMINBOOST_DISABLE_LOCALHOST' ) ) {
+	$edminboost_localhost = EDMINBOOST_PLUGIN_DIR . 'edminboost-localhost.php';
+	if ( is_readable( $edminboost_localhost ) ) {
+		require_once $edminboost_localhost;
+	}
+}
+
 register_activation_hook( __FILE__, array( 'EDMINBOOST_Activator', 'activate' ) );
 register_deactivation_hook( __FILE__, array( 'EDMINBOOST_Deactivator', 'deactivate' ) );
 
@@ -59,6 +66,10 @@ function edminboost_run_plugin() {
 	static $plugin = null;
 
 	if ( null === $plugin ) {
+		if ( function_exists( 'edminboost_premium_load_pro_package' ) ) {
+			edminboost_premium_load_pro_package();
+		}
+
 		$plugin = new EDMINBOOST_Plugin();
 		$plugin->run();
 	}

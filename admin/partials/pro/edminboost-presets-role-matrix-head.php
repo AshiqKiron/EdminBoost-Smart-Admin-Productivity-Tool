@@ -11,6 +11,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( empty( $edminboost_matrix_items ) || ! is_array( $edminboost_matrix_items ) ) {
+	return;
+}
+
 foreach ( $edminboost_matrix_items as $edminboost_item ) :
 	$edminboost_item_slug      = isset( $edminboost_item['slug'] ) ? $edminboost_item['slug'] : '';
 	if ( '' === $edminboost_item_slug ) {

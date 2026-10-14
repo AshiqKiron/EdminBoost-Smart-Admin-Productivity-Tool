@@ -54,9 +54,31 @@ No locked controls in wp-admin. The free tier includes a fixed set of layout, th
 
 Yes. When uninstalled, all plugin options are removed from the database.
 
+== Screenshots ==
+
+1. First-run setup wizard — choose a layout preset with live sidebar and top bar previews.
+2. Command Center dashboard — layout, color theme, and top bar overview cards.
+3. Layout Presets — built-in scenario layouts and role assignments.
+4. Theme — visual admin skins, light/dark mode, and font options.
+5. Admin bar declutter — hide core admin bar items with a live preview.
+6. Top Bar — drag-and-drop shortcuts for the WordPress admin bar.
+7. Menu Studio — reorder, hide, and style the admin sidebar menu.
+8. Productivity — hide routine admin notices (live preview).
+9. Productivity — remove selected dashboard widgets (live preview).
+10. Productivity — custom admin footer text.
+11. Security — XML-RPC, feeds, REST API, and related hardening toggles.
+12. Performance — disable emoji scripts (live preview).
+13. Performance — trim asset tags and disable embeds (live preview).
+14. Themed wp-admin dashboard with EdminBoost top bar shortcuts and custom footer.
+15. Posts list with post duplicator actions enabled.
+
 == Changelog ==
 
 = 1.4.4 =
+* Fix Layout Presets save on sites with large admin menus by syncing only hidden role-visibility items instead of every matrix checkbox.
+* Fresh installs start with customization off so wp-admin stays unchanged until you save settings or complete setup.
+* Menu Studio stays off by default after activation and when applying layout presets until you enable it on the Menu Studio screen.
+* First-time activation no longer pre-applies a layout preset; top bar and Menu Studio order stay empty until you save or complete setup.
 * Consolidate licensed Command Center partial hooks into a single `edminboost_command_center_partial_paths` filter keyed by markup slot.
 
 = 1.4.3 =

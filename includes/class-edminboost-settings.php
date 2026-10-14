@@ -77,7 +77,7 @@ class EDMINBOOST_Settings {
 	 */
 	public static function get_defaults() {
 		$defaults = array(
-			'enabled'         => true,
+			'enabled'         => false,
 			'command_center'  => EDMINBOOST_Command_Center::get_defaults(),
 			'features'        => EDMINBOOST_Feature_Settings::get_defaults(),
 			'white_label'     => self::get_white_label_defaults(),
@@ -89,6 +89,40 @@ class EDMINBOOST_Settings {
 		 * @param array $defaults Default settings.
 		 */
 		return apply_filters( 'edminboost_settings_defaults', $defaults );
+	}
+
+	/**
+	 * Settings seeded on first plugin activation.
+	 *
+	 * Stores plugin defaults only — customization stays off until the user saves
+	 * settings or completes setup (no layout preset, theme, or features applied).
+	 *
+	 * @return array
+	 */
+	public static function get_activation_defaults() {
+		$settings = self::get_defaults();
+		$settings['enabled'] = false;
+
+		if ( isset( $settings['command_center'] ) && is_array( $settings['command_center'] ) ) {
+			$settings['command_center']['onboarding_completed'] = false;
+			$settings['command_center']['top_bar_items']        = array();
+			$settings['command_center']['presets']              = array();
+
+			if ( isset( $settings['command_center']['menu_studio'] ) && is_array( $settings['command_center']['menu_studio'] ) ) {
+				$menu_defaults = EDMINBOOST_Command_Center::get_menu_studio_defaults();
+				$settings['command_center']['menu_studio'] = wp_parse_args(
+					$settings['command_center']['menu_studio'],
+					$menu_defaults
+				);
+				$settings['command_center']['menu_studio']['enabled']       = false;
+				$settings['command_center']['menu_studio']['order']         = array();
+				$settings['command_center']['menu_studio']['submenu_order'] = array();
+				$settings['command_center']['menu_studio']['hidden_items']  = array();
+				$settings['command_center']['menu_studio']['custom_items']  = array();
+			}
+		}
+
+		return $settings;
 	}
 
 	/**
@@ -458,10 +492,7 @@ class EDMINBOOST_Settings {
 				if ( ! empty( $items ) ) {
 					$output['top_bar_items']  = self::sanitize_top_bar_items( $items );
 					$output['default_preset'] = $preset_id;
-					$output['menu_studio']    = self::sanitize_menu_studio(
-						EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id, $output ),
-						null
-					);
+					$output['menu_studio'] = self::sanitize_menu_studio_from_layout_preset( $preset_id, $output );
 					$preset_menu_applied      = true;
 					$preset_layout_applied    = true;
 
@@ -488,10 +519,7 @@ class EDMINBOOST_Settings {
 				$output['top_bar_items']        = self::sanitize_top_bar_items( $items );
 				$output['default_preset']       = $preset_id;
 				$output['onboarding_completed'] = true;
-				$output['menu_studio']          = self::sanitize_menu_studio(
-					EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id, $output ),
-					null
-				);
+				$output['menu_studio'] = self::sanitize_menu_studio_from_layout_preset( $preset_id, $output );
 				$preset_menu_applied            = true;
 				$preset_layout_applied          = true;
 
@@ -546,7 +574,14 @@ class EDMINBOOST_Settings {
 		}
 
 		if ( isset( $raw['behavior'] ) && is_array( $raw['behavior'] ) ) {
-			$output['behavior'] = self::sanitize_behavior( $raw['behavior'] );
+			if ( ! empty( $raw['_layout_studio_save'] ) && ! self::raw_top_bar_has_drawer_interaction( $raw ) ) {
+				// Top Bar save without drawer links — keep stored behavior settings.
+			} else {
+				$output['behavior'] = self::sanitize_behavior(
+					$raw['behavior'],
+					isset( $output['behavior'] ) && is_array( $output['behavior'] ) ? $output['behavior'] : null
+				);
+			}
 		}
 
 		if ( isset( $raw['theme'] ) && is_array( $raw['theme'] ) ) {
@@ -622,6 +657,20 @@ class EDMINBOOST_Settings {
 		}
 
 		return $output;
+	}
+
+	/**
+	 * Sanitize Menu Studio config from a layout preset without enabling runtime.
+	 *
+	 * @param string $preset_id Preset identifier.
+	 * @param array  $cc_output Command Center settings used to resolve the preset.
+	 * @return array
+	 */
+	private static function sanitize_menu_studio_from_layout_preset( $preset_id, $cc_output ) {
+		$menu_studio            = EDMINBOOST_Command_Center::resolve_preset_menu_studio( $preset_id, $cc_output );
+		$menu_studio['enabled'] = false;
+
+		return self::sanitize_menu_studio( $menu_studio, null );
 	}
 
 	/**
@@ -991,14 +1040,39 @@ class EDMINBOOST_Settings {
 	}
 
 	/**
+	 * Whether raw Command Center input includes a drawer top bar item.
+	 *
+	 * @param array $raw Raw command_center input.
+	 * @return bool
+	 */
+	private static function raw_top_bar_has_drawer_interaction( $raw ) {
+		if ( empty( $raw['top_bar_items'] ) || ! is_array( $raw['top_bar_items'] ) ) {
+			return false;
+		}
+
+		foreach ( $raw['top_bar_items'] as $item ) {
+			if ( ! is_array( $item ) || empty( $item['interaction'] ) ) {
+				continue;
+			}
+
+			if ( 'drawer' === sanitize_key( $item['interaction'] ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Sanitize behavior & styling settings.
 	 *
-	 * @param array $raw Raw behavior input.
+	 * @param array      $raw     Raw behavior input.
+	 * @param array|null $current Stored behavior to merge (null = defaults only).
 	 * @return array
 	 */
-	private static function sanitize_behavior( $raw ) {
+	private static function sanitize_behavior( $raw, $current = null ) {
 		$defaults = EDMINBOOST_Command_Center::get_defaults()['behavior'];
-		$output   = $defaults;
+		$output   = is_array( $current ) ? wp_parse_args( $current, $defaults ) : $defaults;
 
 		$allowed_widths = array( 'compact', 'standard', 'fullscreen', 'custom' );
 		if ( isset( $raw['drawer_width'] ) ) {

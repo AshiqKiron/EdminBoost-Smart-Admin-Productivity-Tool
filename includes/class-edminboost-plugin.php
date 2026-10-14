@@ -84,6 +84,7 @@ class EDMINBOOST_Plugin {
 	public function run() {
 		add_action( 'admin_menu', array( $this->admin, 'register_menu' ) );
 		add_action( 'admin_menu', array( $this->admin, 'normalize_plugin_submenu' ), 999 );
+		add_action( 'init', array( $this->admin, 'prime_edminboost_ajax_output_buffer' ), 0 );
 		add_action( 'admin_init', array( $this->admin, 'register_settings' ) );
 		add_action( 'admin_init', array( $this->admin, 'maybe_activation_redirect' ) );
 		add_action( 'wp_ajax_edminboost_save_settings', array( $this->admin, 'ajax_save_settings' ) );

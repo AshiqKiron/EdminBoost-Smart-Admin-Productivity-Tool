@@ -419,17 +419,17 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertNotEmpty( $settings['command_center']['top_bar_items'] );
 		$this->assertTrue( $settings['command_center']['onboarding_completed'] );
 		$this->assertSame( 'system_client', $settings['command_center']['default_preset'] );
-		$this->assertTrue( $settings['command_center']['menu_studio']['enabled'] );
+		$this->assertFalse( $settings['command_center']['menu_studio']['enabled'] );
 		$this->assertNotEmpty( $settings['command_center']['menu_studio']['order'] );
 	}
 
 	/**
-	 * resolve_preset_menu_studio enables Menu Studio for system presets.
+	 * resolve_preset_menu_studio builds sidebar order for system presets without enabling Menu Studio.
 	 */
 	public function test_resolve_preset_menu_studio_for_system_client() {
 		$menu_studio = EDMINBOOST_Command_Center::resolve_preset_menu_studio( 'system_client' );
 
-		$this->assertTrue( $menu_studio['enabled'] );
+		$this->assertFalse( $menu_studio['enabled'] );
 		$this->assertContains( 'index.php', $menu_studio['order'] );
 		$this->assertContains( 'edit.php', $menu_studio['order'] );
 		$this->assertNotContains( 'themes.php', $menu_studio['order'] );
@@ -460,7 +460,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 			)
 		);
 
-		$this->assertTrue( $result['command_center']['menu_studio']['enabled'] );
+		$this->assertFalse( $result['command_center']['menu_studio']['enabled'] );
 		$this->assertNotEmpty( $result['command_center']['menu_studio']['order'] );
 	}
 
@@ -591,6 +591,36 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	}
 
 	/**
+	 * Compact role visibility sync stores hidden slugs without visible-checkbox POST fields.
+	 */
+	public function test_role_visibility_compact_sync_sanitization() {
+		$this->enable_pro_plan();
+		$this->skip_if_pro_package_unloaded();
+
+		$matrix_slugs = wp_list_pluck( EDMINBOOST_Command_Center::get_role_matrix_menu_items(), 'slug' );
+		$this->assertNotEmpty( $matrix_slugs );
+
+		$hidden_slug = in_array( 'edit.php', $matrix_slugs, true ) ? 'edit.php' : $matrix_slugs[0];
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'_role_visibility_sync' => 1,
+					'role_visibility'       => array(
+						'editor' => array( $hidden_slug ),
+					),
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( $hidden_slug ),
+			$result['command_center']['role_visibility']['editor']
+		);
+	}
+
+	/**
 	 * Role preset assignments resolve Menu Studio sidebar settings per user.
 	 */
 	public function test_resolve_menu_studio_for_user_role_assignment() {
@@ -608,7 +638,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 
 		$menu = EDMINBOOST_Command_Center::resolve_menu_studio_for_user( $cc_settings );
 
-		$this->assertTrue( $menu['enabled'] );
+		$this->assertFalse( $menu['enabled'] );
 		$this->assertContains( 'themes.php', $menu['order'] );
 		$this->assertContains( 'plugins.php', $menu['order'] );
 	}
@@ -631,12 +661,33 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertNotEmpty( $result['command_center']['top_bar_items'] );
 		$this->assertTrue( $result['command_center']['onboarding_completed'] );
 		$this->assertSame( 'system_client', $result['command_center']['default_preset'] );
-		$this->assertTrue( $result['command_center']['menu_studio']['enabled'] );
+		$this->assertFalse( $result['command_center']['menu_studio']['enabled'] );
 		$this->assertNotEmpty( $result['command_center']['menu_studio']['order'] );
-		$this->assertNotSame(
-			'custom',
+		$this->assertSame(
+			'default',
 			EDMINBOOST_Command_Center::detect_active_layout_preset( $result['command_center'] )
 		);
+	}
+
+	/**
+	 * Legacy preset saves with Menu Studio enabled still resolve to Default, not Custom.
+	 */
+	public function test_detect_active_layout_preset_matches_default_with_legacy_menu_studio_enabled() {
+		$this->enable_pro_plan();
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'_apply_preset' => 'system_client',
+				),
+			)
+		);
+
+		$cc = $result['command_center'];
+		$cc['menu_studio']['enabled'] = true;
+
+		$this->assertSame( 'default', EDMINBOOST_Command_Center::detect_active_layout_preset( $cc ) );
 	}
 
 	/**
@@ -685,6 +736,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		);
 		$this->assertSame( array(), $result['command_center']['menu_studio']['submenu_order'] );
 		$this->assertSame( array(), $result['command_center']['menu_studio']['custom_items'] );
+		$this->assertFalse( $result['command_center']['menu_studio']['enabled'] );
 		$this->assertNotSame(
 			'custom',
 			EDMINBOOST_Command_Center::detect_active_layout_preset( $result['command_center'] )
@@ -919,5 +971,170 @@ class CommandCenterTest extends Edminboost_Test_Case {
 
 		$this->assertContains( 'index.php', $slugs );
 		$this->assertNotContains( 'plugins.php', $slugs );
+	}
+
+	/**
+	 * CC tab HTML capture must not emit PHP notices (they break admin-ajax JSON).
+	 */
+	public function test_capture_cc_page_html_emits_no_php_notices() {
+		$this->skip_if_pro_package_unloaded();
+		$this->enable_pro_plan();
+
+		$admin      = edminboost_run_plugin()->get_admin();
+		$reflection = new ReflectionClass( $admin );
+		$method     = $reflection->getMethod( 'capture_cc_page_html' );
+		$method->setAccessible( true );
+
+		$pages = array(
+			EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER,
+			EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS,
+			EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MENU_STUDIO,
+			EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_APPEARANCE,
+			EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_SECURITY,
+		);
+
+		$collected = array();
+
+		set_error_handler(
+			static function ( $errno, $errstr, $errfile, $errline ) use ( &$collected ) {
+				if ( E_WARNING === $errno || E_NOTICE === $errno || E_USER_NOTICE === $errno || E_USER_WARNING === $errno ) {
+					$collected[] = $errstr . ' in ' . $errfile . ':' . $errline;
+				}
+
+				return false;
+			}
+		);
+
+		foreach ( $pages as $page ) {
+			$collected = array();
+			$html      = $method->invoke( $admin, $page );
+
+			$this->assertNotSame( '', $html, 'Expected HTML for page ' . $page );
+			$this->assertEmpty(
+				$collected,
+				'PHP notices/warnings while rendering ' . $page . ': ' . implode( ' | ', $collected )
+			);
+		}
+
+		restore_error_handler();
+	}
+
+	/**
+	 * Settings save AJAX must return parseable JSON only.
+	 */
+	public function test_ajax_save_settings_returns_json() {
+		$this->enable_pro_plan();
+
+		$nonce = wp_create_nonce( EDMINBOOST_Settings::SETTINGS_GROUP . '-options' );
+
+		$_POST['action']                              = 'edminboost_save_settings';
+		$_POST['_wpnonce']                            = $nonce;
+		$_POST[ EDMINBOOST_Settings::OPTION_NAME ]    = array(
+			'enabled' => 1,
+		);
+
+		$pre_output = '';
+		if ( ob_get_level() > 0 ) {
+			$pre_output = (string) ob_get_contents();
+		}
+
+		$json_body = $this->invoke_ajax_action( 'wp_ajax_edminboost_save_settings' );
+
+		$this->assertSame( '', $pre_output, 'Unexpected buffered output before AJAX handler.' );
+		$this->assertNotSame( '', $json_body );
+		$this->assertSame( '{', $json_body[0], 'Response must be JSON, got: ' . substr( $json_body, 0, 120 ) );
+
+		$decoded = json_decode( $json_body, true );
+		$this->assertIsArray( $decoded );
+		$this->assertTrue( $decoded['success'] );
+	}
+
+	/**
+	 * Top Bar (layout studio) save AJAX must return parseable JSON.
+	 */
+	public function test_ajax_save_settings_layout_studio_returns_json() {
+		$this->enable_pro_plan();
+
+		$nonce = wp_create_nonce( EDMINBOOST_Settings::SETTINGS_GROUP . '-options' );
+
+		$_POST['action']                           = 'edminboost_save_settings';
+		$_POST['_wpnonce']                         = $nonce;
+		$_POST[ EDMINBOOST_Settings::OPTION_NAME ] = array(
+			'enabled'        => 1,
+			'command_center' => array(
+				'_layout_studio_save' => 1,
+				'top_bar_items'       => array(
+					array(
+						'slug'         => 'index.php',
+						'label'        => 'Dashboard',
+						'icon'         => 'dashicons-dashboard',
+						'interaction'  => 'redirect',
+						'badge_source' => '',
+					),
+				),
+			),
+		);
+
+		$json_body = $this->invoke_ajax_action( 'wp_ajax_edminboost_save_settings' );
+
+		$this->assertNotSame( '', $json_body );
+		$this->assertSame( '{', $json_body[0], 'Response must be JSON, got: ' . substr( $json_body, 0, 120 ) );
+
+		$decoded = json_decode( $json_body, true );
+		$this->assertIsArray( $decoded );
+		$this->assertTrue( $decoded['success'] );
+		$this->assertSame( 'Settings saved.', $decoded['data']['message'] );
+	}
+
+	/**
+	 * Layout Presets CC tab AJAX must return parseable JSON (large HTML payload).
+	 */
+	public function test_ajax_load_cc_page_presets_returns_json() {
+		$this->skip_if_pro_package_unloaded();
+		$this->enable_pro_plan();
+
+		$_POST['action'] = 'edminboost_load_cc_page';
+		$_POST['nonce']  = wp_create_nonce( 'edminboost_cc_nav' );
+		$_POST['page']   = EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_PRESETS;
+
+		$json_body = $this->invoke_ajax_action( 'wp_ajax_edminboost_load_cc_page' );
+
+		$this->assertNotSame( '', $json_body );
+		$this->assertSame( '{', $json_body[0], 'Response must be JSON, got: ' . substr( $json_body, 0, 120 ) );
+
+		$decoded = json_decode( $json_body, true );
+		$this->assertIsArray( $decoded );
+		$this->assertTrue( $decoded['success'] );
+		$this->assertNotEmpty( $decoded['data']['html'] );
+	}
+
+	/**
+	 * Invoke a privileged AJAX action and return the JSON body from wp_die.
+	 *
+	 * @param string $hook AJAX hook name.
+	 * @return string
+	 */
+	private function invoke_ajax_action( $hook ) {
+		$json_body = '';
+
+		add_filter(
+			'wp_die_ajax_handler',
+			static function () use ( &$json_body ) {
+				return static function ( $message ) use ( &$json_body ) {
+					$json_body = is_string( $message ) ? $message : wp_json_encode( $message );
+				};
+			},
+			9999
+		);
+
+		ob_start();
+		do_action( $hook );
+		$stray = (string) ob_get_clean();
+
+		remove_all_filters( 'wp_die_ajax_handler' );
+
+		$this->assertSame( '', $stray, 'Stray output during AJAX: ' . substr( $stray, 0, 200 ) );
+
+		return $json_body;
 	}
 }

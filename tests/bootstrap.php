@@ -34,14 +34,11 @@ function _edminboost_manually_load_plugin() {
 		define( 'EDMINBOOST_SKIP_AUTO_RUN', true );
 	}
 
-	require $plugin_root . '/edminboost-admin-customization.php';
-
-	if ( EDMINBOOST_Plan::is_direct_build() ) {
-		$pro_package = $plugin_root . '/includes/pro/edminboost-pro-package.php';
-		if ( is_readable( $pro_package ) ) {
-			require_once $pro_package;
-		}
+	if ( ! defined( 'EDMINBOOST_DISABLE_LOCALHOST' ) ) {
+		define( 'EDMINBOOST_DISABLE_LOCALHOST', true );
 	}
+
+	require $plugin_root . '/edminboost-admin-customization.php';
 
 	edminboost_run_plugin();
 }

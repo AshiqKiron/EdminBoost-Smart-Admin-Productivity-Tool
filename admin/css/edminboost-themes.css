@@ -1715,6 +1715,18 @@ body.edminboost-theme-active:not( .edminboost-menu-studio-colors ) #adminmenu .u
 	color: #fff;
 }
 
+body.edminboost-theme-active:not( .edminboost-menu-studio-active ) #adminmenu li#toplevel_page_edminboost-admin-customization .wp-menu-arrow {
+	display: none;
+}
+
+body.edminboost-theme-active:not( .edminboost-menu-studio-active ) #adminmenu li#toplevel_page_edminboost-admin-customization .wp-submenu {
+	position: relative;
+	left: 0;
+	top: 0;
+	margin: 0;
+	box-shadow: none;
+}
+
 /* Admin content area (main wp-admin background beside the sidebar) */
 body.edminboost-theme-active #wpwrap,
 body.edminboost-theme-active #wpcontent,

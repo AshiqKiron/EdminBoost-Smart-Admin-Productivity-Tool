@@ -52,7 +52,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 ## Class Wiring
 
-- Bootstrap requires core classes (including `EDMINBOOST_Plan`); instantiate only via `edminboost_run_plugin()`. Dev tree bootstrap omits `includes/pro/`; premium release zip injects `edminboost-premium.php` at build time (`bin/build-zip-lib.sh`). When `EDMINBOOST_Plan::is_direct_build()`, readable `edminboost-pro-package.php` loads pro modules before `EDMINBOOST_Plugin` is constructed. PHPUnit loads `edminboost-premium.php` when `includes/pro/` exists unless `EDMINBOOST_TEST_WPORG=1` (see `tests/bootstrap.php`).
+- Bootstrap requires core classes (including `EDMINBOOST_Plan`); optionally loads gitignored `edminboost-localhost.php` when readable and `EDMINBOOST_DISABLE_LOCALHOST` is undefined (localhost shim sets `EDMINBOOST_LOCALHOST_LOADED`, requires `includes/pro/edminboost-premium.php`, filters `edminboost_is_pro_active` / `edminboost_active_billing_plan` for licensed Pro QA); instantiate only via `edminboost_run_plugin()`, which calls `edminboost_premium_load_pro_package()` when the premium bootstrap defined that helper (`edminboost-pro-package.php` is idempotent via `EDMINBOOST_PRO_PACKAGE_LOADED`). Dev checkout omits `includes/pro/` from WordPress.org zips; premium release zip injects `edminboost-premium.php` + `edminboost_premium_load_pro_package()` at build time (`edminboost_build_inject_premium_bootstrap()` in `bin/build-zip-lib.sh` — not `is_direct_build()` + direct `require` of pro-package). Local dev Pro: `bin/edminboost-localhost.sample.php` → `edminboost-localhost.php`. PHPUnit loads `edminboost-premium.php` when `includes/pro/` exists unless `EDMINBOOST_TEST_WPORG=1`; sets `EDMINBOOST_DISABLE_LOCALHOST` so localhost overrides never run (see `tests/bootstrap.php`).
 - `EDMINBOOST_Plugin` constructor: `EDMINBOOST_Features`, `EDMINBOOST_Admin`.
 - Command Center: `EDMINBOOST_Command_Center` (static helpers + `register_hooks()`).
 - Command Center Bar: `EDMINBOOST_Command_Center_Bar::register_hooks()` in `EDMINBOOST_Plugin::run()` — redirect-only on free/WP.org; drawer/badge paths delegate to `EDMINBOOST_Command_Center_Bar_Pro` when licensed. Role visibility on the live bar: filter `edminboost_top_bar_items_for_user` in `get_items_for_current_user()` (premium: `EDMINBOOST_Command_Center_Role_Visibility_Pro`).
@@ -70,13 +70,15 @@ if ( ! defined( 'ABSPATH' ) ) {
 - Admin page titles: `EDMINBOOST_Admin::register_plugin_submenu_page()` / `bind_admin_page_title()` set `$title` on `load-{hook}` (fixes PHP 8.1+ warnings for tab-only pages with null parent).
 - New productivity modules: extend `EDMINBOOST_Feature_Base`, register in `EDMINBOOST_Features`; defaults/enable/sanitize via `EDMINBOOST_Feature_Settings` (see `edminboost-features.mdc`).
 - Settings: `EDMINBOOST_Settings::get()`, `::get_form_defaults()` (normalized plugin defaults for admin form reset — no `edminboost_settings` filter), `::strip_free_build_product_features()` (WP.org read/sanitize guard — Pro-only keys including `role_visibility` stripped when `! EDMINBOOST_Plan::is_direct_build()`), `::is_enabled()`, `::is_feature_enabled()`, `::get_feature_settings()`; feature shape helpers in `EDMINBOOST_Feature_Settings`. `sanitize_command_center()` applies `edminboost_sanitize_command_center` (premium: `EDMINBOOST_Command_Center_Role_Visibility_Pro` + `EDMINBOOST_Settings_Sanitize_Pro` when licensed). Pro-shaped top bar, behavior, theme schedule, and menu fields sanitize in premium package only — core CC sanitize stays WP.org-safe. `EDMINBOOST_Feature_Settings::sanitize()` ends with `edminboost_sanitize_features` (premium: login redirects when licensed).
-- Activation seeds defaults via `EDMINBOOST_Activator`; deactivation is a no-op.
+- Activation: `EDMINBOOST_Activator::activate()` adds `get_activation_defaults()` when the option is missing (`enabled` false, empty layouts, Menu Studio off), updates `edminboost_version`, sets short-lived `edminboost_activation_redirect` transient; deactivation is a no-op.
 
 ## Settings Option Shape
 
+Global `enabled` defaults to `false` in `EDMINBOOST_Settings::get_defaults()` / `get_activation_defaults()`; CC and feature save forms submit hidden `edminboost_settings[enabled]=1` so partial saves do not turn the plugin off.
+
 ```php
 array(
-	'enabled'        => true,
+	'enabled'        => false,
 	'command_center' => array(
 		'onboarding_completed' => false,
 		'persona'              => '',
@@ -143,7 +145,7 @@ array(
 
 ## Command Center Sanitization Notes
 
-- `_apply_preset` (wizard or apply): replaces `top_bar_items` + `menu_studio` from preset on save; does not merge prior sidebar config (`sanitize_menu_studio( …, null )`). Runtime `resolve_menu_studio_for_user()` re-merges stored `custom_items` via `merge_saved_custom_menu_items()` when a role preset is assigned.
+- `_apply_preset` (wizard or apply): replaces `top_bar_items` and preset sidebar shape via `sanitize_menu_studio_from_layout_preset()` — stores order/hidden/custom data but leaves `menu_studio.enabled` false until Menu Studio save; does not merge prior sidebar config (`sanitize_menu_studio( …, null )`). Runtime `resolve_menu_studio_for_user()` re-merges stored `custom_items` via `merge_saved_custom_menu_items()` when a role preset is assigned.
 - `_layout_studio_save` / `_menu_studio_save` markers gate top bar / sidebar writes so other CC pages do not clobber saved layouts.
 - Menu Studio save with `use_colors` disabled resets `menu_studio.colors` to defaults (legacy path — current UI always submits hidden `use_colors=1`).
 - `_save_custom_preset[name]` appends a new `custom_*` preset from current layout; `_rename_custom_preset[id|name]` renames a saved custom preset label.

@@ -76,6 +76,10 @@ $edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_save_custom_preset][name]" id="edminboost_save_custom_preset_name" value="" />
 		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_rename_custom_preset][id]" id="edminboost_rename_custom_preset_id" value="" />
 		<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_rename_custom_preset][name]" id="edminboost_rename_custom_preset_name" value="" />
+		<?php if ( $edminboost_has_matrix ) : ?>
+			<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_role_visibility_sync]" value="1" />
+			<div id="edminboost-role-visibility-hidden-inputs" hidden aria-hidden="true"></div>
+		<?php endif; ?>
 
 		<section class="edminboost-card edminboost-cc-section">
 			<?php
@@ -103,7 +107,14 @@ $edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 								<th scope="col" class="edminboost-role-matrix__preset-col">
 									<?php EDMINBOOST_Setting_Help::echo_icon( 'role_assignments' ); ?><?php esc_html_e( 'Assigned preset', 'edminboost-admin-customization' ); ?>
 								</th>
-								<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_presets_role_matrix_head_partials' ); ?>
+								<?php
+								EDMINBOOST_Admin::include_filtered_partials(
+									'edminboost_presets_role_matrix_head_partials',
+									array(
+										'edminboost_matrix_items' => $edminboost_matrix_items,
+									)
+								);
+								?>
 							</tr>
 						</thead>
 						<tbody>
@@ -140,7 +151,18 @@ $edminboost_has_matrix = ! empty( $edminboost_matrix_items );
 											<?php endforeach; ?>
 										</select>
 									</td>
-									<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_presets_role_matrix_row_partials', $edminboost_role_key ); ?>
+									<?php
+									EDMINBOOST_Admin::include_filtered_partials(
+										'edminboost_presets_role_matrix_row_partials',
+										array(
+											'edminboost_option_name'     => $edminboost_option_name,
+											'edminboost_role_key'        => $edminboost_role_key,
+											'edminboost_role_label'      => $edminboost_role_label,
+											'edminboost_matrix_items'    => $edminboost_matrix_items,
+											'edminboost_role_visibility' => $edminboost_role_visibility,
+										)
+									);
+									?>
 								</tr>
 							<?php endforeach; ?>
 						</tbody>

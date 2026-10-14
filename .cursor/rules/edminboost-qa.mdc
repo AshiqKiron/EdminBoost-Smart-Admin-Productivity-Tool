@@ -14,16 +14,19 @@ Three-layer local QA harness (MAMP). Full guide: `tests/README.md`.
 bin/
   run-phpunit.sh          # MAMP PHP wrapper
   install-wp-tests.sh     # WP test suite bootstrap
-  setup-qa-site.sh        # QA users + plugin symlink
-  build-zip-lib.sh        # shared rsync staging for release zips
+  setup-qa-site.sh        # QA users + plugin symlink; copies edminboost-localhost.sample.php → edminboost-localhost.php when missing
+  edminboost-localhost.sample.php  # local Pro loader template (gitignored copy at plugin root)
+  build-zip-lib.sh        # shared rsync staging for release zips (excludes edminboost-localhost.php)
   build-wporg-zip.sh      # WordPress.org package (excludes includes/pro/, admin/{partials,js,css}/pro/, assets/, docs/)
   build-plugin-zip.sh     # alias → build-wporg-zip.sh (back-compat)
   build-premium-zip.sh    # Premium/Freemius package
   verify-wporg-zip.sh     # fail if Freemius, includes/pro/, admin/{partials,js,css}/pro/, assets/, docs/, .cursor/, stray *.md, wp_org_gatekeeper, or bare is_premium (allows is_premium_build identifiers)
-  verify-premium-zip.sh   # premium zip sanity checks (docs/, .cursor/, product *.md omitted; Freemius SDK README allowed)
+  verify-premium-zip.sh   # premium zip sanity checks (docs/, .cursor/, product *.md omitted; Freemius SDK README allowed; edminboost-localhost.php excluded at rsync — not asserted here)
   make-pot.sh             # regenerate languages/edminboost-admin-customization.pot (composer make-pot)
-  generate-plugin-banners.py / generate-plugin-icons.py / generate-website-heroes.py  # marketing assets
+  generate-plugin-banners.py / generate-plugin-icons.py / generate-website-heroes.py  # marketing assets (heroes → assets/heroes/, optional in repo)
   capture-doc-screenshots.mjs  # optional docs screenshots (Playwright)
+  capture-wporg-screenshots.mjs  # WordPress.org readme screenshots → assets/screenshot-{1..15}.png (free-tier UI; temporarily renames edminboost-localhost.php)
+  seed-wporg-screenshot-demo.php  # WP-CLI eval-file seed for capture script (wizard + demo modes via EDMINBOOST_SCREENSHOT_SEED)
 tests/
   bootstrap.php           # PHPUnit bootstrap
   wp-tests-config.php     # local DB config (gitignored; copy from .sample)
@@ -47,13 +50,16 @@ package.json              # npm run test:e2e
 composer install && npm install
 cp .env.qa.example .env.qa
 cp tests/wp-tests-config.sample.php tests/wp-tests-config.php
-bash bin/setup-qa-site.sh   # one-time
+bash bin/setup-qa-site.sh   # one-time (creates edminboost-localhost.php for full Pro UI in browser)
 
-composer test               # PHPUnit (uses MAMP PHP via bin/run-phpunit.sh)
+composer test               # PHPUnit (uses MAMP PHP via bin/run-phpunit.sh; EDMINBOOST_DISABLE_LOCALHOST — no localhost Pro shim)
 EDMINBOOST_TEST_WPORG=1 composer test   # simulate WP.org build (skip loading includes/pro/edminboost-premium.php)
 npm run test:e2e            # Playwright (PLAYWRIGHT_BROWSERS_PATH=./.playwright-browsers)
 npm run test:e2e:ui         # debug UI
 npm run test:e2e:report     # open HTML report
+
+# WordPress.org plugin screenshots (requires .env.qa, bin/wp-cli.phar from setup-qa-site.sh)
+node bin/capture-wporg-screenshots.mjs   # writes assets/screenshot-*.png; disables localhost Pro shim during capture
 ```
 
 PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from live tables). E2E reads `.env.qa` (`BASE_URL`, `ADMIN_USER`, `ADMIN_PASSWORD`, `EDITOR_USER`, `EDITOR_PASSWORD`, `PLUGIN_SLUG`). `PLUGIN_SLUG` must match `EDMINBOOST_PLUGIN_SLUG` / bootstrap filename (`edminboost-admin-customization`).
@@ -78,7 +84,7 @@ PHPUnit uses table prefix `wptests_` in the `wordpress` database (separate from 
 
 ## Rules
 
-- Never commit `.env.qa`, `tests/wp-tests-config.php`, `tests/e2e/.auth/`, `vendor/`, `node_modules/`, `playwright-report/`, `test-results/`, `.playwright-browsers/`, `.phpunit.result.cache`.
+- Never commit `.env.qa`, `tests/wp-tests-config.php`, `edminboost-localhost.php`, `tests/e2e/.auth/`, `vendor/`, `node_modules/`, `playwright-report/`, `test-results/`, `.playwright-browsers/`, `.phpunit.result.cache`.
 - E2E selectors: prefer stable plugin IDs/classes (`#edminboost-*`, `.edminboost-*`) over wp-admin internals.
 - Add PHPUnit for new sanitization/helpers (e.g. `CommandCenterTest::test_get_page_links`, `test_get_nav_items`, `test_get_billing_plans`, `test_get_billing_comparison_rows`, `test_get_upgrade_url`, `test_get_role_system_presets`, `test_normalize_dashicon_class`, `test_detect_active_layout_preset`, `test_get_picker_presets`, `test_top_bar_items_match`, `test_sanitize_apply_preset_replaces_custom_menu_studio`, `test_get_role_matrix_menu_items_includes_submenus`, `test_role_visibility_sanitization`, `test_apply_role_visibility_hides_submenu_items`; `CommandCenterBarTest::test_get_items_for_current_user_role_visibility`, `test_get_items_for_current_user_respects_saved_role_visibility_override`; `SettingsTest::test_sanitize_dashboard_theme_preset_clears_stale_custom_flag`, `test_sanitize_dashboard_overview_payload_without_features`, `test_sanitize_save_custom_preset_with_name`, `test_sanitize_rename_custom_preset`; `ThemeTest` for preset catalog, custom colors, body classes, theme extras sanitize; `FeaturesTest::test_menu_studio_protected_slugs`, `test_resolve_menu_studio_for_user_preserves_custom_items`, `test_menu_studio_registers_custom_sidebar_links`, `test_menu_studio_use_colors_off_resets_colors_on_save`; `CommandCenterTest::test_get_animation_speed_options` for drawer duration helpers); add Playwright for new admin UI flows (CC tab nav, dashboard overview pickers + live theme preview, billing page plan cards + comparison table `.edminboost-billing-comparison`, Appearance declutter preview `#edminboost-declutter-preview`, theme extras preview `#edminboost-theme-extras-preview`, Top Bar panel/badge controls `#edminboost-mapper-look`, Menu Studio layout/color live previews, Layout Presets role matrix submenu columns `.edminboost-role-matrix__menu-col.is-submenu`, form reset confirm + reload, White Label status preview `#edminboost-wl-status-preview`, Settings export/import `#edminboost-backup-section`); update `tests/manual/regression-matrix.md` for manual-only checks (e.g. CC-B-02 animation speed).
 - Run `composer test` and `npm run test:e2e` before shipping user-facing CC or settings changes.

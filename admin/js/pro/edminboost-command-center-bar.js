@@ -4,11 +4,15 @@
 ( function () {
 	'use strict';
 
-	if ( ! window.edminboostCcBar ) {
-		return;
-	}
+	var config = window.edminboostCcBar || {
+		drawerItems: {},
+		animationMs: 300,
+		iframeTitle: 'Admin page preview'
+	};
 
-	var config        = window.edminboostCcBar;
+	if ( ! config.drawerItems || 'object' !== typeof config.drawerItems ) {
+		config.drawerItems = {};
+	}
 	var animationMs   = parseInt( config.animationMs, 10 ) || 300;
 	var activeItem    = null;
 	var closeTimer    = null;

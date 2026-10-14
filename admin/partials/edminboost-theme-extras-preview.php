@@ -132,5 +132,14 @@ $edminboost_preview_style_vars = sprintf(
 		</div>
 	</div>
 
-	<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_theme_extras_schedule_preview_partials' ); ?>
+	<?php
+	EDMINBOOST_Admin::include_filtered_partials(
+		'edminboost_theme_extras_schedule_preview_partials',
+		array(
+			'edminboost_schedule_enabled' => $edminboost_schedule_enabled,
+			'edminboost_schedule_start'   => $edminboost_schedule_start,
+			'edminboost_schedule_end'     => $edminboost_schedule_end,
+		)
+	);
+	?>
 </div>

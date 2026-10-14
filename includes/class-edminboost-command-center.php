@@ -672,6 +672,11 @@ class EDMINBOOST_Command_Center {
 	 * @return bool
 	 */
 	public static function top_bar_items_match( $left, $right ) {
+		if ( ! apply_filters( 'edminboost_show_topbar_interaction_ui', false ) ) {
+			$left  = self::normalize_top_bar_items_for_preset_match( $left );
+			$right = self::normalize_top_bar_items_for_preset_match( $right );
+		}
+
 		$left_fps  = array();
 		$right_fps = array();
 
@@ -690,6 +695,31 @@ class EDMINBOOST_Command_Center {
 		}
 
 		return $left_fps === $right_fps;
+	}
+
+	/**
+	 * Align top bar items with free-tier stored shape for preset matching.
+	 *
+	 * @param array $items Top bar items.
+	 * @return array
+	 */
+	private static function normalize_top_bar_items_for_preset_match( $items ) {
+		$normalized = array();
+
+		foreach ( (array) $items as $item ) {
+			if ( ! is_array( $item ) || empty( $item['slug'] ) ) {
+				continue;
+			}
+
+			$normalized[] = array(
+				'slug'         => (string) $item['slug'],
+				'anchor'       => isset( $item['anchor'] ) ? (string) $item['anchor'] : '',
+				'interaction'  => 'redirect',
+				'badge_source' => '',
+			);
+		}
+
+		return $normalized;
 	}
 
 	/**
@@ -753,14 +783,30 @@ class EDMINBOOST_Command_Center {
 		$left_enabled  = ! empty( $left['enabled'] );
 		$right_enabled = ! empty( $right['enabled'] );
 
-		if ( $left_enabled !== $right_enabled ) {
-			return false;
-		}
-
-		if ( ! $left_enabled ) {
+		if ( ! $left_enabled && ! $right_enabled ) {
 			return true;
 		}
 
+		// Preset snapshots keep Menu Studio disabled until the user saves that screen.
+		if ( ! $right_enabled ) {
+			return self::menu_studio_sidebar_shape_match( $left, $right );
+		}
+
+		if ( ! $left_enabled ) {
+			return false;
+		}
+
+		return self::menu_studio_sidebar_shape_match( $left, $right );
+	}
+
+	/**
+	 * Compare sidebar order/hidden/custom shape for preset matching.
+	 *
+	 * @param array $left  First menu_studio settings.
+	 * @param array $right Second menu_studio settings.
+	 * @return bool
+	 */
+	private static function menu_studio_sidebar_shape_match( $left, $right ) {
 		$left_order   = isset( $left['order'] ) && is_array( $left['order'] ) ? $left['order'] : array();
 		$right_order  = isset( $right['order'] ) && is_array( $right['order'] ) ? $right['order'] : array();
 		$left_hidden  = isset( $left['hidden_items'] ) && is_array( $left['hidden_items'] ) ? $left['hidden_items'] : array();
@@ -1444,9 +1490,6 @@ class EDMINBOOST_Command_Center {
 			return $visible;
 		}
 
-		$order  = isset( $menu_studio['order'] ) && is_array( $menu_studio['order'] )
-			? $menu_studio['order']
-			: array();
 		$hidden = isset( $menu_studio['hidden_items'] ) && is_array( $menu_studio['hidden_items'] )
 			? $menu_studio['hidden_items']
 			: array();
@@ -1457,7 +1500,7 @@ class EDMINBOOST_Command_Center {
 			}
 
 			$top_slug = (string) $item['slug'];
-			if ( ! in_array( $top_slug, $order, true ) || in_array( $top_slug, $hidden, true ) ) {
+			if ( in_array( $top_slug, $hidden, true ) ) {
 				continue;
 			}
 
@@ -1468,8 +1511,13 @@ class EDMINBOOST_Command_Center {
 			}
 
 			foreach ( $item['children'] as $child ) {
-				if ( ! empty( $child['slug'] ) ) {
-					$visible[] = (string) $child['slug'];
+				if ( empty( $child['slug'] ) ) {
+					continue;
+				}
+
+				$child_slug = (string) $child['slug'];
+				if ( ! in_array( $child_slug, $hidden, true ) ) {
+					$visible[] = $child_slug;
 				}
 			}
 		}
@@ -1805,21 +1853,9 @@ class EDMINBOOST_Command_Center {
 			}
 		}
 
-		$hidden = array();
-
-		foreach ( $top_slugs as $slug ) {
-			if ( in_array( $slug, $protected, true ) ) {
-				continue;
-			}
-
-			if ( ! in_array( $slug, $resolved_visible, true ) ) {
-				$hidden[] = $slug;
-			}
-		}
-
-		$merged['enabled']       = true;
+		$merged['enabled']       = false;
 		$merged['order']         = $resolved_visible;
-		$merged['hidden_items']  = $hidden;
+		$merged['hidden_items']  = array();
 		$merged['submenu_order'] = array();
 		$merged['custom_items']  = array();
 

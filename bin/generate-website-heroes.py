@@ -32,6 +32,8 @@ HERO_CONCEPTS: tuple[tuple[str, banners.BannerFn], ...] = (
     ("hero-13-wizard-live", banners.banner_wizard_live),
 )
 
+WEBSITE_STACK_HERO = ("hero-14-one-plugin-stack", banners.banner_website_one_plugin_stack, 900, 500)
+
 
 def main() -> None:
     HEROES_DIR.mkdir(parents=True, exist_ok=True)
@@ -42,6 +44,12 @@ def main() -> None:
         img = banners._render_banner(draw_fn, HERO_W, HERO_H)
         banners._save_png(img, path)
         print(f"Wrote {path}")
+
+    folder, draw_fn, ww, wh = WEBSITE_STACK_HERO
+    stack_path = HEROES_DIR / folder / f"hero-{ww}x{wh}.png"
+    stack_img = banners._render_website_hero_light(draw_fn, ww, wh)
+    banners._save_png(stack_img, stack_path)
+    print(f"Wrote {stack_path}")
 
 
 if __name__ == "__main__":

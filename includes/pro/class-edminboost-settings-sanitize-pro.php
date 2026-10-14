@@ -73,7 +73,14 @@ class EDMINBOOST_Settings_Sanitize_Pro {
 				$output['behavior'] = self::sanitize_behavior( $skins[ $skin_id ]['behavior'] );
 			}
 		} elseif ( isset( $raw['behavior'] ) && is_array( $raw['behavior'] ) ) {
-			$output['behavior'] = self::sanitize_behavior( $raw['behavior'] );
+			if ( ! empty( $raw['_layout_studio_save'] ) && ! self::raw_top_bar_has_drawer_interaction( $raw ) ) {
+				// Top Bar save without drawer links — keep stored panel/badge settings.
+			} else {
+				$output['behavior'] = self::sanitize_behavior(
+					$raw['behavior'],
+					isset( $output['behavior'] ) && is_array( $output['behavior'] ) ? $output['behavior'] : null
+				);
+			}
 		}
 
 		if ( isset( $raw['theme'] ) && is_array( $raw['theme'] ) && isset( $output['theme'] ) && is_array( $output['theme'] ) ) {
@@ -237,14 +244,39 @@ class EDMINBOOST_Settings_Sanitize_Pro {
 	}
 
 	/**
+	 * Whether raw Command Center input includes a drawer top bar item.
+	 *
+	 * @param array $raw Raw command_center input.
+	 * @return bool
+	 */
+	private static function raw_top_bar_has_drawer_interaction( $raw ) {
+		if ( empty( $raw['top_bar_items'] ) || ! is_array( $raw['top_bar_items'] ) ) {
+			return false;
+		}
+
+		foreach ( $raw['top_bar_items'] as $item ) {
+			if ( ! is_array( $item ) || empty( $item['interaction'] ) ) {
+				continue;
+			}
+
+			if ( 'drawer' === sanitize_key( $item['interaction'] ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
 	 * Sanitize behavior settings including drawer panel and badge styling.
 	 *
-	 * @param array $raw Raw behavior input.
+	 * @param array      $raw     Raw behavior input.
+	 * @param array|null $current Stored behavior to merge (null = defaults only).
 	 * @return array
 	 */
-	private static function sanitize_behavior( $raw ) {
+	private static function sanitize_behavior( $raw, $current = null ) {
 		$defaults = EDMINBOOST_Command_Center::get_defaults()['behavior'];
-		$output   = $defaults;
+		$output   = is_array( $current ) ? wp_parse_args( $current, $defaults ) : $defaults;
 
 		$allowed_widths = array( 'compact', 'standard', 'fullscreen', 'custom' );
 		if ( isset( $raw['drawer_width'] ) ) {

@@ -58,6 +58,115 @@
 		return !!( window.edminboostData && window.edminboostData.hasLicensedAdminUi );
 	}
 
+	function parseAdminAjaxResponse( response, options ) {
+		options = options || {};
+		var fallbackMessage = options.fallbackMessage
+			|| ( edminboostData.strings && edminboostData.strings.settingsSaveFailed )
+			|| 'Could not save settings. Please try again.';
+		var sessionMessage = edminboostData.strings && edminboostData.strings.sessionExpired
+			? edminboostData.strings.sessionExpired
+			: 'Your session expired. Refresh the page and log in again.';
+
+		return response.text().then( function ( body ) {
+			var trimmed = ( body || '' ).trim();
+
+			if ( ! trimmed ) {
+				if ( ! response.ok ) {
+					throw new Error( fallbackMessage );
+				}
+				throw new Error( fallbackMessage );
+			}
+
+			if ( '0' === trimmed || '-1' === trimmed ) {
+				throw new Error( sessionMessage );
+			}
+
+			var payload;
+
+			try {
+				payload = JSON.parse( trimmed );
+			} catch ( parseError ) {
+				throw new Error( fallbackMessage );
+			}
+
+			if ( ! payload || 'object' !== typeof payload || Array.isArray( payload ) ) {
+				throw new Error( fallbackMessage );
+			}
+
+			return payload;
+		} );
+	}
+
+	function mergeDrawerPreviewConfig( data ) {
+		if ( ! data || ! window.edminboostData ) {
+			return;
+		}
+
+		if ( data.drawerPreview ) {
+			window.edminboostData.drawerPreview = Object.assign(
+				{},
+				window.edminboostData.drawerPreview || {},
+				data.drawerPreview
+			);
+		}
+
+		if ( data.drawerNonce && window.edminboostData.drawerPreview ) {
+			window.edminboostData.drawerPreview.nonce = data.drawerNonce;
+		}
+
+		if ( data.drawerContextNonce && window.edminboostData.drawerPreview ) {
+			window.edminboostData.drawerPreview.contextNonce = data.drawerContextNonce;
+		}
+	}
+
+	function syncDependentSection( section, isEnabled ) {
+		if ( ! section ) {
+			return;
+		}
+
+		section.classList.toggle( 'is-disabled', ! isEnabled );
+		section.setAttribute( 'aria-disabled', isEnabled ? 'false' : 'true' );
+
+		section.querySelectorAll( 'input, textarea, select, button, a[href]' ).forEach( function ( control ) {
+			if ( isEnabled ) {
+				if ( Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentDisabled' ) ) {
+					control.disabled = false;
+					delete control.dataset.edminboostDependentDisabled;
+				}
+
+				if ( Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
+					if ( '' === control.dataset.edminboostDependentTabindex ) {
+						control.removeAttribute( 'tabindex' );
+					} else {
+						control.setAttribute( 'tabindex', control.dataset.edminboostDependentTabindex );
+					}
+
+					delete control.dataset.edminboostDependentTabindex;
+				}
+
+				control.removeAttribute( 'aria-disabled' );
+				return;
+			}
+
+			if (
+				( 'INPUT' === control.tagName || 'TEXTAREA' === control.tagName || 'SELECT' === control.tagName || 'BUTTON' === control.tagName )
+				&& ! control.disabled
+			) {
+				control.disabled = true;
+				control.dataset.edminboostDependentDisabled = '1';
+			}
+
+			if ( ! Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
+				control.dataset.edminboostDependentTabindex = control.getAttribute( 'tabindex' ) || '';
+			}
+
+			control.setAttribute( 'tabindex', '-1' );
+			control.setAttribute( 'aria-disabled', 'true' );
+		} );
+	}
+
+	window.edminboostSyncDependentSection = syncDependentSection;
+
 	function getOverviewPreviewStrings() {
 		var strings = edminboostData.strings || {};
 
@@ -397,7 +506,7 @@
 				signal: controller.signal
 			} )
 				.then( function ( response ) {
-					return response.json();
+					return parseAdminAjaxResponse( response );
 				} )
 				.then( function ( payload ) {
 					if ( ! payload.success ) {
@@ -440,13 +549,7 @@
 						edminboostData.ccNav.nonce = data.ccNavNonce;
 					}
 
-					if ( data.drawerNonce && edminboostData.drawerPreview ) {
-						edminboostData.drawerPreview.nonce = data.drawerNonce;
-					}
-
-					if ( data.drawerContextNonce && edminboostData.drawerPreview ) {
-						edminboostData.drawerPreview.contextNonce = data.drawerContextNonce;
-					}
+					mergeDrawerPreviewConfig( data );
 
 					reinitEdminboostPage( newWrap );
 
@@ -1117,17 +1220,31 @@
 			} );
 		} );
 
+		function resolveSelectedTopBarItem() {
+			if ( selectedItem ) {
+				return selectedItem;
+			}
+
+			return canvas.querySelector( '.edminboost-topbar-item.is-selected' );
+		}
+
 		var previewBtn = document.getElementById( 'edminboost-drawer-preview' );
 		if ( previewBtn ) {
 			previewBtn.addEventListener( 'click', function () {
-				if ( ! selectedItem ) {
+				var item = resolveSelectedTopBarItem();
+				if ( ! item ) {
 					return;
 				}
 
 				var preview = window.edminboostData && window.edminboostData.drawerPreview;
 				var strings = ( window.edminboostData && window.edminboostData.strings ) || {};
 
-				if ( ! preview || typeof window.edminboostCcOpenDrawer !== 'function' ) {
+				if ( ! preview ) {
+					window.alert( strings.drawerPreviewFailed || 'Could not open the drawer preview.' );
+					return;
+				}
+
+				if ( typeof window.edminboostCcOpenDrawer !== 'function' ) {
 					window.alert( strings.drawerPreviewFailed || 'Could not open the drawer preview.' );
 					return;
 				}
@@ -1135,9 +1252,9 @@
 				var formData = new window.FormData();
 				formData.append( 'action', preview.action );
 				formData.append( 'nonce', preview.nonce );
-				formData.append( 'slug', selectedItem.dataset.slug || '' );
-				formData.append( 'anchor', selectedItem.dataset.anchor || '' );
-				formData.append( 'label', selectedItem.dataset.label || '' );
+				formData.append( 'slug', item.dataset.slug || '' );
+				formData.append( 'anchor', item.dataset.anchor || '' );
+				formData.append( 'label', item.dataset.label || '' );
 				formData.append( 'mapper_context_nonce', preview.contextNonce || '' );
 
 				previewBtn.disabled = true;
@@ -1148,9 +1265,15 @@
 					credentials: 'same-origin'
 				} )
 					.then( function ( response ) {
-						return response.json();
+						return parseAdminAjaxResponse( response, {
+							fallbackMessage: strings.drawerPreviewFailed || 'Could not open the drawer preview.'
+						} );
 					} )
 					.then( function ( payload ) {
+						if ( payload.data && ( payload.data.drawerNonce || payload.data.drawerContextNonce ) ) {
+							mergeDrawerPreviewConfig( payload.data );
+						}
+
 						if ( ! payload.success || ! payload.data ) {
 							var message = payload.data && payload.data.message
 								? payload.data.message
@@ -1159,6 +1282,11 @@
 						}
 
 						window.edminboostCcOpenDrawer( payload.data );
+
+						var drawerEl = document.getElementById( 'edminboost-cc-drawer' );
+						if ( ! drawerEl || ! drawerEl.classList.contains( 'is-open' ) ) {
+							throw new Error( strings.drawerPreviewFailed || 'Could not open the drawer preview.' );
+						}
 					} )
 					.catch( function ( error ) {
 						window.alert( error.message || strings.drawerPreviewFailed || 'Could not open the drawer preview.' );
@@ -1649,6 +1777,18 @@
 			} );
 		} );
 
+		function syncDiscoveredFromCanvas() {
+			discovered.querySelectorAll( '.edminboost-discovered-item' ).forEach( function ( row ) {
+				var slug = row.dataset.slug || '';
+				if ( ! slug ) {
+					return;
+				}
+
+				var onCanvas = !!canvas.querySelector( '.edminboost-sidebar-item[data-slug="' + slug + '"]' );
+				setDiscoveredVisible( slug, onCanvas );
+			} );
+		}
+
 		function allowCanvasDrop( event ) {
 			if ( ! dragItem && ! dragPayload ) {
 				return;
@@ -1961,6 +2101,7 @@
 		applyColorPreview();
 		form.addEventListener( 'submit', syncHiddenInputs, true );
 		form.edminboostSyncHiddenInputs = syncHiddenInputs;
+		syncDiscoveredFromCanvas();
 		syncHiddenInputs();
 		updateEmptyState();
 	}
@@ -2231,36 +2372,6 @@
 			syncAssetsPreview();
 		}
 	}
-
-	function syncDependentSection( section, isEnabled ) {
-		section.classList.toggle( 'is-disabled', ! isEnabled );
-		section.setAttribute( 'aria-disabled', isEnabled ? 'false' : 'true' );
-
-		section.querySelectorAll( 'input, textarea, select, button, a[href]' ).forEach( function ( control ) {
-			if ( isEnabled ) {
-				if ( Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
-					if ( '' === control.dataset.edminboostDependentTabindex ) {
-						control.removeAttribute( 'tabindex' );
-					} else {
-						control.setAttribute( 'tabindex', control.dataset.edminboostDependentTabindex );
-					}
-
-					delete control.dataset.edminboostDependentTabindex;
-				}
-
-				control.removeAttribute( 'aria-disabled' );
-				return;
-			}
-
-			if ( ! Object.prototype.hasOwnProperty.call( control.dataset, 'edminboostDependentTabindex' ) ) {
-				control.dataset.edminboostDependentTabindex = control.getAttribute( 'tabindex' ) || '';
-			}
-
-			control.setAttribute( 'tabindex', '-1' );
-			control.setAttribute( 'aria-disabled', 'true' );
-		} );
-	}
-
 
 	function initTheme( root ) {
 		var presetSelect   = document.getElementById( 'edminboost_theme_preset' );
@@ -3245,6 +3356,8 @@
 			}
 		}
 
+		mergeDrawerPreviewConfig( data );
+
 		if ( data.setup_complete && form && form.id === 'edminboost-setup-wizard-form' && loadCommandCenterPageRef ) {
 			loadCommandCenterPageRef(
 				edminboostData.currentPage,
@@ -3288,7 +3401,7 @@
 			credentials: 'same-origin'
 		} )
 			.then( function ( response ) {
-				return response.json();
+				return parseAdminAjaxResponse( response );
 			} )
 			.then( function ( payload ) {
 				if ( ! payload.success ) {
@@ -5067,6 +5180,54 @@
 		}
 
 		syncRolePresetSelectsFn = syncRolePresetSelects;
+
+		function syncRoleVisibilityHiddenInputs() {
+			var container = document.getElementById( 'edminboost-role-visibility-hidden-inputs' );
+
+			if ( ! container ) {
+				return;
+			}
+
+			container.textContent = '';
+			var optionName = edminboostData.optionName || 'edminboost_settings';
+
+			matrix.querySelectorAll( '.edminboost-role-matrix__row' ).forEach( function ( row ) {
+				var roleKey = getRoleKey( row );
+
+				if ( ! roleKey ) {
+					return;
+				}
+
+				row.querySelectorAll( '.edminboost-role-matrix__check input[type="checkbox"]:not(:disabled)' ).forEach( function ( input ) {
+					if ( input.checked ) {
+						return;
+					}
+
+					var slug = input.value || input.getAttribute( 'data-item-slug' ) || '';
+
+					if ( ! slug ) {
+						return;
+					}
+
+					var hidden = document.createElement( 'input' );
+					hidden.type = 'hidden';
+					hidden.name = optionName + '[command_center][role_visibility][' + roleKey + '][]';
+					hidden.value = slug;
+					container.appendChild( hidden );
+				} );
+			} );
+		}
+
+		var previousSyncHiddenInputs = form.edminboostSyncHiddenInputs;
+		form.edminboostSyncHiddenInputs = function () {
+			syncRoleVisibilityHiddenInputs();
+
+			if ( typeof previousSyncHiddenInputs === 'function' ) {
+				previousSyncHiddenInputs();
+			}
+		};
 	}
+
+	window.edminboostParseAdminAjaxResponse = parseAdminAjaxResponse;
 
 } )();

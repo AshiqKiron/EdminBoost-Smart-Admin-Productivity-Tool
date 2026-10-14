@@ -71,3 +71,4 @@ Cross-cutting quality standards. See also: `edminboost-project.mdc` (architectur
 - Include license headers.
 - Include versioning (`EDMINBOOST_VERSION` + plugin header).
 - Ensure the plugin is complete and stable enough for review.
+- Never commit gitignored `edminboost-localhost.php` (local Pro QA only — copy `bin/edminboost-localhost.sample.php` or run `bin/setup-qa-site.sh`; omitted from release zips via `bin/build-zip-lib.sh`).

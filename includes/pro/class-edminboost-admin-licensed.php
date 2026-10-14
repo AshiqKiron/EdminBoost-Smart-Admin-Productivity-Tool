@@ -26,6 +26,7 @@ class EDMINBOOST_Admin_Licensed {
 		add_filter( 'edminboost_should_sanitize_white_label', array( __CLASS__, 'filter_should_sanitize_white_label' ) );
 		add_filter( 'edminboost_admin_script_data', array( __CLASS__, 'filter_admin_script_data' ), 10, 2 );
 		add_filter( 'edminboost_cc_nav_ajax_response', array( __CLASS__, 'filter_cc_nav_ajax_response' ), 10, 2 );
+		add_filter( 'edminboost_ajax_save_response', array( __CLASS__, 'filter_ajax_save_response' ), 10, 2 );
 		add_action( 'edminboost_enqueue_licensed_admin_scripts', array( __CLASS__, 'enqueue_scripts' ), 10, 2 );
 		add_filter( 'plugin_action_links_' . EDMINBOOST_PLUGIN_BASENAME, array( __CLASS__, 'add_settings_link' ) );
 		add_action( 'wp_ajax_edminboost_export_settings', array( __CLASS__, 'ajax_export_settings' ) );
@@ -284,12 +285,7 @@ class EDMINBOOST_Admin_Licensed {
 			'protectedSlugsByRole'  => EDMINBOOST_Command_Center::get_protected_slugs_by_role(),
 			'accessibleSlugsByRole' => EDMINBOOST_Command_Center::get_role_accessible_menu_slugs(),
 		);
-		$localize['drawerPreview']      = array(
-			'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
-			'action'       => 'edminboost_cc_drawer_preview',
-			'nonce'        => wp_create_nonce( 'edminboost_cc_drawer_preview' ),
-			'contextNonce' => wp_create_nonce( 'edminboost_cc_mapper_context' ),
-		);
+		$localize['drawerPreview']      = self::get_drawer_preview_localize();
 		$localize['strings']            = array_merge(
 			isset( $localize['strings'] ) && is_array( $localize['strings'] ) ? $localize['strings'] : array(),
 			array(
@@ -330,8 +326,36 @@ class EDMINBOOST_Admin_Licensed {
 	 * @return array
 	 */
 	public static function filter_cc_nav_ajax_response( $response, $page ) {
-		unset( $page );
+		$response = self::merge_drawer_preview_ajax_nonces( $response );
 
+		if (
+			EDMINBOOST_Pro::has_licensed_admin_ui()
+			&& EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER === $page
+		) {
+			$response['drawerPreview'] = self::get_drawer_preview_localize();
+		}
+
+		return $response;
+	}
+
+	/**
+	 * @param array $response AJAX success payload.
+	 * @param array $cc_raw   Raw command_center input (unused).
+	 * @return array
+	 */
+	public static function filter_ajax_save_response( $response, $cc_raw ) {
+		unset( $cc_raw );
+
+		return self::merge_drawer_preview_ajax_nonces( $response );
+	}
+
+	/**
+	 * Append fresh drawer preview nonces for Layout Studio AJAX.
+	 *
+	 * @param array $response AJAX success payload.
+	 * @return array
+	 */
+	private static function merge_drawer_preview_ajax_nonces( $response ) {
 		if ( ! EDMINBOOST_Pro::has_licensed_admin_ui() ) {
 			return $response;
 		}
@@ -340,6 +364,20 @@ class EDMINBOOST_Admin_Licensed {
 		$response['drawerContextNonce'] = wp_create_nonce( 'edminboost_cc_mapper_context' );
 
 		return $response;
+	}
+
+	/**
+	 * Localized drawer preview AJAX config for Layout Studio (Top Bar).
+	 *
+	 * @return array<string, string>
+	 */
+	public static function get_drawer_preview_localize() {
+		return array(
+			'ajaxUrl'      => admin_url( 'admin-ajax.php' ),
+			'action'       => 'edminboost_cc_drawer_preview',
+			'nonce'        => wp_create_nonce( 'edminboost_cc_drawer_preview' ),
+			'contextNonce' => wp_create_nonce( 'edminboost_cc_mapper_context' ),
+		);
 	}
 
 	/**

@@ -59,6 +59,92 @@ def _banner_gradient(w: int, h: int) -> Image.Image:
     return strip.resize((w, h), Image.Resampling.LANCZOS)
 
 
+WEBSITE_HERO_TOP = (248, 250, 252, 255)
+WEBSITE_HERO_BOTTOM = (226, 232, 240, 255)
+WEBSITE_HERO_TEXT = (15, 23, 42, 255)
+WEBSITE_HERO_TEXT_MUTED = (71, 85, 105, 255)
+
+
+def _website_hero_light_gradient(w: int, h: int) -> Image.Image:
+    strip = Image.new("RGBA", (1, h))
+    px = strip.load()
+    top = WEBSITE_HERO_TOP
+    bottom = WEBSITE_HERO_BOTTOM
+    denom = max(h - 1, 1)
+    for y in range(h):
+        t = y / denom
+        px[0, y] = tuple(_i(top[i] * (1 - t) + bottom[i] * t) for i in range(3)) + (255,)
+    return strip.resize((w, h), Image.Resampling.LANCZOS)
+
+
+def _draw_tagline_on_light(
+    draw: ImageDraw.ImageDraw,
+    w: int,
+    h: int,
+    lines: tuple[str, ...],
+    *,
+    align: str = "left",
+    margin_x: float = 0.05,
+    margin_y: float = 0.1,
+    size_ratio: float = 0.052,
+) -> None:
+    if not lines:
+        return
+    fs = max(14, _i(h * size_ratio))
+    font = _font(fs)
+    font_sub = _font(max(12, _i(fs * 0.72)), bold=False)
+    mx = _i(w * margin_x)
+    gap = _i(h * 0.035)
+    line_gap = _i(h * 0.045)
+    fonts = [font] + [font_sub] * (len(lines) - 1)
+    fills = [WEBSITE_HERO_TEXT] + [WEBSITE_HERO_TEXT_MUTED] * (len(lines) - 1)
+    y = _i(h * margin_y)
+    x_anchor = mx if align == "left" else w - mx
+
+    for i, line in enumerate(lines):
+        f = fonts[i]
+        tw, th = _text_wh(draw, line, f)
+        if align == "left":
+            x = x_anchor
+        else:
+            x = x_anchor - tw
+        draw.text((x, y), line, fill=fills[i], font=f)
+        if i == 0:
+            ly = y + th + gap
+            lw = min(tw, _i(w * 0.32))
+            _rr(draw, (x, ly, x + lw, ly + max(3, _i(h * 0.012))), 2, ACCENT)
+        y += th + line_gap
+
+
+def _draw_generic_plugin_tile(
+    draw: ImageDraw.ImageDraw,
+    x0: int,
+    y0: int,
+    size: int,
+    *,
+    alpha: int = 255,
+) -> tuple[int, int]:
+    """Puzzle-style plugin tile; returns center point."""
+    base = (148, 163, 184, alpha)
+    inner = (203, 213, 225, min(255, alpha + 20))
+    r = _i(size * 0.2)
+    _rr(draw, (x0, y0, x0 + size, y0 + size), r, base)
+    tab = _i(size * 0.22)
+    _rr(
+        draw,
+        (x0 + _i(size * 0.38), y0 - tab // 2, x0 + _i(size * 0.62), y0 + tab // 2),
+        _i(tab * 0.35),
+        base,
+    )
+    bar_h = _i(size * 0.08)
+    bx0 = x0 + _i(size * 0.18)
+    bx1 = x0 + size - _i(size * 0.18)
+    by = y0 + _i(size * 0.42)
+    _rr(draw, (bx0, by, bx1, by + bar_h), _i(bar_h * 0.4), inner)
+    _rr(draw, (bx0, by + bar_h + _i(size * 0.06), bx1 - _i(size * 0.12), by + bar_h * 2), _i(bar_h * 0.35), inner)
+    return x0 + size // 2, y0 + size // 2
+
+
 def _font(size: int, bold: bool = True) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
     candidates = (
         "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
@@ -466,6 +552,109 @@ def banner_stack_replacement(img: Image.Image, draw: ImageDraw.ImageDraw, w: int
     )
 
 
+def banner_website_one_plugin_stack(img: Image.Image, draw: ImageDraw.ImageDraw, w: int, h: int) -> None:
+    """Website hero (light): many gray plugins fold into one EdminBoost hub + admin mock."""
+    _draw_tagline_on_light(
+        draw,
+        w,
+        h,
+        (
+            "Replace the admin customization stack.",
+            "Layouts, appearance, menu control",
+            "and productivity—one Command Center.",
+        ),
+        margin_x=0.05,
+        margin_y=0.08,
+        size_ratio=0.046,
+    )
+
+    tile = _i(h * 0.105)
+    gap = _i(h * 0.022)
+    stack_x = _i(w * 0.06)
+    stack_y0 = _i(h * 0.42)
+    centers: list[tuple[int, int]] = []
+    for i in range(5):
+        ox = stack_x + (i % 2) * _i(tile * 0.28)
+        oy = stack_y0 + i * (tile + gap)
+        alpha = max(90, 255 - i * 32)
+        centers.append(_draw_generic_plugin_tile(draw, ox, oy, tile, alpha=alpha))
+
+    hub_cx = _i(w * 0.36)
+    hub_cy = _i(h * 0.68)
+    hub_r = _i(h * 0.11)
+    for cx, cy in centers:
+        draw.line([(cx, cy), (hub_cx, hub_cy)], fill=(148, 163, 184, 140), width=max(2, _i(h * 0.006)))
+
+    glow = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+    gd = ImageDraw.Draw(glow)
+    for alpha, radius in ((36, hub_r), (22, _i(hub_r * 1.35))):
+        gd.ellipse(
+            (hub_cx - radius, hub_cy - radius, hub_cx + radius, hub_cy + radius),
+            fill=(ACCENT[0], ACCENT[1], ACCENT[2], alpha),
+        )
+    img.alpha_composite(glow)
+
+    _rr(draw, (hub_cx - hub_r, hub_cy - hub_r, hub_cx + hub_r, hub_cy + hub_r), hub_r, SURFACE, ACCENT, max(3, _i(h * 0.008)))
+    _draw_gear(
+        draw,
+        hub_cx,
+        hub_cy,
+        hub_r * 0.62,
+        hub_r * 0.48,
+        hub_r * 0.16,
+        10,
+        ACCENT,
+        ACCENT_DIM,
+        SURFACE,
+        max(2, _i(h * 0.006)),
+    )
+
+    fs = max(11, _i(h * 0.034))
+    label = _font(fs, bold=False)
+    lt = "EdminBoost"
+    tw, _ = _text_wh(draw, lt, label)
+    draw.text((hub_cx - tw // 2, hub_cy + hub_r + _i(h * 0.02)), lt, fill=WEBSITE_HERO_TEXT_MUTED, font=label)
+
+    ui_pad = _i(w * 0.03)
+    ui_x0 = _i(w * 0.48)
+    ui_y0 = _i(h * 0.14)
+    ui_x1 = w - ui_pad
+    ui_y1 = h - _i(h * 0.1)
+    chrome_h = _i(h * 0.075)
+    sh = max(3, _i(h * 0.014))
+    _rr(
+        draw,
+        (ui_x0 + sh, ui_y0 + sh, ui_x1 + sh, ui_y1 + sh),
+        _i(h * 0.035),
+        (148, 163, 184, 80),
+    )
+    _rr(draw, (ui_x0, ui_y0, ui_x1, ui_y1), _i(h * 0.035), SURFACE, outline=DIVIDER, width=max(2, _i(h * 0.004)))
+    _draw_browser_chrome(draw, w, h, ui_x0, ui_y0, ui_x1, chrome_h)
+    inner = (ui_x0 + _i(w * 0.012), ui_y0 + chrome_h + _i(h * 0.012), ui_x1 - _i(w * 0.012), ui_y1 - _i(h * 0.012))
+    _paste_concept(img, icons.draw_option_g_tune_admin, inner)
+
+    chip_fs = max(10, _i(h * 0.028))
+    chip_font = _font(chip_fs, bold=False)
+    chips = ("Menu Studio", "Themes", "Top bar", "Productivity")
+    chip_y = ui_y1 + _i(h * 0.018)
+    chip_x = ui_x0
+    chip_gap = _i(w * 0.014)
+    for chip in chips:
+        tw, th = _text_wh(draw, chip, chip_font)
+        pad_x = _i(w * 0.012)
+        pad_y = _i(h * 0.012)
+        _rr(
+            draw,
+            (chip_x, chip_y, chip_x + tw + pad_x * 2, chip_y + th + pad_y * 2),
+            _i(h * 0.018),
+            SURFACE,
+            outline=DIVIDER,
+            width=max(1, _i(h * 0.003)),
+        )
+        draw.text((chip_x + pad_x, chip_y + pad_y), chip, fill=WEBSITE_HERO_TEXT_MUTED, font=chip_font)
+        chip_x += tw + pad_x * 2 + chip_gap
+
+
 def banner_role_split(img: Image.Image, draw: ImageDraw.ImageDraw, w: int, h: int) -> None:
     pad_x = _i(w * 0.04)
     pad_y = _i(h * 0.16)
@@ -792,6 +981,17 @@ def _render_banner(draw_fn: BannerFn, out_w: int, out_h: int) -> Image.Image:
     sw = out_w * SUPERSAMPLE
     sh = out_h * SUPERSAMPLE
     img = _banner_gradient(sw, sh)
+    draw = ImageDraw.Draw(img, "RGBA")
+    draw_fn(img, draw, sw, sh)
+    return img.resize((out_w, out_h), Image.Resampling.LANCZOS).filter(
+        ImageFilter.UnsharpMask(radius=1.0, percent=120, threshold=2)
+    )
+
+
+def _render_website_hero_light(draw_fn: BannerFn, out_w: int, out_h: int) -> Image.Image:
+    sw = out_w * SUPERSAMPLE
+    sh = out_h * SUPERSAMPLE
+    img = _website_hero_light_gradient(sw, sh)
     draw = ImageDraw.Draw(img, "RGBA")
     draw_fn(img, draw, sw, sh)
     return img.resize((out_w, out_h), Image.Resampling.LANCZOS).filter(

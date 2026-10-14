@@ -348,7 +348,15 @@ $edminboost_show_theme_extras = isset( $edminboost_show_theme_extras ) ? (bool) 
 				</div>
 			</fieldset>
 
-			<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_theme_settings_schedule_partials' ); ?>
+			<?php
+			EDMINBOOST_Admin::include_filtered_partials(
+				'edminboost_theme_settings_schedule_partials',
+				array(
+					'edminboost_theme_key' => $edminboost_theme_key,
+					'edminboost_theme'     => $edminboost_theme,
+				)
+			);
+			?>
 
 			<fieldset class="edminboost-fieldset edminboost-theme-extras-group">
 				<legend><?php EDMINBOOST_Setting_Help::echo_icon( 'theme_status_colors' ); ?><?php esc_html_e( 'Post status row colors', 'edminboost-admin-customization' ); ?></legend>

@@ -9,6 +9,12 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( defined( 'EDMINBOOST_PRO_PACKAGE_LOADED' ) ) {
+	return;
+}
+
+define( 'EDMINBOOST_PRO_PACKAGE_LOADED', true );
+
 require_once dirname( __DIR__ ) . '/features/class-edminboost-feature-base.php';
 require_once __DIR__ . '/class-edminboost-white-label.php';
 require_once __DIR__ . '/features/class-edminboost-login-redirects.php';

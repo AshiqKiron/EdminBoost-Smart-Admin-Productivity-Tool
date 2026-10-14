@@ -218,7 +218,15 @@ foreach ( $edminboost_top_bar_items as $edminboost_item ) {
 					?>
 				</section>
 
-				<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_mapper_after_canvas_partials' ); ?>
+				<?php
+				EDMINBOOST_Admin::include_filtered_partials(
+					'edminboost_mapper_after_canvas_partials',
+					array(
+						'edminboost_behavior' => $edminboost_behavior,
+						'edminboost_cc_key'   => $edminboost_cc_key,
+					)
+				);
+				?>
 
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
 				<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_layout_studio_save]" value="1" />

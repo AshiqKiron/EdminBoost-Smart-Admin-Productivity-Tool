@@ -210,7 +210,16 @@ $edminboost_admin_footer_options_aria  = $edminboost_admin_footer_enabled ? 'fal
 	<?php endforeach; ?>
 </fieldset>
 
-	<?php EDMINBOOST_Admin::include_filtered_partials( 'edminboost_security_page_extra_partials' ); ?>
+	<?php
+	EDMINBOOST_Admin::include_filtered_partials(
+		'edminboost_security_page_extra_partials',
+		array(
+			'edminboost_features_key' => $edminboost_features_key,
+			'edminboost_features'     => $edminboost_features,
+			'edminboost_roles'        => $edminboost_roles,
+		)
+	);
+	?>
 <?php endif; ?>
 
 <?php if ( 'performance' === $edminboost_section ) : ?>

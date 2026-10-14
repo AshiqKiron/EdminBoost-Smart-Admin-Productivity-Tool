@@ -12,6 +12,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
+if ( ! isset( $edminboost_behavior ) || ! is_array( $edminboost_behavior ) ) {
+	$edminboost_behavior = EDMINBOOST_Command_Center::get_defaults()['behavior'];
+}
+
+if ( empty( $edminboost_cc_key ) ) {
+	$edminboost_cc_key = EDMINBOOST_Settings::OPTION_NAME . '[command_center][behavior]';
+}
+
 // Included partial expects `$behavior` and `$cc_key` in parent scope.
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
 $behavior = $edminboost_behavior;

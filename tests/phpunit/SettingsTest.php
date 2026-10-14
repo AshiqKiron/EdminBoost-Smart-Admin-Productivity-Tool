@@ -11,6 +11,56 @@
 class SettingsTest extends Edminboost_Test_Case {
 
 	/**
+	 * Fresh install defaults keep wp-admin unchanged until the user opts in.
+	 */
+	public function test_defaults_keep_plugin_disabled() {
+		$defaults = EDMINBOOST_Settings::get_defaults();
+
+		$this->assertFalse( $defaults['enabled'] );
+
+		EDMINBOOST_Activator::activate();
+
+		$stored = get_option( EDMINBOOST_Settings::OPTION_NAME, array() );
+		$this->assertIsArray( $stored );
+		$this->assertFalse( $stored['enabled'] );
+		$this->assertFalse( $defaults['command_center']['menu_studio']['enabled'] );
+		$this->assertFalse( $stored['command_center']['menu_studio']['enabled'] );
+		$this->assertFalse( EDMINBOOST_Settings::is_enabled() );
+		$this->assertFalse( EDMINBOOST_Theme::is_active() );
+
+		$expected_preset = $defaults['command_center']['default_preset'];
+		$this->assertSame( $expected_preset, $stored['command_center']['default_preset'] );
+		$this->assertSame( array(), $stored['command_center']['top_bar_items'] );
+		$this->assertFalse( $stored['command_center']['onboarding_completed'] );
+		$this->assertSame( array(), $stored['command_center']['menu_studio']['order'] );
+		$this->assertSame(
+			'default',
+			EDMINBOOST_Command_Center::detect_active_layout_preset( $stored['command_center'] )
+		);
+	}
+
+	/**
+	 * Fresh activation keeps layout empty (virtual default preset) when Pro UI is active.
+	 */
+	public function test_activation_defaults_detect_default_layout_preset_with_pro() {
+		$this->enable_pro_plan();
+
+		delete_option( EDMINBOOST_Settings::OPTION_NAME );
+
+		EDMINBOOST_Activator::activate();
+
+		$stored = get_option( EDMINBOOST_Settings::OPTION_NAME, array() );
+		$cc     = $stored['command_center'];
+
+		$this->assertFalse( $cc['menu_studio']['enabled'] );
+		$this->assertSame( array(), $cc['top_bar_items'] );
+		$this->assertSame(
+			'default',
+			EDMINBOOST_Command_Center::detect_active_layout_preset( $cc )
+		);
+	}
+
+	/**
 	 * Global kill switch disables features.
 	 */
 	public function test_is_enabled_blocks_features_when_disabled() {
@@ -33,6 +83,7 @@ class SettingsTest extends Edminboost_Test_Case {
 	public function test_is_feature_enabled_boolean_features() {
 		$this->seed_settings(
 			array(
+				'enabled'  => true,
 				'features' => array(
 					'hide_admin_notices' => true,
 					'disable_emojis'     => false,
@@ -65,6 +116,7 @@ class SettingsTest extends Edminboost_Test_Case {
 	public function test_is_feature_enabled_dashboard_widgets() {
 		$this->seed_settings(
 			array(
+				'enabled'  => true,
 				'features' => array(
 					'dashboard_widgets' => array(
 						'enabled'              => true,

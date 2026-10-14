@@ -29,6 +29,8 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 		add_action( 'admin_footer', array( __CLASS__, 'render_drawer_shell' ) );
 		add_action( 'wp_footer', array( __CLASS__, 'render_drawer_shell' ) );
 		add_action( 'wp_ajax_edminboost_cc_drawer_preview', array( __CLASS__, 'ajax_drawer_preview' ) );
+		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'register_drawer_script' ), 5 );
+		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'register_drawer_script' ), 5 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_drawer_assets' ), 20 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_drawer_assets' ), 20 );
 	}
@@ -144,34 +146,50 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 	}
 
 	/**
+	 * Register drawer shell JavaScript (enqueued when Layout Studio or live drawer items need it).
+	 *
+	 * @return void
+	 */
+	public static function register_drawer_script() {
+		if ( wp_script_is( 'edminboost-command-center-bar', 'registered' ) ) {
+			return;
+		}
+
+		wp_register_script(
+			'edminboost-command-center-bar',
+			EDMINBOOST_PLUGIN_URL . 'admin/js/pro/edminboost-command-center-bar.js',
+			array(),
+			EDMINBOOST_VERSION,
+			true
+		);
+	}
+
+	/**
 	 * Enqueue drawer shell JavaScript when needed.
 	 *
 	 * @return void
 	 */
 	public static function enqueue_drawer_assets() {
-		if ( ! EDMINBOOST_Pro::has_licensed_admin_ui() || ! EDMINBOOST_Settings::is_enabled() || ! is_user_logged_in() ) {
+		if ( ! EDMINBOOST_Pro::has_licensed_admin_ui() || ! is_user_logged_in() ) {
 			return;
 		}
 
 		$mapper_screen = EDMINBOOST_Command_Center_Bar::is_mapper_screen();
-		$plugin_screen = EDMINBOOST_Admin::is_plugin_admin_page();
-		$load_drawer   = self::has_drawer_items() || $mapper_screen || $plugin_screen;
+		$plugin_screen = is_admin() && EDMINBOOST_Admin::is_plugin_admin_page();
+		$enabled       = EDMINBOOST_Settings::is_enabled();
+
+		if ( ! $enabled && ! $mapper_screen && ! $plugin_screen ) {
+			return;
+		}
+
+		$load_drawer = ( $enabled && self::has_drawer_items() ) || $mapper_screen || $plugin_screen;
 
 		if ( ! $load_drawer ) {
 			return;
 		}
 
 		self::enqueue_pro_styles();
-
-		if ( ! wp_script_is( 'edminboost-command-center-bar', 'registered' ) ) {
-			wp_register_script(
-				'edminboost-command-center-bar',
-				EDMINBOOST_PLUGIN_URL . 'admin/js/pro/edminboost-command-center-bar.js',
-				array(),
-				EDMINBOOST_VERSION,
-				true
-			);
-		}
+		self::register_drawer_script();
 
 		wp_enqueue_script( 'edminboost-command-center-bar' );
 
@@ -192,8 +210,10 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 	 * @return void
 	 */
 	public static function ajax_drawer_preview() {
+		EDMINBOOST_Admin::begin_ajax_json_response();
+
 		if ( ! current_user_can( EDMINBOOST_Settings::CAPABILITY ) ) {
-			wp_send_json_error(
+			EDMINBOOST_Admin::send_ajax_json_error(
 				array( 'message' => __( 'You do not have permission to preview drawer items.', 'edminboost-admin-customization' ) ),
 				403
 			);
@@ -202,7 +222,7 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 		$nonce = isset( $_POST['nonce'] ) ? sanitize_text_field( wp_unslash( $_POST['nonce'] ) ) : '';
 
 		if ( ! wp_verify_nonce( $nonce, 'edminboost_cc_drawer_preview' ) ) {
-			wp_send_json_error(
+			EDMINBOOST_Admin::send_ajax_json_error(
 				array(
 					'message' => __( 'Security check failed. Refresh the page and try again.', 'edminboost-admin-customization' ),
 				),
@@ -211,7 +231,7 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 		}
 
 		if ( ! EDMINBOOST_Command_Center_Bar::is_mapper_preview_context() ) {
-			wp_send_json_error(
+			EDMINBOOST_Admin::send_ajax_json_error(
 				array( 'message' => __( 'Drawer preview is only available in Layout Studio.', 'edminboost-admin-customization' ) ),
 				400
 			);
@@ -223,13 +243,13 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 		$anchor = ltrim( $anchor, '#' );
 
 		if ( ! self::is_valid_drawer_slug( $slug, $anchor ) ) {
-			wp_send_json_error(
+			EDMINBOOST_Admin::send_ajax_json_error(
 				array( 'message' => __( 'That admin path cannot be previewed in the drawer.', 'edminboost-admin-customization' ) ),
 				400
 			);
 		}
 
-		wp_send_json_success(
+		EDMINBOOST_Admin::send_ajax_json_success(
 			array(
 				'label'    => $label,
 				'frameUrl' => self::get_drawer_frame_url( $slug, $anchor, true ),
@@ -359,11 +379,19 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 	 * @return void
 	 */
 	public static function render_drawer_shell() {
-		if ( ! EDMINBOOST_Settings::is_enabled() || ! is_user_logged_in() ) {
+		if ( ! is_user_logged_in() ) {
 			return;
 		}
 
-		if ( ! self::has_drawer_items() && ! EDMINBOOST_Command_Center_Bar::is_mapper_screen() && ! EDMINBOOST_Admin::is_plugin_admin_page() ) {
+		$mapper_screen = EDMINBOOST_Command_Center_Bar::is_mapper_screen();
+		$plugin_screen = is_admin() && EDMINBOOST_Admin::is_plugin_admin_page();
+		$enabled       = EDMINBOOST_Settings::is_enabled();
+
+		if ( ! $enabled && ! $mapper_screen && ! $plugin_screen ) {
+			return;
+		}
+
+		if ( ! self::has_drawer_items() && ! $mapper_screen && ! $plugin_screen ) {
 			return;
 		}
 
@@ -502,11 +530,6 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 	}
 
 	/**
-	 * Whether the request is a Layout Studio screen or preview AJAX from it.
-	 *
-	 * @return bool
-	 */
-	/**
 	 * Whether a slug and anchor are valid for drawer iframe loads.
 	 *
 	 * @param string $slug   Menu slug.
@@ -515,7 +538,7 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 	 */
 	private static function is_valid_drawer_slug( $slug, $anchor = '' ) {
 		$anchor = ltrim( (string) $anchor, '#' );
-		$slug   = self::resolve_admin_slug( $slug );
+		$slug   = EDMINBOOST_Command_Center_Bar::normalize_item_slug( $slug );
 
 		if ( preg_match( '#^https?://#i', $slug ) ) {
 			return false;

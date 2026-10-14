@@ -27,6 +27,9 @@ bin/wp-cli.phar
 .playwright-browsers/
 .phpunit.result.cache
 
+# Local dev Pro loader (copy from bin/edminboost-localhost.sample.php)
+edminboost-localhost.php
+
 # Build
 /build/
 /dist/

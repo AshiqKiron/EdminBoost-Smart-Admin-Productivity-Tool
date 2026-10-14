@@ -35,13 +35,22 @@ class EDMINBOOST_Admin_Billing {
 	 * @return void
 	 */
 	public static function register_submenu() {
-		add_submenu_page(
-			EDMINBOOST_Admin::PAGE_SLUG,
-			__( 'Billing', 'edminboost-admin-customization' ),
-			__( 'Billing', 'edminboost-admin-customization' ),
-			EDMINBOOST_Settings::CAPABILITY,
-			self::get_page_slug(),
-			array( __CLASS__, 'render_page' )
+		if ( ! EDMINBOOST_Plan::is_direct_build() ) {
+			return;
+		}
+
+		$page_title = __( 'Billing', 'edminboost-admin-customization' );
+
+		self::bind_admin_page_title(
+			add_submenu_page(
+				EDMINBOOST_Admin::PAGE_SLUG,
+				$page_title,
+				$page_title,
+				EDMINBOOST_Settings::CAPABILITY,
+				self::get_page_slug(),
+				array( __CLASS__, 'render_page' )
+			),
+			$page_title
 		);
 	}
 
@@ -83,14 +92,11 @@ class EDMINBOOST_Admin_Billing {
 	 * @return void
 	 */
 	public static function enqueue_styles( $hook_suffix ) {
-		unset( $hook_suffix );
-
 		if ( ! EDMINBOOST_Plan::is_direct_build() ) {
 			return;
 		}
 
-		$screen_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( self::get_page_slug() !== $screen_page ) {
+		if ( false === strpos( $hook_suffix, EDMINBOOST_Admin::PAGE_SLUG ) ) {
 			return;
 		}
 
@@ -114,6 +120,30 @@ class EDMINBOOST_Admin_Billing {
 		$current_page = self::get_current_page_slug();
 
 		include EDMINBOOST_PLUGIN_DIR . 'admin/partials/pro/edminboost-billing-page.php';
+	}
+
+	/**
+	 * @return string
+	 */
+	/**
+	 * Ensure admin-header.php receives a string page title (PHP 8.1+).
+	 *
+	 * @param string|false $hook_suffix Hook suffix from add_submenu_page.
+	 * @param string       $page_title  Document title when the screen loads.
+	 * @return void
+	 */
+	private static function bind_admin_page_title( $hook_suffix, $page_title ) {
+		if ( ! $hook_suffix ) {
+			return;
+		}
+
+		add_action(
+			"load-{$hook_suffix}",
+			static function () use ( $page_title ) {
+				global $title;
+				$title = $page_title;
+			}
+		);
 	}
 
 	/**

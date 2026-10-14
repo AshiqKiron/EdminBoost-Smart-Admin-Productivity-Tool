@@ -14,7 +14,12 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 class EDMINBOOST_Billing {
 
-public static function get_upgrade_url() {
+	/**
+	 * External upgrade / pricing page URL for Billing CTAs.
+	 *
+	 * @return string
+	 */
+	public static function get_upgrade_url() {
 		/**
 		 * Filter the external upgrade / pricing page URL.
 		 *
@@ -365,10 +370,4 @@ public static function get_upgrade_url() {
 			),
 		);
 	}
-
-	/**
-	 * Active billing plan for the current site.
-	 *
-	 * @return string Plan ID (`free`, `pro`, or `agency`).
-	 */
 }

@@ -20,7 +20,9 @@
 			}
 	
 			function syncLoginRedirectsOptions() {
-				syncDependentSection( optionsSection, enabledToggle.checked );
+				if ( typeof window.edminboostSyncDependentSection === 'function' ) {
+					window.edminboostSyncDependentSection( optionsSection, enabledToggle.checked );
+				}
 			}
 	
 			enabledToggle.addEventListener( 'change', syncLoginRedirectsOptions );
@@ -574,12 +576,14 @@
 					formData.append( 'action', 'edminboost_export_settings' );
 					formData.append( 'nonce', exportBtn.getAttribute( 'data-nonce' ) || '' );
 	
+					var parseAjax = window.edminboostParseAdminAjaxResponse || function ( response ) { return response.json(); };
+
 					window.fetch( edminboostData.settingsSave.ajaxUrl, {
 						method: 'POST',
 						body: formData,
 						credentials: 'same-origin'
 					} )
-						.then( function ( response ) { return response.json(); } )
+						.then( parseAjax )
 						.then( function ( payload ) {
 							if ( ! payload.success || ! payload.data || ! payload.data.json ) {
 								var exportMessage = payload.data && payload.data.message
@@ -646,13 +650,14 @@
 							formData.append( 'nonce', importBtn.getAttribute( 'data-nonce' ) || '' );
 							formData.append( 'json', json );
 	
+							var parseAjax = window.edminboostParseAdminAjaxResponse || function ( response ) { return response.json(); };
+
 							return window.fetch( edminboostData.settingsSave.ajaxUrl, {
 								method: 'POST',
 								body: formData,
 								credentials: 'same-origin'
-							} );
+							} ).then( parseAjax );
 						} )
-						.then( function ( response ) { return response.json(); } )
 						.then( function ( payload ) {
 							if ( payload.success ) {
 								window.location.reload();

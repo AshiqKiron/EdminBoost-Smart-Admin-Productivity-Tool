@@ -25,6 +25,13 @@ if [ ! -f "$WP_PATH/wp-config.php" ]; then
 	exit 1
 fi
 
+LOCALHOST_LOADER="$PLUGIN_DIR/edminboost-localhost.php"
+LOCALHOST_SAMPLE="$SCRIPT_DIR/edminboost-localhost.sample.php"
+if [[ ! -f "$LOCALHOST_LOADER" && -f "$LOCALHOST_SAMPLE" ]]; then
+	cp "$LOCALHOST_SAMPLE" "$LOCALHOST_LOADER"
+	echo "Created $LOCALHOST_LOADER (full Pro on localhost; omitted from org/premium zips)."
+fi
+
 PLUGIN_TARGET="$PLUGINS_DIR/$PLUGIN_SLUG"
 PLUGIN_ALREADY_IN_PLUGINS=false
 

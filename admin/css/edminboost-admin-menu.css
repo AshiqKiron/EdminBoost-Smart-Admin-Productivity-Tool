@@ -54,8 +54,36 @@ body.edminboost-menu-studio-colors #adminmenu li.current a .awaiting-mod {
 }
 
 body.edminboost-menu-studio-active #adminmenuwrap,
-body.edminboost-menu-studio-active #adminmenuback {
+body.edminboost-menu-studio-active #adminmenuback,
+body.edminboost-menu-studio-active #adminmenu {
 	width: var(--eb-ms-width, 160px);
+}
+
+/* Keep main content aligned when sidebar width differs from core 160px. */
+body.edminboost-menu-studio-active:not( .folded ):not( .rtl ) #wpcontent,
+body.edminboost-menu-studio-active:not( .folded ):not( .rtl ) #wpfooter {
+	margin-left: var(--eb-ms-width, 160px);
+}
+
+body.edminboost-menu-studio-active:not( .folded ).rtl #wpcontent,
+body.edminboost-menu-studio-active:not( .folded ).rtl #wpfooter {
+	margin-right: var(--eb-ms-width, 160px);
+}
+
+/*
+ * EdminBoost has many submenu pages — expand in the sidebar column instead of a
+ * flyout over wp-content (and hide the default submenu arrow).
+ */
+body.edminboost-menu-studio-active #adminmenu li#toplevel_page_edminboost-admin-customization .wp-menu-arrow {
+	display: none;
+}
+
+body.edminboost-menu-studio-active #adminmenu li#toplevel_page_edminboost-admin-customization .wp-submenu {
+	position: relative;
+	left: 0;
+	top: 0;
+	margin: 0;
+	box-shadow: none;
 }
 
 body.edminboost-menu-studio-active #adminmenu a {

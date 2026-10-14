@@ -271,4 +271,49 @@ class ProTest extends Edminboost_Test_Case {
 			has_action( 'admin_footer_text', array( 'EDMINBOOST_White_Label', 'filter_admin_footer_text' ) )
 		);
 	}
+
+	/**
+	 * Top Bar save without drawer links must not overwrite panel/badge behavior settings.
+	 */
+	public function test_layout_studio_save_without_drawer_preserves_behavior() {
+		$this->enable_pro_plan();
+		$this->skip_if_pro_package_unloaded();
+
+		$this->seed_settings(
+			array(
+				'command_center' => array(
+					'behavior' => array(
+						'drawer_width'    => 'fullscreen',
+						'badge_style'     => 'dot',
+						'animation_speed' => 'slow',
+					),
+				),
+			)
+		);
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'_layout_studio_save' => 1,
+					'top_bar_items'       => array(
+						array(
+							'slug'         => 'edit.php',
+							'label'        => 'Posts',
+							'icon'         => 'dashicons-admin-post',
+							'interaction'  => 'redirect',
+							'badge_source' => '',
+						),
+					),
+					'behavior'            => array(
+						'drawer_width' => 'compact',
+					),
+				),
+			)
+		);
+
+		$this->assertSame( 'fullscreen', $result['command_center']['behavior']['drawer_width'] );
+		$this->assertSame( 'dot', $result['command_center']['behavior']['badge_style'] );
+		$this->assertSame( 'slow', $result['command_center']['behavior']['animation_speed'] );
+	}
 }
