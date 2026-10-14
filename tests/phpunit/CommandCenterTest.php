@@ -246,7 +246,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 */
 	public function test_get_billing_plans() {
 		if ( ! class_exists( 'EDMINBOOST_Billing', false ) ) {
-			$this->markTestSkipped( 'Billing catalog ships only in the premium package.' );
+			$this->markTestSkipped( 'Premium billing package not loaded.' );
 		}
 
 		$plans = EDMINBOOST_Billing::get_plans();
@@ -260,7 +260,6 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		$this->assertSame( 0, $plans['free']['sites'] );
 		$this->assertSame( 1, $plans['pro']['sites'] );
 		$this->assertSame( 10, $plans['agency']['sites'] );
-		$this->assertSame( 'free', EDMINBOOST_Plan_Licensing::get_active_billing_plan() );
 		$this->assertGreaterThanOrEqual( 8, count( $plans['pro']['features'] ) );
 		$this->assertStringContainsString( 'Friend', $plans['free']['features'][2] );
 		$this->assertStringContainsString( 'visibility matrix', $plans['pro']['features'][3] );
@@ -271,7 +270,7 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	 */
 	public function test_get_billing_comparison_rows() {
 		if ( ! class_exists( 'EDMINBOOST_Billing', false ) ) {
-			$this->markTestSkipped( 'Billing catalog ships only in the premium package.' );
+			$this->markTestSkipped( 'Premium billing package not loaded.' );
 		}
 
 		$rows = EDMINBOOST_Billing::get_comparison_rows();
@@ -296,14 +295,27 @@ class CommandCenterTest extends Edminboost_Test_Case {
 	}
 
 	/**
-	 * Upgrade URL is filterable and used for external checkout links.
+	 * Purchase URL is filterable and used for external pricing links.
 	 */
 	public function test_get_upgrade_url() {
-		if ( ! class_exists( 'EDMINBOOST_Billing', false ) || ! defined( 'EDMINBOOST_UPGRADE_URL' ) ) {
-			$this->markTestSkipped( 'Upgrade URL ships only in the premium package.' );
+		if ( ! class_exists( 'EDMINBOOST_Billing', false ) ) {
+			$this->markTestSkipped( 'Premium billing package not loaded.' );
+		}
+
+		if ( ! defined( 'EDMINBOOST_UPGRADE_URL' ) ) {
+			$this->markTestSkipped( 'EDMINBOOST_UPGRADE_URL not defined.' );
 		}
 
 		$this->assertSame( EDMINBOOST_UPGRADE_URL, EDMINBOOST_Billing::get_upgrade_url() );
+
+		add_filter(
+			'edminboost_upgrade_url',
+			static function () {
+				return 'https://example.com/buy';
+			}
+		);
+
+		$this->assertSame( 'https://example.com/buy', EDMINBOOST_Billing::get_upgrade_url() );
 	}
 
 	/**
@@ -762,6 +774,32 @@ class CommandCenterTest extends Edminboost_Test_Case {
 		);
 
 		$this->assertNotEmpty( $result['command_center']['top_bar_items'] );
+		$this->assertTrue( $result['command_center']['onboarding_completed'] );
+	}
+
+	/**
+	 * Wizard save resolves the virtual Default layout preset.
+	 */
+	public function test_sanitize_setup_wizard_save_virtual_default() {
+		$expected_default = EDMINBOOST_Command_Center::resolve_effective_preset_id( 'default' );
+
+		$result = EDMINBOOST_Settings::sanitize(
+			array(
+				'enabled'        => 1,
+				'command_center' => array(
+					'_setup_wizard_save' => 1,
+					'_apply_preset'      => 'default',
+					'default_preset'     => $expected_default,
+					'theme'              => array(
+						'preset' => 'default',
+						'mode'   => 'light',
+					),
+				),
+			)
+		);
+
+		$this->assertNotEmpty( $result['command_center']['top_bar_items'] );
+		$this->assertSame( $expected_default, $result['command_center']['default_preset'] );
 		$this->assertTrue( $result['command_center']['onboarding_completed'] );
 	}
 

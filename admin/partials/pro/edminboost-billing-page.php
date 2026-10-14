@@ -14,9 +14,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 $edminboost_plans           = EDMINBOOST_Billing::get_plans();
 $edminboost_comparison_rows = EDMINBOOST_Billing::get_comparison_rows();
-$edminboost_active_plan     = EDMINBOOST_Plan_Licensing::get_active_billing_plan();
-$edminboost_active_label    = isset( $edminboost_plans[ $edminboost_active_plan ] ) ? $edminboost_plans[ $edminboost_active_plan ]['name'] : __( 'Free', 'edminboost-admin-customization' );
-$edminboost_upgrade_url     = EDMINBOOST_Billing::get_upgrade_url();
+$edminboost_active_plan = EDMINBOOST_Plan_Licensing::get_active_billing_plan();
+$edminboost_upgrade_url = EDMINBOOST_Billing::get_upgrade_url();
 ?>
 <div class="wrap edminboost-wrap edminboost-cc-wrap">
 	<?php include EDMINBOOST_PLUGIN_DIR . 'admin/partials/edminboost-command-center-nav.php'; ?>
@@ -27,25 +26,6 @@ $edminboost_upgrade_url     = EDMINBOOST_Billing::get_upgrade_url();
 			<?php esc_html_e( 'Choose the plan that fits your workflow. Upgrade anytime as your sites grow.', 'edminboost-admin-customization' ); ?>
 		</p>
 	</header>
-
-	<section class="edminboost-card edminboost-cc-section edminboost-billing-current">
-		<h2><?php esc_html_e( 'Current plan', 'edminboost-admin-customization' ); ?></h2>
-		<p class="edminboost-billing-current__plan">
-			<span class="edminboost-billing-current__label"><?php echo esc_html( $edminboost_active_label ); ?></span>
-			<?php if ( isset( $edminboost_plans[ $edminboost_active_plan ] ) ) : ?>
-				<span class="edminboost-billing-current__meta">
-					<?php
-					printf(
-						/* translators: 1: price label, 2: site count label */
-						esc_html__( '%1$s per year · %2$s', 'edminboost-admin-customization' ),
-						esc_html( $edminboost_plans[ $edminboost_active_plan ]['price_label'] ),
-						esc_html( $edminboost_plans[ $edminboost_active_plan ]['sites_label'] )
-					);
-					?>
-				</span>
-			<?php endif; ?>
-		</p>
-	</section>
 
 	<section class="edminboost-billing-plans" aria-label="<?php esc_attr_e( 'Available plans', 'edminboost-admin-customization' ); ?>">
 		<?php foreach ( $edminboost_plans as $edminboost_plan_id => $edminboost_plan ) : ?>

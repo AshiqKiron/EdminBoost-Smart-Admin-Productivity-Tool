@@ -557,16 +557,16 @@ class EDMINBOOST_Admin {
 
 		$screen_page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended
 
-		$admin_script_deps = array();
-		if (
-			apply_filters( 'edminboost_should_enqueue_licensed_admin_assets', false )
-			&& class_exists( 'EDMINBOOST_Command_Center_Bar_Pro', false )
-		) {
-			EDMINBOOST_Command_Center_Bar_Pro::enqueue_drawer_assets();
-			if ( wp_script_is( 'edminboost-command-center-bar', 'enqueued' ) ) {
-				$admin_script_deps[] = 'edminboost-command-center-bar';
-			}
-		}
+		/**
+		 * Filter script dependencies for the plugin admin bundle.
+		 *
+		 * Premium package may enqueue drawer assets and append handles (e.g. edminboost-command-center-bar).
+		 *
+		 * @param string[] $deps        Script handle dependencies.
+		 * @param string   $hook_suffix Current admin page hook.
+		 * @param string   $screen_page Current admin page slug query arg.
+		 */
+		$admin_script_deps = apply_filters( 'edminboost_admin_script_deps', array(), $hook_suffix, $screen_page );
 
 		wp_enqueue_script(
 			'edminboost-admin',

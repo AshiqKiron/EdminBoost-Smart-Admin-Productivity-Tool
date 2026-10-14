@@ -56,25 +56,27 @@ Yes. When uninstalled, all plugin options are removed from the database.
 
 == Screenshots ==
 
-1. First-run setup wizard — choose a layout preset with live sidebar and top bar previews.
-2. Command Center dashboard — layout, color theme, and top bar overview cards.
-3. Layout Presets — built-in scenario layouts and role assignments.
-4. Theme — visual admin skins, light/dark mode, and font options.
-5. Admin bar declutter — hide core admin bar items with a live preview.
-6. Top Bar — drag-and-drop shortcuts for the WordPress admin bar.
-7. Menu Studio — reorder, hide, and style the admin sidebar menu.
-8. Productivity — hide routine admin notices (live preview).
-9. Productivity — remove selected dashboard widgets (live preview).
-10. Productivity — custom admin footer text.
-11. Security — XML-RPC, feeds, REST API, and related hardening toggles.
-12. Performance — disable emoji scripts (live preview).
-13. Performance — trim asset tags and disable embeds (live preview).
-14. Themed wp-admin dashboard with EdminBoost top bar shortcuts and custom footer.
-15. Posts list with post duplicator actions enabled.
+1. Command Center dashboard — layout preset, color theme, and top bar overview cards with compact previews.
+2. Dashboard setup wizard — step 1 layout preset with live sidebar and top bar previews.
+3. Theme — visual theme preset picker with color swatches and short descriptions.
+4. Top Bar — item configuration and AJAX slide-out drawer preview for a shortcut.
+5. Top Bar — Panel & badges drawer width, animation speed, and live panel preview.
+6. Theme — Appearance extras for admin font size, background, favicon, and post status row colors.
+7. Menu Studio — toggle visibility, reorder items, and preview the admin sidebar menu.
+8. Productivity — hide routine admin notices and Screen Options/Help tabs with live previews.
+9. Performance — disable emoji detection scripts with admin vs front-end scope preview.
+10. White Label — branding toggles and system status footer live preview.
+11. Security — harden XML-RPC, feeds, REST API, comments, and login redirects.
+12. Top Bar — notification badge refresh rate, style options, and live preview.
+13. Layout Presets — “Who sees what” role matrix for presets and menu visibility.
+14. Settings — export and import all EdminBoost settings as JSON.
 
 == Changelog ==
 
 = 1.4.4 =
+* Add a static Billing page to the WordPress.org build with Free, Pro, and Agency plan cards, feature comparison, and external purchase links (no in-plugin checkout or license logic).
+* Direct-download Billing page omits the redundant Current plan summary card; active plan is shown on plan cards and the comparison table.
+* Dashboard setup wizard includes the Default layout preset in the layout dropdown and pre-selects it on fresh installs.
 * Fix Layout Presets save on sites with large admin menus by syncing only hidden role-visibility items instead of every matrix checkbox.
 * Fresh installs start with customization off so wp-admin stays unchanged until you save settings or complete setup.
 * Menu Studio stays off by default after activation and when applying layout presets until you enable it on the Menu Studio screen.

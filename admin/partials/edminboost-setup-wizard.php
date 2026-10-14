@@ -31,20 +31,20 @@ if ( ! isset( $edminboost_mapper_url ) ) {
 	$edminboost_mapper_url = admin_url( 'admin.php?page=' . EDMINBOOST_Admin::PAGE_SLUG . EDMINBOOST_Command_Center::PAGE_MAPPER );
 }
 
-$edminboost_default_preset     = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
-$edminboost_all_presets        = EDMINBOOST_Command_Center::get_all_presets();
-$edminboost_wizard_preset      = isset( $edminboost_all_presets[ $edminboost_default_preset ] ) && ! empty( $edminboost_all_presets[ $edminboost_default_preset ]['system'] )
-	? $edminboost_default_preset
-	: 'system_client';
-$edminboost_preview_items      = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $edminboost_wizard_preset );
+$edminboost_cc_defaults        = EDMINBOOST_Command_Center::get_defaults();
+$edminboost_stored_default     = isset( $cc_settings['default_preset'] ) && '' !== $cc_settings['default_preset']
+	? $cc_settings['default_preset']
+	: $edminboost_cc_defaults['default_preset'];
+$edminboost_wizard_apply_preset = EDMINBOOST_Command_Center::detect_active_layout_preset( $cc_settings );
+$edminboost_preview_items       = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $edminboost_wizard_apply_preset, $cc_settings );
 $edminboost_preset_picker_mode = 'wizard';
 ?>
 <form action="options.php" method="post" class="edminboost-cc-form edminboost-setup-wizard" id="edminboost-setup-wizard-form">
 	<?php settings_fields( EDMINBOOST_Settings::SETTINGS_GROUP ); ?>
 	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[enabled]" value="1" />
 	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_setup_wizard_save]" value="1" />
-	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_apply_preset]" id="edminboost_wizard_apply_preset" value="<?php echo esc_attr( $edminboost_wizard_preset ); ?>" />
-	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][default_preset]" id="edminboost_wizard_default_preset" value="<?php echo esc_attr( $edminboost_wizard_preset ); ?>" />
+	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][_apply_preset]" id="edminboost_wizard_apply_preset" value="<?php echo esc_attr( $edminboost_wizard_apply_preset ); ?>" />
+	<input type="hidden" name="<?php echo esc_attr( $edminboost_option_name ); ?>[command_center][default_preset]" id="edminboost_wizard_default_preset" value="<?php echo esc_attr( $edminboost_stored_default ); ?>" />
 
 	<nav class="edminboost-setup-stepper" aria-label="<?php esc_attr_e( 'Setup progress', 'edminboost-admin-customization' ); ?>">
 		<ol class="edminboost-setup-stepper__list">

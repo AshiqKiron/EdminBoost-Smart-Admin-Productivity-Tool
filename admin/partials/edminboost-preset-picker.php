@@ -18,18 +18,25 @@ if ( ! isset( $edminboost_preset_picker_mode ) ) {
 	$edminboost_preset_picker_mode = isset( $preset_picker_mode ) ? $preset_picker_mode : 'full';
 }
 
-$edminboost_include_virtual    = 'wizard' !== $edminboost_preset_picker_mode;
-$edminboost_all_presets        = EDMINBOOST_Command_Center::get_picker_presets( $edminboost_include_virtual );
 $edminboost_preset_categories  = EDMINBOOST_Command_Center::get_preset_categories();
 $edminboost_grouped_presets    = array();
 $edminboost_default_preset     = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
 
 if ( 'wizard' === $edminboost_preset_picker_mode ) {
-	$edminboost_wizard_preset = isset( $cc_settings['default_preset'] ) ? $cc_settings['default_preset'] : 'system_client';
-	if ( isset( $edminboost_all_presets[ $edminboost_wizard_preset ] ) && ! empty( $edminboost_all_presets[ $edminboost_wizard_preset ]['system'] ) ) {
-		$edminboost_selected_preset = $edminboost_wizard_preset;
-	} else {
-		$edminboost_selected_preset = 'system_client';
+	$edminboost_virtual_presets = EDMINBOOST_Command_Center::get_virtual_layout_presets();
+	$edminboost_all_presets     = array_merge(
+		array( 'default' => $edminboost_virtual_presets['default'] ),
+		EDMINBOOST_Command_Center::get_all_presets()
+	);
+} else {
+	$edminboost_include_virtual = true;
+	$edminboost_all_presets     = EDMINBOOST_Command_Center::get_picker_presets( $edminboost_include_virtual );
+}
+
+if ( 'wizard' === $edminboost_preset_picker_mode ) {
+	$edminboost_selected_preset = EDMINBOOST_Command_Center::detect_active_layout_preset( $cc_settings );
+	if ( ! isset( $edminboost_all_presets[ $edminboost_selected_preset ] ) ) {
+		$edminboost_selected_preset = 'default';
 	}
 } else {
 	$edminboost_selected_preset = EDMINBOOST_Command_Center::detect_active_layout_preset( $cc_settings );
@@ -66,7 +73,7 @@ foreach ( $edminboost_all_presets as $edminboost_preset_id => $edminboost_preset
 }
 
 $edminboost_preset_display_order = 'wizard' === $edminboost_preset_picker_mode
-	? array( 'scenario', 'workflow' )
+	? array( 'source', 'scenario', 'workflow' )
 	: array( 'source', 'scenario', 'workflow', 'saved' );
 
 $edminboost_show_preset_preview = 'overview' !== $edminboost_preset_picker_mode;

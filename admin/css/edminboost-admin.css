@@ -683,6 +683,12 @@ summary .edminboost-setting-info,
 	margin-top: 16px;
 }
 
+.edminboost-setup-wizard__footer #edminboost-setup-back[hidden],
+.edminboost-setup-wizard__footer #edminboost-setup-next[hidden],
+.edminboost-setup-wizard__footer #edminboost-setup-submit[hidden] {
+	display: none !important;
+}
+
 .edminboost-preset-picker--wizard,
 .edminboost-preset-picker--full {
 	display: flex;

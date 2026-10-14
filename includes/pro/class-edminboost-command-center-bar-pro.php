@@ -20,6 +20,7 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 	 * @return void
 	 */
 	public static function register_hooks() {
+		add_filter( 'edminboost_admin_script_deps', array( __CLASS__, 'filter_admin_script_deps' ), 10, 3 );
 		add_filter( 'edminboost_cc_bar_use_pro_register_nodes', array( __CLASS__, 'filter_use_pro_register_nodes' ) );
 		add_action( 'edminboost_cc_bar_register_pro_nodes', array( __CLASS__, 'register_nodes' ) );
 		add_filter( 'edminboost_cc_bar_has_drawer_items', array( __CLASS__, 'filter_has_drawer_items' ) );
@@ -33,6 +34,28 @@ class EDMINBOOST_Command_Center_Bar_Pro {
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'register_drawer_script' ), 5 );
 		add_action( 'admin_enqueue_scripts', array( __CLASS__, 'enqueue_drawer_assets' ), 20 );
 		add_action( 'wp_enqueue_scripts', array( __CLASS__, 'enqueue_drawer_assets' ), 20 );
+	}
+
+	/**
+	 * Append drawer script as a dependency of edminboost-admin on plugin screens.
+	 *
+	 * @param string[] $deps        Script handle dependencies.
+	 * @param string   $hook_suffix Current admin page hook.
+	 * @param string   $screen_page Current admin page slug query arg.
+	 * @return string[]
+	 */
+	public static function filter_admin_script_deps( $deps, $hook_suffix, $screen_page ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter
+		if ( ! apply_filters( 'edminboost_should_enqueue_licensed_admin_assets', false ) ) {
+			return $deps;
+		}
+
+		self::enqueue_drawer_assets();
+
+		if ( wp_script_is( 'edminboost-command-center-bar', 'enqueued' ) ) {
+			$deps[] = 'edminboost-command-center-bar';
+		}
+
+		return $deps;
 	}
 
 	/**

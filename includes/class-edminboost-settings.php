@@ -487,8 +487,13 @@ class EDMINBOOST_Settings {
 
 		if ( ! empty( $raw['_setup_wizard_save'] ) && ! empty( $raw['_apply_preset'] ) ) {
 			$preset_id = sanitize_key( $raw['_apply_preset'] );
+
+			if ( 'default' === $preset_id ) {
+				$preset_id = EDMINBOOST_Command_Center::resolve_effective_preset_id( 'default', $output );
+			}
+
 			if ( EDMINBOOST_Plan::is_layout_preset_available( $preset_id ) ) {
-				$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id );
+				$items = EDMINBOOST_Command_Center::resolve_preset_top_bar_items( $preset_id, $output );
 				if ( ! empty( $items ) ) {
 					$output['top_bar_items']  = self::sanitize_top_bar_items( $items );
 					$output['default_preset'] = $preset_id;

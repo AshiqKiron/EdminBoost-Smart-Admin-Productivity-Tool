@@ -81,6 +81,7 @@ FORBIDDEN_PATTERNS=(
 	'class[[:space:]]+EDMINBOOST_Billing'
 	'class[[:space:]]+EDMINBOOST_Plan_Licensing'
 	'edminboost-billing-page\.php'
+	'edminboost_upgrade_url'
 	'edminboost-pro-package\.php'
 	'has_licensed_admin_ui'
 	'EDMINBOOST_Command_Center_Bar_Pro'

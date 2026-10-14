@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-02T19:32:55+00:00\n"
+"POT-Creation-Date: 2026-10-14T19:17:44+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: edminboost-admin-customization\n"
@@ -47,11 +47,6 @@ msgstr ""
 msgid "All your major admin tools in one place. Configure layout, appearance, and your top bar to build a workflow that works for you."
 msgstr ""
 
-#: admin/partials/edminboost-animation-speed-field.php:35
-#: admin/partials/edminboost-animation-speed-field.php:79
-msgid "Animation speed"
-msgstr ""
-
 #: admin/partials/edminboost-appearance-page.php:29
 msgid "Customize colors, fonts, and admin bar cleanup."
 msgstr ""
@@ -64,70 +59,56 @@ msgstr ""
 msgid "EdminBoost Command Center"
 msgstr ""
 
-#: admin/partials/edminboost-dashboard-overview.php:55
-msgid "Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer."
+#: admin/partials/edminboost-dashboard-overview.php:45
+#: includes/class-edminboost-admin.php:594
+msgid "Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor."
 msgstr ""
 
-#: admin/partials/edminboost-dashboard-overview.php:57
+#: admin/partials/edminboost-dashboard-overview.php:47
+#: includes/class-edminboost-admin.php:595
 msgid "Admin link shortcuts appear in your WordPress top bar."
 msgstr ""
 
-#. translators: %d: number of links that open directly
-#: admin/partials/edminboost-dashboard-overview.php:63
-#, php-format
-msgid "%d opens directly"
-msgid_plural "%d open directly"
-msgstr[0] ""
-msgstr[1] ""
-
-#. translators: %d: number of links that open in a slide-out drawer
-#: admin/partials/edminboost-dashboard-overview.php:71
-#, php-format
-msgid "%d opens in a slide-out drawer"
-msgid_plural "%d open in a slide-out drawer"
-msgstr[0] ""
-msgstr[1] ""
-
-#: admin/partials/edminboost-dashboard-overview.php:128
-#: admin/partials/edminboost-preset-picker.php:91
-#: admin/partials/edminboost-preset-picker.php:152
+#: admin/partials/edminboost-dashboard-overview.php:97
+#: admin/partials/edminboost-preset-picker.php:98
+#: admin/partials/edminboost-preset-picker.php:159
 #: admin/partials/edminboost-setup-review.php:15
 msgid "Layout preset"
 msgstr ""
 
 #. translators: %s: layout preset name
-#: admin/partials/edminboost-dashboard-overview.php:140
-#: admin/partials/edminboost-preset-picker.php:230
+#: admin/partials/edminboost-dashboard-overview.php:109
+#: admin/partials/edminboost-preset-picker.php:237
 #, php-format
 msgid "Sidebar menu preview for the %s layout preset"
 msgstr ""
 
-#: admin/partials/edminboost-dashboard-overview.php:147
+#: admin/partials/edminboost-dashboard-overview.php:116
 msgid "Manage layout presets"
 msgstr ""
 
-#: admin/partials/edminboost-dashboard-overview.php:151
+#: admin/partials/edminboost-dashboard-overview.php:120
 #: admin/partials/edminboost-overview-theme-picker.php:77
 #: admin/partials/edminboost-setup-review.php:19
 #: admin/partials/edminboost-setup-wizard.php:57
 msgid "Color theme"
 msgstr ""
 
-#: admin/partials/edminboost-dashboard-overview.php:159
+#: admin/partials/edminboost-dashboard-overview.php:128
 msgid "Customize appearance"
 msgstr ""
 
-#: admin/partials/edminboost-dashboard-overview.php:163
+#: admin/partials/edminboost-dashboard-overview.php:132
 #: admin/partials/edminboost-setup-wizard.php:61
 #: includes/class-edminboost-theme.php:100
 msgid "Top bar"
 msgstr ""
 
-#: admin/partials/edminboost-dashboard-overview.php:169
+#: admin/partials/edminboost-dashboard-overview.php:138
 msgid "Preview of your configured top bar links"
 msgstr ""
 
-#: admin/partials/edminboost-dashboard-overview.php:175
+#: admin/partials/edminboost-dashboard-overview.php:144
 msgid "Edit top bar"
 msgstr ""
 
@@ -142,9 +123,9 @@ msgstr ""
 
 #: admin/partials/edminboost-declutter-preview.php:58
 #: admin/partials/edminboost-feature-fields.php:200
-#: includes/class-edminboost-command-center.php:867
-#: includes/class-edminboost-command-center.php:2909
-#: includes/class-edminboost-command-center.php:2939
+#: includes/class-edminboost-command-center.php:921
+#: includes/class-edminboost-command-center.php:2869
+#: includes/class-edminboost-command-center.php:2899
 #: includes/features/class-edminboost-admin-bar.php:84
 msgid "Comments"
 msgstr ""
@@ -342,76 +323,76 @@ msgstr ""
 msgid "Disable comments for selected post types."
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:222
+#: admin/partials/edminboost-feature-fields.php:227
 msgid "Emoji scripts"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:226
+#: admin/partials/edminboost-feature-fields.php:231
 msgid "Disable emoji detection scripts."
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:229
+#: admin/partials/edminboost-feature-fields.php:234
 msgid "Scope"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:231
+#: admin/partials/edminboost-feature-fields.php:236
 msgid "Admin only"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:232
+#: admin/partials/edminboost-feature-fields.php:237
 msgid "Front end only"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:233
+#: admin/partials/edminboost-feature-fields.php:238
 msgid "Admin and front end"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:243
+#: admin/partials/edminboost-feature-fields.php:248
 msgid "Assets"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:247
+#: admin/partials/edminboost-feature-fields.php:252
 msgid "Remove version query strings from scripts and styles."
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:252
+#: admin/partials/edminboost-feature-fields.php:257
 msgid "Remove Dashicons on the front end for visitors."
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:257
+#: admin/partials/edminboost-feature-fields.php:262
 #: includes/features/class-edminboost-feature-base.php:145
 msgid "Disable WordPress embeds and oEmbed discovery."
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:266
+#: admin/partials/edminboost-feature-fields.php:271
 msgid "Heartbeat API"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:269
+#: admin/partials/edminboost-feature-fields.php:274
 msgid "Admin screens"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:270
+#: admin/partials/edminboost-feature-fields.php:275
 msgid "Post editor"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:271
+#: admin/partials/edminboost-feature-fields.php:276
 #: admin/partials/edminboost-performance-preview.php:62
 msgid "Front end"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:274
-#: admin/partials/edminboost-theme-settings.php:378
-#: includes/class-edminboost-command-center.php:587
+#: admin/partials/edminboost-feature-fields.php:279
+#: admin/partials/edminboost-theme-settings.php:388
+#: includes/class-edminboost-command-center.php:583
 #: includes/class-edminboost-theme.php:114
 msgid "Default"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:275
+#: admin/partials/edminboost-feature-fields.php:280
 msgid "Slow (60s)"
 msgstr ""
 
-#: admin/partials/edminboost-feature-fields.php:276
+#: admin/partials/edminboost-feature-fields.php:281
 msgid "Disable"
 msgstr ""
 
@@ -461,7 +442,7 @@ msgstr ""
 
 #: admin/partials/edminboost-mapper-item-sidebar.php:56
 #: admin/partials/pro/edminboost-mapper-item-sidebar.php:59
-#: includes/class-edminboost-admin.php:527
+#: includes/class-edminboost-admin.php:587
 msgid "Remove from top bar"
 msgstr ""
 
@@ -486,7 +467,7 @@ msgid "Search installed plugins…"
 msgstr ""
 
 #: admin/partials/edminboost-mapper-page.php:68
-#: admin/partials/edminboost-menu-studio-page.php:125
+#: admin/partials/edminboost-menu-studio-page.php:128
 msgid "No admin menus detected."
 msgstr ""
 
@@ -536,183 +517,183 @@ msgstr ""
 
 #: admin/partials/edminboost-mapper-page.php:160
 #: admin/partials/edminboost-overview-topbar-preview.php:33
-#: admin/partials/edminboost-preset-picker.php:240
+#: admin/partials/edminboost-preset-picker.php:247
 msgid "Top bar preview"
 msgstr ""
 
 #: admin/partials/edminboost-mapper-page.php:207
-#: includes/class-edminboost-admin.php:528
+#: includes/class-edminboost-admin.php:588
 msgid "Toggle items from the left panel or drag them here to build your top bar."
 msgstr ""
 
-#: admin/partials/edminboost-mapper-page.php:236
+#: admin/partials/edminboost-mapper-page.php:237
 msgid "Save top bar"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:35
+#: admin/partials/edminboost-menu-studio-page.php:38
 msgid "Parent background"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:40
+#: admin/partials/edminboost-menu-studio-page.php:43
 msgid "Parent text"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:45
+#: admin/partials/edminboost-menu-studio-page.php:48
 msgid "Parent hover / active"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:50
+#: admin/partials/edminboost-menu-studio-page.php:53
 msgid "Submenu background"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:55
+#: admin/partials/edminboost-menu-studio-page.php:58
 msgid "Submenu text"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:60
+#: admin/partials/edminboost-menu-studio-page.php:63
 msgid "Submenu hover text"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:65
+#: admin/partials/edminboost-menu-studio-page.php:68
 msgid "Notification background"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:70
+#: admin/partials/edminboost-menu-studio-page.php:73
 msgid "Notification text"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:82
+#: admin/partials/edminboost-menu-studio-page.php:85
 msgid "Reorder the WordPress admin sidebar, add custom links, and style parent menus, submenus, and update badges."
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:101
+#: admin/partials/edminboost-menu-studio-page.php:104
 msgid "Enable Menu Studio on all admin screens"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:107
+#: admin/partials/edminboost-menu-studio-page.php:110
 msgid "Admin Menu Items"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:108
+#: admin/partials/edminboost-menu-studio-page.php:111
 msgid "Toggle visibility or drag items into the sidebar preview."
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:112
+#: admin/partials/edminboost-menu-studio-page.php:115
 msgid "Filter menu items"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:118
+#: admin/partials/edminboost-menu-studio-page.php:121
 msgid "Search menu items…"
 msgstr ""
 
 #. translators: %s: menu item label
-#: admin/partials/edminboost-menu-studio-page.php:158
+#: admin/partials/edminboost-menu-studio-page.php:161
 #, php-format
 msgid "Show %s on sidebar"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:183
+#: admin/partials/edminboost-menu-studio-page.php:189
 msgid "Sidebar Preview"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:184
+#: admin/partials/edminboost-menu-studio-page.php:190
 msgid "Drag to reorder top-level items. Expand a parent to reorder its submenus."
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:186
-#: admin/partials/edminboost-preset-picker.php:220
+#: admin/partials/edminboost-menu-studio-page.php:192
+#: admin/partials/edminboost-preset-picker.php:227
 msgid "Sidebar preview"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:226
+#: admin/partials/edminboost-menu-studio-page.php:232
 msgid "Expand submenu"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:254
-#: includes/class-edminboost-admin.php:548
+#: admin/partials/edminboost-menu-studio-page.php:260
+#: includes/class-edminboost-admin.php:604
 msgid "Drag menu items here to reorder your admin sidebar."
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:259
+#: admin/partials/edminboost-menu-studio-page.php:265
 msgid "Sidebar layout & typography"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:260
+#: admin/partials/edminboost-menu-studio-page.php:266
 msgid "Adjust sidebar width, typography, and how menu icons and labels appear in wp-admin."
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:265
+#: admin/partials/edminboost-menu-studio-page.php:271
 msgid "Menu width (px)"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:283
+#: admin/partials/edminboost-menu-studio-page.php:289
 msgid "Typography"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:286
+#: admin/partials/edminboost-menu-studio-page.php:292
 msgid "Font size (px)"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:303
+#: admin/partials/edminboost-menu-studio-page.php:309
 msgid "Line height (px)"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:320
+#: admin/partials/edminboost-menu-studio-page.php:326
 msgid "Letter spacing (px)"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:348
+#: admin/partials/edminboost-menu-studio-page.php:358
 msgid "Preview how sidebar width, typography, and icon display will look in wp-admin."
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:352
-#: admin/partials/edminboost-menu-studio-page.php:407
+#: admin/partials/edminboost-menu-studio-page.php:362
+#: admin/partials/edminboost-menu-studio-page.php:417
 #: admin/partials/pro/edminboost-white-label-plugin-preview.php:78
-#: includes/class-edminboost-command-center.php:846
-#: includes/class-edminboost-command-center.php:2844
-#: includes/class-edminboost-command-center.php:2888
-#: includes/class-edminboost-command-center.php:2925
-#: includes/class-edminboost-command-center.php:2955
+#: includes/class-edminboost-command-center.php:900
+#: includes/class-edminboost-command-center.php:2804
+#: includes/class-edminboost-command-center.php:2848
+#: includes/class-edminboost-command-center.php:2885
+#: includes/class-edminboost-command-center.php:2915
 msgid "Posts"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:357
-#: admin/partials/edminboost-menu-studio-page.php:416
-#: includes/class-edminboost-command-center.php:860
-#: includes/class-edminboost-command-center.php:890
-#: includes/class-edminboost-command-center.php:2895
-#: includes/class-edminboost-command-center.php:2932
+#: admin/partials/edminboost-menu-studio-page.php:367
+#: admin/partials/edminboost-menu-studio-page.php:426
+#: includes/class-edminboost-command-center.php:914
+#: includes/class-edminboost-command-center.php:944
+#: includes/class-edminboost-command-center.php:2855
+#: includes/class-edminboost-command-center.php:2892
 msgid "Media"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:361
-#: includes/class-edminboost-command-center.php:853
-#: includes/class-edminboost-command-center.php:883
-#: includes/class-edminboost-command-center.php:2902
+#: admin/partials/edminboost-menu-studio-page.php:371
+#: includes/class-edminboost-command-center.php:907
+#: includes/class-edminboost-command-center.php:937
+#: includes/class-edminboost-command-center.php:2862
 msgid "Pages"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:369
+#: admin/partials/edminboost-menu-studio-page.php:379
 msgid "Sidebar Colors"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:370
+#: admin/partials/edminboost-menu-studio-page.php:380
 msgid "Customize parent menu, submenu, and notification badge colors across wp-admin."
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:403
+#: admin/partials/edminboost-menu-studio-page.php:413
 msgid "Preview how parent menu, submenu, and badge colors will look in wp-admin."
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:411
+#: admin/partials/edminboost-menu-studio-page.php:421
 msgid "All Posts"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:412
+#: admin/partials/edminboost-menu-studio-page.php:422
 msgid "Add New"
 msgstr ""
 
-#: admin/partials/edminboost-menu-studio-page.php:428
+#: admin/partials/edminboost-menu-studio-page.php:438
 msgid "Save Menu Studio"
 msgstr ""
 
@@ -721,7 +702,7 @@ msgid "Sidebar menu preview"
 msgstr ""
 
 #: admin/partials/edminboost-overview-sidebar-preview.php:50
-#: includes/class-edminboost-admin.php:560
+#: includes/class-edminboost-admin.php:612
 msgid "No sidebar items in this preview yet."
 msgstr ""
 
@@ -735,41 +716,33 @@ msgstr ""
 msgid "Admin color theme preview"
 msgstr ""
 
-#: admin/partials/edminboost-overview-topbar-links-picker.php:16
+#: admin/partials/edminboost-overview-topbar-links-picker.php:17
 msgid "No links configured"
 msgstr ""
 
 #. translators: %d: number of top bar links
-#: admin/partials/edminboost-overview-topbar-links-picker.php:19
+#: admin/partials/edminboost-overview-topbar-links-picker.php:20
 #, php-format
 msgid "%d link configured"
 msgid_plural "%d links configured"
 msgstr[0] ""
 msgstr[1] ""
 
-#: admin/partials/edminboost-overview-topbar-links-picker.php:42
+#: admin/partials/edminboost-overview-topbar-links-picker.php:43
 msgid "Configured top bar links"
 msgstr ""
 
-#: admin/partials/edminboost-overview-topbar-links-picker.php:47
+#: admin/partials/edminboost-overview-topbar-links-picker.php:48
 msgid "Add links in the Top Bar editor to see them here."
 msgstr ""
 
-#: admin/partials/edminboost-overview-topbar-links-picker.php:57
-msgid "Opens in drawer"
-msgstr ""
-
-#: admin/partials/edminboost-overview-topbar-links-picker.php:58
-msgid "Opens directly"
-msgstr ""
-
 #: admin/partials/edminboost-overview-topbar-preview.php:75
-#: includes/class-edminboost-admin.php:559
+#: includes/class-edminboost-admin.php:611
 msgid "No links in this preview yet."
 msgstr ""
 
 #: admin/partials/edminboost-overview-topbar-preview.php:81
-#: includes/class-edminboost-admin.php:561
+#: includes/class-edminboost-admin.php:613
 msgid "WordPress"
 msgstr ""
 
@@ -788,7 +761,7 @@ msgid "+%d"
 msgstr ""
 
 #: admin/partials/edminboost-overview-topbar-preview.php:126
-#: includes/class-edminboost-admin.php:562
+#: includes/class-edminboost-admin.php:614
 msgid "My account"
 msgstr ""
 
@@ -862,61 +835,148 @@ msgstr ""
 msgid "Assets live preview"
 msgstr ""
 
+#: admin/partials/edminboost-plans-cta.php:25
+#: admin/partials/edminboost-plans-page.php:32
+#: admin/partials/pro/edminboost-billing-plan-cta.php:25
+msgid "Current plan"
+msgstr ""
+
+#. translators: %s: plan name
+#: admin/partials/edminboost-plans-cta.php:37
+#, php-format
+msgid "Get %s"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:27
+msgid "Choose the plan that fits your workflow. Paid plans open the EdminBoost pricing page in a new tab."
+msgstr ""
+
+#. translators: 1: price label, 2: site count label
+#: admin/partials/edminboost-plans-page.php:40
+#, php-format
+msgid "%1$s per year · %2$s"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:50
+#: admin/partials/pro/edminboost-billing-page.php:30
+msgid "Available plans"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:60
+#: admin/partials/pro/edminboost-billing-page.php:40
+msgid "Most popular"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:67
+#: admin/partials/pro/edminboost-billing-page.php:47
+msgid "/ year"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:90
+#: admin/partials/pro/edminboost-billing-page.php:70
+msgid "Compare plans"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:92
+#: admin/partials/pro/edminboost-billing-page.php:72
+msgid "Scan down a column to see what each plan includes."
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:98
+#: admin/partials/edminboost-plans-page.php:166
+#: admin/partials/pro/edminboost-billing-page.php:78
+#: admin/partials/pro/edminboost-billing-page.php:146
+msgid "Included"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:102
+#: admin/partials/edminboost-plans-page.php:168
+#: admin/partials/pro/edminboost-billing-page.php:82
+#: admin/partials/pro/edminboost-billing-page.php:148
+msgid "Not included"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:111
+#: admin/partials/pro/edminboost-billing-page.php:91
+msgid "Feature"
+msgstr ""
+
+#. translators: 1: price label, 2: site count label
+#: admin/partials/edminboost-plans-page.php:126
+#: admin/partials/pro/edminboost-billing-page.php:106
+#, php-format
+msgid "%1$s/yr · %2$s"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:133
+#: admin/partials/pro/edminboost-billing-page.php:113
+msgid "Current"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:184
+#: admin/partials/pro/edminboost-billing-page.php:164
+msgid "Plan actions"
+msgstr ""
+
+#: admin/partials/edminboost-plans-page.php:208
+msgid "Paid plans are billed annually per site license. Purchase links open the EdminBoost pricing page in a new tab."
+msgstr ""
+
 #. translators: %s: layout preset name
-#: admin/partials/edminboost-preset-picker.php:85
+#: admin/partials/edminboost-preset-picker.php:92
 #, php-format
 msgid "Top bar preview for the %s layout preset"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:136
-#: admin/partials/edminboost-preset-picker.php:178
+#: admin/partials/edminboost-preset-picker.php:143
+#: admin/partials/edminboost-preset-picker.php:185
 #: admin/partials/edminboost-setup-wizard.php:53
-#: includes/class-edminboost-admin.php:558
+#: includes/class-edminboost-admin.php:610
 msgid "Layout"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:138
-#: admin/partials/edminboost-preset-picker.php:180
-#: includes/class-edminboost-admin.php:556
+#: admin/partials/edminboost-preset-picker.php:145
+#: admin/partials/edminboost-preset-picker.php:187
+#: includes/class-edminboost-admin.php:608
 msgid "Built-in"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:140
-#: admin/partials/edminboost-preset-picker.php:182
-#: includes/class-edminboost-admin.php:557
+#: admin/partials/edminboost-preset-picker.php:147
+#: admin/partials/edminboost-preset-picker.php:189
+#: includes/class-edminboost-admin.php:609
 msgid "Saved"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:264
+#: admin/partials/edminboost-preset-picker.php:271
 msgid "Apply preset"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:272
+#: admin/partials/edminboost-preset-picker.php:279
 msgid "Set as site default"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:275
+#: admin/partials/edminboost-preset-picker.php:282
 msgid "Export JSON"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:279
-#: admin/partials/edminboost-presets-page.php:56
+#: admin/partials/edminboost-preset-picker.php:286
+#: admin/partials/edminboost-presets-page.php:51
 msgid "Preset name"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:285
-#: admin/partials/edminboost-presets-page.php:62
+#: admin/partials/edminboost-preset-picker.php:292
+#: admin/partials/edminboost-presets-page.php:57
 msgid "Enter a name for your preset"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:289
 #: admin/partials/edminboost-preset-picker.php:296
+#: admin/partials/edminboost-preset-picker.php:303
 msgid "Rename preset"
 msgstr ""
 
-#: admin/partials/edminboost-preset-picker.php:292
-#: admin/partials/edminboost-presets-page.php:69
-#: includes/class-edminboost-admin.php:571
+#: admin/partials/edminboost-preset-picker.php:299
+#: admin/partials/edminboost-presets-page.php:64
+#: includes/class-edminboost-admin.php:619
 msgid "Cancel"
 msgstr ""
 
@@ -924,49 +984,49 @@ msgstr ""
 msgid "Choose a layout template—or reuse one you saved—to set up the top bar and sidebar menu, then control which admin menu items each user role can see."
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:52
+#: admin/partials/edminboost-presets-page.php:47
 msgid "Save current layout as preset"
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:66
+#: admin/partials/edminboost-presets-page.php:61
 msgid "Save preset"
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:93
+#: admin/partials/edminboost-presets-page.php:92
 msgid "Who sees what"
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:95
+#: admin/partials/edminboost-presets-page.php:94
 msgid "Assign a layout preset per role to customize both the top bar and admin sidebar for that role."
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:99
+#: admin/partials/edminboost-presets-page.php:98
 msgid "No roles available."
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:101
+#: admin/partials/edminboost-presets-page.php:100
 msgid "No admin menu items were discovered. Try reloading this page from wp-admin."
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:107
+#: admin/partials/edminboost-presets-page.php:106
 msgid "User role"
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:109
+#: admin/partials/edminboost-presets-page.php:108
 msgid "Assigned preset"
 msgstr ""
 
 #. translators: %s: role name
-#: admin/partials/edminboost-presets-page.php:127
+#: admin/partials/edminboost-presets-page.php:129
 #, php-format
 msgid "Preset for %s"
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:136
+#: admin/partials/edminboost-presets-page.php:138
 msgid "— Use site default —"
 msgstr ""
 
-#: admin/partials/edminboost-presets-page.php:171
+#: admin/partials/edminboost-presets-page.php:176
 msgid "Save presets"
 msgstr ""
 
@@ -991,8 +1051,8 @@ msgid "Dashboard widgets live preview"
 msgstr ""
 
 #: admin/partials/edminboost-productivity-preview.php:72
-#: includes/class-edminboost-admin.php:541
-#: includes/class-edminboost-admin.php:1034
+#: includes/class-edminboost-admin.php:596
+#: includes/class-edminboost-admin.php:1156
 msgid "Settings saved."
 msgstr ""
 
@@ -1029,19 +1089,19 @@ msgstr ""
 #: admin/partials/edminboost-productivity-preview.php:185
 #: admin/partials/pro/edminboost-white-label-plugin-preview.php:76
 #: includes/class-edminboost-admin.php:56
-#: includes/class-edminboost-admin.php:220
-#: includes/class-edminboost-admin.php:944
+#: includes/class-edminboost-admin.php:222
+#: includes/class-edminboost-admin.php:1064
 #: includes/class-edminboost-command-center.php:323
-#: includes/class-edminboost-command-center.php:369
-#: includes/class-edminboost-command-center.php:839
-#: includes/class-edminboost-command-center.php:876
-#: includes/class-edminboost-command-center.php:2837
-#: includes/class-edminboost-command-center.php:2881
-#: includes/class-edminboost-command-center.php:2918
-#: includes/class-edminboost-command-center.php:2948
-#: includes/class-edminboost-command-center.php:2964
-#: includes/class-edminboost-command-center.php:2973
-#: includes/class-edminboost-command-center.php:3010
+#: includes/class-edminboost-command-center.php:367
+#: includes/class-edminboost-command-center.php:893
+#: includes/class-edminboost-command-center.php:930
+#: includes/class-edminboost-command-center.php:2797
+#: includes/class-edminboost-command-center.php:2841
+#: includes/class-edminboost-command-center.php:2878
+#: includes/class-edminboost-command-center.php:2908
+#: includes/class-edminboost-command-center.php:2924
+#: includes/class-edminboost-command-center.php:2933
+#: includes/class-edminboost-command-center.php:2970
 msgid "Dashboard"
 msgstr ""
 
@@ -1169,42 +1229,42 @@ msgid "Next"
 msgstr ""
 
 #: admin/partials/edminboost-setup-wizard.php:115
-#: includes/class-edminboost-admin.php:555
+#: includes/class-edminboost-admin.php:607
 msgid "Save and launch"
 msgstr ""
 
 #: admin/partials/edminboost-theme-extras-preview.php:48
-#: admin/partials/edminboost-theme-settings.php:357
+#: admin/partials/edminboost-theme-settings.php:367
 msgctxt "post status"
 msgid "Published"
 msgstr ""
 
 #: admin/partials/edminboost-theme-extras-preview.php:49
-#: admin/partials/edminboost-theme-settings.php:358
+#: admin/partials/edminboost-theme-settings.php:368
 msgctxt "post status"
 msgid "Pending"
 msgstr ""
 
 #: admin/partials/edminboost-theme-extras-preview.php:50
-#: admin/partials/edminboost-theme-settings.php:359
+#: admin/partials/edminboost-theme-settings.php:369
 msgctxt "post status"
 msgid "Scheduled"
 msgstr ""
 
 #: admin/partials/edminboost-theme-extras-preview.php:51
-#: admin/partials/edminboost-theme-settings.php:360
+#: admin/partials/edminboost-theme-settings.php:370
 msgctxt "post status"
 msgid "Private"
 msgstr ""
 
 #: admin/partials/edminboost-theme-extras-preview.php:52
-#: admin/partials/edminboost-theme-settings.php:361
+#: admin/partials/edminboost-theme-settings.php:371
 msgctxt "post status"
 msgid "Draft"
 msgstr ""
 
 #: admin/partials/edminboost-theme-extras-preview.php:53
-#: admin/partials/edminboost-theme-settings.php:362
+#: admin/partials/edminboost-theme-settings.php:372
 msgctxt "post status"
 msgid "Trash"
 msgstr ""
@@ -1240,63 +1300,63 @@ msgid "Visual theme"
 msgstr ""
 
 #: admin/partials/edminboost-theme-settings.php:35
-msgid "Colors and fonts for the admin top bar, sidebar menu, Command Center bar, slide-out drawer, and EdminBoost admin screens. Does not change behavior or top bar layout."
+msgid "Colors and fonts for the admin top bar, sidebar menu, Command Center bar, and EdminBoost admin screens. Does not change behavior or top bar layout."
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:39
-#: admin/partials/edminboost-theme-settings.php:90
+#: admin/partials/edminboost-theme-settings.php:45
+#: admin/partials/edminboost-theme-settings.php:96
 msgid "Theme preset"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:149
+#: admin/partials/edminboost-theme-settings.php:155
 msgid "Color mode"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:160
+#: admin/partials/edminboost-theme-settings.php:166
 msgid "Font"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:175
+#: admin/partials/edminboost-theme-settings.php:181
 msgid "Custom colors"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:259
+#: admin/partials/edminboost-theme-settings.php:265
 msgid "Appearance extras"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:261
+#: admin/partials/edminboost-theme-settings.php:267
 msgid "Fine-tune admin typography, background, favicon, and post list colors."
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:267
+#: admin/partials/edminboost-theme-settings.php:273
 msgid "Typography & background"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:270
+#: admin/partials/edminboost-theme-settings.php:276
 msgid "Admin font size"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:296
+#: admin/partials/edminboost-theme-settings.php:302
 msgid "Admin background"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:316
+#: admin/partials/edminboost-theme-settings.php:322
 msgid "Background image ID"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:331
+#: admin/partials/edminboost-theme-settings.php:337
 msgid "Browser chrome"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:333
+#: admin/partials/edminboost-theme-settings.php:339
 msgid "Admin favicon ID"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:352
+#: admin/partials/edminboost-theme-settings.php:362
 msgid "Post status row colors"
 msgstr ""
 
-#: admin/partials/edminboost-theme-settings.php:353
+#: admin/partials/edminboost-theme-settings.php:363
 msgid "Optional hex colors for post list table rows by status. Leave blank to use the default table styling."
 msgstr ""
 
@@ -1316,74 +1376,16 @@ msgstr ""
 msgid "Open full top bar editor"
 msgstr ""
 
-#: admin/partials/pro/edminboost-billing-page.php:18
-msgid "Free"
+#: admin/partials/pro/edminboost-animation-speed-field.php:35
+#: admin/partials/pro/edminboost-animation-speed-field.php:79
+msgid "Animation speed"
 msgstr ""
 
-#: admin/partials/pro/edminboost-billing-page.php:27
+#: admin/partials/pro/edminboost-billing-page.php:26
 msgid "Choose the plan that fits your workflow. Upgrade anytime as your sites grow."
 msgstr ""
 
-#: admin/partials/pro/edminboost-billing-page.php:32
-#: admin/partials/pro/edminboost-billing-plan-cta.php:25
-msgid "Current plan"
-msgstr ""
-
-#. translators: 1: price label, 2: site count label
-#: admin/partials/pro/edminboost-billing-page.php:40
-#, php-format
-msgid "%1$s per year · %2$s"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:50
-msgid "Available plans"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:60
-msgid "Most popular"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:67
-msgid "/ year"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:90
-msgid "Compare plans"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:92
-msgid "Scan down a column to see what each plan includes."
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:98
-#: admin/partials/pro/edminboost-billing-page.php:166
-msgid "Included"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:102
-#: admin/partials/pro/edminboost-billing-page.php:168
-msgid "Not included"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:111
-msgid "Feature"
-msgstr ""
-
-#. translators: 1: price label, 2: site count label
-#: admin/partials/pro/edminboost-billing-page.php:126
-#, php-format
-msgid "%1$s/yr · %2$s"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:133
-msgid "Current"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:184
-msgid "Plan actions"
-msgstr ""
-
-#: admin/partials/pro/edminboost-billing-page.php:208
+#: admin/partials/pro/edminboost-billing-page.php:188
 msgid "Paid plans are billed annually per site license. Upgrade opens the EdminBoost pricing page in a new tab."
 msgstr ""
 
@@ -1414,7 +1416,7 @@ msgid "Full screen"
 msgstr ""
 
 #: admin/partials/pro/edminboost-home-advanced-look.php:44
-#: includes/class-edminboost-command-center.php:593
+#: includes/class-edminboost-command-center.php:589
 #: includes/class-edminboost-theme.php:150
 msgid "Custom"
 msgstr ""
@@ -1429,7 +1431,7 @@ msgid "Preview"
 msgstr ""
 
 #: admin/partials/pro/edminboost-home-advanced-look.php:72
-#: includes/class-edminboost-admin.php:540
+#: includes/pro/class-edminboost-admin-licensed.php:307
 msgid "Drawer width preview on a typical desktop screen."
 msgstr ""
 
@@ -1493,11 +1495,11 @@ msgstr ""
 msgid "Live badge binding"
 msgstr ""
 
-#: admin/partials/pro/edminboost-mapper-look-section.php:22
+#: admin/partials/pro/edminboost-mapper-look-section.php:30
 msgid "Panel & badges"
 msgstr ""
 
-#: admin/partials/pro/edminboost-mapper-look-section.php:24
+#: admin/partials/pro/edminboost-mapper-look-section.php:32
 msgid "Adjust slide-out panel style and notification badges. Set a top bar link to AJAX slide-out drawer to configure these settings."
 msgstr ""
 
@@ -1541,14 +1543,24 @@ msgstr ""
 msgid "Text only"
 msgstr ""
 
+#: admin/partials/pro/edminboost-overview-topbar-link-meta.php:16
+#: includes/pro/class-edminboost-admin-licensed.php:302
+msgid "Opens in drawer"
+msgstr ""
+
+#: admin/partials/pro/edminboost-overview-topbar-link-meta.php:17
+#: includes/pro/class-edminboost-admin-licensed.php:297
+msgid "Opens directly"
+msgstr ""
+
 #. translators: 1: role name, 2: parent menu label, 3: submenu label
-#: admin/partials/pro/edminboost-presets-role-matrix-cells.php:66
+#: admin/partials/pro/edminboost-presets-role-matrix-cells.php:70
 #, php-format
 msgid "Show %2$s › %3$s for %1$s"
 msgstr ""
 
 #. translators: 1: role name, 2: item label
-#: admin/partials/pro/edminboost-presets-role-matrix-cells.php:76
+#: admin/partials/pro/edminboost-presets-role-matrix-cells.php:80
 #, php-format
 msgid "Show %2$s for %1$s"
 msgstr ""
@@ -1636,6 +1648,10 @@ msgstr ""
 
 #: admin/partials/pro/edminboost-theme-schedule-dark-mode.php:38
 msgid "Dark mode end"
+msgstr ""
+
+#: admin/partials/pro/edminboost-theme-settings-licensed-desc.php:13
+msgid "Theme tokens also apply to the AJAX slide-out drawer when a top bar link uses in-panel interaction."
 msgstr ""
 
 #: admin/partials/pro/edminboost-white-label-page.php:29
@@ -1772,6 +1788,15 @@ msgstr ""
 msgid "No status details selected."
 msgstr ""
 
+#: includes/class-edminboost-admin-plans.php:38
+#: includes/class-edminboost-admin-plans.php:78
+#: includes/class-edminboost-command-center.php:345
+#: includes/class-edminboost-command-center.php:401
+#: includes/pro/class-edminboost-admin-billing.php:42
+#: includes/pro/class-edminboost-admin-billing.php:82
+msgid "Billing"
+msgstr ""
+
 #: includes/class-edminboost-admin.php:61
 #: includes/pro/class-edminboost-white-label.php:100
 msgid "EdminBoost"
@@ -1779,254 +1804,201 @@ msgstr ""
 
 #: includes/class-edminboost-admin.php:81
 #: includes/class-edminboost-admin.php:82
-#: includes/class-edminboost-admin.php:947
+#: includes/class-edminboost-admin.php:1067
 #: includes/class-edminboost-command-center.php:327
-#: includes/class-edminboost-command-center.php:373
+#: includes/class-edminboost-command-center.php:371
 msgid "Layouts"
 msgstr ""
 
 #: includes/class-edminboost-admin.php:89
 #: includes/class-edminboost-admin.php:90
-#: includes/class-edminboost-admin.php:154
-#: includes/class-edminboost-admin.php:155
-#: includes/class-edminboost-admin.php:945
+#: includes/class-edminboost-admin.php:156
+#: includes/class-edminboost-admin.php:157
+#: includes/class-edminboost-admin.php:1065
 #: includes/class-edminboost-command-center.php:331
-#: includes/class-edminboost-command-center.php:377
+#: includes/class-edminboost-command-center.php:375
 msgid "Theme"
 msgstr ""
 
 #: includes/class-edminboost-admin.php:97
 #: includes/class-edminboost-admin.php:98
-#: includes/class-edminboost-admin.php:946
+#: includes/class-edminboost-admin.php:1066
 #: includes/class-edminboost-command-center.php:335
-#: includes/class-edminboost-command-center.php:381
+#: includes/class-edminboost-command-center.php:379
 msgid "Top Bar"
 msgstr ""
 
 #: includes/class-edminboost-admin.php:105
 #: includes/class-edminboost-admin.php:106
-#: includes/class-edminboost-admin.php:948
+#: includes/class-edminboost-admin.php:1068
 #: includes/class-edminboost-command-center.php:339
-#: includes/class-edminboost-command-center.php:385
+#: includes/class-edminboost-command-center.php:383
 msgid "Menu Studio"
 msgstr ""
 
 #: includes/class-edminboost-admin.php:114
 #: includes/class-edminboost-admin.php:115
-#: includes/class-edminboost-admin.php:949
-#: includes/class-edminboost-command-center.php:389
+#: includes/class-edminboost-admin.php:1069
+#: includes/class-edminboost-command-center.php:387
 msgid "Productivity"
 msgstr ""
 
 #: includes/class-edminboost-admin.php:122
 #: includes/class-edminboost-admin.php:123
-#: includes/class-edminboost-admin.php:950
-#: includes/class-edminboost-command-center.php:393
+#: includes/class-edminboost-admin.php:1070
+#: includes/class-edminboost-command-center.php:391
 msgid "Security"
 msgstr ""
 
 #: includes/class-edminboost-admin.php:130
 #: includes/class-edminboost-admin.php:131
-#: includes/class-edminboost-admin.php:951
-#: includes/class-edminboost-command-center.php:397
+#: includes/class-edminboost-admin.php:1071
+#: includes/class-edminboost-command-center.php:395
 msgid "Performance"
 msgstr ""
 
-#: includes/class-edminboost-admin.php:525
+#: includes/class-edminboost-admin.php:585
 msgid "EdminBoost is ready."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:526
+#: includes/class-edminboost-admin.php:586
 msgid "Configure"
 msgstr ""
 
-#: includes/class-edminboost-admin.php:529
-msgid "Preset exported."
-msgstr ""
-
-#: includes/class-edminboost-admin.php:530
-msgid "Could not export settings. Please try again."
-msgstr ""
-
-#: includes/class-edminboost-admin.php:531
-#: includes/class-edminboost-admin.php:550
+#: includes/class-edminboost-admin.php:589
+#: includes/pro/class-edminboost-admin-licensed.php:313
 msgid "Enter an admin path."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:532
-#: includes/class-edminboost-admin.php:551
+#: includes/class-edminboost-admin.php:590
+#: includes/pro/class-edminboost-admin-licensed.php:314
 msgid "Enter a label."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:533
-#: includes/class-edminboost-admin.php:552
+#: includes/class-edminboost-admin.php:591
+#: includes/pro/class-edminboost-admin-licensed.php:315
 msgid "Use a relative admin path such as edit.php?post_type=page."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:534
+#: includes/class-edminboost-admin.php:592
 msgid "Use letters, numbers, hyphens, underscores, or dots in the anchor."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:535
+#: includes/class-edminboost-admin.php:593
 msgid "That link is already on your top bar."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:536
-msgid "Could not open the drawer preview."
-msgstr ""
-
-#. translators: 1: drawer width in pixels, 2: approximate percentage of a typical desktop screen width.
-#: includes/class-edminboost-admin.php:538
-#, php-format
-msgid "Drawer uses %1$s px — about %2$s%% of a typical desktop screen."
-msgstr ""
-
-#: includes/class-edminboost-admin.php:539
-msgid "Drawer uses the full screen width."
-msgstr ""
-
-#: includes/class-edminboost-admin.php:542
+#: includes/class-edminboost-admin.php:597
 msgid "Could not save settings. Please try again."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:543
-#: includes/class-edminboost-admin.php:1040
+#: includes/class-edminboost-admin.php:598
+msgid "Your session expired. Refresh the page and log in again."
+msgstr ""
+
+#: includes/class-edminboost-admin.php:599
+#: includes/class-edminboost-admin.php:1162
 msgid "Preset applied."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:544
+#: includes/class-edminboost-admin.php:600
 msgid "Enter a name for your preset."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:545
-#: includes/class-edminboost-admin.php:1050
+#: includes/class-edminboost-admin.php:601
+#: includes/class-edminboost-admin.php:1172
 msgid "Preset saved."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:546
-#: includes/class-edminboost-admin.php:1058
+#: includes/class-edminboost-admin.php:602
+#: includes/class-edminboost-admin.php:1180
 msgid "Preset renamed."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:547
-#: includes/class-edminboost-admin.php:1043
+#: includes/class-edminboost-admin.php:603
+#: includes/class-edminboost-admin.php:1165
 msgid "Preset duplicated."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:549
+#: includes/class-edminboost-admin.php:605
 msgid "Remove from sidebar"
 msgstr ""
 
-#: includes/class-edminboost-admin.php:553
-msgid "That link is already on your sidebar."
-msgstr ""
-
-#: includes/class-edminboost-admin.php:554
+#: includes/class-edminboost-admin.php:606
 msgid "Select a layout preset to continue."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:563
-#: includes/pro/class-edminboost-command-center-bar-pro.php:347
+#: includes/class-edminboost-admin.php:615
+#: includes/pro/class-edminboost-command-center-bar-pro.php:447
 msgid "Loading…"
 msgstr ""
 
-#: includes/class-edminboost-admin.php:564
+#: includes/class-edminboost-admin.php:616
 msgid "Could not load that page. Please try again."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:565
-msgid "Paste exported JSON or choose a file to import."
-msgstr ""
-
-#: includes/class-edminboost-admin.php:566
-msgid "Choose a JSON file to import."
-msgstr ""
-
-#: includes/class-edminboost-admin.php:567
-msgid "Could not read the selected file."
-msgstr ""
-
-#: includes/class-edminboost-admin.php:568
-msgid "Could not import settings. Check the JSON and try again."
-msgstr ""
-
-#: includes/class-edminboost-admin.php:569
+#: includes/class-edminboost-admin.php:617
 msgid "Reset all fields on this page to their default values? Your saved settings are not changed until you click Save."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:570
+#: includes/class-edminboost-admin.php:618
 msgid "Yes, reset to defaults"
 msgstr ""
 
-#: includes/class-edminboost-admin.php:698
-#: includes/class-edminboost-admin.php:699
-#: includes/class-edminboost-admin.php:953
-#: includes/class-edminboost-command-center.php:2872
-#: includes/pro/class-edminboost-admin-licensed.php:54
-#: includes/pro/class-edminboost-admin-licensed.php:104
-msgid "Settings"
-msgstr ""
-
-#: includes/class-edminboost-admin.php:706
-#: includes/class-edminboost-admin.php:707
-#: includes/class-edminboost-admin.php:952
-msgid "White Label"
-msgstr ""
-
-#: includes/class-edminboost-admin.php:728
+#: includes/class-edminboost-admin.php:751
 msgid "Docs"
 msgstr ""
 
-#: includes/class-edminboost-admin.php:762
+#: includes/class-edminboost-admin.php:882
 msgid "You do not have permission to view this page."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:771
-#: includes/class-edminboost-admin.php:979
-#: includes/class-edminboost-admin.php:1095
-#: includes/class-edminboost-admin.php:1121
-#: includes/pro/class-edminboost-command-center-bar-pro.php:158
+#: includes/class-edminboost-admin.php:891
+#: includes/class-edminboost-admin.php:1099
+#: includes/class-edminboost-admin.php:1227
+#: includes/class-edminboost-admin.php:1255
+#: includes/pro/class-edminboost-command-center-bar-pro.php:250
 msgid "Security check failed. Refresh the page and try again."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:783
+#: includes/class-edminboost-admin.php:903
 msgid "Unknown Command Center page."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:794
+#: includes/class-edminboost-admin.php:914
 msgid "Could not load that page."
 msgstr ""
 
 #. translators: 1: page title, 2: site name
-#: includes/class-edminboost-admin.php:809
+#: includes/class-edminboost-admin.php:928
 #, php-format
 msgid "%1$s ‹ %2$s — WordPress"
 msgstr ""
 
-#: includes/class-edminboost-admin.php:968
+#: includes/class-edminboost-admin.php:1088
 msgid "You do not have permission to save these settings."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:992
+#: includes/class-edminboost-admin.php:1112
 msgid "Invalid settings payload."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:1037
+#: includes/class-edminboost-admin.php:1159
 msgid "Command Center launched."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:1089
-#: includes/class-edminboost-admin.php:1115
-#: includes/pro/class-edminboost-admin-licensed.php:138
-#: includes/pro/class-edminboost-admin-licensed.php:149
+#: includes/class-edminboost-admin.php:1221
+#: includes/class-edminboost-admin.php:1249
+#: includes/pro/class-edminboost-admin-licensed.php:434
+#: includes/pro/class-edminboost-admin-licensed.php:445
 msgid "Permission denied."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:1131
+#: includes/class-edminboost-admin.php:1265
 msgid "Invalid JSON payload."
 msgstr ""
 
-#: includes/class-edminboost-admin.php:1137
+#: includes/class-edminboost-admin.php:1271
 msgid "Settings imported."
 msgstr ""
 
@@ -2042,153 +2014,153 @@ msgstr ""
 msgid "Slow (500ms)"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:346
-#: includes/class-edminboost-command-center.php:404
-#: includes/pro/class-edminboost-admin-billing.php:39
-#: includes/pro/class-edminboost-admin-billing.php:40
-#: includes/pro/class-edminboost-admin-billing.php:72
-msgid "Billing"
-msgstr ""
-
-#: includes/class-edminboost-command-center.php:444
+#: includes/class-edminboost-command-center.php:440
 msgid "Clean"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:445
+#: includes/class-edminboost-command-center.php:441
 msgid "Standard panel, subtle badges, hides logo and profile text."
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:461
+#: includes/class-edminboost-command-center.php:457
 msgid "Focused"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:462
+#: includes/class-edminboost-command-center.php:458
 msgid "Compact panel, counter badges, minimal admin bar clutter."
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:478
+#: includes/class-edminboost-command-center.php:474
 msgid "Full"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:479
+#: includes/class-edminboost-command-center.php:475
 msgid "Standard panel with accent badges and the full native admin bar."
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:544
-#: includes/class-edminboost-command-center.php:802
+#: includes/class-edminboost-command-center.php:540
+#: includes/class-edminboost-command-center.php:856
 msgid "Friend's Website"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:545
+#: includes/class-edminboost-command-center.php:541
 msgid "You help a friend keep their blog or portfolio updated — content-first shortcuts without technical clutter."
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:550
-#: includes/class-edminboost-command-center.php:809
+#: includes/class-edminboost-command-center.php:546
+#: includes/class-edminboost-command-center.php:863
 msgid "Family Member's Site"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:551
+#: includes/class-edminboost-command-center.php:547
 msgid "A gentle setup for parents or relatives who only need pages, photos, and the basics."
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:572
+#: includes/class-edminboost-command-center.php:568
 msgid "Current layout"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:573
+#: includes/class-edminboost-command-center.php:569
 msgid "By use case"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:574
+#: includes/class-edminboost-command-center.php:570
 msgid "By role"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:575
+#: includes/class-edminboost-command-center.php:571
 msgid "Your saved layouts"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:588
+#: includes/class-edminboost-command-center.php:584
 msgid "Your site's default layout preset."
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:594
+#: includes/class-edminboost-command-center.php:590
 msgid "Fine-tune the top bar and sidebar in Top Bar and Menu Studio"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:803
+#: includes/class-edminboost-command-center.php:857
 msgid "Help a friend publish posts, update pages, and moderate comments — no dev tools."
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:810
+#: includes/class-edminboost-command-center.php:864
 msgid "Ultra-simple bar with dashboard, pages, and media for non-technical relatives."
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:2095
+#: includes/class-edminboost-command-center.php:2055
 msgid "Custom layout"
 msgstr ""
 
 #. translators: 1: parent menu label, 2: submenu label
-#: includes/class-edminboost-command-center.php:2473
+#: includes/class-edminboost-command-center.php:2433
 #, php-format
 msgid "%1$s → %2$s"
 msgstr ""
 
 #. translators: %s: WordPress user role name
-#: includes/class-edminboost-command-center.php:2770
+#: includes/class-edminboost-command-center.php:2730
 #, php-format
 msgid "Top bar layout tuned for the %s role."
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:2851
+#: includes/class-edminboost-command-center.php:2811
 msgid "Plugins"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:2858
+#: includes/class-edminboost-command-center.php:2818
 msgid "Appearance"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:2865
+#: includes/class-edminboost-command-center.php:2825
 msgid "Tools"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:2980
+#: includes/class-edminboost-command-center.php:2832
+#: includes/pro/class-edminboost-admin-licensed.php:48
+#: includes/pro/class-edminboost-admin-licensed.php:128
+#: includes/pro/class-edminboost-admin-licensed.php:212
+#: includes/pro/class-edminboost-admin-licensed.php:262
+msgid "Settings"
+msgstr ""
+
+#: includes/class-edminboost-command-center.php:2940
 msgid "WooCommerce"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:2987
+#: includes/class-edminboost-command-center.php:2947
 msgid "Orders"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:2994
+#: includes/class-edminboost-command-center.php:2954
 msgid "Products"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:3001
+#: includes/class-edminboost-command-center.php:2961
 msgid "Analytics"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:3066
+#: includes/class-edminboost-command-center.php:3026
 msgid "None"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:3067
+#: includes/class-edminboost-command-center.php:3027
 msgid "WooCommerce — unread orders"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:3068
+#: includes/class-edminboost-command-center.php:3028
 msgid "WooCommerce — pending reviews"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:3069
+#: includes/class-edminboost-command-center.php:3029
 msgid "WordPress — pending comments"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:3070
+#: includes/class-edminboost-command-center.php:3030
 msgid "WordPress — available updates"
 msgstr ""
 
-#: includes/class-edminboost-command-center.php:3071
+#: includes/class-edminboost-command-center.php:3031
 msgid "WPForms — unread entries"
 msgstr ""
 
@@ -2199,11 +2171,11 @@ msgid "More information: %s"
 msgstr ""
 
 #: includes/class-edminboost-setting-help.php:129
-msgid "Choose a color palette for wp-admin, the Command Center bar, slide-out drawer, and EdminBoost screens."
+msgid "Choose a color palette for wp-admin, the Command Center bar, and EdminBoost screens."
 msgstr ""
 
 #: includes/class-edminboost-setting-help.php:130
-msgid "Force light or dark styling, follow the system preference, or use scheduled dark mode when enabled below."
+msgid "Force light or dark styling, or follow the system preference."
 msgstr ""
 
 #: includes/class-edminboost-setting-help.php:131
@@ -2255,443 +2227,295 @@ msgid "Media library attachment ID for an optional admin background image."
 msgstr ""
 
 #: includes/class-edminboost-setting-help.php:143
-msgid "When color mode is Auto, switch to dark styling during the configured time window."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:144
-msgid "Local site time when scheduled dark mode begins (24-hour HH:MM)."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:145
-msgid "Local site time when scheduled dark mode ends (24-hour HH:MM)."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:146
 msgid "Optional hex colors for post list table rows by status (draft, pending, etc.)."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:149
-msgid "Default width of the AJAX slide-out drawer when a top bar link opens in-panel instead of navigating away."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:150
-msgid "Pixel width for the drawer when Custom is selected. Clamped between 400 and 800."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:151
-msgid "Transition speed when opening and closing the slide-out drawer."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:152
-msgid "Adds a frosted-glass blur effect to the drawer backdrop."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:153
-msgid "How often forms inside the slide-out drawer auto-save, in seconds (10–600)."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:154
-msgid "How often live notification badges on the Command Center bar refresh, in seconds (15–600)."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:155
-msgid "Visual style for live counters bound to WooCommerce orders, comments, updates, and similar sources."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:158
+#: includes/class-edminboost-setting-help.php:146
 msgid "Remove the WordPress logo and its submenu from the native admin bar."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:159
+#: includes/class-edminboost-setting-help.php:147
 msgid "Hide plugin, theme, and core update notification bubbles on the admin bar."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:160
+#: includes/class-edminboost-setting-help.php:148
 msgid "Hide the “Howdy” greeting text in the admin bar profile area."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:161
+#: includes/class-edminboost-setting-help.php:149
 msgid "Remove the comments shortcut from the native admin bar."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:162
+#: includes/class-edminboost-setting-help.php:150
 msgid "Remove the “New” content dropdown from the native admin bar."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:163
+#: includes/class-edminboost-setting-help.php:151
 msgid "Hide the Customize link when the Customizer is available."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:166
-msgid "Read-only list of admin shortcuts from your layout preset. Use the full Top Bar editor to reorder links, change icons, set drawer interactions, or bind live badges."
+#: includes/class-edminboost-setting-help.php:154
+msgid "Read-only list of admin shortcuts from your layout preset. Use the full Top Bar editor to reorder links and change icons."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:167
+#: includes/class-edminboost-setting-help.php:155
 msgid "Opens the Top Bar editor where you can drag discovered admin pages, add custom links, and configure each item before or after setup."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:168
+#: includes/class-edminboost-setting-help.php:156
 msgid "Summary of your layout, theme, sidebar, and top bar choices before saving. Saving applies the preset and completes Dashboard setup."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:169
+#: includes/class-edminboost-setting-help.php:157
 msgid "Sidebar menu items and visibility included with the selected layout preset. Customize order, colors, and hidden items later in Menu Studio."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:170
-msgid "Top bar shortcuts included with the selected layout preset. Fine-tune labels, icons, and interactions in the Top Bar editor."
+#: includes/class-edminboost-setting-help.php:158
+msgid "Top bar shortcuts included with the selected layout preset. Fine-tune labels and icons in the Top Bar editor."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:171
+#: includes/class-edminboost-setting-help.php:159
 msgid "Sample of top-level sidebar menu items included with the selected layout preset (not every submenu is shown)."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:172
+#: includes/class-edminboost-setting-help.php:160
 msgid "Sample of Command Center top bar shortcuts included with the selected layout preset."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:173
-msgid "Optional admin typography, background, favicon, post list status colors, and scheduled dark mode window."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:176
+#: includes/class-edminboost-setting-help.php:163
 msgid "Apply a built-in or saved template that configures the top bar and left sidebar menu. Use Top Bar and Menu Studio for custom granular control."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:177
+#: includes/class-edminboost-setting-help.php:164
 msgid "Assign a layout preset per user role. The first matching role for a logged-in user determines their top bar layout and sidebar menu visibility."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:178
-msgid "Hide specific admin menu items from selected roles. Checked items remain visible in the top bar and sidebar for that role, including individual submenu pages. Items outside the assigned preset start unchecked but can still be enabled. Items the role cannot access by default also start unchecked—you may enable them manually."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:181
+#: includes/class-edminboost-setting-help.php:167
 msgid "Admin menu pages scanned from your sidebar. Toggle or drag items onto the top bar canvas."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:182
+#: includes/class-edminboost-setting-help.php:168
 msgid "Filter the discovered list by menu or plugin name."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:183
+#: includes/class-edminboost-setting-help.php:169
 msgid "Relative wp-admin path such as edit.php or admin.php?page=my-plugin. You may include a #fragment."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:184
+#: includes/class-edminboost-setting-help.php:170
 msgid "Short label shown on the Command Center bar for the custom link."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:185
+#: includes/class-edminboost-setting-help.php:171
 msgid "Optional page fragment to scroll to when the link opens. Can also be appended to the path above."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:186
-msgid "Drag to reorder icons. Click an item to configure icon, label, interaction, and badge binding."
+#: includes/class-edminboost-setting-help.php:172
+msgid "Drag to reorder icons. Click an item to configure its icon and label."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:187
+#: includes/class-edminboost-setting-help.php:173
 msgid "Dashicon displayed on the Command Center bar for this link."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:188
+#: includes/class-edminboost-setting-help.php:174
 msgid "Override the default menu label shown on the bar."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:189
-msgid "Scroll to this section ID when the link opens in redirect or drawer mode."
+#: includes/class-edminboost-setting-help.php:175
+msgid "Scroll to this section ID when the link opens."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:190
-msgid "Open the admin page directly or load it inside the AJAX slide-out drawer."
+#: includes/class-edminboost-setting-help.php:178
+msgid "Apply sidebar reordering, hidden items, and styling on all wp-admin screens."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:191
-msgid "Optional live counter from local WordPress data (orders, comments, updates, etc.)."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:194
-msgid "Apply sidebar reordering, hidden items, custom links, and styling on all wp-admin screens."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:195
+#: includes/class-edminboost-setting-help.php:179
 msgid "Toggle visibility or drag admin menu items into the sidebar preview."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:196
+#: includes/class-edminboost-setting-help.php:180
 msgid "Filter the admin menu item list."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:197
-msgid "Relative wp-admin path for a custom sidebar link."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:198
-msgid "Label shown in the wp-admin sidebar for the custom link."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:199
-msgid "Nest the link under an existing top-level menu, or leave as top level."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:200
+#: includes/class-edminboost-setting-help.php:181
 msgid "Drag top-level items to reorder. Expand a parent to reorder its submenus."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:201
+#: includes/class-edminboost-setting-help.php:182
 msgid "Sidebar width in pixels (120–300)."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:202
+#: includes/class-edminboost-setting-help.php:183
 msgid "Sidebar menu font size in pixels (10–24)."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:203
+#: includes/class-edminboost-setting-help.php:184
 msgid "Line height for sidebar menu items in pixels (12–36)."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:204
+#: includes/class-edminboost-setting-help.php:185
 msgid "Letter spacing for sidebar labels in pixels (-2 to 6)."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:205
-msgid "Show icons, text, or both on sidebar menu items."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:206
+#: includes/class-edminboost-setting-help.php:186
 msgid "Apply the custom color tokens below to the wp-admin sidebar."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:207
+#: includes/class-edminboost-setting-help.php:187
 msgid "Background for top-level sidebar menu items."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:208
+#: includes/class-edminboost-setting-help.php:188
 msgid "Text color for top-level sidebar menu items."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:209
+#: includes/class-edminboost-setting-help.php:189
 msgid "Background for hovered or active top-level sidebar items."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:210
+#: includes/class-edminboost-setting-help.php:190
 msgid "Background for fly-out submenu panels."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:211
+#: includes/class-edminboost-setting-help.php:191
 msgid "Text color for submenu links."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:212
+#: includes/class-edminboost-setting-help.php:192
 msgid "Text color for submenu links on hover or focus."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:213
+#: includes/class-edminboost-setting-help.php:193
 msgid "Background for update count badges on menu items."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:214
+#: includes/class-edminboost-setting-help.php:194
 msgid "Text color for update count badges."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:217
+#: includes/class-edminboost-setting-help.php:197
 msgid "Moves routine success and info notices out of view. Errors and warnings stay visible."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:218
+#: includes/class-edminboost-setting-help.php:198
 msgid "Hides the Screen Options and Help tabs in wp-admin."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:219
+#: includes/class-edminboost-setting-help.php:199
 msgid "Remove selected core Dashboard widgets for all users. Choose which widgets to hide below."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:220
+#: includes/class-edminboost-setting-help.php:200
 msgid "Replace the default “Thank you for creating with WordPress” footer text in wp-admin."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:221
+#: includes/class-edminboost-setting-help.php:201
 msgid "Custom HTML-safe text shown in the admin footer when replacement is enabled."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:222
+#: includes/class-edminboost-setting-help.php:202
 msgid "Adds a Duplicate row action to posts and pages in list tables."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:223
+#: includes/class-edminboost-setting-help.php:203
 msgid "Restores the pre-block classic widgets screen under Appearance."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:224
+#: includes/class-edminboost-setting-help.php:204
 msgid "Adds a duplicate action when editing navigation menus."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:225
+#: includes/class-edminboost-setting-help.php:205
 msgid "Adds optional columns to the Posts and Pages list tables in wp-admin. Enable the feature, then configure each post type below. New columns appear immediately after the Title column."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:226
+#: includes/class-edminboost-setting-help.php:206
 msgid "Shows a 40×40 featured image thumbnail after the Title column. Posts without a featured image leave the cell empty."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:227
+#: includes/class-edminboost-setting-help.php:207
 msgid "Shows the numeric post ID after the Title column. Useful for shortcodes, support tickets, or database lookups."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:228
+#: includes/class-edminboost-setting-help.php:208
 msgid "Shows the stored value for one post meta key after the Title column. Enter the exact meta key name (for example, _price). Only the first value is shown; serialized or array data may not display cleanly."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:229
+#: includes/class-edminboost-setting-help.php:209
 msgid "Enables drag-and-drop ordering via an Order column on supported post types."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:232
+#: includes/class-edminboost-setting-help.php:212
 msgid "These options may affect plugins or themes that rely on XML-RPC, feeds, or public REST access."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:233
+#: includes/class-edminboost-setting-help.php:213
 msgid "Blocks XML-RPC requests. Required by some remote apps and Jetpack features."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:234
+#: includes/class-edminboost-setting-help.php:214
 msgid "Disables RSS/Atom feeds and redirects feed URLs to the home page."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:235
+#: includes/class-edminboost-setting-help.php:215
 msgid "Removes the REST API discovery link tag from HTML output."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:236
+#: includes/class-edminboost-setting-help.php:216
 msgid "Returns an authentication error for unauthenticated REST API requests."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:237
+#: includes/class-edminboost-setting-help.php:217
 msgid "Turns off comments and comment UI for the selected public post types."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:238
-msgid "Send users to custom URLs after login or logout based on their role."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:239
-msgid "Fallback URL after login when no role-specific URL is set."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:240
-msgid "Fallback URL after logout when no role-specific URL is set."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:241
-msgid "Login redirect URL for this user role. Leave empty to use the default."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:242
-msgid "Logout redirect URL for this user role. Leave empty to use the default."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:245
+#: includes/class-edminboost-setting-help.php:220
 msgid "Removes WordPress emoji detection scripts and related DNS prefetch hints."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:246
+#: includes/class-edminboost-setting-help.php:221
 msgid "Limit emoji removal to wp-admin, the front end, or both."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:247
+#: includes/class-edminboost-setting-help.php:222
 msgid "Strips ?ver= query strings from enqueued script and style URLs. Can affect cache busting."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:248
+#: includes/class-edminboost-setting-help.php:223
 msgid "Dequeues Dashicons for visitors who are not logged in."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:249
+#: includes/class-edminboost-setting-help.php:224
 msgid "Disables oEmbed discovery, embed rewrite rules, and the wp-embed script."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:250
+#: includes/class-edminboost-setting-help.php:225
 msgid "Slow or disable the Heartbeat API on admin screens, the post editor, or the front end."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:251
+#: includes/class-edminboost-setting-help.php:226
 msgid "Applies to wp-admin screens outside the post editor, such as list tables and settings pages. Default keeps the standard ~15 second interval. Slow reduces polling to 60 seconds. Disable removes the Heartbeat script entirely."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:252
+#: includes/class-edminboost-setting-help.php:227
 msgid "Applies to the post and page editor (post.php and post-new.php). WordPress uses Heartbeat for autosave, post locking, and revision checks. Slow reduces polling to 60 seconds. Disable may affect autosave and collaborative editing."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:253
+#: includes/class-edminboost-setting-help.php:228
 msgid "Applies when logged-in users browse the public site. WordPress uses Heartbeat for session checks and admin bar updates. Default keeps the standard interval. Slow reduces polling to 60 seconds. Disable removes the script on the front end."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:256
-msgid "Master switch for white-label branding in wp-admin: sidebar menu label, Plugins screen row, and admin footer options below."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:257
-msgid "Removes the default WordPress version credit from the admin footer."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:258
-msgid "Include the visitor IP address in the system status footer."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:259
-msgid "Include the PHP version in the system status footer."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:260
-msgid "Include the WordPress version in the system status footer."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:261
-msgid "Include current PHP memory usage in the system status footer."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:262
-msgid "Include the PHP memory limit in the system status footer."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:263
-msgid "Include estimated available memory in the system status footer."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:264
-msgid "Replaces the plugin name on the Plugins screen and in plugin row meta."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:265
-msgid "Replaces the plugin description shown on the Plugins screen."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:266
-msgid "Replaces the author name shown for this plugin."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:267
-msgid "Replaces the plugin website link on the Plugins screen."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:268
-msgid "Replaces the EdminBoost item label in the wp-admin sidebar menu."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:271
+#: includes/class-edminboost-setting-help.php:231
 msgid "Master switch for EdminBoost features, the Command Center bar, Menu Studio, and visual theme."
 msgstr ""
 
-#: includes/class-edminboost-setting-help.php:272
-msgid "Download all EdminBoost options as JSON for backup or migration. Media files referenced by attachment IDs are not included."
-msgstr ""
-
-#: includes/class-edminboost-setting-help.php:273
-msgid "Restore settings from exported JSON by pasting the payload or uploading a .json file. Existing values are replaced after validation."
+#: includes/class-edminboost-setting-help.php:232
+msgid "Optional admin typography, background, favicon, and post list status colors."
 msgstr ""
 
 #. translators: %s: preset name
-#: includes/class-edminboost-settings.php:846
+#: includes/class-edminboost-settings.php:912
 #, php-format
 msgid "%s (Copy)"
 msgstr ""
@@ -3045,43 +2869,278 @@ msgstr ""
 msgid "REST API restricted to authenticated users."
 msgstr ""
 
-#: includes/pro/class-edminboost-command-center-bar-pro.php:135
-#: includes/pro/class-edminboost-command-center-bar-pro.php:356
+#: includes/pro/class-edminboost-admin-licensed.php:63
+#: includes/pro/class-edminboost-admin-licensed.php:132
+msgid "White Label"
+msgstr ""
+
+#: includes/pro/class-edminboost-admin-licensed.php:292
+msgid "Admin link shortcuts can appear in your WordPress top bar. Add links in the Top Bar editor and choose whether each opens directly or in a slide-out drawer."
+msgstr ""
+
+#. translators: %d: number of links that open directly
+#: includes/pro/class-edminboost-admin-licensed.php:294
+#, php-format
+msgid "%d opens directly"
+msgstr ""
+
+#. translators: %d: number of links that open directly
+#: includes/pro/class-edminboost-admin-licensed.php:296
+#, php-format
+msgid "%d open directly"
+msgstr ""
+
+#. translators: %d: number of links that open in a slide-out drawer
+#: includes/pro/class-edminboost-admin-licensed.php:299
+#, php-format
+msgid "%d opens in a slide-out drawer"
+msgstr ""
+
+#. translators: %d: number of links that open in a slide-out drawer
+#: includes/pro/class-edminboost-admin-licensed.php:301
+#, php-format
+msgid "%d open in a slide-out drawer"
+msgstr ""
+
+#: includes/pro/class-edminboost-admin-licensed.php:303
+msgid "Could not open the drawer preview."
+msgstr ""
+
+#. translators: 1: drawer width in pixels, 2: approximate percentage of a typical desktop screen width.
+#: includes/pro/class-edminboost-admin-licensed.php:305
+#, php-format
+msgid "Drawer uses %1$s px — about %2$s%% of a typical desktop screen."
+msgstr ""
+
+#: includes/pro/class-edminboost-admin-licensed.php:306
+msgid "Drawer uses the full screen width."
+msgstr ""
+
+#: includes/pro/class-edminboost-admin-licensed.php:308
+msgid "Could not export settings. Please try again."
+msgstr ""
+
+#: includes/pro/class-edminboost-admin-licensed.php:309
+msgid "Paste exported JSON or choose a file to import."
+msgstr ""
+
+#: includes/pro/class-edminboost-admin-licensed.php:310
+msgid "Choose a JSON file to import."
+msgstr ""
+
+#: includes/pro/class-edminboost-admin-licensed.php:311
+msgid "Could not read the selected file."
+msgstr ""
+
+#: includes/pro/class-edminboost-admin-licensed.php:312
+msgid "Could not import settings. Check the JSON and try again."
+msgstr ""
+
+#: includes/pro/class-edminboost-admin-licensed.php:316
+msgid "That link is already on your sidebar."
+msgstr ""
+
+#: includes/pro/class-edminboost-command-center-bar-pro.php:225
+#: includes/pro/class-edminboost-command-center-bar-pro.php:456
 msgid "Admin page preview"
 msgstr ""
 
-#: includes/pro/class-edminboost-command-center-bar-pro.php:148
+#: includes/pro/class-edminboost-command-center-bar-pro.php:240
 msgid "You do not have permission to preview drawer items."
 msgstr ""
 
-#: includes/pro/class-edminboost-command-center-bar-pro.php:166
+#: includes/pro/class-edminboost-command-center-bar-pro.php:258
 msgid "Drawer preview is only available in Layout Studio."
 msgstr ""
 
-#: includes/pro/class-edminboost-command-center-bar-pro.php:178
+#: includes/pro/class-edminboost-command-center-bar-pro.php:270
 msgid "That admin path cannot be previewed in the drawer."
 msgstr ""
 
-#: includes/pro/class-edminboost-command-center-bar-pro.php:207
+#: includes/pro/class-edminboost-command-center-bar-pro.php:299
 msgid "You must be logged in to view this page."
 msgstr ""
 
-#: includes/pro/class-edminboost-command-center-bar-pro.php:215
-#: includes/pro/class-edminboost-command-center-bar-pro.php:221
+#: includes/pro/class-edminboost-command-center-bar-pro.php:307
+#: includes/pro/class-edminboost-command-center-bar-pro.php:313
 msgid "Invalid drawer request."
 msgstr ""
 
-#: includes/pro/class-edminboost-command-center-bar-pro.php:237
-#: includes/pro/class-edminboost-command-center-bar-pro.php:243
+#: includes/pro/class-edminboost-command-center-bar-pro.php:329
+#: includes/pro/class-edminboost-command-center-bar-pro.php:335
 msgid "You cannot open this page in the drawer."
 msgstr ""
 
-#: includes/pro/class-edminboost-command-center-bar-pro.php:343
+#: includes/pro/class-edminboost-command-center-bar-pro.php:443
 msgid "Open full page"
 msgstr ""
 
-#: includes/pro/class-edminboost-command-center-bar-pro.php:344
+#: includes/pro/class-edminboost-command-center-bar-pro.php:444
 msgid "Close drawer"
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:48
+msgid "Default width of the AJAX slide-out drawer when a top bar link opens in-panel instead of navigating away."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:49
+msgid "Pixel width for the drawer when Custom is selected. Clamped between 400 and 800."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:50
+msgid "Transition speed when opening and closing the slide-out drawer."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:51
+msgid "Adds a frosted-glass blur effect to the drawer backdrop."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:52
+msgid "How often forms inside the slide-out drawer auto-save, in seconds (10–600)."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:53
+msgid "How often live notification badges on the Command Center bar refresh, in seconds (15–600)."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:54
+msgid "Visual style for live counters bound to WooCommerce orders, comments, updates, and similar sources."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:57
+msgid "Read-only list of admin shortcuts from your layout preset. Use the full Top Bar editor to reorder links, change icons, set drawer interactions, or bind live badges."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:58
+msgid "Top bar shortcuts included with the selected layout preset. Fine-tune labels, icons, and interactions in the Top Bar editor."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:61
+msgid "Drag to reorder icons. Click an item to configure icon, label, interaction, and badge binding."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:62
+msgid "Open the admin page directly or load it inside the AJAX slide-out drawer."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:63
+msgid "Optional live counter from local WordPress data (orders, comments, updates, etc.)."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:66
+msgid "Hide specific admin menu items from selected roles. Checked items remain visible in the top bar and sidebar for that role, including individual submenu pages. Items outside the assigned preset start unchecked but can still be enabled. Items the role cannot access by default also start unchecked—you may enable them manually."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:69
+msgid "Show icons, text, or both on sidebar menu items."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:70
+msgid "Relative wp-admin path for a custom sidebar link."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:71
+msgid "Label shown in the wp-admin sidebar for the custom link."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:72
+msgid "Nest the link under an existing top-level menu, or leave as top level."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:75
+msgid "When color mode is Auto, switch to dark styling during the configured time window."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:76
+msgid "Local site time when scheduled dark mode begins (24-hour HH:MM)."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:77
+msgid "Local site time when scheduled dark mode ends (24-hour HH:MM)."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:78
+msgid "Optional admin typography, background, favicon, post list status colors, and scheduled dark mode window."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:81
+msgid "Send users to custom URLs after login or logout based on their role."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:82
+msgid "Fallback URL after login when no role-specific URL is set."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:83
+msgid "Fallback URL after logout when no role-specific URL is set."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:84
+msgid "Login redirect URL for this user role. Leave empty to use the default."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:85
+msgid "Logout redirect URL for this user role. Leave empty to use the default."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:88
+msgid "Master switch for white-label branding in wp-admin: sidebar menu label, Plugins screen row, and admin footer options below."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:89
+msgid "Removes the default WordPress version credit from the admin footer."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:90
+msgid "Include the visitor IP address in the system status footer."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:91
+msgid "Include the PHP version in the system status footer."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:92
+msgid "Include the WordPress version in the system status footer."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:93
+msgid "Include current PHP memory usage in the system status footer."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:94
+msgid "Include the PHP memory limit in the system status footer."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:95
+msgid "Include estimated available memory in the system status footer."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:96
+msgid "Replaces the plugin name on the Plugins screen and in plugin row meta."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:97
+msgid "Replaces the plugin description shown on the Plugins screen."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:98
+msgid "Replaces the author name shown for this plugin."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:99
+msgid "Replaces the plugin website link on the Plugins screen."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:100
+msgid "Replaces the EdminBoost item label in the wp-admin sidebar menu."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:103
+msgid "Download all EdminBoost options as JSON for backup or migration. Media files referenced by attachment IDs are not included."
+msgstr ""
+
+#: includes/pro/class-edminboost-setting-help-pro.php:104
+msgid "Restore settings from exported JSON by pasting the payload or uploading a .json file. Existing values are replaced after validation."
 msgstr ""
 
 #: includes/pro/class-edminboost-theme-presets-pro.php:52

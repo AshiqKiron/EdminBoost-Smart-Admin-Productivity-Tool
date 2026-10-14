@@ -4611,8 +4611,8 @@
 			if ( applyField ) {
 				applyField.value = presetId || '';
 			}
-			if ( defaultField ) {
-				defaultField.value = presetId || '';
+			if ( defaultField && presetId && 'default' !== presetId ) {
+				defaultField.value = presetId;
 			}
 			renderTopBarSummary( presetId );
 		}
@@ -4638,10 +4638,13 @@
 			}
 
 			if ( nextBtn ) {
-				nextBtn.hidden = currentStep >= totalSteps;
+				var hideNext = currentStep >= totalSteps;
+				nextBtn.hidden = hideNext;
+				nextBtn.style.display = hideNext ? 'none' : '';
 			}
 
 			if ( submitBtn ) {
+				submitBtn.hidden = currentStep < totalSteps;
 				submitBtn.style.display = currentStep >= totalSteps ? '' : 'none';
 			}
 
